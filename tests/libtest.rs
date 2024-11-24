@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-pub mod range;
+use stl;
 
-pub use range::*;
-
-pub fn add(a: u64, b: u64) -> u64 {
-    a + b
+#[test]
+fn test_add() {
+    assert_eq!(stl::add(2, 3), 5)
 }
