@@ -1,3 +1,3 @@
 # rs-stl
 
-Implementing STL with rust.
+Rust implementation of STL with indices.
