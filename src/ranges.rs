@@ -60,6 +60,12 @@ where
     fn position_before(&self, i: Self::Position, n: usize) -> Self::Position;
 }
 
+pub trait BoundedRange: InputRange {
+    // Returns the "past the end" position in self, that is, the position
+    // immediately after the last element in self
+    fn last_position(&self) -> Self::Position;
+}
+
 pub trait OutputRange: InputRange {
     // Access element at position i
     //
