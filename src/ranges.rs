@@ -29,9 +29,20 @@ pub trait InputRange {
     fn at(&self, i: &Self::Position) -> &Self::Element;
 }
 
-pub trait ForwardRange: InputRange {
-    // Type of the positions in self
-    type Position: Regular;
+pub trait ForwardRange: InputRange
+where
+    Self::Position: Regular,
+{
+}
+
+pub trait BidirectionalRange: ForwardRange
+where
+    Self::Position: Regular,
+{
+    // Returns position immediately before i
+    //
+    // Requires: i != first_position()
+    fn position_before(&self, i: Self::Position) -> Self::Position;
 }
 
 pub trait OutputRange: InputRange {
