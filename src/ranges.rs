@@ -64,6 +64,11 @@ pub trait BoundedRange: InputRange {
     // Returns the "past the end" position in self, that is, the position
     // immediately after the last element in self
     fn last_position(&self) -> Self::Position;
+
+    // Default defintion for is_last_position
+    fn is_last_position(&self, i: &Self::Position) -> bool {
+        *i == self.last_position()
+    }
 }
 
 pub trait OutputRange: InputRange {
