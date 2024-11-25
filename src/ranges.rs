@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::SemiRegular;
+use crate::{Regular, SemiRegular};
 
 pub trait InputRange {
     // Type of the element contained in self
@@ -27,6 +27,11 @@ pub trait InputRange {
     //
     // Requires: i is a valid position in self and is_last_position(i) == false
     fn at(&self, i: &Self::Position) -> &Self::Element;
+}
+
+pub trait ForwardRange: InputRange {
+    // Type of the positions in self
+    type Position: Regular;
 }
 
 pub trait OutputRange: InputRange {
