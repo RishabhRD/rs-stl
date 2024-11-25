@@ -45,6 +45,21 @@ where
     fn position_before(&self, i: Self::Position) -> Self::Position;
 }
 
+pub trait RandomAccessRange: BidirectionalRange
+where
+    Self::Position: Regular + Ord,
+{
+    // Returns nth position after i
+    //
+    // Requires: there should be n valid positions after i
+    fn position_after(&self, i: Self::Position, n: usize) -> Self::Position;
+
+    // Returns nth position before i
+    //
+    // Requires: there should be n valid positions before i
+    fn position_before(&self, i: Self::Position, n: usize) -> Self::Position;
+}
+
 pub trait OutputRange: InputRange {
     // Access element at position i
     //
