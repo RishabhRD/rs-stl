@@ -28,3 +28,10 @@ pub trait InputRange {
     // Requires: i is a valid position in self and is_last_position(i) == false
     fn at(&self, i: &Self::Position) -> &Self::Element;
 }
+
+pub trait OutputRange: InputRange {
+    // Access element at position i
+    //
+    // Requires: i is a valid position in self and is_last_position(i) == false
+    fn at(&mut self, i: &Self::Position) -> &mut Self::Element;
+}
