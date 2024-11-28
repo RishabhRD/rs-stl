@@ -1,0 +1,6 @@
+max_width = 80
+tab_spaces = 4
+trailing_comma = "Always"
+align_match_arm = true
+brace_style = "SameLine"
+wrap_comments = true
