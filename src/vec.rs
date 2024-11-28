@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalRange, ForwardRange, InputRange, OutputRange, RandomAccessRange};
+use crate::{
+    BidirectionalRange, ForwardRange, InputRange, OutputRange,
+    RandomAccessRange,
+};
 
 impl<T> InputRange for Vec<T> {
     type Element = T;
@@ -34,11 +37,19 @@ impl<T> BidirectionalRange for Vec<T> {
 }
 
 impl<T> RandomAccessRange for Vec<T> {
-    fn nth_position_after(&self, i: Self::Position, n: usize) -> Self::Position {
+    fn nth_position_after(
+        &self,
+        i: Self::Position,
+        n: usize,
+    ) -> Self::Position {
         i + n
     }
 
-    fn nth_position_before(&self, i: Self::Position, n: usize) -> Self::Position {
+    fn nth_position_before(
+        &self,
+        i: Self::Position,
+        n: usize,
+    ) -> Self::Position {
         i - n
     }
 }
