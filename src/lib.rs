@@ -3,6 +3,7 @@
 
 pub mod ranges;
 pub mod regular;
+pub mod vec;
 
 pub use ranges::*;
 pub use regular::*;
