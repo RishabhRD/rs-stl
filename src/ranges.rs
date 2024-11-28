@@ -64,5 +64,5 @@ pub trait OutputRange: InputRange {
     // Access element at position i
     //
     // Requires: i is a valid position in self and is_last_position(i) == false
-    fn at(&mut self, i: &Self::Position) -> &mut Self::Element;
+    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
 }
