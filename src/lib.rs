@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
+pub mod algo;
 pub mod ranges;
 pub mod regular;
+pub mod rng;
 pub mod vec;
 
 pub use ranges::*;
 pub use regular::*;
-
-pub fn add(a: u64, b: u64) -> u64 {
-    a + b
-}
