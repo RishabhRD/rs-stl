@@ -14,9 +14,9 @@ pub trait InputRange {
     // or if self is empty then is_last_position(first_position()) == true
     fn first_position(&self) -> Self::Position;
 
-    // Returns true if index is "past the end" position in self, that is, the
-    // position is immediately after the last element in self
-    fn is_last_position(&self, i: &Self::Position) -> bool;
+    // Returns the "past the end" position in self, that is, the position
+    // immediately after the last element in self
+    fn last_position(&self) -> Self::Position;
 
     // Returns position immediately after i
     //
@@ -58,17 +58,6 @@ where
     //
     // Requires: there should be n valid positions before i
     fn position_before(&self, i: Self::Position, n: usize) -> Self::Position;
-}
-
-pub trait BoundedRange: InputRange {
-    // Returns the "past the end" position in self, that is, the position
-    // immediately after the last element in self
-    fn last_position(&self) -> Self::Position;
-
-    // Default defintion for is_last_position
-    fn is_last_position(&self, i: &Self::Position) -> bool {
-        *i == self.last_position()
-    }
 }
 
 pub trait OutputRange: InputRange {
