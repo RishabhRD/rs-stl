@@ -12,11 +12,11 @@ pub trait InputRange {
 
     // Returns the position of first element in self,
     // or if self is empty then is_last_position(first_position()) == true
-    fn first_position(&self) -> Self::Position;
+    fn start_position(&self) -> Self::Position;
 
     // Returns the "past the end" position in self, that is, the position
     // immediately after the last element in self
-    fn last_position(&self) -> Self::Position;
+    fn end_position(&self) -> Self::Position;
 
     // Returns position immediately after i
     //
