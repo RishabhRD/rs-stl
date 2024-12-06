@@ -27,3 +27,41 @@ where
     }
     start
 }
+
+// Precondition:
+//   - [start, end) represent valid positions in rng.
+// Postcondition:
+//   - Returns position of first element in [start, end) of rng NOT satisfying pred.
+//   - Returns end if no such element exists.
+//   - Complexity: O(n) where n is number if elements in [start, end).
+pub fn find_if_not<R, F>(
+    rng: &R,
+    start: R::Position,
+    end: R::Position,
+    pred: F,
+) -> R::Position
+where
+    R: InputRange,
+    F: Fn(&R::Element) -> bool,
+{
+    find_if(rng, start, end, |x| !pred(x))
+}
+
+// Precondition:
+//   - [start, end) represent valid positions in rng.
+// Postcondition:
+//   - Returns position of first element in [start, end) of rng equals e.
+//   - Returns end if no such element exists.
+//   - Complexity: O(n) where n is number if elements in [start, end).
+pub fn find<R>(
+    rng: &R,
+    start: R::Position,
+    end: R::Position,
+    e: &R::Element,
+) -> R::Position
+where
+    R: InputRange,
+    R::Element: Eq,
+{
+    find_if(rng, start, end, |x| x == e)
+}
