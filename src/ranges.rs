@@ -12,16 +12,16 @@ pub trait InputRange {
 
     // Returns the position of first element in self,
     // or if self is empty then is_last_position(first_position()) == true
-    fn start_position(&self) -> Self::Position;
+    fn start(&self) -> Self::Position;
 
     // Returns the "past the end" position in self, that is, the position
     // immediately after the last element in self
-    fn end_position(&self) -> Self::Position;
+    fn end(&self) -> Self::Position;
 
     // Returns position immediately after i
     //
     // Requires: is_last_position(i) == false
-    fn position_after(&self, i: Self::Position) -> Self::Position;
+    fn after(&self, i: Self::Position) -> Self::Position;
 
     // Access element at position i
     //
@@ -42,7 +42,7 @@ where
     // Returns position immediately before i
     //
     // Requires: i != first_position()
-    fn position_before(&self, i: Self::Position) -> Self::Position;
+    fn before(&self, i: Self::Position) -> Self::Position;
 }
 
 pub trait RandomAccessRange: BidirectionalRange
@@ -52,17 +52,12 @@ where
     // Returns nth position after i
     //
     // Requires: there should be n valid positions after i
-    fn nth_position_after(&self, i: Self::Position, n: usize)
-        -> Self::Position;
+    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position;
 
     // Returns nth position before i
     //
     // Requires: there should be n valid positions before i
-    fn nth_position_before(
-        &self,
-        i: Self::Position,
-        n: usize,
-    ) -> Self::Position;
+    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position;
 }
 
 pub trait OutputRange: InputRange {

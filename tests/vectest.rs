@@ -6,19 +6,19 @@ use stl::*;
 #[test]
 fn start_position() {
     let vec = vec![10, 20, 30];
-    assert_eq!(vec.start_position(), 0)
+    assert_eq!(vec.start(), 0)
 }
 
 #[test]
 fn end_position() {
     let vec = vec![10, 20, 30];
-    assert_eq!(vec.end_position(), 3)
+    assert_eq!(vec.end(), 3)
 }
 
 #[test]
 fn position_after() {
     let vec = vec![10, 20, 30];
-    assert_eq!(vec.position_after(vec.start_position()), 1)
+    assert_eq!(vec.after(vec.start()), 1)
 }
 
 #[test]
@@ -30,19 +30,19 @@ fn at() {
 #[test]
 fn position_before() {
     let vec = vec![10, 20, 30];
-    assert_eq!(vec.position_before(3), 2)
+    assert_eq!(vec.before(3), 2)
 }
 
 #[test]
 fn nth_position_after() {
     let vec = vec![10, 20, 30];
-    assert_eq!(vec.nth_position_after(0, 2), 2)
+    assert_eq!(vec.after_n(0, 2), 2)
 }
 
 #[test]
 fn nth_position_before() {
     let vec = vec![10, 20, 30];
-    assert_eq!(vec.nth_position_before(2, 2), 0)
+    assert_eq!(vec.before_n(2, 2), 0)
 }
 
 #[test]

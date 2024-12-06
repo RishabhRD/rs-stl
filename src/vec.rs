@@ -11,15 +11,15 @@ impl<T> InputRange for Vec<T> {
 
     type Position = usize;
 
-    fn start_position(&self) -> Self::Position {
+    fn start(&self) -> Self::Position {
         0
     }
 
-    fn end_position(&self) -> Self::Position {
+    fn end(&self) -> Self::Position {
         self.len()
     }
 
-    fn position_after(&self, i: Self::Position) -> Self::Position {
+    fn after(&self, i: Self::Position) -> Self::Position {
         i + 1
     }
 
@@ -31,25 +31,17 @@ impl<T> InputRange for Vec<T> {
 impl<T> ForwardRange for Vec<T> {}
 
 impl<T> BidirectionalRange for Vec<T> {
-    fn position_before(&self, i: Self::Position) -> Self::Position {
+    fn before(&self, i: Self::Position) -> Self::Position {
         i - 1
     }
 }
 
 impl<T> RandomAccessRange for Vec<T> {
-    fn nth_position_after(
-        &self,
-        i: Self::Position,
-        n: usize,
-    ) -> Self::Position {
+    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
         i + n
     }
 
-    fn nth_position_before(
-        &self,
-        i: Self::Position,
-        n: usize,
-    ) -> Self::Position {
+    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
         i - n
     }
 }

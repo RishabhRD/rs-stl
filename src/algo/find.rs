@@ -23,7 +23,7 @@ where
         if pred(rng.at(&start)) {
             break;
         }
-        start = rng.position_after(start)
+        start = rng.after(start)
     }
     start
 }

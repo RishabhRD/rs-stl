@@ -8,7 +8,7 @@ where
     T: InputRange,
     F: Fn(&T::Element) -> bool,
 {
-    algo::find_if(rng, rng.start_position(), rng.end_position(), pred)
+    algo::find_if(rng, rng.start(), rng.end(), pred)
 }
 
 pub mod infix {
