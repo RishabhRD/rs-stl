@@ -6,3 +6,6 @@ pub use find::*;
 
 pub mod count;
 pub use count::*;
+
+pub mod of;
+pub use of::*;
