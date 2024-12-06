@@ -8,7 +8,8 @@ use crate::InputRange;
 // Postcondition:
 //   - Returns position of first element in [start, end) of rng satisfying pred.
 //   - Returns end if no such element exists.
-//   - Complexity: O(n) where n is number if elements in [start, end).
+//   - Complexity: O(n) applications of pred,
+//     where n is number if elements in [start, end).
 pub fn find_if<R, F>(
     rng: &R,
     mut start: R::Position,
@@ -33,7 +34,8 @@ where
 // Postcondition:
 //   - Returns position of first element in [start, end) of rng NOT satisfying pred.
 //   - Returns end if no such element exists.
-//   - Complexity: O(n) where n is number if elements in [start, end).
+//   - Complexity: O(n) applications of pred,
+//     where n is number if elements in [start, end).
 pub fn find_if_not<R, F>(
     rng: &R,
     start: R::Position,
@@ -52,7 +54,8 @@ where
 // Postcondition:
 //   - Returns position of first element in [start, end) of rng equals e.
 //   - Returns end if no such element exists.
-//   - Complexity: O(n) where n is number if elements in [start, end).
+//   - Complexity: O(n) equality comparisions,
+//     where n is number if elements in [start, end).
 pub fn find<R>(
     rng: &R,
     start: R::Position,
