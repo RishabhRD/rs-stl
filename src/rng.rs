@@ -4,6 +4,10 @@
 pub mod find;
 pub use find::*;
 
+pub mod count;
+pub use count::*;
+
 pub mod infix {
+    pub use super::count::infix::*;
     pub use super::find::infix::*;
 }
