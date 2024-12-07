@@ -144,7 +144,7 @@ required description would be provided.
 - [x] none_of
 - [x] mismatch -> mismatch_unbounded, mismatch_unbounded_by, mismatch, mismatch_by
 - [ ] find_end
-- [ ] adjacent_find
+- [x] adjacent_find -> adjacent_find_if
 - [ ] equal
 - [ ] search
 - [ ] search_n

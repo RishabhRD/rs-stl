@@ -13,7 +13,11 @@ pub use of::*;
 pub mod mismatch;
 pub use mismatch::*;
 
+pub mod adjacent_find;
+pub use adjacent_find::*;
+
 pub mod infix {
+    pub use super::adjacent_find::infix::*;
     pub use super::count::infix::*;
     pub use super::find::infix::*;
     pub use super::of::infix::*;
