@@ -10,6 +10,9 @@ pub use count::*;
 pub mod of;
 pub use of::*;
 
+pub mod mismatch;
+pub use mismatch::*;
+
 pub mod infix {
     pub use super::count::infix::*;
     pub use super::find::infix::*;

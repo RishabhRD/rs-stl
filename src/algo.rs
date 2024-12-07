@@ -9,3 +9,6 @@ pub use count::*;
 
 pub mod of;
 pub use of::*;
+
+pub mod mismatch;
+pub use mismatch::*;
