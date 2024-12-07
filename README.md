@@ -142,7 +142,7 @@ required description would be provided.
 - [x] all_of
 - [x] any_of
 - [x] none_of
-- [ ] mismatch
+- [x] mismatch -> mismatch_unbounded, mismatch_unbounded_by, mismatch, mismatch_by
 - [ ] find_end
 - [ ] adjacent_find
 - [ ] equal
