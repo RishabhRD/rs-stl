@@ -2,10 +2,9 @@
 
 Porting STL to rust.
 
-Because of safety features of Rust, Rust is becoming a popular choice for
-implementing many new softwares. Rust has great set of algorithms based on
-`rust iterators`. However, still many algorithms are still missing like
-`std::rotate` because we don't have concept of `C++-like iterators`.
+Rust has great set of algorithms based on `rust iterators`. However, many
+algorithms like `std::rotate` is still missing. This is because we don't have
+concept of `C++-like iterators`.
 
 C++ STL is a brilliant piece of work by Alex Stepanov and provides highly
 composable algorithms over C++ iterators.
@@ -18,11 +17,11 @@ are generalization over indexes.
 
 rs-stl defines concept of ranges. A range can be of following types:
 
-- InputRange: Models single pass ranges
-- ForwardRange: Models multi-pass ranges. Automatically an input range.
-- BidirectionalRange: Models range that also supports backward iteration. Automatically a forward range.
-- RandomAccessRange: Models range that supports random access iteration. Automatically a bidirectional range.
-- OutputRange: Models mutable range. Automatically an input range.
+- **InputRange**: Models single pass ranges.
+- **ForwardRange**: Models multi-pass ranges. Automatically an input range.
+- **BidirectionalRange**: Models range that also supports backward iteration. Automatically a forward range.
+- **RandomAccessRange**: Models range that supports random access iteration. Automatically a bidirectional range.
+- **OutputRange**: Models mutable range. Automatically an input range.
 
 ```rust
 pub trait InputRange {
@@ -131,7 +130,7 @@ required description would be provided.
 
 <details>
 
-<summary>Click to expand</summary>
+<summary>Algorithms List</summary>
 
 ### Search Operations
 
