@@ -135,118 +135,118 @@ required description would be provided.
 
 ### Search Operations
 
-[x] find_if
-[x] find_if_not
-[x] find
-[x] count_if
-[x] count
-[x] all_of
-[x] any_of
-[x] none_of
-[ ] mismatch
-[ ] find_end
-[ ] adjacent_find
-[ ] equal
-[ ] search
-[ ] search_n
+- [x] find_if
+- [x] find_if_not
+- [x] find
+- [x] count_if
+- [x] count
+- [x] all_of
+- [x] any_of
+- [x] none_of
+- [ ] mismatch
+- [ ] find_end
+- [ ] adjacent_find
+- [ ] equal
+- [ ] search
+- [ ] search_n
 
 ### Copy Operations
 
-[ ] copy
-[ ] copy_if
-[ ] copy_n
-[ ] copy_backward
-[ ] move
-[ ] move_backward
+- [ ] copy
+- [ ] copy_if
+- [ ] copy_n
+- [ ] copy_backward
+- [ ] move
+- [ ] move_backward
 
 ### Swap Operations
 
-[ ] swap_ranges
+- [ ] swap_ranges
 
 ### Transformation Operations
 
-[ ] transform
-[ ] replace
-[ ] replace_if
-[ ] replace_copy_if
+- [ ] transform
+- [ ] replace
+- [ ] replace_if
+- [ ] replace_copy_if
 
 ### Generation Operations
 
-[ ] fill
-[ ] fill_n
-[ ] generate
-[ ] generate_n
+- [ ] fill
+- [ ] fill_n
+- [ ] generate
+- [ ] generate_n
 
 ### Removing Operations
 
-[ ] remove
-[ ] remove_if
-[ ] remove_copy
-[ ] remove_copy_if
-[ ] unique
-[ ] unique_copy
+- [ ] remove
+- [ ] remove_if
+- [ ] remove_copy
+- [ ] remove_copy_if
+- [ ] unique
+- [ ] unique_copy
 
 ### Permutation Operations
 
-[ ] reverse
-[ ] reverse_copy
-[ ] rotate
-[ ] rotate_copy
-[ ] shift_left
-[ ] shift_right
-[ ] next_permutation
-[ ] prev_permutation
-[ ] is_permutation
+- [ ] reverse
+- [ ] reverse_copy
+- [ ] rotate
+- [ ] rotate_copy
+- [ ] shift_left
+- [ ] shift_right
+- [ ] next_permutation
+- [ ] prev_permutation
+- [ ] is_permutation
 
 ### Partitioning Operations
 
-[ ] is_partitioned
-[ ] partition
-[ ] partition_copy
-[ ] stable_partition
-[ ] partition_point
+- [ ] is_partitioned
+- [ ] partition
+- [ ] partition_copy
+- [ ] stable_partition
+- [ ] partition_point
 
 ### Sorting Operations
 
-[ ] sort
-[ ] stable_sort
-[ ] partial_sort
-[ ] partial_sort_copy
-[ ] is_sorted
-[ ] is_sorted_until
-[ ] nth_element
+- [ ] sort
+- [ ] stable_sort
+- [ ] partial_sort
+- [ ] partial_sort_copy
+- [ ] is_sorted
+- [ ] is_sorted_until
+- [ ] nth_element
 
 ### Binary Search Operations
 
-[ ] partition_point
-[ ] lower_bound
-[ ] upper_bound
-[ ] equal_range
-[ ] binary_search
+- [ ] partition_point
+- [ ] lower_bound
+- [ ] upper_bound
+- [ ] equal_range
+- [ ] binary_search
 
 ### Merge Operations
 
-[ ] merge
-[ ] inplace_merge
+- [ ] merge
+- [ ] inplace_merge
 
 ### Minimum/Maximum Operations
 
-[ ] min_element
-[ ] max_element
-[ ] minmax_element
+- [ ] min_element
+- [ ] max_element
+- [ ] minmax_element
 
 ### Numeric Operations
 
-[ ] iota
-[ ] accumulate/reduce
-[ ] inner_product
-[ ] adjacent_difference
-[ ] partial_sum
-[ ] exclusive_scan
-[ ] inclusive_scan
-[ ] transform_reduce
-[ ] transform_exclusive_scan
-[ ] transform_inclusive_scan
+- [ ] iota
+- [ ] accumulate/reduce
+- [ ] inner_product
+- [ ] adjacent_difference
+- [ ] partial_sum
+- [ ] exclusive_scan
+- [ ] inclusive_scan
+- [ ] transform_reduce
+- [ ] transform_exclusive_scan
+- [ ] transform_inclusive_scan
 
 </details>
 
