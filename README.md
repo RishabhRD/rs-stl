@@ -146,9 +146,9 @@ required description would be provided.
 - [x] copy
 - [x] copy_if
 - [x] copy_n
-- [ ] copy_backward -> **NOT IMPLEMENTED:** Not sure if it will be useful in rust at all?
-- [ ] move -> **NOT POSSIBLE:** Due to rust ownership model. Maybe unsafe code?
-- [ ] move_backward -> **NOT IMPLEMENTED:** Not sure if it will be useful in rust at all?
+- [ ] ~~copy_backwar~~d -> **NOT IMPLEMENTED:** Not sure if it will be useful in rust at all?
+- [ ] ~~move~~ -> **NOT POSSIBLE:** Due to rust ownership model. Maybe unsafe code?
+- [ ] ~~move_backward~~ -> **NOT IMPLEMENTED:** Not sure if it will be useful in rust at all?
 
 ### Swap Operations
 
