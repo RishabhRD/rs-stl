@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{ForwardRange, Regular};
+use crate::ForwardRange;
 
 // Precondition:
 //   - [start, end) denotes valid positions in rng
@@ -17,7 +17,6 @@ pub fn adjacent_find_if<R, F>(
 ) -> R::Position
 where
     R: ForwardRange,
-    R::Position: Regular,
     F: Fn(&R::Element, &R::Element) -> bool,
 {
     if start == end {

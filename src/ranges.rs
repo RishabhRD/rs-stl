@@ -29,25 +29,17 @@ pub trait InputRange {
     fn at(&self, i: &Self::Position) -> &Self::Element;
 }
 
-pub trait ForwardRange: InputRange
-where
-    Self::Position: Regular,
-{
-}
+pub trait ForwardRange: InputRange<Position: Regular> {}
 
-pub trait BidirectionalRange: ForwardRange
-where
-    Self::Position: Regular,
-{
+pub trait BidirectionalRange: ForwardRange {
     // Returns position immediately before i
     //
     // Requires: i != first_position()
     fn before(&self, i: Self::Position) -> Self::Position;
 }
 
-pub trait RandomAccessRange: BidirectionalRange
-where
-    Self::Position: Regular + Ord,
+pub trait RandomAccessRange:
+    BidirectionalRange<Position: Regular + Ord>
 {
     // Returns nth position after i
     //

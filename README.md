@@ -75,11 +75,7 @@ assert_eq!(cnt, 2);
 Similarily, stl defines ForwardRange which just mandates Position to be `Regular`.
 
 ```rust
-pub trait ForwardRange: InputRange
-where
-    Self::Position: Regular,
-{
-}
+pub trait ForwardRange: InputRange<Position: Regular> {}
 ```
 
 BidirectionalRange defines a before function in addition to after function that
@@ -87,8 +83,6 @@ returns position before current position.
 
 ```rust
 pub trait BidirectionalRange: ForwardRange
-where
-    Self::Position: Regular,
 {
     fn before(&self, i: Self::Position) -> Self::Position;
 }
@@ -98,9 +92,7 @@ RandomAccessRange mandates `Position` type to be `Ord` as well as supports
 function to iterate n steps forward or backward.
 
 ```rust
-pub trait RandomAccessRange: BidirectionalRange
-where
-    Self::Position: Regular + Ord,
+pub trait RandomAccessRange: BidirectionalRange<Position: Regular + Ord>
 {
     fn after_n(&self, i: Self::Position, n: usize) -> Self::Position;
     fn before_n(&self, i: Self::Position, n: usize) -> Self::Position;
