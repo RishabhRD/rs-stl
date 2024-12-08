@@ -67,4 +67,15 @@ pub mod tests {
         assert!(vec2.equals(&vec![0, 0, 0, 0, 0]));
         assert_eq!(j, 1);
     }
+
+    #[test]
+    pub fn copy_n_non_empty() {
+        let vec1 = vec![1, 2, 3];
+        let mut vec2 = vec![0, 0, 0, 0, 0];
+
+        let j = algo::copy_n(&vec1, 1, 2, &mut vec2, 1);
+
+        assert!(vec2.equals(&vec![0, 2, 3, 0, 0]));
+        assert_eq!(j, 3);
+    }
 }

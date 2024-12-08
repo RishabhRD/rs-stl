@@ -145,7 +145,7 @@ required description would be provided.
 
 - [x] copy
 - [x] copy_if
-- [ ] copy_n
+- [x] copy_n
 - [ ] copy_backward -> **NOT IMPLEMENTED:** Not sure if it will be useful in rust at all?
 - [ ] move
 - [ ] move_backward -> **NOT IMPLEMENTED:** Not sure if it will be useful in rust at all?

@@ -63,3 +63,32 @@ where
     }
     out
 }
+
+// Precondition:
+//   - n >= 0.
+//   - [start, start + n) represent valid positions in rng.
+//   - dest should be able to accomodate n elements starting from out
+// Postcondition:
+//   - copies elements from [start, start + n) to out position of dest.
+//   - Returns the position of dest just after last copy position.
+//   - Complexity: O(n). Total n copy operations.
+pub fn copy_n<R, D>(
+    rng: &R,
+    mut start: R::Position,
+    mut n: usize,
+    dest: &mut D,
+    mut out: D::Position,
+) -> D::Position
+where
+    R: InputRange<Element = D::Element>,
+    R::Element: Clone,
+    D: OutputRange,
+{
+    while n != 0 {
+        *dest.at_mut(&out) = rng.at(&start).clone();
+        out = dest.after(out);
+        start = rng.after(start);
+        n -= 1;
+    }
+    out
+}
