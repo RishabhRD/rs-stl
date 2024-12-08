@@ -137,7 +137,7 @@ required description would be provided.
 - [x] mismatch -> mismatch_unbounded, mismatch_unbounded_by, mismatch, mismatch_by
 - [ ] find_end
 - [x] adjacent_find -> adjacent_find_if
-- [ ] equal
+- [x] equal -> equals, equals_by, equals_unbounded, equals_unbounded_by
 - [ ] search
 - [ ] search_n
 

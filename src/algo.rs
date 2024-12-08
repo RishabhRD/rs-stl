@@ -15,3 +15,6 @@ pub use mismatch::*;
 
 pub mod adjacent_find;
 pub use adjacent_find::*;
+
+pub mod equals;
+pub use equals::*;
