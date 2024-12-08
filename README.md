@@ -148,7 +148,7 @@ required description would be provided.
 - [ ] copy_n
 - [ ] copy_backward -> **NOT IMPLEMENTED:** Not sure if it will be useful in rust at all?
 - [ ] move
-- [ ] move_backward
+- [ ] move_backward -> **NOT IMPLEMENTED:** Not sure if it will be useful in rust at all?
 
 ### Swap Operations
 
