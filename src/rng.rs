@@ -19,6 +19,9 @@ pub use adjacent_find::*;
 pub mod equals;
 pub use equals::*;
 
+pub mod copy;
+pub use copy::*;
+
 pub mod infix {
     pub use super::adjacent_find::infix::*;
     pub use super::count::infix::*;

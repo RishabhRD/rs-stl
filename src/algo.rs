@@ -18,3 +18,6 @@ pub use adjacent_find::*;
 
 pub mod equals;
 pub use equals::*;
+
+pub mod copy;
+pub use copy::*;

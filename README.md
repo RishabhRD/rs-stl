@@ -143,8 +143,8 @@ required description would be provided.
 
 ### Copy Operations
 
-- [ ] copy
-- [ ] copy_if
+- [x] copy
+- [x] copy_if
 - [ ] copy_n
 - [ ] copy_backward
 - [ ] move
