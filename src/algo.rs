@@ -27,3 +27,6 @@ pub use transform::*;
 
 pub mod replace;
 pub use replace::*;
+
+pub mod fill;
+pub use fill::*;

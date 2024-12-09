@@ -28,10 +28,14 @@ pub use transform::*;
 pub mod replace;
 pub use replace::*;
 
+pub mod fill;
+pub use fill::*;
+
 pub mod infix {
     pub use super::adjacent_find::infix::*;
     pub use super::count::infix::*;
     pub use super::equals::infix::*;
+    pub use super::fill::infix::*;
     pub use super::find::infix::*;
     pub use super::of::infix::*;
     pub use super::replace::infix::*;

@@ -170,10 +170,10 @@ required description would be provided.
 
 ### Generation Operations
 
-- [ ] fill
-- [ ] fill_n
-- [ ] generate
-- [ ] generate_n
+- [x] fill -> fill_value
+- [ ] ~~fill_n~~ -> **NOT PLANNED:** Use fill_value with slices.
+- [x] generate -> fill_by
+- [ ] ~~generate_n~~ -> **NOT PLANNED:** Use fill_by with slices.
 
 ### Removing Operations
 
