@@ -109,9 +109,19 @@ pub trait OutputRange: InputRange {
 
 ### Support for standard library
 
-Currently `Vec<T>` implements `RandomAccessRange` and `OutputRange`. In future,
-we plan to support more containers and if not possible for any container, provide
-alernative for the same.
+Currently range concepts have been implemented for:
+
+- \[T, N\]
+- \[T\]
+- Vec<T>
+  In future, we plan to support more data structures from standard library.
+
+Not sure, how to deal with
+
+- str
+- String
+
+correctly?
 
 ## Algorithms Implemented / Planned to Implement
 
