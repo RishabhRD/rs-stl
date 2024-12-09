@@ -126,7 +126,7 @@ correctly?
 ## Algorithms Implemented / Planned to Implement
 
 The names mentioned here are C++ standard library names. If any algorithm is
-implemented with other name as I would feel that name would be more suitable
+implemented with other name as other name would be more suitable
 then, that name would be mentioned explicitly in front of C++ name as well as
 required description would be provided.
 
