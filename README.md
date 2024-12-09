@@ -156,7 +156,7 @@ required description would be provided.
 
 ### Transformation Operations
 
-- [ ] transform
+- [x] transform -> transform, zip_transform
 - [ ] replace
 - [ ] replace_if
 - [ ] replace_copy_if

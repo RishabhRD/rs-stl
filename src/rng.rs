@@ -22,6 +22,9 @@ pub use equals::*;
 pub mod copy;
 pub use copy::*;
 
+pub mod transform;
+pub use transform::*;
+
 pub mod infix {
     pub use super::adjacent_find::infix::*;
     pub use super::count::infix::*;
