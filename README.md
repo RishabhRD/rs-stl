@@ -154,7 +154,7 @@ required description would be provided.
 - [x] copy_n
 - [ ] ~~copy_backward~~ -> **NOT PLANNED:** Unlikely to be useful in rust?
 - [ ] ~~move~~ -> **NOT POSSIBLE:** Due to rust ownership model.
-- [ ] ~~move_backward~~ -> **NOT PLANNED:** Unlikely to be useful in rust?
+- [ ] ~~move_backward~~ -> **NOT POSSIBLE:** Due to rust ownership model.
 
 ### Swap Operations
 
