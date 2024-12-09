@@ -130,10 +130,6 @@ implemented with other name as I would feel that name would be more suitable
 then, that name would be mentioned explicitly in front of C++ name as well as
 required description would be provided.
 
-<details>
-
-<summary>Algorithms List</summary>
-
 ### Search Operations
 
 - [x] find_if
@@ -249,8 +245,6 @@ required description would be provided.
 - [ ] transform_reduce
 - [ ] transform_exclusive_scan
 - [ ] transform_inclusive_scan
-
-</details>
 
 ## Motivations
 
