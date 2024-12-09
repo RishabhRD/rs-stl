@@ -6,7 +6,7 @@ use crate::{
     RandomAccessRange,
 };
 
-impl<T, const N: usize> InputRange for [T; N] {
+impl<T> InputRange for [T] {
     type Element = T;
 
     type Position = usize;
@@ -16,7 +16,7 @@ impl<T, const N: usize> InputRange for [T; N] {
     }
 
     fn end(&self) -> Self::Position {
-        N
+        self.len()
     }
 
     fn after(&self, i: Self::Position) -> Self::Position {
@@ -28,15 +28,15 @@ impl<T, const N: usize> InputRange for [T; N] {
     }
 }
 
-impl<T, const N: usize> ForwardRange for [T; N] {}
+impl<T> ForwardRange for [T] {}
 
-impl<T, const N: usize> BidirectionalRange for [T; N] {
+impl<T> BidirectionalRange for [T] {
     fn before(&self, i: Self::Position) -> Self::Position {
         i - 1
     }
 }
 
-impl<T, const N: usize> RandomAccessRange for [T; N] {
+impl<T> RandomAccessRange for [T] {
     fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
         i + n
     }
@@ -46,7 +46,7 @@ impl<T, const N: usize> RandomAccessRange for [T; N] {
     }
 }
 
-impl<T, const N: usize> OutputRange for [T; N] {
+impl<T> OutputRange for [T] {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         &mut self[*i]
     }

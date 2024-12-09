@@ -6,6 +6,7 @@ pub mod array;
 pub mod ranges;
 pub mod regular;
 pub mod rng;
+pub mod slice;
 pub mod vec;
 
 pub use ranges::*;
