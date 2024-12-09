@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, OutputRange, Regular};
+use crate::{algo, InputRange, OutputRange, Regular};
 
 pub fn replace_if<R, F>(rng: &mut R, pred: F, new_e: &R::Element)
 where
@@ -18,6 +18,51 @@ where
     R::Element: Regular,
 {
     algo::replace(rng, rng.start(), rng.end(), old_e, new_e)
+}
+
+pub fn replace_copy_if<R, D, F>(
+    rng: &R,
+    dest: &mut D,
+    pred: F,
+    new_e: &R::Element,
+) -> D::Position
+where
+    R: InputRange + ?Sized,
+    D: OutputRange<Element = R::Element> + ?Sized,
+    R::Element: Clone,
+    F: Fn(&R::Element) -> bool,
+{
+    algo::replace_copy_if(
+        rng,
+        rng.start(),
+        rng.end(),
+        dest,
+        dest.start(),
+        pred,
+        new_e,
+    )
+}
+
+pub fn replace_copy<R, D>(
+    rng: &R,
+    dest: &mut D,
+    old_e: &R::Element,
+    new_e: &R::Element,
+) -> D::Position
+where
+    R: InputRange + ?Sized,
+    D: OutputRange<Element = R::Element> + ?Sized,
+    R::Element: Regular,
+{
+    algo::replace_copy(
+        rng,
+        rng.start(),
+        rng.end(),
+        dest,
+        dest.start(),
+        old_e,
+        new_e,
+    )
 }
 
 pub mod infix {

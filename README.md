@@ -165,8 +165,8 @@ required description would be provided.
 - [x] transform -> transform, zip_transform
 - [x] replace
 - [x] replace_if
-- [ ] replace_copy
-- [ ] replace_copy_if
+- [x] replace_copy
+- [x] replace_copy_if
 
 ### Generation Operations
 
