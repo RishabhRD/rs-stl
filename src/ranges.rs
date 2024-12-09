@@ -52,7 +52,7 @@ pub trait RandomAccessRange:
     fn before_n(&self, i: Self::Position, n: usize) -> Self::Position;
 }
 
-pub trait OutputRange: InputRange {
+pub trait OutputRange: ForwardRange {
     // Access element at position i
     //
     // Requires: i is a valid position in self and is_last_position(i) == false
