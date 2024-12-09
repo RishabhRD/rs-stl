@@ -3,26 +3,21 @@
 
 use crate::{algo, InputRange, OutputRange};
 
-pub fn copy_if<R, D, F>(
-    rng: &R,
-    dest: &mut D,
-    out: D::Position,
-    pred: F,
-) -> D::Position
+pub fn copy_if<R, D, F>(rng: &R, dest: &mut D, pred: F) -> D::Position
 where
     R: InputRange<Element = D::Element>,
     R::Element: Clone,
     D: OutputRange,
     F: Fn(&R::Element) -> bool,
 {
-    algo::copy_if(rng, rng.start(), rng.end(), dest, out, pred)
+    algo::copy_if(rng, rng.start(), rng.end(), dest, dest.start(), pred)
 }
 
-pub fn copy<R, D>(rng: &R, dest: &mut D, out: D::Position) -> D::Position
+pub fn copy<R, D>(rng: &R, dest: &mut D) -> D::Position
 where
     R: InputRange<Element = D::Element>,
     R::Element: Clone,
     D: OutputRange,
 {
-    algo::copy(rng, rng.start(), rng.end(), dest, out)
+    algo::copy(rng, rng.start(), rng.end(), dest, dest.start())
 }

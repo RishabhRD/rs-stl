@@ -17,9 +17,9 @@ pub mod tests {
         assert!(vec2.equals(&vec![0, 4, 0]));
         assert_eq!(j, 2);
 
-        let j = rng::copy_if(&vec1, &mut vec2, 1, |x| x % 2 == 0);
-        assert!(vec2.equals(&vec![0, 2, 4]));
-        assert_eq!(j, 3);
+        let j = rng::copy_if(&vec1, &mut vec2, |x| x % 2 == 0);
+        assert!(vec2.equals(&vec![2, 4, 0]));
+        assert_eq!(j, 2);
     }
 
     #[test]
@@ -32,9 +32,9 @@ pub mod tests {
         assert!(vec2.equals(&vec![0, 3, 4, 0, 0]));
         assert_eq!(j, 3);
 
-        let j = rng::copy(&vec1, &mut vec2, 1);
-        assert!(vec2.equals(&vec![0, 1, 2, 3, 4]));
-        assert_eq!(j, 5);
+        let j = rng::copy(&vec1, &mut vec2);
+        assert!(vec2.equals(&vec![1, 2, 3, 4, 0]));
+        assert_eq!(j, 4);
     }
 
     #[test]
@@ -48,9 +48,9 @@ pub mod tests {
         assert!(vec2.equals(&vec![0, 0, 0]));
         assert_eq!(j, 1);
 
-        let j = rng::copy_if(&vec1, &mut vec2, 1, |x| x % 2 == 0);
+        let j = rng::copy_if(&vec1, &mut vec2, |x| x % 2 == 0);
         assert!(vec2.equals(&vec![0, 0, 0]));
-        assert_eq!(j, 1);
+        assert_eq!(j, 0);
     }
 
     #[test]
@@ -63,9 +63,9 @@ pub mod tests {
         assert!(vec2.equals(&vec![0, 0, 0, 0, 0]));
         assert_eq!(j, 1);
 
-        let j = rng::copy(&vec1, &mut vec2, 1);
+        let j = rng::copy(&vec1, &mut vec2);
         assert!(vec2.equals(&vec![0, 0, 0, 0, 0]));
-        assert_eq!(j, 1);
+        assert_eq!(j, 0);
     }
 
     #[test]
