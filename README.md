@@ -167,8 +167,9 @@ required description would be provided.
 ### Transformation Operations
 
 - [x] transform -> transform, zip_transform
-- [ ] replace
-- [ ] replace_if
+- [x] replace
+- [x] replace_if
+- [ ] replace_copy
 - [ ] replace_copy_if
 
 ### Generation Operations
