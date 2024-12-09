@@ -18,7 +18,7 @@ pub fn replace_if<R, F>(
     pred: F,
     new_e: &R::Element,
 ) where
-    R: OutputRange,
+    R: OutputRange + ?Sized,
     R::Element: Clone,
     F: Fn(&R::Element) -> bool,
 {
@@ -45,7 +45,7 @@ pub fn replace<R>(
     old_e: &R::Element,
     new_e: &R::Element,
 ) where
-    R: OutputRange,
+    R: OutputRange + ?Sized,
     R::Element: Regular,
 {
     replace_if(rng, start, end, |x| x == old_e, new_e)

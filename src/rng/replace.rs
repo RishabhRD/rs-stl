@@ -5,7 +5,7 @@ use crate::{algo, OutputRange, Regular};
 
 pub fn replace_if<R, F>(rng: &mut R, pred: F, new_e: &R::Element)
 where
-    R: OutputRange,
+    R: OutputRange + ?Sized,
     R::Element: Clone,
     F: Fn(&R::Element) -> bool,
 {
@@ -14,7 +14,7 @@ where
 
 pub fn replace<R>(rng: &mut R, old_e: &R::Element, new_e: &R::Element)
 where
-    R: OutputRange,
+    R: OutputRange + ?Sized,
     R::Element: Regular,
 {
     algo::replace(rng, rng.start(), rng.end(), old_e, new_e)
@@ -36,7 +36,7 @@ pub mod infix {
 
     impl<R> STLReplaceExt for R
     where
-        R: OutputRange,
+        R: OutputRange + ?Sized,
     {
         fn replace_if<F>(&mut self, pred: F, new_e: &Self::Element)
         where

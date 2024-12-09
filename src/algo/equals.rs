@@ -20,8 +20,8 @@ pub fn equals_unbounded_by<R1, R2, F>(
     bi_pred: F,
 ) -> bool
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     F: Fn(&R1::Element, &R2::Element) -> bool,
 {
     while start1 != end1 {
@@ -50,8 +50,8 @@ pub fn equals_unbounded<R1, R2>(
     start2: R2::Position,
 ) -> bool
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     R1::Element: PartialEq<R2::Element>,
 {
     equals_unbounded_by(rng1, start1, end1, rng2, start2, |x, y| x == y)
@@ -76,8 +76,8 @@ pub fn equals_by<R1, R2, F>(
     bi_pred: F,
 ) -> bool
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     F: Fn(&R1::Element, &R2::Element) -> bool,
 {
     while start1 != end1 && start2 != end2 {
@@ -108,8 +108,8 @@ pub fn equals<R1, R2>(
     end2: R2::Position,
 ) -> bool
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     R1::Element: PartialEq<R2::Element>,
 {
     equals_by(rng1, start1, end1, rng2, start2, end2, |x, y| x == y)

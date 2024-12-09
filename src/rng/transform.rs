@@ -5,8 +5,8 @@ use crate::{algo, InputRange, OutputRange};
 
 pub fn transform<R, D, F>(rng: &R, dest: &mut D, unary_op: F) -> D::Position
 where
-    R: InputRange,
-    D: OutputRange,
+    R: InputRange + ?Sized,
+    D: OutputRange + ?Sized,
     F: Fn(&R::Element) -> D::Element,
 {
     algo::transform(rng, rng.start(), rng.end(), dest, dest.start(), unary_op)
@@ -27,9 +27,9 @@ pub fn zip_transform<R1, R2, D, F>(
     binary_op: F,
 ) -> D::Position
 where
-    R1: InputRange,
-    R2: InputRange,
-    D: OutputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
+    D: OutputRange + ?Sized,
     F: Fn(&R1::Element, &R2::Element) -> D::Element,
 {
     let mut start1 = rng1.start();

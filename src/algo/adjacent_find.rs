@@ -18,7 +18,7 @@ pub fn adjacent_find_if<R, F>(
     bi_pred: F,
 ) -> R::Position
 where
-    R: ForwardRange,
+    R: ForwardRange + ?Sized,
     F: Fn(&R::Element, &R::Element) -> bool,
 {
     if start == end {

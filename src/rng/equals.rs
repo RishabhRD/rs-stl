@@ -10,8 +10,8 @@ pub fn equals_unbounded_by<R1, R2, F>(
     bi_pred: F,
 ) -> bool
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     F: Fn(&R1::Element, &R2::Element) -> bool,
 {
     algo::equals_unbounded_by(
@@ -30,8 +30,8 @@ pub fn equals_unbounded<R1, R2>(
     start2: R2::Position,
 ) -> bool
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     R1::Element: PartialEq<R2::Element>,
 {
     algo::equals_unbounded(rng1, rng1.start(), rng1.end(), rng2, start2)
@@ -39,8 +39,8 @@ where
 
 pub fn equals_by<R1, R2, F>(rng1: &R1, rng2: &R2, bi_pred: F) -> bool
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     F: Fn(&R1::Element, &R2::Element) -> bool,
 {
     algo::equals_by(
@@ -56,8 +56,8 @@ where
 
 pub fn equals<R1, R2>(rng1: &R1, rng2: &R2) -> bool
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     R1::Element: PartialEq<R2::Element>,
 {
     algo::equals(
@@ -88,7 +88,7 @@ pub mod infix {
 
     impl<T> STLEqualsExt for T
     where
-        T: InputRange,
+        T: InputRange + ?Sized,
     {
         fn equals_by<R, F>(&self, rng: &R, bi_pred: F) -> bool
         where

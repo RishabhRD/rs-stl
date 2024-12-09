@@ -17,7 +17,7 @@ pub fn all_of<R, F>(
     pred: F,
 ) -> bool
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     while start != end {
@@ -43,7 +43,7 @@ pub fn any_of<R, F>(
     pred: F,
 ) -> bool
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     while start != end {
@@ -69,7 +69,7 @@ pub fn none_of<R, F>(
     pred: F,
 ) -> bool
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     while start != end {

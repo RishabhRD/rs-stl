@@ -9,8 +9,8 @@ pub fn mismatch_by<R1, R2, F>(
     bi_pred: F,
 ) -> (R1::Position, R2::Position)
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     F: Fn(&R1::Element, &R2::Element) -> bool,
 {
     algo::mismatch_by(
@@ -26,8 +26,8 @@ where
 
 pub fn mismatch<R1, R2>(rng1: &R1, rng2: &R2) -> (R1::Position, R2::Position)
 where
-    R1: InputRange,
-    R2: InputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
     R1::Element: PartialEq<R2::Element>,
 {
     algo::mismatch(

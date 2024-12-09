@@ -16,7 +16,7 @@ pub fn count_if<R, F>(
     pred: F,
 ) -> u32
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     let mut cnt: u32 = 0;
@@ -42,7 +42,7 @@ pub fn count<R>(
     e: &R::Element,
 ) -> u32
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     R::Element: Eq,
 {
     count_if(rng, start, end, |x| x == e)

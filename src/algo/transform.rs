@@ -20,8 +20,8 @@ pub fn transform<R, D, F>(
     unary_op: F,
 ) -> D::Position
 where
-    R: InputRange,
-    D: OutputRange,
+    R: InputRange + ?Sized,
+    D: OutputRange + ?Sized,
     F: Fn(&R::Element) -> D::Element,
 {
     while start != end {
@@ -52,9 +52,9 @@ pub fn zip_transform<R1, R2, D, F>(
     binary_op: F,
 ) -> D::Position
 where
-    R1: InputRange,
-    R2: InputRange,
-    D: OutputRange,
+    R1: InputRange + ?Sized,
+    R2: InputRange + ?Sized,
+    D: OutputRange + ?Sized,
     F: Fn(&R1::Element, &R2::Element) -> D::Element,
 {
     while start1 != end1 {

@@ -36,7 +36,7 @@ pub mod tests {
         assert!(arr.equals(&vec![3, 2, 3]));
 
         let mut arr = [1, 2, 1];
-        arr.replace(&1, &3);
+        arr[..].replace(&1, &3);
         assert!(arr.equals(&vec![3, 2, 3]));
     }
 }

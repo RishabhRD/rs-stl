@@ -5,7 +5,7 @@ use crate::{algo, InputRange};
 
 pub fn all_of<R, F>(rng: &R, pred: F) -> bool
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     algo::all_of(rng, rng.start(), rng.end(), pred)
@@ -13,7 +13,7 @@ where
 
 pub fn any_of<R, F>(rng: &R, pred: F) -> bool
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     algo::any_of(rng, rng.start(), rng.end(), pred)
@@ -21,7 +21,7 @@ where
 
 pub fn none_of<R, F>(rng: &R, pred: F) -> bool
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     algo::none_of(rng, rng.start(), rng.end(), pred)
@@ -47,7 +47,7 @@ pub mod infix {
 
     impl<T> STLOfExt for T
     where
-        T: InputRange,
+        T: InputRange + ?Sized,
     {
         fn all_of<F>(&self, pred: F) -> bool
         where

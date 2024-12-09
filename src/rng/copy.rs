@@ -5,9 +5,9 @@ use crate::{algo, InputRange, OutputRange};
 
 pub fn copy_if<R, D, F>(rng: &R, dest: &mut D, pred: F) -> D::Position
 where
-    R: InputRange<Element = D::Element>,
+    R: InputRange<Element = D::Element> + ?Sized,
     R::Element: Clone,
-    D: OutputRange,
+    D: OutputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     algo::copy_if(rng, rng.start(), rng.end(), dest, dest.start(), pred)
@@ -15,9 +15,9 @@ where
 
 pub fn copy<R, D>(rng: &R, dest: &mut D) -> D::Position
 where
-    R: InputRange<Element = D::Element>,
+    R: InputRange<Element = D::Element> + ?Sized,
     R::Element: Clone,
-    D: OutputRange,
+    D: OutputRange + ?Sized,
 {
     algo::copy(rng, rng.start(), rng.end(), dest, dest.start())
 }

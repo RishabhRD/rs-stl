@@ -17,7 +17,7 @@ pub fn find_if<R, F>(
     pred: F,
 ) -> R::Position
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     while start != end {
@@ -43,7 +43,7 @@ pub fn find_if_not<R, F>(
     pred: F,
 ) -> R::Position
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     find_if(rng, start, end, |x| !pred(x))
@@ -63,7 +63,7 @@ pub fn find<R>(
     e: &R::Element,
 ) -> R::Position
 where
-    R: InputRange,
+    R: InputRange + ?Sized,
     R::Element: Eq,
 {
     find_if(rng, start, end, |x| x == e)

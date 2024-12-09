@@ -21,9 +21,9 @@ pub fn copy_if<R, D, F>(
     pred: F,
 ) -> D::Position
 where
-    R: InputRange<Element = D::Element>,
+    R: InputRange<Element = D::Element> + ?Sized,
     R::Element: Clone,
-    D: OutputRange,
+    D: OutputRange + ?Sized,
     F: Fn(&R::Element) -> bool,
 {
     while start != end {
@@ -52,9 +52,9 @@ pub fn copy<R, D>(
     mut out: D::Position,
 ) -> D::Position
 where
-    R: InputRange<Element = D::Element>,
+    R: InputRange<Element = D::Element> + ?Sized,
     R::Element: Clone,
-    D: OutputRange,
+    D: OutputRange + ?Sized,
 {
     while start != end {
         *dest.at_mut(&out) = rng.at(&start).clone();
@@ -80,9 +80,9 @@ pub fn copy_n<R, D>(
     mut out: D::Position,
 ) -> D::Position
 where
-    R: InputRange<Element = D::Element>,
+    R: InputRange<Element = D::Element> + ?Sized,
     R::Element: Clone,
-    D: OutputRange,
+    D: OutputRange + ?Sized,
 {
     while n != 0 {
         *dest.at_mut(&out) = rng.at(&start).clone();
