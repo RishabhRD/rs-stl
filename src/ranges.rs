@@ -57,4 +57,9 @@ pub trait OutputRange: ForwardRange {
     //
     // Requires: i is a valid position in self and is_last_position(i) == false
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
+
+    // Swap elements at position i and j
+    //
+    // Requires: i and j is a valid position in self.
+    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
 }

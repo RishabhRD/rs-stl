@@ -50,4 +50,8 @@ impl<T> OutputRange for [T] {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         &mut self[*i]
     }
+
+    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
+        self.swap(*i, *j);
+    }
 }
