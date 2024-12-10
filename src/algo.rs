@@ -30,3 +30,6 @@ pub use replace::*;
 
 pub mod fill;
 pub use fill::*;
+
+pub mod remove;
+pub use remove::*;

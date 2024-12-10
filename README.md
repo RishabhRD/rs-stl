@@ -177,10 +177,10 @@ required description would be provided.
 
 ### Removing Operations
 
-- [ ] remove
-- [ ] remove_if
-- [ ] remove_copy
-- [ ] remove_copy_if
+- [x] remove
+- [x] remove_if
+- [x] remove_copy
+- [x] remove_copy_if
 - [ ] unique
 - [ ] unique_copy
 
