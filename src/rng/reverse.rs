@@ -26,3 +26,12 @@ pub mod infix {
         }
     }
 }
+
+pub fn reverse_copy<R, D>(rng: &R, dest: &mut D) -> D::Position
+where
+    R: BidirectionalRange + ?Sized,
+    D: OutputRange<Element = R::Element> + ?Sized,
+    R::Element: Clone,
+{
+    algo::reverse_copy(rng, rng.start(), rng.end(), dest, dest.start())
+}
