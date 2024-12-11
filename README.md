@@ -186,7 +186,7 @@ required description would be provided.
 
 ### Permutation Operations
 
-- [ ] reverse
+- [x] reverse
 - [ ] reverse_copy
 - [ ] rotate
 - [ ] rotate_copy

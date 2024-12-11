@@ -36,3 +36,6 @@ pub use remove::*;
 
 pub mod unique;
 pub use unique::*;
+
+pub mod reverse;
+pub use reverse::*;

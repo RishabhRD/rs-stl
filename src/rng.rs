@@ -37,6 +37,9 @@ pub use remove::*;
 pub mod unique;
 pub use unique::*;
 
+pub mod reverse;
+pub use reverse::*;
+
 pub mod infix {
     pub use super::adjacent_find::infix::*;
     pub use super::count::infix::*;
@@ -46,5 +49,6 @@ pub mod infix {
     pub use super::of::infix::*;
     pub use super::remove::infix::*;
     pub use super::replace::infix::*;
+    pub use super::reverse::infix::*;
     pub use super::unique::infix::*;
 }
