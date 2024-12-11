@@ -15,6 +15,9 @@ use crate::{InputRange, OutputRange, Regular, SemiRegular};
 //   - Relative order of preserved elements are maintained.
 //   - Relative order of removed elements are NOT guaranteed.
 //   - Returns the position to new end of rng.
+//   - Complexity: O(n). Exactly max(0, n - 1) applications of bi_pred.
+//
+//   Where n is number of elements in [start, end).
 pub fn unique_by<R, F>(
     rng: &mut R,
     mut start: R::Position,
@@ -53,6 +56,9 @@ where
 //   - Relative order of preserved elements are maintained.
 //   - Relative order of removed elements are NOT guaranteed.
 //   - Returns the position to new end of rng.
+//   - Complexity: O(n). Exactly max(0, n - 1) equality comparisions.
+//
+//   Where n is number of elements in [start, end).
 pub fn unique<R>(
     rng: &mut R,
     start: R::Position,
@@ -75,6 +81,9 @@ where
 //   - Copies elements from rng from [start, end) with ommiting adjacent
 //     equivalent elements by bi_pred to dest starting from out.
 //   - Returns the position of past to last copied element in dest.
+//   - Complexity: O(n). Exactly max(0, n - 1) applications of bi_pred.
+//
+//   Where n is number of elements in [start, end).
 pub fn unique_copy_by<R, D, F>(
     rng: &R,
     mut start: R::Position,
@@ -113,6 +122,9 @@ where
 //   - Copies elements from rng from [start, end) with ommiting adjacent
 //     equivalent elements to dest starting from out.
 //   - Returns the position of past to last copied element in dest.
+//   - Complexity: O(n). Exactly max(0, n - 1) equality comparisions.
+//
+//   Where n is number of elements in [start, end).
 pub fn unique_copy<R, D>(
     rng: &R,
     start: R::Position,
