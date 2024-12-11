@@ -182,7 +182,7 @@ required description would be provided.
 - [x] remove_copy
 - [x] remove_copy_if
 - [x] unique -> unique, unique_by
-- [ ] unique_copy
+- [x] unique_copy
 
 ### Permutation Operations
 
