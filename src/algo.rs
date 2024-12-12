@@ -39,3 +39,6 @@ pub use unique::*;
 
 pub mod reverse;
 pub use reverse::*;
+
+pub mod rotate;
+pub use rotate::*;

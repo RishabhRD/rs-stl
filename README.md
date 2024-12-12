@@ -188,7 +188,7 @@ required description would be provided.
 
 - [x] reverse
 - [x] reverse_copy
-- [ ] rotate
+- [x] rotate
 - [ ] rotate_copy
 - [ ] shift_left
 - [ ] shift_right
