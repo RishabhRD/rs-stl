@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::OutputRange;
+use crate::{ForwardRange, OutputRange};
+
+use super::copy;
 
 // Precondition:
 //   - [start, mid) represent valid position in rng.
@@ -45,4 +47,32 @@ where
     }
     rotate(rng, write.clone(), next_read, end);
     write
+}
+
+// Precondition:
+//   - [start, mid) represent valid position in rng.
+//   - [mid, end) represent valid position in rng.
+//   - dest should be able to accomodate n elements starting from out.
+// Postcondition:
+//   - Copies elements from [start, end) of rng to dest starting from out in
+//     such a way, that the element at mid becomes first element at out and
+//     element at (mid - 1) becomes last element.
+//   - Complexity: O(n). Exactly n assignments.
+//
+//   Where n is number of elements in [start, end).
+pub fn rotate_copy<R, D>(
+    rng: &R,
+    start: R::Position,
+    mid: R::Position,
+    end: R::Position,
+    dest: &mut D,
+    mut out: D::Position,
+) -> D::Position
+where
+    R: ForwardRange + ?Sized,
+    R::Element: Clone,
+    D: OutputRange<Element = R::Element> + ?Sized,
+{
+    out = copy(rng, mid.clone(), end, dest, out);
+    copy(rng, start, mid, dest, out)
 }

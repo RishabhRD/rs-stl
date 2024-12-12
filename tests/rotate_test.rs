@@ -85,4 +85,34 @@ pub mod tests {
         assert_eq!(i, 3);
         assert!(arr.equals(&[2, 3, 4, 0, 1]));
     }
+
+    #[test]
+    fn rotate_copy() {
+        let arr = [0, 1, 2, 3, 4];
+
+        let mut dest = [0, 0, 0, 0, 0];
+        let i = algo::rotate_copy(&arr, 0, 2, 5, &mut dest, 0);
+        assert_eq!(i, 5);
+        assert!(dest.equals(&[2, 3, 4, 0, 1]));
+
+        let mut dest = [0, 0, 0, 0, 0];
+        let i = rng::rotate_copy(&arr, 2, &mut dest);
+        assert_eq!(i, 5);
+        assert!(dest.equals(&[2, 3, 4, 0, 1]));
+
+        let mut dest = [0, 0, 0, 0, 0];
+        let i = algo::rotate_copy(&arr, 0, 0, 0, &mut dest, 0);
+        assert_eq!(i, 0);
+        assert!(dest.equals(&[0, 0, 0, 0, 0]));
+
+        let mut dest = [0, 0, 0, 0, 0];
+        let i = algo::rotate_copy(&arr, 0, 0, 5, &mut dest, 0);
+        assert_eq!(i, 5);
+        assert!(dest.equals(&[0, 1, 2, 3, 4]));
+
+        let mut dest = [0, 0, 0, 0, 0];
+        let i = algo::rotate_copy(&arr, 0, 5, 5, &mut dest, 0);
+        assert_eq!(i, 5);
+        assert!(dest.equals(&[0, 1, 2, 3, 4]));
+    }
 }

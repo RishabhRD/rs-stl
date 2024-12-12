@@ -189,7 +189,7 @@ required description would be provided.
 - [x] reverse
 - [x] reverse_copy
 - [x] rotate
-- [ ] rotate_copy
+- [x] rotate_copy
 - [ ] shift_left
 - [ ] shift_right
 - [ ] next_permutation

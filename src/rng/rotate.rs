@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, OutputRange};
+use crate::{algo, ForwardRange, OutputRange};
 
 // TODO: there are efficient implementations for BidirectionalRange and
 // RandomAccessRange in rust. How to overload for them in rust?
@@ -10,6 +10,15 @@ where
     R: OutputRange + ?Sized,
 {
     algo::rotate(rng, rng.start(), mid, rng.end())
+}
+
+pub fn rotate_copy<R, D>(rng: &R, mid: R::Position, dest: &mut D) -> D::Position
+where
+    R: ForwardRange + ?Sized,
+    R::Element: Clone,
+    D: OutputRange<Element = R::Element> + ?Sized,
+{
+    algo::rotate_copy(rng, rng.start(), mid, rng.end(), dest, dest.start())
 }
 
 pub mod infix {
