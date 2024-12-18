@@ -53,15 +53,15 @@ where
 /// Returns true if rng1 `[start1, end1)` elements are equal to elements of rng2 starting from start2.
 ///
 /// # Precondition
-///   - [start1, end1) denotes valid positions in rng1.
-///   - [start2, start2 + n) denotes valid positions in rng2.
+///   - `[start1, end1)` denotes valid positions in rng1.
+///   - `[start2, start2 + n)` denotes valid positions in rng2.
 ///
 /// # Postcondition
-///   - Returns true if range at [start1, end1) is equal to
-///     range at [start2, start2 + n).
+///   - Returns true if range at `[start1, end1)` is equal to
+///     range at `[start2, start2 + n)`.
 ///   - Complexity: O(n). Maximum `n` equality comparisions.
 ///
-/// where n is number of elements in `[start1, end1).
+/// where n is number of elements in `[start1, end1)`.
 ///
 /// # Example
 /// ```rust
@@ -92,15 +92,15 @@ where
 /// by relationship bi_pred and have same length.
 ///
 /// # Precondition
-///   - [start1, end1) denotes valid positions in rng1.
-///   - [start2, end2) denotes valid positions in rng2
+///   - `[start1, end1)` denotes valid positions in rng1.
+///   - `[start2, end2)` denotes valid positions in rng2
 ///   - bi_pred should follow equivalence relationship.
 ///
 /// # Postcondition
-///   - Returns true if range at [start1, end1) is equivalent to
-///     range at [start2, end2) by relationship bi_pred.
+///   - Returns true if range at `[start1, end1)` is equivalent to
+///     range at `[start2, end2)` by relationship bi_pred.
 ///   - Complexity: O(n). Maximum `n` `bi_pred` applications.
-///     Where n is min(#[start1, end1), #[start2, end2)) and
+///     Where n is min(#`[start1, end1)`, #`[start2, end2)`) and
 ///     # is number of elements in range operator.
 ///
 /// # Example
@@ -142,15 +142,15 @@ where
 /// and have same length.
 ///
 /// # Precondition
-///   - [start1, end1) denotes valid positions in rng1.
-///   - [start2, end2) denotes valid positions in rng2
+///   - `[start1, end1)` denotes valid positions in rng1.
+///   - `[start2, end2)` denotes valid positions in rng2
 ///
 /// # Postcondition
-///   - Returns true if range at [start1, end1) is equal to
+///   - Returns true if range at `[start1, end1)` is equal to
 ///     range at [start2, end2).
 ///   - Complexity: O(n). Maximum `n` equality comparisions of elements.
 ///
-/// Where n is min(#[start1, end1), #[start2, end2)) and
+/// Where n is min(#`[start1, end1)`, #`[start2, end2)`) and
 /// # is number of elements in range operator.
 ///
 /// # Example

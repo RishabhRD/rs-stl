@@ -61,11 +61,11 @@ pub fn replace<Range>(
 /// element.
 ///
 /// # Precondition
-///   - `[start, end)` represents valid positions in rng.
+///   - `[start, end)` represents valid positions in src.
 ///   - dest should be able to accomodate n elements starting from out.
 ///
 /// Poscondition:
-///   - Copies elements from `[start, end)` from rng to new range dest starting
+///   - Copies elements from `[start, end)` from src to new range dest starting
 ///     from out while replacing all elements satisfying pred with new_e.
 ///   - Complexity: O(n). Exactly n applications of pred.
 ///
@@ -101,17 +101,17 @@ where
 /// element.
 ///
 /// # Precondition
-///   - `[start, end)` represents valid positions in rng.
+///   - `[start, end)` represents valid positions in src.
 ///   - dest should be able to accomodate elements being copied starting from out.
 ///
 /// Poscondition:
-///   - Copies elements from `[start, end)` from rng to new range dest starting
+///   - Copies elements from `[start, end)` from src to new range dest starting
 ///     from out while replacing all elements == old_e with new_e.
 ///   - Complexity: O(n). Exactly n applications of pred.
 ///
 ///   Where n is number of elements in `[start, end)`.
 pub fn replace_copy<SrcRange, DestRange>(
-    rng: &SrcRange,
+    src: &SrcRange,
     start: SrcRange::Position,
     end: SrcRange::Position,
     dest: &mut DestRange,
@@ -124,5 +124,5 @@ where
     DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
     SrcRange::Element: Regular,
 {
-    replace_copy_if(rng, start, end, dest, out, |x| x == old_e, new_e)
+    replace_copy_if(src, start, end, dest, out, |x| x == old_e, new_e)
 }

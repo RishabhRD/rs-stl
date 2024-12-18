@@ -3,19 +3,20 @@
 
 use crate::{InputRange, OutputRange};
 
-/// Copies elements of rng to dest with applying unary operation on it.
+/// Copies elements of src to dest with applying unary operation on it.
 ///
 /// # Precondition
-///   - `[start, end)` represents valid positions in rng.
+///   - `[start, end)` represents valid positions in src.
 ///   - dest can accomodate transformed elements starting from out.
 ///
 /// # Postcondition
 ///   - Applies given function unary_op to elements of given range positions
 ///     and stores result in dest starting from out position.
-///   - Complexity: O(n). Exactly n applications of unary_op. Where n is
-///     number of elements in `[start, end)`.
+///   - Complexity: O(n). Exactly n applications of unary_op.
+///
+///   Where n is number of elements in `[start, end)`.
 pub fn transform<SrcRange, DestRange, UnaryOp>(
-    rng: &SrcRange,
+    src: &SrcRange,
     mut start: SrcRange::Position,
     end: SrcRange::Position,
     dest: &mut DestRange,
@@ -28,8 +29,8 @@ where
     UnaryOp: Fn(&SrcRange::Element) -> DestRange::Element,
 {
     while start != end {
-        *dest.at_mut(&out) = unary_op(rng.at(&start));
-        start = rng.after(start);
+        *dest.at_mut(&out) = unary_op(src.at(&start));
+        start = src.after(start);
         out = dest.after(out);
     }
     out
@@ -38,15 +39,15 @@ where
 /// Copies elements of rng1 and rng2 to dest with applying binary operation on it.
 ///
 /// # Precondition
-///   - [start1, end1) represents valid positions in rng1.
-///   - [start2, start2 + n) represents valid positions in rng2.
+///   - `[start1, end1)` represents valid positions in rng1.
+///   - `[start2, start2 + n)` represents valid positions in rng2.
 ///   - dest can accomodate transformed elements starting from out.
 ///
 /// # Postcondition
 ///   - Applies given function binary_op to elements of given range positions
 ///     and stores result in dest starting from out position.
 ///   - Complexity: O(n). Exactly n applications of binary_op. Where n is
-///     number of elements in [start1, end1).
+///     number of elements in `[start1, end1)`.
 pub fn zip_transform<R1, R2, DestRange, BinaryOp>(
     rng1: &R1,
     mut start1: R1::Position,

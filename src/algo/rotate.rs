@@ -55,19 +55,19 @@ where
 /// Copies the given range to dest as if it is rotated at mid.
 ///
 /// # Precondition
-///   - `[start, mid)` represent valid position in rng.
-///   - `[mid, end)` represent valid position in rng.
+///   - `[start, mid)` represent valid position in src.
+///   - `[mid, end)` represent valid position in src.
 ///   - dest should be able to accomodate n elements starting from out.
 ///
 /// # Postcondition
-///   - Copies elements from `[start, end)` of rng to dest starting from out in
+///   - Copies elements from `[start, end)` of src to dest starting from out in
 ///     such a way, that the element at mid becomes first element at out and
 ///     element at (mid - 1) becomes last element.
 ///   - Complexity: O(n). Exactly n assignments.
 ///
 ///   Where n is number of elements in `[start, end)`.
 pub fn rotate_copy<SrcRange, DestRange>(
-    rng: &SrcRange,
+    src: &SrcRange,
     start: SrcRange::Position,
     mid: SrcRange::Position,
     end: SrcRange::Position,
@@ -79,6 +79,6 @@ where
     SrcRange::Element: Clone,
     DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
 {
-    out = copy(rng, mid.clone(), end, dest, out);
-    copy(rng, start, mid, dest, out)
+    out = copy(src, mid.clone(), end, dest, out);
+    copy(src, start, mid, dest, out)
 }

@@ -33,17 +33,17 @@ pub fn reverse<Range>(
 /// Copies the given range in reverse order to dest.
 ///
 /// # Precondition
-///   - `[start, end)` represents valid positions in rng.
+///   - `[start, end)` represents valid positions src.
 ///   - dest must be able to accomodate copied elements starting from out.
 ///
 /// # Postcondition
-///   - Copies elements from `[start, end)` of rng in reverse order to dest
+///   - Copies elements from `[start, end)` of src in reverse order to dest
 ///     starting from out.
 ///   - Complexity: O(n). Exactly n assignments.
 ///
-///   Where n is number of elements in `[start, end)` of rng.
+///   Where n is number of elements in `[start, end)` of src.
 pub fn reverse_copy<SrcRange, DestRange>(
-    rng: &SrcRange,
+    src: &SrcRange,
     start: SrcRange::Position,
     mut end: SrcRange::Position,
     dest: &mut DestRange,
@@ -55,8 +55,8 @@ where
     SrcRange::Element: Clone,
 {
     while start != end {
-        end = rng.before(end);
-        *dest.at_mut(&out) = rng.at(&end).clone();
+        end = src.before(end);
+        *dest.at_mut(&out) = src.at(&end).clone();
         out = dest.after(out);
     }
     out

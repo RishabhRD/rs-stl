@@ -12,10 +12,10 @@ where
     algo::transform(rng, rng.start(), rng.end(), dest, dest.start(), unary_op)
 }
 
-/// Precondition:
+/// # Precondition
 ///   - dest can accomodate n transformed elements starting from out.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Applies given function binary_op to elements of given range positions
 ///     and stores result in dest starting from out position.
 ///   - Complexity: O(n). Exactly n applications of binary_op.

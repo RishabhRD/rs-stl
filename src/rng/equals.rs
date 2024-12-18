@@ -53,11 +53,10 @@ where
 /// Returns true if rng1 elements are equal to elements of rng2 starting from start2.
 ///
 /// # Precondition
-///   - [start2, start2 + n) denotes valid positions in rng2
+///   - `[start2, start2 + n)` denotes valid positions in rng2
 ///
 /// # Postcondition
-///   - Returns true if range at [start1, end1) is equal to
-///     range at [start2, start2 + n).
+///   - Returns true if rng1 has equal elements as rng2 `[start2, start2 + n)`.
 ///   - Complexity: O(n). Maximum `n` equality comparisions.
 ///
 /// where n is number of elements in rng1.
