@@ -13,7 +13,8 @@ use crate::{algo, InputRange, OutputRange};
 ///     dest.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n pred applications and maximum n copy operations.
-///     where n is number of elements in `[start, end)` of src.
+///
+/// where n is number of elements in src.
 ///
 /// #### Infix Supported
 /// NO
@@ -44,17 +45,20 @@ where
     algo::copy_if(src, src.start(), src.end(), dest, dest.start(), pred)
 }
 
-/// Copies elements from src to out of dest.
+/// Copies elements from src to dest.
 ///
 /// # Precondition
 ///   - dest should be able to accomodate n elements
 ///
 /// # Postcondition
-///   - copies elements from `[start, end)` to out position of dest.
+///   - copies elements from src to dest.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n copy operations.
 ///
 /// where n is number of elements in src.
+///
+/// #### Infix Supported
+/// NO
 ///
 /// # Example
 /// ```rust
@@ -68,11 +72,14 @@ where
 /// assert!(dest.equals(&[1, 2, 3]));
 /// assert_eq!(i, 3);
 /// ```
-pub fn copy<R, D>(rng: &R, dest: &mut D) -> D::Position
+pub fn copy<SrcRange, DestRange>(
+    rng: &SrcRange,
+    dest: &mut DestRange,
+) -> DestRange::Position
 where
-    R: InputRange<Element = D::Element> + ?Sized,
-    R::Element: Clone,
-    D: OutputRange + ?Sized,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    DestRange: OutputRange + ?Sized,
 {
     algo::copy(rng, rng.start(), rng.end(), dest, dest.start())
 }
