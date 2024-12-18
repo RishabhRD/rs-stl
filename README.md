@@ -52,9 +52,11 @@ This way positions are not the owner of elements and have not borrowed from
 original range. Ownership of range still lies with range only and range would
 be necessary to access the element at any time.
 
-This is important because
-with iterator model, iterators used to borrow from ranges and becasue we need
-2 iterators for most of algorithms, that would not be possible.
+This is important because with iterator model, iterators used to borrow from
+ranges and 2 iterators are needed for most of algorithms.
+However, this would create problem when algorithms need to mutate ranges as
+then 2 mutable iterators are needed to algorithms. However, rust ownership
+model doesn't allow the same.
 
 And surprisingly, this is just enough for porting most of STL algorihtms to rust.
 
