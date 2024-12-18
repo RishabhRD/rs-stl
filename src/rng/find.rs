@@ -30,10 +30,10 @@ use crate::{algo, InputRange};
 /// let i = arr.find_if(|x| *x == 3);
 /// assert_eq!(i, 2);
 /// ```
-pub fn find_if<R, F>(rng: &R, pred: F) -> R::Position
+pub fn find_if<Range, Pred>(rng: &Range, pred: Pred) -> Range::Position
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     algo::find_if(rng, rng.start(), rng.end(), pred)
 }
@@ -65,10 +65,10 @@ where
 /// let i = arr.find_if_not(|x| *x == 3);
 /// assert_eq!(i, 0);
 /// ```
-pub fn find_if_not<R, F>(rng: &R, pred: F) -> R::Position
+pub fn find_if_not<Range, Pred>(rng: &Range, pred: Pred) -> Range::Position
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     algo::find_if_not(rng, rng.start(), rng.end(), pred)
 }
@@ -100,10 +100,10 @@ where
 /// let i = arr.find(&3);
 /// assert_eq!(i, 2);
 /// ```
-pub fn find<R>(rng: &R, e: &R::Element) -> R::Position
+pub fn find<Range>(rng: &Range, e: &Range::Element) -> Range::Position
 where
-    R: InputRange + ?Sized,
-    R::Element: Eq,
+    Range: InputRange + ?Sized,
+    Range::Element: Eq,
 {
     algo::find(rng, rng.start(), rng.end(), e)
 }
