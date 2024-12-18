@@ -78,11 +78,24 @@ where
 ///
 /// # Postcondition
 ///   - Returns first position in rng1 and rng2 st rng1.at(p1) != rng2.at(p2)
-///   - If no mismatches are found and comparision reaches last1 or last2
+///   - If no mismatches are found and comparision reaches end1 or end2
 ///     whichever happens first, returns positions of that point.
-///   - Complexity: O(n), maximum `n` bi_pred applications,
+///   - Complexity: O(n), maximum `n` bi_pred applications.
+///
 ///     where n is min(#[start1, end1), #[start2, end2))
 ///     and # denotes number of elements
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr1 = [1, 2, 3];
+/// let arr2 = [1, 2, 4];
+///
+/// let (i, j) = algo::mismatch_by(&arr1, arr1.start(), arr1.end(), &arr2, arr2.start(), arr2.end(), |x, y| x == y);
+/// assert_eq!(i, 2);
+/// assert_eq!(j, 2);
+/// ```
 pub fn mismatch_by<R1, R2, BinaryPred>(
     rng1: &R1,
     mut start1: R1::Position,
@@ -111,17 +124,28 @@ where
 ///
 /// # Precondition
 ///   - [start1, end1) defines valid position of rng1
-///   - [start2, start2 + n) defines valid positions of rng2 where n in number
-///     of elements in [start1, end1)
-///   - bi_pred should follow equivalence relationship.
+///   - [start2, end2) defines valid positions of rng2
 ///
 /// # Postcondition
 ///   - Returns first position in rng1 and rng2 st rng1.at(p1) != rng2.at(p2)
-///   - If no mismatches are found and comparision reaches last1 or last2
+///   - If no mismatches are found and comparision reaches end1 or end2
 ///     whichever happens first, returns positions of that point.
-///   - Complexity: O(n), maximum `n` equality comparisions,
+///   - Complexity: O(n), maximum `n` equality comparisions.
+///
 ///     where n is min(#[start1, end1), #[start2, end2))
 ///     and # denotes number of elements
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr1 = [1, 2, 3];
+/// let arr2 = [1, 2, 4];
+///
+/// let (i, j) = algo::mismatch(&arr1, arr1.start(), arr1.end(), &arr2, arr2.start(), arr2.end());
+/// assert_eq!(i, 2);
+/// assert_eq!(j, 2);
+/// ```
 pub fn mismatch<R1, R2>(
     rng1: &R1,
     start1: R1::Position,
