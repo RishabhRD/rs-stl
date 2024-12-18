@@ -12,6 +12,15 @@ use crate::InputRange;
 ///   - Returns count of elements in `[start, end)` position of rng satisfying pred
 ///   - Complexity: O(n), Maximum `n` applications of `pred` where n is number of
 ///     elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 2, 3];
+/// let cnt = algo::count_if(&arr, arr.start(), arr.end(), |x| x % 2 == 1);
+/// assert_eq!(cnt, 2);
+/// ```
 pub fn count_if<Range, Pred>(
     rng: &Range,
     mut start: Range::Position,
@@ -41,6 +50,15 @@ where
 ///   - Returns count of elements in `[start, end)` position of rng equals `e`
 ///   - Complexity: O(n), Maximum `n` applications of equality check
 ///     where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 2, 2];
+/// let cnt = algo::count(&arr, arr.start(), arr.end(), &2);
+/// assert_eq!(cnt, 2);
+/// ```
 pub fn count<Range>(
     rng: &Range,
     start: Range::Position,

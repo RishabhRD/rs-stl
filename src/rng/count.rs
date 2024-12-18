@@ -3,14 +3,65 @@
 
 use crate::{algo, InputRange};
 
-pub fn count_if<R, F>(rng: &R, f: F) -> u32
+/// Counts elements in rng that satisfies predicate.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns count of elements in rng satisfying pred.
+///   - Complexity: O(n), Maximum `n` applications of `pred` where n is number of
+///     elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 2, 3];
+///
+/// let cnt = rng::count_if(&arr, |x| x % 2 == 1);
+/// assert_eq!(cnt, 2);
+///
+/// let cnt = arr.count_if(|x| x % 2 == 1);
+/// assert_eq!(cnt, 2);
+/// ```
+pub fn count_if<Range, Pred>(rng: &Range, f: Pred) -> u32
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     algo::count_if(rng, rng.start(), rng.end(), f)
 }
 
+/// Counts elements in rng equals given element.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns count of elements in rng equals `e`
+///   - Complexity: O(n), Maximum `n` applications of equality check
+///
+/// where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 2, 2];
+///
+/// let cnt = rng::count(&arr, &2);
+/// assert_eq!(cnt, 2);
+///
+/// let cnt = arr.count(&2);
+/// assert_eq!(cnt, 2);
+/// ```
 pub fn count<R>(rng: &R, e: &R::Element) -> u32
 where
     R: InputRange + ?Sized,
