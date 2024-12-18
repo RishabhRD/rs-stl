@@ -24,10 +24,14 @@ jobs:
       - name: Generate documentation
         run: cargo doc --no-deps
 
+      - name: Generate index.html file
+        run: |
+          echo "<meta http-equiv=refresh content=0;url=stl/index.html>" > target/doc/index.html
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/doc/stl
+          publish_dir: ./target/doc
           force_orphan: true
           publish_branch: gh-pages
