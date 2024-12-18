@@ -5,10 +5,10 @@ use crate::InputRange;
 
 /// Counts elements in rng that satisfies predicate.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represent valid positions in rng.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns count of elements in `[start, end)` position of rng satisfying pred
 ///   - Complexity: O(n), Maximum `n` applications of `pred` where n is number of
 ///     elements in `[start, end)`.
@@ -34,10 +34,10 @@ where
 
 /// Counts elements in rng equals given element.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represent valid positions in rng.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns count of elements in `[start, end)` position of rng equals `e`
 ///   - Complexity: O(n), Maximum `n` applications of equality check
 ///     where n is number of elements in `[start, end)`.

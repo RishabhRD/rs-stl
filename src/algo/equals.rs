@@ -5,13 +5,13 @@ use crate::InputRange;
 
 /// Returns true if rng1 `[start1, end1)` elements are equvivalent to elements of rng2 starting from start2 by relation bi_pred.
 ///
-/// Precondition:
+/// # Precondition
 ///   - [start1, end1) denotes valid positions in rng1.
 ///   - [start2, start2 + n) denotes valid positions in rng2 where n is number
 ///     of elements in [start1, end1).
 ///   - BinaryPred should follow equivalence relationship.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns true if range at [start1, end1) is equivalent to
 ///     range at [start2, start2 + n) by relationship `bi_pred`.
 ///   - Complexity: O(n). Maximum `n` bi_pred applications.
@@ -40,12 +40,12 @@ where
 
 /// Returns true if rng1 `[start1, end1)` elements are equal to elements of rng2 starting from start2.
 ///
-/// Precondition:
+/// # Precondition
 ///   - [start1, end1) denotes valid positions in rng1.
 ///   - [start2, start2 + n) denotes valid positions in rng2 where n is number
 ///     of elements in [start1, end1).
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns true if range at [start1, end1) is equal to
 ///     range at [start2, start2 + n).
 ///   - Complexity: O(n). Maximum `n` equality comparisions.
@@ -67,11 +67,11 @@ where
 /// Returns true if rng1 `[start1, end1)` elements are equivalent to elements of rng2 `[start2, end2)`
 /// by relationship bi_pred and have same length.
 ///
-/// Precondition:
+/// # Precondition
 ///   - [start1, end1) denotes valid positions in rng1.
 ///   - [start2, end2) denotes valid positions in rng2
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns true if range at [start1, end1) is equivalent to
 ///     range at [start2, end2) by relationship bi_pred.
 ///   - Complexity: O(n). Maximum `n` `bi_pred` applications.
@@ -104,11 +104,11 @@ where
 /// Returns true if rng1 `[start1, end1)` elements are equal to elements of rng2 `[start2, end2)`
 /// and have same length.
 ///
-/// Precondition:
+/// # Precondition
 ///   - [start1, end1) denotes valid positions in rng1.
 ///   - [start2, end2) denotes valid positions in rng2
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns true if range at [start1, end1) is equal to
 ///     range at [start2, end2).
 ///   - Complexity: O(n). Maximum `n` equality comparisions of elements.

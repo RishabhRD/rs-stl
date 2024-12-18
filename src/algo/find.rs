@@ -5,10 +5,10 @@ use crate::InputRange;
 
 /// Finds position of first element satisfying predicate.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represent valid positions in rng.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns position of first element in `[start, end)` of rng satisfying pred.
 ///   - Returns end if no such element exists.
 ///   - Complexity: O(n). Maximum `n` applications of `pred`,
@@ -34,10 +34,10 @@ where
 
 /// Finds position of first element not satisfying predicate.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represent valid positions in rng.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns position of first element in `[start, end)` of rng NOT satisfying pred.
 ///   - Returns end if no such element exists.
 ///   - Complexity: O(n). Maximum `n` applications of `pred`,
@@ -57,10 +57,10 @@ where
 
 /// Finds position of first element equals given element.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represent valid positions in rng.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns position of first element in `[start, end)` of rng equals e.
 ///   - Returns end if no such element exists.
 ///   - Complexity: O(n). Maximum `n` equality comparisions,

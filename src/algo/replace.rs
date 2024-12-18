@@ -5,7 +5,7 @@ use crate::{InputRange, OutputRange, Regular};
 
 /// Replaces elements of range satisfying predicate with new element.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
 ///
 /// Poscondition:
@@ -35,7 +35,7 @@ pub fn replace_if<Range, Pred>(
 
 /// Replaces elements of range equals old element with new element.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
 ///
 /// Poscondition:
@@ -60,7 +60,7 @@ pub fn replace<Range>(
 /// Copies elements from src to dest with replacing the elements satisfying predicate with new
 /// element.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
 ///   - dest should be able to accomodate n elements starting from out.
 ///
@@ -100,7 +100,7 @@ where
 /// Copies elements from src to dest with replacing the elements equals given element with new
 /// element.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
 ///   - dest should be able to accomodate elements being copied starting from out.
 ///

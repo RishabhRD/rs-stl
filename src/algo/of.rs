@@ -5,10 +5,10 @@ use crate::InputRange;
 
 /// Returns true if all elements in range satisfies the predicate.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid position in `rng`.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns true if all elements of position `[start, end)` in rng satisfies pred
 ///   - Otherwise, returns false.
 ///   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
@@ -34,10 +34,10 @@ where
 
 /// Returns true if atleast one element in range satisfies the predicate.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid position in `rng`.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns true if atleast one element of position `[start, end)` in rng satisfies pred
 ///   - Otherwise, returns false.
 ///   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
@@ -63,10 +63,10 @@ where
 
 /// Returns true if no element in range satisfies the predicate.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid position in `rng`.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns true if no element of position `[start, end)` in rng satisfies pred
 ///   - Otherwise, returns false.
 ///   - Complexity: O(n), maximum n invocations of `pred`. Where n is number

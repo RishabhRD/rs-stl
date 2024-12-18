@@ -7,11 +7,11 @@ use super::copy;
 
 /// Rotates the given range at mid.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, mid)` represent valid position in `rng`.
 ///   - `[mid, end)` represent valid position in `rng`.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Swaps element of `[start, end)` in such a way that the elements at
 ///     `[start, mid)` are placed after elements at `[mid, end)` while the orders
 ///     of both ranges are preserved.
@@ -54,12 +54,12 @@ where
 
 /// Copies the given range to dest as if it is rotated at mid.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, mid)` represent valid position in rng.
 ///   - `[mid, end)` represent valid position in rng.
 ///   - dest should be able to accomodate n elements starting from out.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Copies elements from `[start, end)` of rng to dest starting from out in
 ///     such a way, that the element at mid becomes first element at out and
 ///     element at (mid - 1) becomes last element.

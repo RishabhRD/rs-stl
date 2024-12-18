@@ -5,10 +5,10 @@ use crate::{BidirectionalRange, OutputRange};
 
 /// Reverses the given range.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Reverses the order of elements at `[start, end)` in rng.
 ///   - Complexity: O(n). Exactly (n / 2) swaps.
 ///
@@ -32,11 +32,11 @@ pub fn reverse<Range>(
 
 /// Copies the given range in reverse order to dest.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
 ///   - dest must be able to accomodate copied elements starting from out.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Copies elements from `[start, end)` of rng in reverse order to dest
 ///     starting from out.
 ///   - Complexity: O(n). Exactly n assignments.

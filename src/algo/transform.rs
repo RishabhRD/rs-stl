@@ -5,11 +5,11 @@ use crate::{InputRange, OutputRange};
 
 /// Copies elements of rng to dest with applying unary operation on it.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
 ///   - dest can accomodate transformed elements starting from out.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Applies given function unary_op to elements of given range positions
 ///     and stores result in dest starting from out position.
 ///   - Complexity: O(n). Exactly n applications of unary_op. Where n is
@@ -37,12 +37,12 @@ where
 
 /// Copies elements of rng1 and rng2 to dest with applying binary operation on it.
 ///
-/// Precondition:
+/// # Precondition
 ///   - [start1, end1) represents valid positions in rng1.
 ///   - [start2, start2 + n) represents valid positions in rng2.
 ///   - dest can accomodate transformed elements starting from out.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Applies given function binary_op to elements of given range positions
 ///     and stores result in dest starting from out position.
 ///   - Complexity: O(n). Exactly n applications of binary_op. Where n is

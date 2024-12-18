@@ -6,13 +6,13 @@ use crate::InputRange;
 /// Finds first mismatch position between 2 ranges by given equivalence relation where second range
 /// is considered to be atleast as big as first one.
 ///
-/// Precondition:
+/// # Precondition
 ///   - [start1, end1) defines valid position of rng1
 ///   - [start2, start2 + n) defines valid positions of rng2 where n in number
 ///     of elements in [start1, end1)
 ///   - bi_pred should follow equivalence relationship.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns first position in rng1 and rng2 st rng1.at(p1) != rng2.at(p2)
 ///   - If no mismatches are found and comparision reaches last1 or last2
 ///     whichever happens first, returns positions of that point.
@@ -43,13 +43,13 @@ where
 /// Finds first mismatch position between 2 ranges by equality where second range
 /// is considered to be atleast as big as first one.
 ///
-/// Precondition:
+/// # Precondition
 ///   - [start1, end1) defines valid position of rng1
 ///   - [start2, start2 + n) defines valid positions of rng2 where n in number
 ///     of elements in [start1, end1)
 ///   - bi_pred should follow equivalence relationship.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns first position in rng1 and rng2 st rng1.at(p1) != rng2.at(p2)
 ///   - If no mismatches are found and comparision reaches last1 or last2
 ///     whichever happens first, returns positions of that point.
@@ -71,12 +71,12 @@ where
 
 /// Finds first mismatch position between 2 ranges by given equivalence relation.
 ///
-/// Precondition:
+/// # Precondition
 ///   - [start1, end1) defines valid position of rng1
 ///   - [start2, end2) defines valid positions of rng2
 ///   - bi_pred should follow equivalence relationship.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns first position in rng1 and rng2 st rng1.at(p1) != rng2.at(p2)
 ///   - If no mismatches are found and comparision reaches last1 or last2
 ///     whichever happens first, returns positions of that point.
@@ -109,13 +109,13 @@ where
 
 /// Finds first mismatch position between 2 ranges by equality.
 ///
-/// Precondition:
+/// # Precondition
 ///   - [start1, end1) defines valid position of rng1
 ///   - [start2, start2 + n) defines valid positions of rng2 where n in number
 ///     of elements in [start1, end1)
 ///   - bi_pred should follow equivalence relationship.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns first position in rng1 and rng2 st rng1.at(p1) != rng2.at(p2)
 ///   - If no mismatches are found and comparision reaches last1 or last2
 ///     whichever happens first, returns positions of that point.

@@ -5,10 +5,10 @@ use crate::{InputRange, OutputRange, Regular};
 
 /// Moves all element satisfying predicate to end of range.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Removes element satisfying pred by moving them to end of rng.
 ///   - NOTE: remove_if doesn't resize rng.
 ///   - Relative ordering of elements NOT satisfying pred is preserved.
@@ -49,10 +49,10 @@ where
 
 /// Moves all element equals given element to end of range.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Removes element == val by moving them to end of rng.
 ///   - NOTE: remove doesn't resize rng.
 ///   - Relative ordering of preserved elements are maintained.
@@ -76,11 +76,11 @@ where
 
 /// Copies elements from src to dest omitting elements satisfying given predicate.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng
 ///   - dest can accomodate copied elements starting from out.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Copies elements from `[start, end)` of `rng` to starting from `out`
 ///     of `dest`, omitting the elements which satisfies pred.
 ///   - Returns position of past the last element copied in dest.
@@ -113,11 +113,11 @@ where
 
 /// Copies elements from src to dest omitting elements equals given element.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid positions in rng
 ///   - dest can accomodate copied elements starting from out.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Copies elements from `[start, end)` of `rng` to starting from `out`
 ///     of `dest`, omitting the elements == val.
 ///   - Returns position of past the last element copied in dest.

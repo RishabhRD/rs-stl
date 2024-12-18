@@ -5,10 +5,10 @@ use crate::OutputRange;
 
 /// Fills rng with given value.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` is represents valid positions in rng.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Fills element at `[start, end)` of rng with e.
 ///   - Complexity: O(n). Exactly n assignments.
 ///
@@ -30,10 +30,10 @@ pub fn fill_value<Range>(
 
 /// Fills rng using given generator.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` is represents valid positions in rng.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Fills element at `[start, end)` of rng with e.
 ///   - Complexity: O(n). Exactly n application of gen.
 ///

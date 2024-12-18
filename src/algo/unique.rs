@@ -6,13 +6,13 @@ use crate::{InputRange, OutputRange, Regular, SemiRegular};
 /// Moves all except first of adjacent equivalent elements by given equivalence relationship to end
 /// of range.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid position in rng.
 ///   - binary_pred should return true if 2 elements of rng are equivalent.
 ///   - binary_pred should follow equivalence relationship, otherwise behavior
 ///     is undefined.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Removes all the adjacent equivalent elements from rng by moving them to
 ///     end of rng.
 ///   - NOTE: rng size would not be changed by this.
@@ -51,12 +51,12 @@ where
 
 /// Moves all except first of adjacent equal elements to end of range.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid position in rng.
 ///   - Equality comparision should follow equivalence relationship otherwise
 ///     behavior is undefined.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Removes all the adjacent equivalent elements from rng by moving them to
 ///     end of rng.
 ///   - NOTE: rng size would not be changed by this.
@@ -81,14 +81,14 @@ where
 /// Copies all elements from src to dest with copying only first of adjacent equivalent elements by
 /// given equivalence relationship.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid position in rng.
 ///   - dest can accomodate copied elements at out.
 ///   - binary_pred should return true if 2 elements of rng are equivalent.
 ///   - binary_pred should follow equivalence relationship, otherwise behavior
 ///     is undefined.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Copies elements from rng from `[start, end)` with omitting adjacent
 ///     equivalent elements by bi_pred to dest starting from out.
 ///   - Returns the position of past to last copied element in dest.
@@ -126,13 +126,13 @@ where
 
 /// Copies all elements from src to dest with copying only first of adjacent equal elements.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represents valid position in rng.
 ///   - dest can accomodate copied elements at out.
 ///   - R::Element equality comparision should follow equivalence relationsip
 ///     otherwise behavior is undefined.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Copies elements from rng from `[start, end)` with omitting adjacent
 ///     equivalent elements to dest starting from out.
 ///   - Returns the position of past to last copied element in dest.

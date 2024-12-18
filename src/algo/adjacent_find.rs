@@ -6,10 +6,10 @@ use crate::ForwardRange;
 /// Returns first position in range such that element at that
 /// position and element after that position satisfies binary predicate.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` denotes valid positions in rng
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - Returns first position in `[start, end)` of rng such that element at that
 ///     position and element after that position satisfies bi_pred.
 ///   - Returns end if no such element is found

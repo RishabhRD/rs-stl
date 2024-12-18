@@ -5,11 +5,11 @@ use crate::{InputRange, OutputRange};
 
 /// Copies elements from src to out of dest if it satisfies predicate.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represent valid positions in src.
 ///   - dest should be able to accomodate all copied elements starting from out.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - copies elements from `[start, end)` satisfying `pred` to out position of
 ///     dest.
 ///   - Returns the position of dest just after last copy position.
@@ -41,12 +41,12 @@ where
 
 /// Copies elements from src to out of dest.
 ///
-/// Precondition:
+/// # Precondition
 ///   - `[start, end)` represent valid positions in src.
 ///   - dest should be able to accomodate n elements starting from out where n
 ///     is number of elements in `[start, end)` of src.
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - copies elements from `[start, end)` to out position of dest.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n copy operations.
@@ -72,12 +72,12 @@ where
 
 /// Copies n elements from start of src to out of dest.
 ///
-/// Precondition:
+/// # Precondition
 ///   - n >= 0.
 ///   - [start, start + n) represent valid positions in src.
 ///   - dest should be able to accomodate n elements starting from out
 ///
-/// Postcondition:
+/// # Postcondition
 ///   - copies elements from [start, start + n) to out position of dest.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n copy operations.
