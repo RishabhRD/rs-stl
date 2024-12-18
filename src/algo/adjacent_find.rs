@@ -3,7 +3,7 @@
 
 use crate::ForwardRange;
 
-/// Returns first position in `[start, end)` of range such that element at that
+/// Returns first position in range such that element at that
 /// position and element after that position satisfies binary predicate.
 ///
 /// Precondition:
