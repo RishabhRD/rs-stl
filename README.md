@@ -17,11 +17,11 @@ are generalization over indexes.
 
 rs-stl defines concept of ranges. A range can be of following types:
 
-- **InputRange**: Models single pass ranges.
+- **InputRange**: Models single-pass ranges.
 - **ForwardRange**: Models multi-pass ranges. Automatically an input range.
-- **BidirectionalRange**: Models range that also supports backward iteration. Automatically a forward range.
+- **BidirectionalRange**: Models range that also supports forward as well as backward iteration. Automatically a forward range.
 - **RandomAccessRange**: Models range that supports random access iteration. Automatically a bidirectional range.
-- **OutputRange**: Models mutable range. Automatically an input range.
+- **OutputRange**: Models mutable range. Automatically an forward range.
 
 ```rust
 pub trait InputRange {
@@ -102,7 +102,7 @@ pub trait RandomAccessRange: BidirectionalRange<Position: Regular + Ord>
 And at last, to support mutation, OutputRange defines at_mut function on `InputRange`.
 
 ```rust
-pub trait OutputRange: InputRange {
+pub trait OutputRange: ForwardRange {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
 }
 ```
