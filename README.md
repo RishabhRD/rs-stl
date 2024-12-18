@@ -13,6 +13,10 @@ C++ ranges expose iterators for traversal and algorithms. Iterators are generali
 of pointers. However, pointers would be too unsafe for using as API in rust.
 Instead, rs-stl expose `Positions` and Positions are generalization of indexes.
 
+## Documentation
+
+View API documentation at: [rs-stl docs](https://rishabhrd.github.io/rs-stl/).
+
 ## rs-stl model
 
 rs-stl defines concept of ranges. A range can be of following types:
