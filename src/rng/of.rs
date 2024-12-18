@@ -3,14 +3,60 @@
 
 use crate::{algo, InputRange};
 
-pub fn all_of<R, F>(rng: &R, pred: F) -> bool
+/// Returns true if all elements in range satisfies the predicate.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns true if all elements in rng satisfies pred
+///   - Otherwise, returns false.
+///   - Complexity: O(n), maximum n invocations of `pred`.
+///
+///   Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 3, 5];
+/// assert!(rng::all_of(&arr, |x| x % 2 == 1));
+/// assert!(arr.all_of(|x| x % 2 == 1));
+/// ```
+pub fn all_of<Range, Pred>(rng: &Range, pred: Pred) -> bool
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     algo::all_of(rng, rng.start(), rng.end(), pred)
 }
 
+/// Returns true if atleast one element in range satisfies the predicate.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns true if atleast one element in rng satisfies pred
+///   - Otherwise, returns false.
+///   - Complexity: O(n), maximum n invocations of `pred`.
+///
+///   Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [2, 4, 5];
+/// assert!(rng::any_of(&arr, |x| x % 2 == 1));
+/// assert!(arr.any_of(|x| x % 2 == 1));
+/// ```
 pub fn any_of<R, F>(rng: &R, pred: F) -> bool
 where
     R: InputRange + ?Sized,
@@ -19,6 +65,29 @@ where
     algo::any_of(rng, rng.start(), rng.end(), pred)
 }
 
+/// Returns true if no element in range satisfies the predicate.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns true if no element in rng satisfies pred.
+///   - Otherwise, returns false.
+///   - Complexity: O(n), maximum n invocations of `pred`.
+///
+///   Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [2, 4, 6];
+/// assert!(rng::none_of(&arr, |x| x % 2 == 1));
+/// assert!(arr.none_of(|x| x % 2 == 1));
+/// ```
 pub fn none_of<R, F>(rng: &R, pred: F) -> bool
 where
     R: InputRange + ?Sized,
