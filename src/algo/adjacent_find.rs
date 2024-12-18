@@ -3,14 +3,15 @@
 
 use crate::ForwardRange;
 
-// Precondition:
-//   - [start, end) denotes valid positions in rng
-// Postcondition:
-//   - Returns first position in [start, end) of rng such that element at that
-//     position and element after that position satisfies bi_pred.
-//   - Returns end if no such element is found
-//   - Complexity: O(n), maximum `n - 1` calls to `bi_pred`.
-//     Where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` denotes valid positions in rng
+///
+/// Postcondition:
+///   - Returns first position in `[start, end)` of rng such that element at that
+///     position and element after that position satisfies bi_pred.
+///   - Returns end if no such element is found
+///   - Complexity: O(n), maximum `n - 1` calls to `bi_pred`.
+///     Where n is number of elements in `[start, end)`.
 pub fn adjacent_find_if<R, F>(
     rng: &R,
     mut start: R::Position,

@@ -3,8 +3,8 @@
 
 use crate::{algo, ForwardRange, OutputRange};
 
-// TODO: there are efficient implementations for BidirectionalRange and
-// RandomAccessRange in rust. How to overload for them in rust?
+/// TODO: there are efficient implementations for BidirectionalRange and
+/// RandomAccessRange in rust. How to overload for them in rust?
 pub fn rotate<R>(rng: &mut R, mid: R::Position) -> R::Position
 where
     R: OutputRange + ?Sized,
@@ -24,8 +24,8 @@ where
 pub mod infix {
     use crate::{rng, OutputRange};
 
-    // TODO: there are efficient implementations for BidirectionalRange and
-    // RandomAccessRange in rust. How to overload for them in rust?
+    /// TODO: there are efficient implementations for BidirectionalRange and
+    /// RandomAccessRange in rust. How to overload for them in rust?
     pub trait STLRotateExt: OutputRange {
         fn rotate(&mut self, mid: Self::Position) -> Self::Position {
             rng::rotate(self, mid)

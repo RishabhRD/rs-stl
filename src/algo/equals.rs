@@ -3,14 +3,15 @@
 
 use crate::InputRange;
 
-// Precondition:
-//   - [start1, end1) denotes valid positions in rng1.
-//   - [start2, start2 + n) denotes valid positions in rng2 where n is number
-//     of elements in [start1, end1).
-// Postcondition:
-//   - Returns true if range at [start1, end1) is equivalent to
-//     range at [start2, start2 + n) by relationship `bi_pred`.
-//   - Complexity: O(n). Maximum `n` bi_pred applications.
+/// Precondition:
+///   - [start1, end1) denotes valid positions in rng1.
+///   - [start2, start2 + n) denotes valid positions in rng2 where n is number
+///     of elements in [start1, end1).
+///
+/// Postcondition:
+///   - Returns true if range at [start1, end1) is equivalent to
+///     range at [start2, start2 + n) by relationship `bi_pred`.
+///   - Complexity: O(n). Maximum `n` bi_pred applications.
 pub fn equals_unbounded_by<R1, R2, F>(
     rng1: &R1,
     mut start1: R1::Position,
@@ -34,14 +35,15 @@ where
     true
 }
 
-// Precondition:
-//   - [start1, end1) denotes valid positions in rng1.
-//   - [start2, start2 + n) denotes valid positions in rng2 where n is number
-//     of elements in [start1, end1).
-// Postcondition:
-//   - Returns true if range at [start1, end1) is equal to
-//     range at [start2, start2 + n).
-//   - Complexity: O(n). Maximum `n` equality comparisions.
+/// Precondition:
+///   - [start1, end1) denotes valid positions in rng1.
+///   - [start2, start2 + n) denotes valid positions in rng2 where n is number
+///     of elements in [start1, end1).
+///
+/// Postcondition:
+///   - Returns true if range at [start1, end1) is equal to
+///     range at [start2, start2 + n).
+///   - Complexity: O(n). Maximum `n` equality comparisions.
 pub fn equals_unbounded<R1, R2>(
     rng1: &R1,
     start1: R1::Position,
@@ -57,15 +59,16 @@ where
     equals_unbounded_by(rng1, start1, end1, rng2, start2, |x, y| x == y)
 }
 
-// Precondition:
-//   - [start1, end1) denotes valid positions in rng1.
-//   - [start2, end2) denotes valid positions in rng2
-// Postcondition:
-//   - Returns true if range at [start1, end1) is equivalent to
-//     range at [start2, end2) by relationship bi_pred.
-//   - Complexity: O(n). Maximum `n` `bi_pred` applications.
-//     Where n is min(#[start1, end1), #[start2, end2)) and
-//     # is number of elements in range operator.
+/// Precondition:
+///   - [start1, end1) denotes valid positions in rng1.
+///   - [start2, end2) denotes valid positions in rng2
+///
+/// Postcondition:
+///   - Returns true if range at [start1, end1) is equivalent to
+///     range at [start2, end2) by relationship bi_pred.
+///   - Complexity: O(n). Maximum `n` `bi_pred` applications.
+///     Where n is min(#[start1, end1), #[start2, end2)) and
+///     # is number of elements in range operator.
 pub fn equals_by<R1, R2, F>(
     rng1: &R1,
     mut start1: R1::Position,
@@ -90,15 +93,16 @@ where
     start1 == end1 && start2 == end2
 }
 
-// Precondition:
-//   - [start1, end1) denotes valid positions in rng1.
-//   - [start2, end2) denotes valid positions in rng2
-// Postcondition:
-//   - Returns true if range at [start1, end1) is equal to
-//     range at [start2, end2).
-//   - Complexity: O(n). Maximum `n` equality comparisions of elements.
-//     Where n is min(#[start1, end1), #[start2, end2)) and
-//     # is number of elements in range operator.
+/// Precondition:
+///   - [start1, end1) denotes valid positions in rng1.
+///   - [start2, end2) denotes valid positions in rng2
+///
+/// Postcondition:
+///   - Returns true if range at [start1, end1) is equal to
+///     range at [start2, end2).
+///   - Complexity: O(n). Maximum `n` equality comparisions of elements.
+///     Where n is min(#[start1, end1), #[start2, end2)) and
+///     # is number of elements in range operator.
 pub fn equals<R1, R2>(
     rng1: &R1,
     start1: R1::Position,

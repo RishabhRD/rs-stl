@@ -3,14 +3,14 @@
 
 use crate::{InputRange, OutputRange, Regular};
 
-// Precondition:
-//   - [start, end) represents valid positions in rng.
-// Poscondition:
-//   - Replaces element which satisfies pred of rng from
-//     [start, end) with new_e.
-//   - Complexity: O(n). Exactly n applications of pred.
-//
-//   Where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represents valid positions in rng.
+/// Poscondition:
+///   - Replaces element which satisfies pred of rng from
+///     `[start, end)` with new_e.
+///   - Complexity: O(n). Exactly n applications of pred.
+///
+///   Where n is number of elements in `[start, end)`.
 pub fn replace_if<R, F>(
     rng: &mut R,
     mut start: R::Position,
@@ -30,14 +30,14 @@ pub fn replace_if<R, F>(
     }
 }
 
-// Precondition:
-//   - [start, end) represents valid positions in rng.
-// Poscondition:
-//   - Replaces all elements == old_e with new_e of rng from
-//     [start, end).
-//   - Complexity: O(n). Exactly n equality comparisions.
-//
-//   Where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represents valid positions in rng.
+/// Poscondition:
+///   - Replaces all elements == old_e with new_e of rng from
+///     `[start, end)`.
+///   - Complexity: O(n). Exactly n equality comparisions.
+///
+///   Where n is number of elements in `[start, end)`.
 pub fn replace<R>(
     rng: &mut R,
     start: R::Position,
@@ -51,15 +51,15 @@ pub fn replace<R>(
     replace_if(rng, start, end, |x| x == old_e, new_e)
 }
 
-// Precondition:
-//   - [start, end) represents valid positions in rng.
-//   - dest should be able to accomodate n elements starting from out.
-// Poscondition:
-//   - Copies elements from [start, end) from rng to new range dest starting
-//     from out while replacing all elements satisfying pred with new_e.
-//   - Complexity: O(n). Exactly n applications of pred.
-//
-//   Where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represents valid positions in rng.
+///   - dest should be able to accomodate n elements starting from out.
+/// Poscondition:
+///   - Copies elements from `[start, end)` from rng to new range dest starting
+///     from out while replacing all elements satisfying pred with new_e.
+///   - Complexity: O(n). Exactly n applications of pred.
+///
+///   Where n is number of elements in `[start, end)`.
 pub fn replace_copy_if<R, D, F>(
     rng: &R,
     mut start: R::Position,
@@ -87,15 +87,15 @@ where
     out
 }
 
-// Precondition:
-//   - [start, end) represents valid positions in rng.
-//   - dest should be able to accomodate elements being copied starting from out.
-// Poscondition:
-//   - Copies elements from [start, end) from rng to new range dest starting
-//     from out while replacing all elements == old_e with new_e.
-//   - Complexity: O(n). Exactly n applications of pred.
-//
-//   Where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represents valid positions in rng.
+///   - dest should be able to accomodate elements being copied starting from out.
+/// Poscondition:
+///   - Copies elements from `[start, end)` from rng to new range dest starting
+///     from out while replacing all elements == old_e with new_e.
+///   - Complexity: O(n). Exactly n applications of pred.
+///
+///   Where n is number of elements in `[start, end)`.
 pub fn replace_copy<R, D>(
     rng: &R,
     start: R::Position,

@@ -3,13 +3,14 @@
 
 use crate::InputRange;
 
-// Precondition:
-//   - [start, end) represents valid position in `rng`.
-// Postcondition:
-//   - Returns true if all elements of position [start, end) in rng satisfies pred
-//   - Otherwise, returns false.
-//   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
-//     of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represents valid position in `rng`.
+///
+/// Postcondition:
+///   - Returns true if all elements of position `[start, end)` in rng satisfies pred
+///   - Otherwise, returns false.
+///   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
+///     of elements in `[start, end)`.
 pub fn all_of<R, F>(
     rng: &R,
     mut start: R::Position,
@@ -29,13 +30,14 @@ where
     true
 }
 
-// Precondition:
-//   - [start, end) represents valid position in `rng`.
-// Postcondition:
-//   - Returns true if atleast one element of position [start, end) in rng satisfies pred
-//   - Otherwise, returns false.
-//   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
-//     of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represents valid position in `rng`.
+///
+/// Postcondition:
+///   - Returns true if atleast one element of position `[start, end)` in rng satisfies pred
+///   - Otherwise, returns false.
+///   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
+///     of elements in `[start, end)`.
 pub fn any_of<R, F>(
     rng: &R,
     mut start: R::Position,
@@ -55,13 +57,14 @@ where
     false
 }
 
-// Precondition:
-//   - [start, end) represents valid position in `rng`.
-// Postcondition:
-//   - Returns true if no element of position [start, end) in rng satisfies pred
-//   - Otherwise, returns false.
-//   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
-//     of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represents valid position in `rng`.
+///
+/// Postcondition:
+///   - Returns true if no element of position `[start, end)` in rng satisfies pred
+///   - Otherwise, returns false.
+///   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
+///     of elements in `[start, end)`.
 pub fn none_of<R, F>(
     rng: &R,
     mut start: R::Position,

@@ -3,13 +3,14 @@
 
 use crate::OutputRange;
 
-// Precondition:
-//   - [start, end) is represents valid positions in rng.
-// Postcondition:
-//   - Fills element at [start, end) of rng with e.
-//   - Complexity: O(n). Exactly n assignments.
-//
-//   Where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` is represents valid positions in rng.
+///
+/// Postcondition:
+///   - Fills element at `[start, end)` of rng with e.
+///   - Complexity: O(n). Exactly n assignments.
+///
+///   Where n is number of elements in `[start, end)`.
 pub fn fill_value<R>(
     rng: &mut R,
     mut start: R::Position,
@@ -25,13 +26,14 @@ pub fn fill_value<R>(
     }
 }
 
-// Precondition:
-//   - [start, end) is represents valid positions in rng.
-// Postcondition:
-//   - Fills element at [start, end) of rng with e.
-//   - Complexity: O(n). Exactly n application of gen.
-//
-//   Where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` is represents valid positions in rng.
+///
+/// Postcondition:
+///   - Fills element at `[start, end)` of rng with e.
+///   - Complexity: O(n). Exactly n application of gen.
+///
+///   Where n is number of elements in `[start, end)`.
 pub fn fill_by<R, Gen>(
     rng: &mut R,
     mut start: R::Position,

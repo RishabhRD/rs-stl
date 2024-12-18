@@ -12,14 +12,15 @@ where
     algo::transform(rng, rng.start(), rng.end(), dest, dest.start(), unary_op)
 }
 
-// Precondition:
-//   - dest can accomodate n transformed elements starting from out.
-// Postcondition:
-//   - Applies given function binary_op to elements of given range positions
-//     and stores result in dest starting from out position.
-//   - Complexity: O(n). Exactly n applications of binary_op.
-//
-//   Where n is minimum of number of elements in rng1, rng2.
+/// Precondition:
+///   - dest can accomodate n transformed elements starting from out.
+///
+/// Postcondition:
+///   - Applies given function binary_op to elements of given range positions
+///     and stores result in dest starting from out position.
+///   - Complexity: O(n). Exactly n applications of binary_op.
+///
+///   Where n is minimum of number of elements in rng1, rng2.
 pub fn zip_transform<R1, R2, D, F>(
     rng1: &R1,
     rng2: &R2,

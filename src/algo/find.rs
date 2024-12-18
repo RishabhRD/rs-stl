@@ -3,13 +3,14 @@
 
 use crate::InputRange;
 
-// Precondition:
-//   - [start, end) represent valid positions in rng.
-// Postcondition:
-//   - Returns position of first element in [start, end) of rng satisfying pred.
-//   - Returns end if no such element exists.
-//   - Complexity: O(n). Maximum `n` applications of `pred`,
-//     where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represent valid positions in rng.
+///
+/// Postcondition:
+///   - Returns position of first element in `[start, end)` of rng satisfying pred.
+///   - Returns end if no such element exists.
+///   - Complexity: O(n). Maximum `n` applications of `pred`,
+///     where n is number of elements in `[start, end)`.
 pub fn find_if<R, F>(
     rng: &R,
     mut start: R::Position,
@@ -29,13 +30,14 @@ where
     start
 }
 
-// Precondition:
-//   - [start, end) represent valid positions in rng.
-// Postcondition:
-//   - Returns position of first element in [start, end) of rng NOT satisfying pred.
-//   - Returns end if no such element exists.
-//   - Complexity: O(n). Maximum `n` applications of `pred`,
-//     where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represent valid positions in rng.
+///
+/// Postcondition:
+///   - Returns position of first element in `[start, end)` of rng NOT satisfying pred.
+///   - Returns end if no such element exists.
+///   - Complexity: O(n). Maximum `n` applications of `pred`,
+///     where n is number of elements in `[start, end)`.
 pub fn find_if_not<R, F>(
     rng: &R,
     start: R::Position,
@@ -49,13 +51,14 @@ where
     find_if(rng, start, end, |x| !pred(x))
 }
 
-// Precondition:
-//   - [start, end) represent valid positions in rng.
-// Postcondition:
-//   - Returns position of first element in [start, end) of rng equals e.
-//   - Returns end if no such element exists.
-//   - Complexity: O(n). Maximum `n` equality comparisions,
-//     where n is number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represent valid positions in rng.
+///
+/// Postcondition:
+///   - Returns position of first element in `[start, end)` of rng equals e.
+///   - Returns end if no such element exists.
+///   - Complexity: O(n). Maximum `n` equality comparisions,
+///     where n is number of elements in `[start, end)`.
 pub fn find<R>(
     rng: &R,
     start: R::Position,

@@ -3,14 +3,15 @@
 
 use crate::{InputRange, OutputRange};
 
-// Precondition:
-//   - [start, end) represents valid positions in rng.
-//   - dest can accomodate transformed elements starting from out.
-// Postcondition:
-//   - Applies given function unary_op to elements of given range positions
-//     and stores result in dest starting from out position.
-//   - Complexity: O(n). Exactly n applications of unary_op. Where n is
-//     number of elements in [start, end).
+/// Precondition:
+///   - `[start, end)` represents valid positions in rng.
+///   - dest can accomodate transformed elements starting from out.
+///
+/// Postcondition:
+///   - Applies given function unary_op to elements of given range positions
+///     and stores result in dest starting from out position.
+///   - Complexity: O(n). Exactly n applications of unary_op. Where n is
+///     number of elements in `[start, end)`.
 pub fn transform<R, D, F>(
     rng: &R,
     mut start: R::Position,
@@ -32,15 +33,16 @@ where
     out
 }
 
-// Precondition:
-//   - [start1, end1) represents valid positions in rng1.
-//   - [start2, start2 + n) represents valid positions in rng2.
-//   - dest can accomodate transformed elements starting from out.
-// Postcondition:
-//   - Applies given function binary_op to elements of given range positions
-//     and stores result in dest starting from out position.
-//   - Complexity: O(n). Exactly n applications of binary_op. Where n is
-//     number of elements in [start1, end1).
+/// Precondition:
+///   - [start1, end1) represents valid positions in rng1.
+///   - [start2, start2 + n) represents valid positions in rng2.
+///   - dest can accomodate transformed elements starting from out.
+///
+/// Postcondition:
+///   - Applies given function binary_op to elements of given range positions
+///     and stores result in dest starting from out position.
+///   - Complexity: O(n). Exactly n applications of binary_op. Where n is
+///     number of elements in [start1, end1).
 pub fn zip_transform<R1, R2, D, F>(
     rng1: &R1,
     mut start1: R1::Position,
