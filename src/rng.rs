@@ -21,7 +21,8 @@
 //! ```
 //!
 //! For all algorithms it is mentioned in doc if infix version is supported or
-//! not for that algorithm.
+//! not for that algorithm. Or open infix module to see all supported infix
+//! algorithms.
 //!
 //! For using infix version of supported algorithms use:
 //! ```rust
@@ -98,17 +99,32 @@ pub mod rotate;
 #[doc(inline)]
 pub use rotate::*;
 
-#[doc(hidden)]
 pub mod infix {
+    //! Defines extension traits to support infix version of range algorithms.
+    //!
+    //! For preconditions and postcondition of any algorithm see `rng` module
+    //! functions.
+
+    #[doc(inline)]
     pub use super::adjacent_find::infix::*;
+    #[doc(inline)]
     pub use super::count::infix::*;
+    #[doc(inline)]
     pub use super::equals::infix::*;
+    #[doc(inline)]
     pub use super::fill::infix::*;
+    #[doc(inline)]
     pub use super::find::infix::*;
+    #[doc(inline)]
     pub use super::of::infix::*;
+    #[doc(inline)]
     pub use super::remove::infix::*;
+    #[doc(inline)]
     pub use super::replace::infix::*;
+    #[doc(inline)]
     pub use super::reverse::infix::*;
+    #[doc(inline)]
     pub use super::rotate::infix::*;
+    #[doc(inline)]
     pub use super::unique::infix::*;
 }

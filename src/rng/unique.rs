@@ -22,6 +22,7 @@ where
 pub mod infix {
     use crate::{rng, OutputRange, SemiRegular};
 
+    /// `unique`, `unique_by`.
     pub trait STLUniqueExt: OutputRange {
         fn unique_by<F>(&mut self, bi_pred: F) -> Self::Position
         where

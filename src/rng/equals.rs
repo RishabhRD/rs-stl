@@ -185,6 +185,7 @@ pub mod infix {
     use crate::rng;
     use crate::InputRange;
 
+    /// `equals`, `equals_by`.
     pub trait STLEqualsExt: InputRange {
         fn equals_by<R, F>(&self, rng: &R, bi_pred: F) -> bool
         where

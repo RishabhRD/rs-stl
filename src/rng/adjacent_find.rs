@@ -44,6 +44,7 @@ where
 pub mod infix {
     use crate::{rng, ForwardRange};
 
+    /// `adjacent_find`.
     pub trait STLAdjacentFindExt: ForwardRange {
         fn adjacent_find_if<BinaryPred>(
             &self,

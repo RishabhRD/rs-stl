@@ -74,6 +74,7 @@ where
 pub mod infix {
     use crate::{rng, OutputRange};
 
+    /// `fill_value`, `fill_by`.
     pub trait STLFillExt: OutputRange {
         fn fill_value(&mut self, e: &Self::Element)
         where

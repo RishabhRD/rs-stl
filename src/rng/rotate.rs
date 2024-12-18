@@ -24,9 +24,10 @@ where
 pub mod infix {
     use crate::{rng, OutputRange};
 
-    /// TODO: there are efficient implementations for BidirectionalRange and
-    /// RandomAccessRange in rust. How to overload for them in rust?
+    /// `rotate`.
     pub trait STLRotateExt: OutputRange {
+        /// TODO: there are efficient implementations for BidirectionalRange and
+        /// RandomAccessRange in rust. How to overload for them in rust?
         fn rotate(&mut self, mid: Self::Position) -> Self::Position {
             rng::rotate(self, mid)
         }

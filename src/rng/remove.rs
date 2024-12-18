@@ -164,6 +164,7 @@ where
 pub mod infix {
     use crate::{rng, OutputRange};
 
+    /// `remove`, `remove_if`.
     pub trait STLRemoveExt: OutputRange {
         fn remove_if<F>(&mut self, pred: F) -> Self::Position
         where

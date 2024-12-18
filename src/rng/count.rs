@@ -74,6 +74,7 @@ pub mod infix {
     use crate::rng;
     use crate::InputRange;
 
+    /// `count_if`, `count`.
     pub trait STLCountExt: InputRange {
         fn count_if<F>(&self, pred: F) -> u32
         where

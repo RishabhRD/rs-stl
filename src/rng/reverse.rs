@@ -13,6 +13,7 @@ where
 pub mod infix {
     use crate::{rng, BidirectionalRange, OutputRange};
 
+    /// `reverse`.
     pub trait STLReverseExt: OutputRange + BidirectionalRange {
         fn reverse(&mut self);
     }

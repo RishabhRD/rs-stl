@@ -68,6 +68,7 @@ where
 pub mod infix {
     use crate::{rng, OutputRange, Regular};
 
+    /// `replace`, `replace_if`.
     pub trait STLReplaceExt: OutputRange {
         fn replace_if<F>(&mut self, pred: F, new_e: &Self::Element)
         where

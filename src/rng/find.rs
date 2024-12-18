@@ -112,6 +112,7 @@ pub mod infix {
     use crate::rng;
     use crate::InputRange;
 
+    /// `find_if`, `find_if_not`, `find`.
     pub trait STLFindExt: InputRange {
         fn find_if<F>(&self, pred: F) -> Self::Position
         where

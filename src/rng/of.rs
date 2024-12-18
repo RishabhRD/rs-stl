@@ -100,6 +100,7 @@ pub mod infix {
     use crate::rng;
     use crate::InputRange;
 
+    /// `all_of`, `any_of`, `none_of`.
     pub trait STLOfExt: InputRange {
         fn all_of<F>(&self, pred: F) -> bool
         where
