@@ -3,6 +3,8 @@
 
 use crate::{InputRange, OutputRange, Regular};
 
+/// Replaces elements of range satisfying predicate with new element.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng.
 ///
@@ -12,16 +14,16 @@ use crate::{InputRange, OutputRange, Regular};
 ///   - Complexity: O(n). Exactly n applications of pred.
 ///
 ///   Where n is number of elements in `[start, end)`.
-pub fn replace_if<R, F>(
-    rng: &mut R,
-    mut start: R::Position,
-    end: R::Position,
-    pred: F,
-    new_e: &R::Element,
+pub fn replace_if<Range, Pred>(
+    rng: &mut Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    pred: Pred,
+    new_e: &Range::Element,
 ) where
-    R: OutputRange + ?Sized,
-    R::Element: Clone,
-    F: Fn(&R::Element) -> bool,
+    Range: OutputRange + ?Sized,
+    Range::Element: Clone,
+    Pred: Fn(&Range::Element) -> bool,
 {
     while start != end {
         if pred(rng.at(&start)) {
@@ -31,6 +33,8 @@ pub fn replace_if<R, F>(
     }
 }
 
+/// Replaces elements of range equals old element with new element.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng.
 ///
@@ -40,19 +44,22 @@ pub fn replace_if<R, F>(
 ///   - Complexity: O(n). Exactly n equality comparisions.
 ///
 ///   Where n is number of elements in `[start, end)`.
-pub fn replace<R>(
-    rng: &mut R,
-    start: R::Position,
-    end: R::Position,
-    old_e: &R::Element,
-    new_e: &R::Element,
+pub fn replace<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+    old_e: &Range::Element,
+    new_e: &Range::Element,
 ) where
-    R: OutputRange + ?Sized,
-    R::Element: Regular,
+    Range: OutputRange + ?Sized,
+    Range::Element: Regular,
 {
     replace_if(rng, start, end, |x| x == old_e, new_e)
 }
 
+/// Copies elements from src to dest with replacing the elements satisfying predicate with new
+/// element.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng.
 ///   - dest should be able to accomodate n elements starting from out.
@@ -63,33 +70,36 @@ pub fn replace<R>(
 ///   - Complexity: O(n). Exactly n applications of pred.
 ///
 ///   Where n is number of elements in `[start, end)`.
-pub fn replace_copy_if<R, D, F>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    dest: &mut D,
-    mut out: D::Position,
-    pred: F,
-    new_e: &R::Element,
-) -> D::Position
+pub fn replace_copy_if<SrcRange, DestRange, Pred>(
+    src: &SrcRange,
+    mut start: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+    pred: Pred,
+    new_e: &SrcRange::Element,
+) -> DestRange::Position
 where
-    R: InputRange + ?Sized,
-    D: OutputRange<Element = R::Element> + ?Sized,
-    R::Element: Clone,
-    F: Fn(&R::Element) -> bool,
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    Pred: Fn(&SrcRange::Element) -> bool,
 {
     while start != end {
-        if pred(rng.at(&start)) {
+        if pred(src.at(&start)) {
             *dest.at_mut(&out) = new_e.clone();
         } else {
-            *dest.at_mut(&out) = rng.at(&start).clone();
+            *dest.at_mut(&out) = src.at(&start).clone();
         }
         out = dest.after(out);
-        start = rng.after(start);
+        start = src.after(start);
     }
     out
 }
 
+/// Copies elements from src to dest with replacing the elements equals given element with new
+/// element.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng.
 ///   - dest should be able to accomodate elements being copied starting from out.
@@ -100,19 +110,19 @@ where
 ///   - Complexity: O(n). Exactly n applications of pred.
 ///
 ///   Where n is number of elements in `[start, end)`.
-pub fn replace_copy<R, D>(
-    rng: &R,
-    start: R::Position,
-    end: R::Position,
-    dest: &mut D,
-    out: D::Position,
-    old_e: &R::Element,
-    new_e: &R::Element,
-) -> D::Position
+pub fn replace_copy<SrcRange, DestRange>(
+    rng: &SrcRange,
+    start: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    out: DestRange::Position,
+    old_e: &SrcRange::Element,
+    new_e: &SrcRange::Element,
+) -> DestRange::Position
 where
-    R: InputRange + ?Sized,
-    D: OutputRange<Element = R::Element> + ?Sized,
-    R::Element: Regular,
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    SrcRange::Element: Regular,
 {
     replace_copy_if(rng, start, end, dest, out, |x| x == old_e, new_e)
 }

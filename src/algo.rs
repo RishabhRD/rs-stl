@@ -6,6 +6,10 @@
 //! The `algo` module provides a collection of STL algorithms. These algorithms
 //! explicitly accepts Positions. For more compact algorithm overloads that
 //! just accepts ranges, or infix notation (by .) use `rng` module.
+//!
+//! NOTE: In documentation of any function that accepts position with notation
+//! like [start, end), if doc talks in term of full range, it should be considered
+//! as rng elements from [start, end) position only.
 
 #[doc(hidden)]
 pub mod find;

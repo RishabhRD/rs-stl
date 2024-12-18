@@ -3,6 +3,8 @@
 
 use crate::InputRange;
 
+/// Returns true if all elements in range satisfies the predicate.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid position in `rng`.
 ///
@@ -11,15 +13,15 @@ use crate::InputRange;
 ///   - Otherwise, returns false.
 ///   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
 ///     of elements in `[start, end)`.
-pub fn all_of<R, F>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    pred: F,
+pub fn all_of<Range, Pred>(
+    rng: &Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    pred: Pred,
 ) -> bool
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     while start != end {
         if !pred(rng.at(&start)) {
@@ -30,6 +32,8 @@ where
     true
 }
 
+/// Returns true if atleast one element in range satisfies the predicate.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid position in `rng`.
 ///
@@ -38,15 +42,15 @@ where
 ///   - Otherwise, returns false.
 ///   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
 ///     of elements in `[start, end)`.
-pub fn any_of<R, F>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    pred: F,
+pub fn any_of<Range, Pred>(
+    rng: &Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    pred: Pred,
 ) -> bool
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     while start != end {
         if pred(rng.at(&start)) {
@@ -57,6 +61,8 @@ where
     false
 }
 
+/// Returns true if no element in range satisfies the predicate.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid position in `rng`.
 ///
@@ -65,15 +71,15 @@ where
 ///   - Otherwise, returns false.
 ///   - Complexity: O(n), maximum n invocations of `pred`. Where n is number
 ///     of elements in `[start, end)`.
-pub fn none_of<R, F>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    pred: F,
+pub fn none_of<Range, Pred>(
+    rng: &Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    pred: Pred,
 ) -> bool
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     while start != end {
         if pred(rng.at(&start)) {

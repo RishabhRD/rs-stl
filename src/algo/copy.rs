@@ -3,8 +3,10 @@
 
 use crate::{InputRange, OutputRange};
 
+/// Copies element from src's `[start, end)` to dest starting from out if it satisfies predicate.
+///
 /// Precondition:
-///   - `[start, end)` represent valid positions in rng.
+///   - `[start, end)` represent valid positions in src.
 ///   - dest should be able to accomodate all copied elements starting from out.
 ///
 /// Postcondition:
@@ -12,85 +14,89 @@ use crate::{InputRange, OutputRange};
 ///     dest.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n pred applications and maximum n copy operations.
-///     where n is number of elements in `[start, end)` of rng.
-pub fn copy_if<R, D, F>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    dest: &mut D,
-    mut out: D::Position,
-    pred: F,
-) -> D::Position
+///     where n is number of elements in `[start, end)` of src.
+pub fn copy_if<SrcRange, DestRange, Pred>(
+    src: &SrcRange,
+    mut start: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+    pred: Pred,
+) -> DestRange::Position
 where
-    R: InputRange<Element = D::Element> + ?Sized,
-    R::Element: Clone,
-    D: OutputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    DestRange: OutputRange + ?Sized,
+    Pred: Fn(&SrcRange::Element) -> bool,
 {
     while start != end {
-        if pred(rng.at(&start)) {
-            *dest.at_mut(&out) = rng.at(&start).clone();
+        if pred(src.at(&start)) {
+            *dest.at_mut(&out) = src.at(&start).clone();
             out = dest.after(out);
         }
-        start = rng.after(start);
+        start = src.after(start);
     }
     out
 }
 
+/// Copies element from src's `[start, end)` to dest starting from out.
+///
 /// Precondition:
-///   - `[start, end)` represent valid positions in rng.
+///   - `[start, end)` represent valid positions in src.
 ///   - dest should be able to accomodate n elements starting from out where n
-///     is number of elements in `[start, end)` of rng.
+///     is number of elements in `[start, end)` of src.
 ///
 /// Postcondition:
 ///   - copies elements from `[start, end)` to out position of dest.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n copy operations.
-pub fn copy<R, D>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    dest: &mut D,
-    mut out: D::Position,
-) -> D::Position
+pub fn copy<SrcRange, DestRange>(
+    src: &SrcRange,
+    mut start: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+) -> DestRange::Position
 where
-    R: InputRange<Element = D::Element> + ?Sized,
-    R::Element: Clone,
-    D: OutputRange + ?Sized,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    DestRange: OutputRange + ?Sized,
 {
     while start != end {
-        *dest.at_mut(&out) = rng.at(&start).clone();
+        *dest.at_mut(&out) = src.at(&start).clone();
         out = dest.after(out);
-        start = rng.after(start);
+        start = src.after(start);
     }
     out
 }
 
+/// Copies n elements from start of src to out of dest.
+///
 /// Precondition:
 ///   - n >= 0.
-///   - [start, start + n) represent valid positions in rng.
+///   - [start, start + n) represent valid positions in src.
 ///   - dest should be able to accomodate n elements starting from out
 ///
 /// Postcondition:
 ///   - copies elements from [start, start + n) to out position of dest.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n copy operations.
-pub fn copy_n<R, D>(
-    rng: &R,
-    mut start: R::Position,
+pub fn copy_n<SrcRange, DestRange>(
+    src: &SrcRange,
+    mut start: SrcRange::Position,
     mut n: usize,
-    dest: &mut D,
-    mut out: D::Position,
-) -> D::Position
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+) -> DestRange::Position
 where
-    R: InputRange<Element = D::Element> + ?Sized,
-    R::Element: Clone,
-    D: OutputRange + ?Sized,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    DestRange: OutputRange + ?Sized,
 {
     while n != 0 {
-        *dest.at_mut(&out) = rng.at(&start).clone();
+        *dest.at_mut(&out) = src.at(&start).clone();
         out = dest.after(out);
-        start = rng.after(start);
+        start = src.after(start);
         n -= 1;
     }
     out

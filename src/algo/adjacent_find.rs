@@ -3,6 +3,9 @@
 
 use crate::ForwardRange;
 
+/// Returns first position in `[start, end)` of range such that element at that
+/// position and element after that position satisfies binary predicate.
+///
 /// Precondition:
 ///   - `[start, end)` denotes valid positions in rng
 ///
@@ -12,15 +15,15 @@ use crate::ForwardRange;
 ///   - Returns end if no such element is found
 ///   - Complexity: O(n), maximum `n - 1` calls to `bi_pred`.
 ///     Where n is number of elements in `[start, end)`.
-pub fn adjacent_find_if<R, F>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    bi_pred: F,
-) -> R::Position
+pub fn adjacent_find_if<Range, BinaryPred>(
+    rng: &Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    bi_pred: BinaryPred,
+) -> Range::Position
 where
-    R: ForwardRange + ?Sized,
-    F: Fn(&R::Element, &R::Element) -> bool,
+    Range: ForwardRange + ?Sized,
+    BinaryPred: Fn(&Range::Element, &Range::Element) -> bool,
 {
     if start == end {
         return end;

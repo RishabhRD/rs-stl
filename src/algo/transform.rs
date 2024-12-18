@@ -3,6 +3,8 @@
 
 use crate::{InputRange, OutputRange};
 
+/// Copies elements of rng to dest with applying unary operation on it.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng.
 ///   - dest can accomodate transformed elements starting from out.
@@ -12,18 +14,18 @@ use crate::{InputRange, OutputRange};
 ///     and stores result in dest starting from out position.
 ///   - Complexity: O(n). Exactly n applications of unary_op. Where n is
 ///     number of elements in `[start, end)`.
-pub fn transform<R, D, F>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    dest: &mut D,
-    mut out: D::Position,
-    unary_op: F,
-) -> D::Position
+pub fn transform<SrcRange, DestRange, UnaryOp>(
+    rng: &SrcRange,
+    mut start: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+    unary_op: UnaryOp,
+) -> DestRange::Position
 where
-    R: InputRange + ?Sized,
-    D: OutputRange + ?Sized,
-    F: Fn(&R::Element) -> D::Element,
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange + ?Sized,
+    UnaryOp: Fn(&SrcRange::Element) -> DestRange::Element,
 {
     while start != end {
         *dest.at_mut(&out) = unary_op(rng.at(&start));
@@ -33,6 +35,8 @@ where
     out
 }
 
+/// Copies elements of rng1 and rng2 to dest with applying binary operation on it.
+///
 /// Precondition:
 ///   - [start1, end1) represents valid positions in rng1.
 ///   - [start2, start2 + n) represents valid positions in rng2.
@@ -43,21 +47,21 @@ where
 ///     and stores result in dest starting from out position.
 ///   - Complexity: O(n). Exactly n applications of binary_op. Where n is
 ///     number of elements in [start1, end1).
-pub fn zip_transform<R1, R2, D, F>(
+pub fn zip_transform<R1, R2, DestRange, BinaryOp>(
     rng1: &R1,
     mut start1: R1::Position,
     end1: R1::Position,
     rng2: &R2,
     mut start2: R2::Position,
-    dest: &mut D,
-    mut out: D::Position,
-    binary_op: F,
-) -> D::Position
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+    binary_op: BinaryOp,
+) -> DestRange::Position
 where
     R1: InputRange + ?Sized,
     R2: InputRange + ?Sized,
-    D: OutputRange + ?Sized,
-    F: Fn(&R1::Element, &R2::Element) -> D::Element,
+    DestRange: OutputRange + ?Sized,
+    BinaryOp: Fn(&R1::Element, &R2::Element) -> DestRange::Element,
 {
     while start1 != end1 {
         *dest.at_mut(&out) = binary_op(rng1.at(&start1), rng2.at(&start2));

@@ -3,6 +3,8 @@
 
 use crate::{BidirectionalRange, OutputRange};
 
+/// Reverses the given range.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng.
 ///
@@ -11,9 +13,12 @@ use crate::{BidirectionalRange, OutputRange};
 ///   - Complexity: O(n). Exactly (n / 2) swaps.
 ///
 ///   Where n is number of elements in `[start, end)` of rng.
-pub fn reverse<R>(rng: &mut R, mut start: R::Position, mut end: R::Position)
-where
-    R: OutputRange + BidirectionalRange + ?Sized,
+pub fn reverse<Range>(
+    rng: &mut Range,
+    mut start: Range::Position,
+    mut end: Range::Position,
+) where
+    Range: OutputRange + BidirectionalRange + ?Sized,
 {
     while start != end {
         end = rng.before(end);
@@ -25,6 +30,8 @@ where
     }
 }
 
+/// Copies the given range in reverse order to dest.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng.
 ///   - dest must be able to accomodate copied elements starting from out.
@@ -35,17 +42,17 @@ where
 ///   - Complexity: O(n). Exactly n assignments.
 ///
 ///   Where n is number of elements in `[start, end)` of rng.
-pub fn reverse_copy<R, D>(
-    rng: &R,
-    start: R::Position,
-    mut end: R::Position,
-    dest: &mut D,
-    mut out: D::Position,
-) -> D::Position
+pub fn reverse_copy<SrcRange, DestRange>(
+    rng: &SrcRange,
+    start: SrcRange::Position,
+    mut end: SrcRange::Position,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+) -> DestRange::Position
 where
-    R: BidirectionalRange + ?Sized,
-    D: OutputRange<Element = R::Element> + ?Sized,
-    R::Element: Clone,
+    SrcRange: BidirectionalRange + ?Sized,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
 {
     while start != end {
         end = rng.before(end);

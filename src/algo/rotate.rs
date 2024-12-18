@@ -5,6 +5,8 @@ use crate::{ForwardRange, OutputRange};
 
 use super::copy;
 
+/// Rotates the given range at mid.
+///
 /// Precondition:
 ///   - `[start, mid)` represent valid position in `rng`.
 ///   - `[mid, end)` represent valid position in `rng`.
@@ -20,14 +22,14 @@ use super::copy;
 ///
 /// TODO: there are efficient implementations for BidirectionalRange and
 /// RandomAccessRange in rust. How to overload for them in rust?
-pub fn rotate<R>(
-    rng: &mut R,
-    start: R::Position,
-    mid: R::Position,
-    end: R::Position,
-) -> R::Position
+pub fn rotate<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+) -> Range::Position
 where
-    R: OutputRange + ?Sized,
+    Range: OutputRange + ?Sized,
 {
     if start == mid {
         return end;
@@ -50,6 +52,8 @@ where
     write
 }
 
+/// Copies the given range to dest as if it is rotated at mid.
+///
 /// Precondition:
 ///   - `[start, mid)` represent valid position in rng.
 ///   - `[mid, end)` represent valid position in rng.
@@ -62,18 +66,18 @@ where
 ///   - Complexity: O(n). Exactly n assignments.
 ///
 ///   Where n is number of elements in `[start, end)`.
-pub fn rotate_copy<R, D>(
-    rng: &R,
-    start: R::Position,
-    mid: R::Position,
-    end: R::Position,
-    dest: &mut D,
-    mut out: D::Position,
-) -> D::Position
+pub fn rotate_copy<SrcRange, DestRange>(
+    rng: &SrcRange,
+    start: SrcRange::Position,
+    mid: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+) -> DestRange::Position
 where
-    R: ForwardRange + ?Sized,
-    R::Element: Clone,
-    D: OutputRange<Element = R::Element> + ?Sized,
+    SrcRange: ForwardRange + ?Sized,
+    SrcRange::Element: Clone,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
 {
     out = copy(rng, mid.clone(), end, dest, out);
     copy(rng, start, mid, dest, out)

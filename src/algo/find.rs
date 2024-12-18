@@ -3,6 +3,8 @@
 
 use crate::InputRange;
 
+/// Finds position of first element satisfying predicate.
+///
 /// Precondition:
 ///   - `[start, end)` represent valid positions in rng.
 ///
@@ -11,15 +13,15 @@ use crate::InputRange;
 ///   - Returns end if no such element exists.
 ///   - Complexity: O(n). Maximum `n` applications of `pred`,
 ///     where n is number of elements in `[start, end)`.
-pub fn find_if<R, F>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    pred: F,
-) -> R::Position
+pub fn find_if<Range, Pred>(
+    rng: &Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    pred: Pred,
+) -> Range::Position
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     while start != end {
         if pred(rng.at(&start)) {
@@ -30,6 +32,8 @@ where
     start
 }
 
+/// Finds position of first element not satisfying predicate.
+///
 /// Precondition:
 ///   - `[start, end)` represent valid positions in rng.
 ///
@@ -38,19 +42,21 @@ where
 ///   - Returns end if no such element exists.
 ///   - Complexity: O(n). Maximum `n` applications of `pred`,
 ///     where n is number of elements in `[start, end)`.
-pub fn find_if_not<R, F>(
-    rng: &R,
-    start: R::Position,
-    end: R::Position,
-    pred: F,
-) -> R::Position
+pub fn find_if_not<Range, Pred>(
+    rng: &Range,
+    start: Range::Position,
+    end: Range::Position,
+    pred: Pred,
+) -> Range::Position
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     find_if(rng, start, end, |x| !pred(x))
 }
 
+/// Finds position of first element equals given element.
+///
 /// Precondition:
 ///   - `[start, end)` represent valid positions in rng.
 ///
@@ -59,15 +65,15 @@ where
 ///   - Returns end if no such element exists.
 ///   - Complexity: O(n). Maximum `n` equality comparisions,
 ///     where n is number of elements in `[start, end)`.
-pub fn find<R>(
-    rng: &R,
-    start: R::Position,
-    end: R::Position,
-    e: &R::Element,
-) -> R::Position
+pub fn find<Range>(
+    rng: &Range,
+    start: Range::Position,
+    end: Range::Position,
+    e: &Range::Element,
+) -> Range::Position
 where
-    R: InputRange + ?Sized,
-    R::Element: Eq,
+    Range: InputRange + ?Sized,
+    Range::Element: Eq,
 {
     find_if(rng, start, end, |x| x == e)
 }

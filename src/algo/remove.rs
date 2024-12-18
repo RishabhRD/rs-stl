@@ -3,8 +3,10 @@
 
 use crate::{InputRange, OutputRange, Regular};
 
+/// Moves all element satisfying predicate to end of range.
+///
 /// Precondition:
-///   - \`[start, end)` represents valid positions in rng
+///   - `[start, end)` represents valid positions in rng
 ///
 /// Postcondition:
 ///   - Removes element satisfying pred by moving them to end of rng.
@@ -15,15 +17,15 @@ use crate::{InputRange, OutputRange, Regular};
 ///   - Complexity: O(n). Exactly n applications of pred.
 ///
 ///   Where n is number of elements in `[start, end)`.
-pub fn remove_if<R, F>(
-    rng: &mut R,
-    mut start: R::Position,
-    end: R::Position,
-    pred: F,
-) -> R::Position
+pub fn remove_if<Range, Pred>(
+    rng: &mut Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    pred: Pred,
+) -> Range::Position
 where
-    R: OutputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: OutputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     while start != end {
         if pred(rng.at(&start)) {
@@ -45,6 +47,8 @@ where
     start
 }
 
+/// Moves all element equals given element to end of range.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng
 ///
@@ -57,77 +61,81 @@ where
 ///   - Complexity: O(n). Exactly n equality comparisions.
 ///
 ///   Where n is number of elements in `[start, end)`.
-pub fn remove<R>(
-    rng: &mut R,
-    start: R::Position,
-    end: R::Position,
-    val: &R::Element,
-) -> R::Position
+pub fn remove<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+    val: &Range::Element,
+) -> Range::Position
 where
-    R: OutputRange + ?Sized,
-    R::Element: Eq,
+    Range: OutputRange + ?Sized,
+    Range::Element: Eq,
 {
     remove_if(rng, start, end, |x| x == val)
 }
 
+/// Copies elements from src to dest omitting elements satisfying given predicate.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng
 ///   - dest can accomodate copied elements starting from out.
 ///
 /// Postcondition:
 ///   - Copies elements from `[start, end)` of `rng` to starting from `out`
-///     of `dest`, ommiting the elements which satisfies pred.
+///     of `dest`, omitting the elements which satisfies pred.
 ///   - Returns position of past the last element copied in dest.
 ///   - Complexity: O(n). Exactly n applications of pred.
 ///
 ///   Where n is number of elements in `[start, end)`.
-pub fn remove_copy_if<R, D, F>(
-    rng: &R,
-    mut start: R::Position,
-    end: R::Position,
-    dest: &mut D,
-    mut out: D::Position,
-    pred: F,
-) -> D::Position
+pub fn remove_copy_if<SrcRange, DestRange, Pred>(
+    src: &SrcRange,
+    mut start: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+    pred: Pred,
+) -> DestRange::Position
 where
-    R: InputRange + ?Sized,
-    R::Element: Clone,
-    D: OutputRange<Element = R::Element> + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    SrcRange: InputRange + ?Sized,
+    SrcRange::Element: Clone,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    Pred: Fn(&SrcRange::Element) -> bool,
 {
     while start != end {
-        if !pred(rng.at(&start)) {
-            *dest.at_mut(&out) = rng.at(&start).clone();
+        if !pred(src.at(&start)) {
+            *dest.at_mut(&out) = src.at(&start).clone();
             out = dest.after(out);
         }
-        start = rng.after(start);
+        start = src.after(start);
     }
     out
 }
 
+/// Copies elements from src to dest omitting elements equals given element.
+///
 /// Precondition:
 ///   - `[start, end)` represents valid positions in rng
 ///   - dest can accomodate copied elements starting from out.
 ///
 /// Postcondition:
 ///   - Copies elements from `[start, end)` of `rng` to starting from `out`
-///     of `dest`, ommiting the elements == val.
+///     of `dest`, omitting the elements == val.
 ///   - Returns position of past the last element copied in dest.
 ///   - Complexity: O(n). Exactly n equality comparisions.
 ///
 ///   Where n is number of elements in `[start, end)`.
-pub fn remove_copy<R, D>(
-    rng: &R,
-    start: R::Position,
-    end: R::Position,
-    dest: &mut D,
-    out: D::Position,
-    val: &R::Element,
-) -> D::Position
+pub fn remove_copy<SrcRange, DestRange>(
+    src: &SrcRange,
+    start: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    out: DestRange::Position,
+    val: &SrcRange::Element,
+) -> DestRange::Position
 where
-    R: InputRange + ?Sized,
-    R::Element: Regular,
-    D: OutputRange<Element = R::Element> + ?Sized,
+    SrcRange: InputRange + ?Sized,
+    SrcRange::Element: Regular,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
 {
-    remove_copy_if(rng, start, end, dest, out, |x| x == val)
+    remove_copy_if(src, start, end, dest, out, |x| x == val)
 }
