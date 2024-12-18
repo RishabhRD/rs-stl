@@ -3,6 +3,33 @@
 
 use crate::{algo, InputRange};
 
+/// Finds position of first element satisfying predicate.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns position of first element in rng satisfying pred.
+///   - Returns end position if no such element exists.
+///   - Complexity: O(n). Maximum `n` applications of `pred`.
+///
+///     where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 2, 3];
+///
+/// let i = rng::find_if(&arr, |x| *x == 3);
+/// assert_eq!(i, 2);
+///
+/// let i = arr.find_if(|x| *x == 3);
+/// assert_eq!(i, 2);
+/// ```
 pub fn find_if<R, F>(rng: &R, pred: F) -> R::Position
 where
     R: InputRange + ?Sized,
@@ -11,6 +38,33 @@ where
     algo::find_if(rng, rng.start(), rng.end(), pred)
 }
 
+/// Finds position of first element not satisfying predicate.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns position of first element in rng not satisfying pred.
+///   - Returns end position if no such element exists.
+///   - Complexity: O(n). Maximum `n` applications of `pred`.
+///
+///     where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 2, 3];
+///
+/// let i = rng::find_if_not(&arr, |x| *x == 3);
+/// assert_eq!(i, 0);
+///
+/// let i = arr.find_if_not(|x| *x == 3);
+/// assert_eq!(i, 0);
+/// ```
 pub fn find_if_not<R, F>(rng: &R, pred: F) -> R::Position
 where
     R: InputRange + ?Sized,
@@ -19,6 +73,33 @@ where
     algo::find_if_not(rng, rng.start(), rng.end(), pred)
 }
 
+/// Finds position of first element equals given element.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns position of first element in rng equals e.
+///   - Returns end if no such element exists.
+///   - Complexity: O(n). Maximum `n` equality comparisions,
+///
+///     where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 2, 3];
+///
+/// let i = rng::find(&arr, &3);
+/// assert_eq!(i, 2);
+///
+/// let i = arr.find(&3);
+/// assert_eq!(i, 2);
+/// ```
 pub fn find<R>(rng: &R, e: &R::Element) -> R::Position
 where
     R: InputRange + ?Sized,
