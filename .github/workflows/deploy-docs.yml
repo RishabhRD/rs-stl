@@ -3,50 +3,26 @@ name: Deploy rs-stl docs
 on:
   push:
     branches:
-      - rs-stl
-  workflow_dispatch:
+      - master
 
 jobs:
   deploy-docs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Install Rust toolchain
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
 
-      # Step 3: Build documentation
-      - name: Generate Rust documentation
-        run: |
-          cargo doc --no-deps
-          cp -r target/doc temp_docs
+      - name: Generate documentation
+        run: cargo doc --no-deps
 
-      # Step 4: Deploy to `gh-pages` branch
       - name: Deploy to GitHub Pages
-        run: |
-          # Ensure we're in a clean state
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          # Create and switch to `gh-pages` branch
-          git checkout --orphan gh-pages
-
-          # Remove all files from the branch
-          git reset --hard
-          git clean -fdx
-
-          # Copy the generated documentation to the root
-          cp -r temp_docs/* .
-
-          # Add and commit the changes
-          git add .
-          git commit -m "Deploy Rust documentation via GitHub Actions"
-
-          # Push to `gh-pages` branch (force to overwrite)
-          git push -f origin gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./target/doc
