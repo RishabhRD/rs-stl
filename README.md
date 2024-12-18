@@ -9,9 +9,9 @@ concept of `C++-like iterators`.
 C++ STL is a brilliant piece of work by Alex Stepanov and provides highly
 composable algorithms over C++ iterators.
 
-C++ iterators are generalization over pointers. However, pointers would be too
-unsafe for using as API in rust. Instead, rs-stl work over `Positions`. Positions
-are generalization over indexes.
+C++ ranges expose iterators for traversal and algorithms. Iterators are generalization
+of pointers. However, pointers would be too unsafe for using as API in rust.
+Instead, rs-stl expose `Positions` and Positions are generalization of indexes.
 
 ## rs-stl model
 
