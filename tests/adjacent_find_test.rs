@@ -10,12 +10,12 @@ pub mod tests {
     pub fn adjacent_find_with_element_found() {
         let vec = vec![1, 2, 2, 3];
         let i = rng::adjacent_find_if(&vec, |x, y| x == y);
-        assert_eq!(i, 2);
+        assert_eq!(i, 1);
         let i =
             algo::adjacent_find_if(&vec, vec.start(), vec.end(), |x, y| x == y);
-        assert_eq!(i, 2);
+        assert_eq!(i, 1);
         let i = vec.adjacent_find_if(|x, y| x == y);
-        assert_eq!(i, 2);
+        assert_eq!(i, 1);
     }
 
     #[test]

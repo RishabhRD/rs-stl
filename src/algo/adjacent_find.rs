@@ -15,6 +15,16 @@ use crate::ForwardRange;
 ///   - Returns end if no such element is found
 ///   - Complexity: O(n), maximum `n - 1` calls to `bi_pred`.
 ///     Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 1, 3];
+///
+/// let i = algo::adjacent_find_if(&arr, arr.start(), arr.end(), |x, y| x == y);
+/// assert_eq!(i, 0);
+/// ```
 pub fn adjacent_find_if<Range, BinaryPred>(
     rng: &Range,
     mut start: Range::Position,
@@ -32,7 +42,7 @@ where
     start = rng.after(start);
     while start != end {
         if bi_pred(rng.at(&prev), rng.at(&start)) {
-            return start;
+            return prev;
         }
         prev = start.clone();
         start = rng.after(start);
