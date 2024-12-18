@@ -3,14 +3,66 @@
 
 use crate::{algo, OutputRange};
 
-pub fn fill_value<R>(rng: &mut R, e: &R::Element)
+/// Fills rng with given value.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Fills element in rng with value e.
+///   - Complexity: O(n). Exactly n assignments.
+///
+///   Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [0, 0, 0];
+/// rng::fill_value(&mut arr, &2);
+/// assert!(arr.equals(&[2, 2, 2]));
+///
+/// let mut arr = [0, 0, 0];
+/// arr.fill_value(&2);
+/// assert!(arr.equals(&[2, 2, 2]));
+/// ```
+pub fn fill_value<Range>(rng: &mut Range, e: &Range::Element)
 where
-    R: OutputRange + ?Sized,
-    R::Element: Clone,
+    Range: OutputRange + ?Sized,
+    Range::Element: Clone,
 {
     algo::fill_value(rng, rng.start(), rng.end(), e);
 }
 
+/// Fills rng using given generator.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Fills element in rng with e with result of invoking gen.
+///   - Complexity: O(n). Exactly n application of gen.
+///
+///   Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [0, 0, 0];
+/// rng::fill_by(&mut arr, || 2);
+/// assert!(arr.equals(&[2, 2, 2]));
+///
+/// let mut arr = [0, 0, 0];
+/// arr.fill_by(|| 2);
+/// assert!(arr.equals(&[2, 2, 2]));
+/// ```
 pub fn fill_by<R, Gen>(rng: &mut R, gen: Gen)
 where
     R: OutputRange + ?Sized,

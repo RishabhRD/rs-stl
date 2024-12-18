@@ -13,6 +13,18 @@ use crate::OutputRange;
 ///   - Complexity: O(n). Exactly n assignments.
 ///
 ///   Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [0, 0, 0];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::fill_value(&mut arr, start, end, &2);
+/// assert!(arr.equals(&[2, 2, 2]));
+/// ```
 pub fn fill_value<Range>(
     rng: &mut Range,
     mut start: Range::Position,
@@ -34,10 +46,22 @@ pub fn fill_value<Range>(
 ///   - `[start, end)` is represents valid positions in rng.
 ///
 /// # Postcondition
-///   - Fills element at `[start, end)` of rng with e.
+///   - Fills element at `[start, end)` of rng with result of invoking gen.
 ///   - Complexity: O(n). Exactly n application of gen.
 ///
 ///   Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [0, 0, 0];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::fill_by(&mut arr, start, end, || 2);
+/// assert!(arr.equals(&[2, 2, 2]));
+/// ```
 pub fn fill_by<Range, Gen>(
     rng: &mut Range,
     mut start: Range::Position,
