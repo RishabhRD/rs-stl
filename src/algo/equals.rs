@@ -3,18 +3,30 @@
 
 use crate::InputRange;
 
-/// Returns true if rng1 `[start1, end1)` elements are equvivalent to elements of rng2 starting from start2 by relation bi_pred.
+/// Returns true if rng1 `[start1, end1)` elements are equivalent to elements of rng2 starting from start2 by relation bi_pred.
 ///
 /// # Precondition
-///   - [start1, end1) denotes valid positions in rng1.
-///   - [start2, start2 + n) denotes valid positions in rng2 where n is number
-///     of elements in [start1, end1).
+///   - `[start1, end1)` denotes valid positions in rng1.
+///   - `[start2, start2 + n)` denotes valid positions in rng2.
 ///   - BinaryPred should follow equivalence relationship.
 ///
 /// # Postcondition
-///   - Returns true if range at [start1, end1) is equivalent to
-///     range at [start2, start2 + n) by relationship `bi_pred`.
+///   - Returns true if range at `[start1, end1)` is equivalent to
+///     range at `[start2, start2 + n)` by equivalence relationship `bi_pred`.
 ///   - Complexity: O(n). Maximum `n` bi_pred applications.
+///
+/// where n is number of elements in `[start1, end1)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr1 = [1, 2, 3];
+/// let arr2 = [1, 2, 3];
+///
+/// let is_eq = algo::equals_unbounded_by(&arr1, arr1.start(), arr1.end(), &arr2, arr2.start(), |x, y| y == x);
+/// assert!(is_eq);
+/// ```
 pub fn equals_unbounded_by<R1, R2, BinaryPred>(
     rng1: &R1,
     mut start1: R1::Position,
@@ -42,13 +54,25 @@ where
 ///
 /// # Precondition
 ///   - [start1, end1) denotes valid positions in rng1.
-///   - [start2, start2 + n) denotes valid positions in rng2 where n is number
-///     of elements in [start1, end1).
+///   - [start2, start2 + n) denotes valid positions in rng2.
 ///
 /// # Postcondition
 ///   - Returns true if range at [start1, end1) is equal to
 ///     range at [start2, start2 + n).
 ///   - Complexity: O(n). Maximum `n` equality comparisions.
+///
+/// where n is number of elements in `[start1, end1).
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr1 = [1, 2, 3];
+/// let arr2 = [1, 2, 3];
+///
+/// let is_eq = algo::equals_unbounded(&arr1, arr1.start(), arr1.end(), &arr2, arr2.start());
+/// assert!(is_eq);
+/// ```
 pub fn equals_unbounded<R1, R2>(
     rng1: &R1,
     start1: R1::Position,
@@ -70,6 +94,7 @@ where
 /// # Precondition
 ///   - [start1, end1) denotes valid positions in rng1.
 ///   - [start2, end2) denotes valid positions in rng2
+///   - bi_pred should follow equivalence relationship.
 ///
 /// # Postcondition
 ///   - Returns true if range at [start1, end1) is equivalent to
@@ -77,6 +102,18 @@ where
 ///   - Complexity: O(n). Maximum `n` `bi_pred` applications.
 ///     Where n is min(#[start1, end1), #[start2, end2)) and
 ///     # is number of elements in range operator.
+///
+/// # Example
+///
+/// ```rust
+/// use stl::*;
+///
+/// let arr1 = [1, 2, 3];
+/// let arr2 = [1, 2, 3];
+///
+/// let is_eq = algo::equals_by(&arr1, arr1.start(), arr1.end(), &arr2, arr2.start(), arr2.end(), |x, y| x == y);
+/// assert!(is_eq);
+/// ```
 pub fn equals_by<R1, R2, F>(
     rng1: &R1,
     mut start1: R1::Position,
@@ -112,8 +149,21 @@ where
 ///   - Returns true if range at [start1, end1) is equal to
 ///     range at [start2, end2).
 ///   - Complexity: O(n). Maximum `n` equality comparisions of elements.
-///     Where n is min(#[start1, end1), #[start2, end2)) and
-///     # is number of elements in range operator.
+///
+/// Where n is min(#[start1, end1), #[start2, end2)) and
+/// # is number of elements in range operator.
+///
+/// # Example
+///
+/// ```rust
+/// use stl::*;
+///
+/// let arr1 = [1, 2, 3];
+/// let arr2 = [1, 2, 3];
+///
+/// let is_eq = algo::equals(&arr1, arr1.start(), arr1.end(), &arr2, arr2.start(), arr2.end());
+/// assert!(is_eq);
+/// ```
 pub fn equals<R1, R2>(
     rng1: &R1,
     start1: R1::Position,
