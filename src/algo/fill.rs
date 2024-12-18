@@ -3,7 +3,7 @@
 
 use crate::OutputRange;
 
-/// Fills rng `[start, end)` with given value.
+/// Fills rng with given value.
 ///
 /// Precondition:
 ///   - `[start, end)` is represents valid positions in rng.
@@ -28,7 +28,7 @@ pub fn fill_value<Range>(
     }
 }
 
-/// Fills rng `[start, end)` using given generator.
+/// Fills rng using given generator.
 ///
 /// Precondition:
 ///   - `[start, end)` is represents valid positions in rng.

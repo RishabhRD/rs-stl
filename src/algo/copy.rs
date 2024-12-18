@@ -3,7 +3,7 @@
 
 use crate::{InputRange, OutputRange};
 
-/// Copies element from src's `[start, end)` to dest starting from out if it satisfies predicate.
+/// Copies elements from src to out of dest if it satisfies predicate.
 ///
 /// Precondition:
 ///   - `[start, end)` represent valid positions in src.
@@ -39,7 +39,7 @@ where
     out
 }
 
-/// Copies element from src's `[start, end)` to dest starting from out.
+/// Copies elements from src to out of dest.
 ///
 /// Precondition:
 ///   - `[start, end)` represent valid positions in src.

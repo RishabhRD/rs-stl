@@ -3,7 +3,7 @@
 
 use crate::InputRange;
 
-/// Counts elements from `[start, end)` in rng that satisfies predicate.
+/// Counts elements in rng that satisfies predicate.
 ///
 /// Precondition:
 ///   - `[start, end)` represent valid positions in rng.
@@ -32,7 +32,7 @@ where
     cnt
 }
 
-/// Counts elements from `[start, end)` in rng equals given element.
+/// Counts elements in rng equals given element.
 ///
 /// Precondition:
 ///   - `[start, end)` represent valid positions in rng.
