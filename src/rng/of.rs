@@ -57,10 +57,10 @@ where
 /// assert!(rng::any_of(&arr, |x| x % 2 == 1));
 /// assert!(arr.any_of(|x| x % 2 == 1));
 /// ```
-pub fn any_of<R, F>(rng: &R, pred: F) -> bool
+pub fn any_of<Range, Pred>(rng: &Range, pred: Pred) -> bool
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     algo::any_of(rng, rng.start(), rng.end(), pred)
 }
@@ -88,10 +88,10 @@ where
 /// assert!(rng::none_of(&arr, |x| x % 2 == 1));
 /// assert!(arr.none_of(|x| x % 2 == 1));
 /// ```
-pub fn none_of<R, F>(rng: &R, pred: F) -> bool
+pub fn none_of<Range, Pred>(rng: &Range, pred: Pred) -> bool
 where
-    R: InputRange + ?Sized,
-    F: Fn(&R::Element) -> bool,
+    Range: InputRange + ?Sized,
+    Pred: Fn(&Range::Element) -> bool,
 {
     algo::none_of(rng, rng.start(), rng.end(), pred)
 }
