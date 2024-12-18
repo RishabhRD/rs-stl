@@ -63,10 +63,10 @@ where
 /// arr.fill_by(|| 2);
 /// assert!(arr.equals(&[2, 2, 2]));
 /// ```
-pub fn fill_by<R, Gen>(rng: &mut R, gen: Gen)
+pub fn fill_by<Range, Gen>(rng: &mut Range, gen: Gen)
 where
-    R: OutputRange + ?Sized,
-    Gen: Fn() -> R::Element,
+    Range: OutputRange + ?Sized,
+    Gen: Fn() -> Range::Element,
 {
     algo::fill_by(rng, rng.start(), rng.end(), gen);
 }
