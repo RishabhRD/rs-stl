@@ -8,7 +8,6 @@ use crate::{InputRange, OutputRange, Regular, SemiRegular};
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid position in rng.
-///   - binary_pred should return true if 2 elements of rng are equivalent.
 ///   - binary_pred should follow equivalence relationship, otherwise behavior
 ///     is undefined.
 ///
@@ -22,6 +21,17 @@ use crate::{InputRange, OutputRange, Regular, SemiRegular};
 ///   - Complexity: O(n). Exactly max(0, n - 1) applications of bi_pred.
 ///
 ///   Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [(1, 2), (1, 3), (2, 3)];
+/// let i = algo::unique_by(&mut arr, 0, 3, |x, y| x.0 == y.0);
+/// assert_eq!(i, 2);
+/// assert!(arr[..i].equals(&[(1, 2), (2, 3)]));
+/// ```
 pub fn unique_by<Range, BinaryPred>(
     rng: &mut Range,
     mut start: Range::Position,
@@ -53,8 +63,6 @@ where
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid position in rng.
-///   - Equality comparision should follow equivalence relationship otherwise
-///     behavior is undefined.
 ///
 /// # Postcondition
 ///   - Removes all the adjacent equivalent elements from rng by moving them to
@@ -66,6 +74,17 @@ where
 ///   - Complexity: O(n). Exactly max(0, n - 1) equality comparisions.
 ///
 ///   Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [1, 1, 2];
+/// let i = algo::unique(&mut arr, 0, 3);
+/// assert_eq!(i, 2);
+/// assert!(arr[..i].equals(&[1, 2]));
+/// ```
 pub fn unique<Range>(
     rng: &mut Range,
     start: Range::Position,
@@ -82,19 +101,30 @@ where
 /// given equivalence relationship.
 ///
 /// # Precondition
-///   - `[start, end)` represents valid position in rng.
-///   - dest can accomodate copied elements at out.
-///   - binary_pred should return true if 2 elements of rng are equivalent.
+///   - `[start, end)` represents valid position in src.
+///   - dest can accomodate copied elements starting from out.
 ///   - binary_pred should follow equivalence relationship, otherwise behavior
 ///     is undefined.
 ///
 /// # Postcondition
-///   - Copies elements from rng from `[start, end)` with omitting adjacent
+///   - Copies elements from src from `[start, end)` with omitting adjacent
 ///     equivalent elements by bi_pred to dest starting from out.
 ///   - Returns the position of past to last copied element in dest.
 ///   - Complexity: O(n). Exactly max(0, n - 1) applications of bi_pred.
 ///
 ///   Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let src = [(1, 2), (1, 3), (2, 3)];
+/// let mut dest = [(0, 0), (0, 0)];
+/// let i = algo::unique_copy_by(&src, 0, 3, &mut dest, 0, |x, y| x.0 == y.0);
+/// assert_eq!(i, 2);
+/// assert!(dest.equals(&[(1, 2), (2, 3)]));
+/// ```
 pub fn unique_copy_by<SrcRange, DestRange, BinaryPred>(
     src: &SrcRange,
     mut start: SrcRange::Position,
@@ -127,18 +157,28 @@ where
 /// Copies all elements from src to dest with copying only first of adjacent equal elements.
 ///
 /// # Precondition
-///   - `[start, end)` represents valid position in rng.
+///   - `[start, end)` represents valid position in src.
 ///   - dest can accomodate copied elements at out.
-///   - R::Element equality comparision should follow equivalence relationsip
-///     otherwise behavior is undefined.
 ///
 /// # Postcondition
-///   - Copies elements from rng from `[start, end)` with omitting adjacent
-///     equivalent elements to dest starting from out.
+///   - Copies elements from src from `[start, end)` with omitting adjacent
+///     equal elements to dest starting from out.
 ///   - Returns the position of past to last copied element in dest.
 ///   - Complexity: O(n). Exactly max(0, n - 1) equality comparisions.
 ///
 ///   Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let src = [1, 1, 2];
+/// let mut dest = [0, 0];
+/// let i = algo::unique_copy(&src, 0, 3, &mut dest, 0);
+/// assert_eq!(i, 2);
+/// assert!(dest.equals(&[1, 2]));
+/// ```
 pub fn unique_copy<SrcRange, DestRange>(
     src: &SrcRange,
     start: SrcRange::Position,
