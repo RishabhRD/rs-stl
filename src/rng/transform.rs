@@ -3,35 +3,84 @@
 
 use crate::{algo, InputRange, OutputRange};
 
-pub fn transform<R, D, F>(rng: &R, dest: &mut D, unary_op: F) -> D::Position
+/// Copies elements of src to dest with applying unary operation on it.
+///
+/// # Precondition
+///   - dest can accomodate transformed elements.
+///
+/// # Postcondition
+///   - Applies given function unary_op to elements of given range positions
+///     and stores result in dest.
+///   - Complexity: O(n). Exactly n applications of unary_op.
+///
+///   Where n is number of elements in src.
+///
+/// #### Infix Supported
+/// NO
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let input = [1, 2, 3];
+/// let mut out = [0, 0, 0, 0];
+///
+/// let j = rng::transform(&input, &mut out, |x| x + 1);
+/// assert!(out.equals(&[2, 3, 4, 0]));
+/// assert_eq!(j, 3);
+/// ```
+pub fn transform<SrcRange, DestRange, UnaryOp>(
+    src: &SrcRange,
+    dest: &mut DestRange,
+    unary_op: UnaryOp,
+) -> DestRange::Position
 where
-    R: InputRange + ?Sized,
-    D: OutputRange + ?Sized,
-    F: Fn(&R::Element) -> D::Element,
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange + ?Sized,
+    UnaryOp: Fn(&SrcRange::Element) -> DestRange::Element,
 {
-    algo::transform(rng, rng.start(), rng.end(), dest, dest.start(), unary_op)
+    algo::transform(src, src.start(), src.end(), dest, dest.start(), unary_op)
 }
 
+/// Stores result in dest after applying binary operation on zipped elements of given ranges.
+///
 /// # Precondition
-///   - dest can accomodate n transformed elements starting from out.
+///   - dest can accomodate n transformed elements.
 ///
 /// # Postcondition
 ///   - Applies given function binary_op to elements of given range positions
-///     and stores result in dest starting from out position.
+///     and stores result in dest.
 ///   - Complexity: O(n). Exactly n applications of binary_op.
 ///
 ///   Where n is minimum of number of elements in rng1, rng2.
-pub fn zip_transform<R1, R2, D, F>(
+///
+/// #### Infix Supported
+/// NO
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let input = vec![1, 2, 3];
+/// let input1 = vec![1, 2];
+/// let mut out = vec![0, 0, 0, 0];
+/// let j = rng::zip_transform(&input, &input1, &mut out, |x, y| x * y);
+/// assert!(out.equals(&vec![1, 4, 0, 0]));
+/// assert_eq!(j, 2);
+/// ```
+pub fn zip_transform<R1, R2, DestRange, BinaryOp>(
     rng1: &R1,
     rng2: &R2,
-    dest: &mut D,
-    binary_op: F,
-) -> D::Position
+    dest: &mut DestRange,
+    binary_op: BinaryOp,
+) -> DestRange::Position
 where
     R1: InputRange + ?Sized,
     R2: InputRange + ?Sized,
-    D: OutputRange + ?Sized,
-    F: Fn(&R1::Element, &R2::Element) -> D::Element,
+    DestRange: OutputRange + ?Sized,
+    BinaryOp: Fn(&R1::Element, &R2::Element) -> DestRange::Element,
 {
     let mut start1 = rng1.start();
     let end1 = rng1.end();
