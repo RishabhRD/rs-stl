@@ -3,39 +3,123 @@
 
 use crate::{algo, InputRange, OutputRange, Regular};
 
-pub fn replace_if<R, F>(rng: &mut R, pred: F, new_e: &R::Element)
-where
-    R: OutputRange + ?Sized,
-    R::Element: Clone,
-    F: Fn(&R::Element) -> bool,
+/// Replaces elements of range satisfying predicate with new element.
+///
+/// # Precondition
+///
+/// # Poscondition:
+///   - Replaces element of rng which satisfies pred with new_e.
+///   - Complexity: O(n). Exactly n applications of pred.
+///
+///   Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [1, 2, 3];
+/// rng::replace_if(&mut arr, |x| x % 2 == 1, &7);
+/// assert!(arr.equals(&[7, 2, 7]));
+///
+/// let mut arr = [1, 2, 3];
+/// arr.replace_if(|x| x % 2 == 1, &7);
+/// assert!(arr.equals(&[7, 2, 7]));
+/// ```
+pub fn replace_if<Range, Pred>(
+    rng: &mut Range,
+    pred: Pred,
+    new_e: &Range::Element,
+) where
+    Range: OutputRange + ?Sized,
+    Range::Element: Clone,
+    Pred: Fn(&Range::Element) -> bool,
 {
     algo::replace_if(rng, rng.start(), rng.end(), pred, new_e);
 }
 
-pub fn replace<R>(rng: &mut R, old_e: &R::Element, new_e: &R::Element)
-where
-    R: OutputRange + ?Sized,
-    R::Element: Regular,
+/// Replaces elements of range equals old element with new element.
+///
+/// # Precondition
+///
+/// # Poscondition:
+///   - Replaces all elements == old_e with new_e of rng.
+///   - Complexity: O(n). Exactly n equality comparisions.
+///
+///   Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [1, 2, 1];
+/// rng::replace(&mut arr, &1, &7);
+/// assert!(arr.equals(&[7, 2, 7]));
+///
+/// let mut arr = [1, 2, 1];
+/// arr.replace(&1, &7);
+/// assert!(arr.equals(&[7, 2, 7]));
+/// ```
+pub fn replace<Range>(
+    rng: &mut Range,
+    old_e: &Range::Element,
+    new_e: &Range::Element,
+) where
+    Range: OutputRange + ?Sized,
+    Range::Element: Regular,
 {
     algo::replace(rng, rng.start(), rng.end(), old_e, new_e)
 }
 
-pub fn replace_copy_if<R, D, F>(
-    rng: &R,
-    dest: &mut D,
-    pred: F,
-    new_e: &R::Element,
-) -> D::Position
+/// Copies elements from src to dest with replacing the elements satisfying predicate with new
+/// element.
+///
+/// # Precondition
+///   - dest should be able to accomodate n elements.
+///
+/// # Poscondition:
+///   - Copies elements from src to dest with replacing all elements
+///     satisfying pred with new_e.
+///   - Complexity: O(n). Exactly n applications of pred.
+///
+///   Where n is number of elements in src.
+///
+/// #### Infix Supported
+/// NO
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 2, 1];
+/// let mut dest = [0, 0, 0];
+/// rng::replace_copy_if(&arr, &mut dest, |x| *x == 1, &7);
+/// assert!(dest.equals(&[7, 2, 7]));
+/// ```
+pub fn replace_copy_if<SrcRange, DestRange, Pred>(
+    src: &SrcRange,
+    dest: &mut DestRange,
+    pred: Pred,
+    new_e: &SrcRange::Element,
+) -> DestRange::Position
 where
-    R: InputRange + ?Sized,
-    D: OutputRange<Element = R::Element> + ?Sized,
-    R::Element: Clone,
-    F: Fn(&R::Element) -> bool,
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    Pred: Fn(&SrcRange::Element) -> bool,
 {
     algo::replace_copy_if(
-        rng,
-        rng.start(),
-        rng.end(),
+        src,
+        src.start(),
+        src.end(),
         dest,
         dest.start(),
         pred,
@@ -43,21 +127,46 @@ where
     )
 }
 
-pub fn replace_copy<R, D>(
-    rng: &R,
-    dest: &mut D,
-    old_e: &R::Element,
-    new_e: &R::Element,
-) -> D::Position
+/// Copies elements from src to dest with replacing the elements equals given element with new
+/// element.
+///
+/// # Precondition
+///   - dest should be able to accomodate elements being copied.
+///
+/// # Poscondition:
+///   - Copies elements from src to dest with replacing all elements == old_e with new_e.
+///   - Complexity: O(n). Exactly n applications of pred.
+///
+///   Where n is number of elements in src.
+///
+/// #### Infix Supported
+/// NO
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 2, 1];
+/// let mut dest = [0, 0, 0];
+/// rng::replace_copy(&arr, &mut dest, &1, &7);
+/// assert!(dest.equals(&[7, 2, 7]));
+/// ```
+pub fn replace_copy<SrcRange, DestRange>(
+    src: &SrcRange,
+    dest: &mut DestRange,
+    old_e: &SrcRange::Element,
+    new_e: &SrcRange::Element,
+) -> DestRange::Position
 where
-    R: InputRange + ?Sized,
-    D: OutputRange<Element = R::Element> + ?Sized,
-    R::Element: Regular,
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    SrcRange::Element: Regular,
 {
     algo::replace_copy(
-        rng,
-        rng.start(),
-        rng.end(),
+        src,
+        src.start(),
+        src.end(),
         dest,
         dest.start(),
         old_e,
