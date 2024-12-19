@@ -13,6 +13,18 @@ use crate::{BidirectionalRange, OutputRange};
 ///   - Complexity: O(n). Exactly (n / 2) swaps.
 ///
 ///   Where n is number of elements in `[start, end)` of rng.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [1, 2, 3];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::reverse(&mut arr, start, end);
+/// assert!(arr.equals(&[3, 2, 1]));
+/// ```
 pub fn reverse<Range>(
     rng: &mut Range,
     mut start: Range::Position,
@@ -39,9 +51,23 @@ pub fn reverse<Range>(
 /// # Postcondition
 ///   - Copies elements from `[start, end)` of src in reverse order to dest
 ///     starting from out.
+///   - Returns position in dest after last copied element.
 ///   - Complexity: O(n). Exactly n assignments.
 ///
 ///   Where n is number of elements in `[start, end)` of src.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let src = [1, 2, 3];
+/// let mut dest = [0, 0, 0];
+/// let out = dest.start();
+/// let i = algo::reverse_copy(&src, src.start(), src.end(), &mut dest, out);
+/// assert_eq!(i, 3);
+/// assert!(dest.equals(&[3, 2, 1]));
+/// ```
 pub fn reverse_copy<SrcRange, DestRange>(
     src: &SrcRange,
     start: SrcRange::Position,
