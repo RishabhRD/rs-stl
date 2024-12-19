@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":["STLAdjacentFindExt","STLCountExt","STLEqualsExt","STLFillExt","STLFindExt","STLOfExt","STLRemoveExt","STLReplaceExt","STLReverseExt","STLRotateExt","STLUniqueExt"]};
