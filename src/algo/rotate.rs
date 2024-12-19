@@ -20,8 +20,20 @@ use super::copy;
 ///
 ///   Where n is number of elements in `[start, end)`.
 ///
-/// TODO: there are efficient implementations for BidirectionalRange and
-/// RandomAccessRange in rust. How to overload for them in rust?
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [0, 1, 2, 3, 4];
+/// let i = algo::rotate(&mut arr, 0, 2, 5); // Position type for array is usize
+/// assert_eq!(i, 3);
+/// assert!(arr.equals(&[2, 3, 4, 0, 1]));
+/// ```
+///
+/// # TODO
+///   - There are efficient implementations for BidirectionalRange and
+///     RandomAccessRange in rust. How to overload for them in rust?
 pub fn rotate<Range>(
     rng: &mut Range,
     start: Range::Position,
@@ -66,6 +78,18 @@ where
 ///   - Complexity: O(n). Exactly n assignments.
 ///
 ///   Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [0, 1, 2, 3, 4];
+/// let mut dest = [0, 0, 0, 0, 0];
+/// let i = algo::rotate_copy(&arr, 0, 2, 5, &mut dest, 0); // Position type for array is usize
+/// assert_eq!(i, 5);
+/// assert!(dest.equals(&[2, 3, 4, 0, 1]));
+/// ```
 pub fn rotate_copy<SrcRange, DestRange>(
     src: &SrcRange,
     start: SrcRange::Position,
