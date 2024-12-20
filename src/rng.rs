@@ -99,6 +99,11 @@ pub mod rotate;
 #[doc(inline)]
 pub use rotate::*;
 
+#[doc(hidden)]
+pub mod minmax;
+#[doc(inline)]
+pub use minmax::*;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!
@@ -115,6 +120,8 @@ pub mod infix {
     pub use super::fill::infix::*;
     #[doc(inline)]
     pub use super::find::infix::*;
+    #[doc(inline)]
+    pub use super::minmax::infix::*;
     #[doc(inline)]
     pub use super::of::infix::*;
     #[doc(inline)]

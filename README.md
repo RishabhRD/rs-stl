@@ -235,7 +235,7 @@ required description would be provided.
 
 ### Minimum/Maximum Operations
 
-- [ ] min_element
+- [x] min_element -> min_element, min_element_by
 - [ ] max_element
 - [ ] minmax_element
 

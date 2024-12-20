@@ -80,3 +80,8 @@ pub use reverse::*;
 pub mod rotate;
 #[doc(inline)]
 pub use rotate::*;
+
+#[doc(hidden)]
+pub mod minmax;
+#[doc(inline)]
+pub use minmax::*;
