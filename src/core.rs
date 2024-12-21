@@ -27,7 +27,7 @@ pub trait InputRange {
     type Position: SemiRegular;
 
     /// Returns the position of first element in self,
-    /// or if self is empty then is_last_position(first_position()) == true
+    /// or if self is empty then start() == end()
     fn start(&self) -> Self::Position;
 
     /// Returns the "past the end" position in self, that is, the position
@@ -36,12 +36,12 @@ pub trait InputRange {
 
     /// Returns position immediately after i
     ///
-    /// Requires: is_last_position(i) == false
+    /// Requires: i != end()
     fn after(&self, i: Self::Position) -> Self::Position;
 
     /// Access element at position i
     ///
-    /// Requires: i is a valid position in self and is_last_position(i) == false
+    /// Requires: i is a valid position in self and i != end()
     /// Complexity Requirement: O(1).
     fn at(&self, i: &Self::Position) -> &Self::Element;
 }
@@ -92,7 +92,7 @@ pub trait RandomAccessRange:
 pub trait OutputRange: ForwardRange {
     /// Access element at position i
     ///
-    /// Requires: i is a valid position in self and is_last_position(i) == false
+    /// Requires: i is a valid position in self and i != end()
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
 
     /// Swap elements at position i and j
