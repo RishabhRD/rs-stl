@@ -45,10 +45,12 @@
 //!
 //! rs-stl works with **ranges**. Range models linear sequence of elements.
 //!
+//! ```text
 //!   _ _ _ _ _
 //!   ^          ^
 //!   |          |
 //! start       end
+//! ```
 //!
 //! Every range has a `start` position, that is position of first element in range,
 //! and an `end` position, that is position just after last element in range.
