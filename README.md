@@ -201,7 +201,7 @@ required description would be provided.
 
 - [x] is_partitioned
 - [x] partition
-- [ ] partition_copy
+- [ ] ~~partition_copy~~ -> Do we need that (copy_if is enough)? If yes, contribute with reason.
 - [ ] stable_partition
 - [ ] partition_point
 
