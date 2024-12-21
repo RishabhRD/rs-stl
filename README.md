@@ -199,7 +199,7 @@ required description would be provided.
 
 ### Partitioning Operations
 
-- [ ] is_partitioned
+- [x] is_partitioned
 - [ ] partition
 - [ ] partition_copy
 - [ ] stable_partition

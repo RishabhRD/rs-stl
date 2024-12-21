@@ -85,3 +85,8 @@ pub use rotate::*;
 pub mod minmax;
 #[doc(inline)]
 pub use minmax::*;
+
+#[doc(hidden)]
+pub mod partition;
+#[doc(inline)]
+pub use partition::*;

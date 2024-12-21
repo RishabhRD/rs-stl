@@ -104,6 +104,11 @@ pub mod minmax;
 #[doc(inline)]
 pub use minmax::*;
 
+#[doc(hidden)]
+pub mod partition;
+#[doc(inline)]
+pub use partition::*;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!
@@ -124,6 +129,8 @@ pub mod infix {
     pub use super::minmax::infix::*;
     #[doc(inline)]
     pub use super::of::infix::*;
+    #[doc(inline)]
+    pub use super::partition::infix::*;
     #[doc(inline)]
     pub use super::remove::infix::*;
     #[doc(inline)]
