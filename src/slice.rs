@@ -25,6 +25,10 @@ impl<T> InputRange for [T] {
         i + 1
     }
 
+    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
+        i + n
+    }
+
     fn at(&self, i: &Self::Position) -> &Self::Element {
         &self[*i]
     }
@@ -40,17 +44,13 @@ impl<T> BidirectionalRange for [T] {
     fn before(&self, i: Self::Position) -> Self::Position {
         i - 1
     }
-}
-
-impl<T> RandomAccessRange for [T] {
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i + n
-    }
 
     fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
         i - n
     }
 }
+
+impl<T> RandomAccessRange for [T] {}
 
 impl<T> OutputRange for [T] {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
