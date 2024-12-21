@@ -78,10 +78,13 @@ let cnt = vec.count_if(|x| x % 2 == 1);
 assert_eq!(cnt, 2);
 ```
 
-Similarily, stl defines ForwardRange which just mandates Position to be `Regular`.
+Similarily, stl defines ForwardRange which mandates Position to be `Regular`
+and a distance algorithm to get distance between 2 positions.
 
 ```rust
-pub trait ForwardRange: InputRange<Position: Regular> {}
+pub trait ForwardRange: InputRange<Position: Regular> {
+    fn distance(&self, from: Self::Position, to: Self::Position) -> usize;
+}
 ```
 
 BidirectionalRange defines a before function in addition to after function that
@@ -95,7 +98,8 @@ pub trait BidirectionalRange: ForwardRange
 ```
 
 RandomAccessRange mandates `Position` type to be `Ord` as well as supports
-function to iterate n steps forward or backward.
+function to iterate n steps forward or backward. RandomAccessRange mandates
+the distance algorithm should work in O(1).
 
 ```rust
 pub trait RandomAccessRange: BidirectionalRange<Position: Regular + Ord>
