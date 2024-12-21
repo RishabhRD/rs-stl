@@ -74,7 +74,7 @@ To get to next position from current position `i` in range `rng`,
 
 See the trait docs for more information.
 
-### How to use
+## How to use
 
 rs-stl supports following operation with ranges:
 
@@ -82,7 +82,7 @@ rs-stl supports following operation with ranges:
 
 Please look at module docs for more information for the same.
 
-### Algorithms
+#### Algorithms
 
 Let's take an example of `std::count_if` in rs-stl, how to use this algorithm.
 
@@ -123,7 +123,7 @@ let cnt = arr.count_if(|x| x % 2 == 1);
 assert_eq!(cnt, 2);
 ```
 
-### Support for standard library
+## Support for standard library
 
 Currently range concepts have been implemented for:
 
