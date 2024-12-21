@@ -42,6 +42,7 @@ pub trait InputRange {
     /// Access element at position i
     ///
     /// Requires: i is a valid position in self and is_last_position(i) == false
+    /// Complexity Requirement: O(1).
     fn at(&self, i: &Self::Position) -> &Self::Element;
 }
 
@@ -51,7 +52,14 @@ pub trait ForwardRange: InputRange<Position: Regular> {
     ///
     /// Requires `[from, to)` represents valid position in range.
     /// Complexity: O(n)
-    fn distance(&self, from: Self::Position, to: Self::Position) -> usize;
+    fn distance(&self, mut from: Self::Position, to: Self::Position) -> usize {
+        let mut res = 0;
+        while from != to {
+            from = self.after(from);
+            res += 1;
+        }
+        res
+    }
 }
 
 /// 5-> Models a bidirectional range, which can be traversed forward as well as backward.
