@@ -16,7 +16,7 @@
 //!
 //! ## Design
 //!
-//! rs-stl is port of STL of C++. C++ STL works over abstraction of iterators.
+//! rs-stl is port of C++ STL to rust. C++ STL works over abstraction of iterators.
 //! Iterators in C++ are generalization of pointers. However, pointers have
 //! reference semantics so does iterators. Most STL algorithms need 2 iterators
 //! to work upon. However, this model can't be adopted to rust. As an example,
