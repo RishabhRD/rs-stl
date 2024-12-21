@@ -13,7 +13,7 @@ use crate::{algo, InputRange};
 ///     i comes before j and
 ///     `pred(rng.at(&i)) == false && pred(rng.at(&j)) == true`.
 ///   - Otherwise, returns false.
-///   - Complexity: O(n). At most n applications of p.
+///   - Complexity: O(n). At most n applications of pred.
 ///
 /// Where n is number of elements in rng.
 ///
