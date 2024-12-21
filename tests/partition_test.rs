@@ -27,4 +27,45 @@ pub mod tests {
         let arr = [1, 2, 3];
         assert!(!(arr.is_partitioned(|x| x % 2 == 1)));
     }
+
+    #[test]
+    fn partiton() {
+        let mut arr = [1, 3, 2, 5, 4];
+        let start = arr.start();
+        let end = arr.end();
+        let i = algo::partition(&mut arr, start, end, |x| x % 2 == 1);
+        assert_eq!(i, 3);
+        assert!(arr[0..i].all_of(|x| x % 2 == 1));
+        assert!(arr[i..].all_of(|x| x % 2 == 0));
+
+        let mut arr = [1, 3, 2, 5, 4];
+        let i = rng::partition(&mut arr, |x| x % 2 == 1);
+        assert_eq!(i, 3);
+        assert!(arr[0..i].all_of(|x| x % 2 == 1));
+        assert!(arr[i..].all_of(|x| x % 2 == 0));
+
+        let mut arr = [1, 3, 2, 5, 4];
+        let i = arr.partition(|x| x % 2 == 1);
+        assert_eq!(i, 3);
+        assert!(arr[0..i].all_of(|x| x % 2 == 1));
+        assert!(arr[i..].all_of(|x| x % 2 == 0));
+
+        let mut arr = [1, 3, 5];
+        let i = arr.partition(|x| x % 2 == 1);
+        assert_eq!(i, 3);
+        assert!(arr[0..i].all_of(|x| x % 2 == 1));
+        assert!(arr[i..].all_of(|x| x % 2 == 0));
+
+        let mut arr = [2, 4];
+        let i = arr.partition(|x| x % 2 == 1);
+        assert_eq!(i, 0);
+        assert!(arr[0..i].all_of(|x| x % 2 == 1));
+        assert!(arr[i..].all_of(|x| x % 2 == 0));
+
+        let mut arr = [];
+        let i = arr.partition(|x| x % 2 == 1);
+        assert_eq!(i, 0);
+        assert!(arr[0..i].all_of(|x| x % 2 == 1));
+        assert!(arr[i..].all_of(|x| x % 2 == 0));
+    }
 }

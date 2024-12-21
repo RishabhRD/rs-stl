@@ -200,7 +200,7 @@ required description would be provided.
 ### Partitioning Operations
 
 - [x] is_partitioned
-- [ ] partition
+- [x] partition
 - [ ] partition_copy
 - [ ] stable_partition
 - [ ] partition_point
