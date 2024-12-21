@@ -166,10 +166,6 @@ required description would be provided.
 - [ ] ~~move~~ -> **NOT POSSIBLE:** Due to rust ownership model.
 - [ ] ~~move_backward~~ -> **NOT POSSIBLE:** Due to rust ownership model.
 
-### Swap Operations
-
-- [ ] swap_ranges
-
 ### Transformation Operations
 
 - [x] transform -> transform, zip_transform
@@ -194,17 +190,12 @@ required description would be provided.
 - [x] unique -> unique, unique_by
 - [x] unique_copy
 
-### Permutation Operations
+### Order Changing Operations
 
 - [x] reverse
 - [x] reverse_copy
 - [x] rotate
 - [x] rotate_copy
-- [ ] shift_left
-- [ ] shift_right
-- [ ] next_permutation
-- [ ] prev_permutation
-- [ ] is_permutation
 
 ### Partitioning Operations
 
@@ -255,6 +246,18 @@ required description would be provided.
 - [ ] transform_reduce
 - [ ] transform_exclusive_scan
 - [ ] transform_inclusive_scan
+
+### Swap Operations
+
+- [ ] swap_ranges
+
+### Permutation Operations
+
+- [ ] shift_left
+- [ ] shift_right
+- [ ] next_permutation
+- [ ] prev_permutation
+- [ ] is_permutation
 
 ## Motivations
 
