@@ -237,7 +237,7 @@ required description would be provided.
 
 - [x] min_element -> min_element, min_element_by
 - [x] max_element -> max_element, max_element_by
-- [ ] minmax_element
+- [x] minmax_element -> minmax_element, minmax_element_by
 
 ### Numeric Operations
 

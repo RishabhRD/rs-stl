@@ -67,4 +67,64 @@ pub mod tests {
         let i = arr.max_element();
         assert_eq!(i, 3);
     }
+
+    #[test]
+    fn minmax_element() {
+        let arr = [2, 1, 1, 2, 3, 3, 2];
+
+        let (i, j) =
+            algo::minmax_element_by(&arr, arr.start(), arr.end(), |x, y| x < y);
+        assert_eq!(i, 1);
+        assert_eq!(j, 5);
+
+        let (i, j) =
+            algo::minmax_element_by(&arr, arr.start(), arr.start(), |x, y| {
+                x < y
+            });
+        assert_eq!(i, 0);
+        assert_eq!(j, 0);
+
+        let (i, j) = algo::minmax_element_by(
+            &arr,
+            arr.start(),
+            arr.after(arr.start()),
+            |x, y| x < y,
+        );
+        assert_eq!(i, 0);
+        assert_eq!(j, 0);
+
+        let (i, j) = rng::minmax_element_by(&arr, |x, y| x < y);
+        assert_eq!(i, 1);
+        assert_eq!(j, 5);
+
+        let (i, j) = arr.minmax_element_by(|x, y| x < y);
+        assert_eq!(i, 1);
+        assert_eq!(j, 5);
+
+        let (i, j) = algo::minmax_element(&arr, arr.start(), arr.end());
+        assert_eq!(i, 1);
+        assert_eq!(j, 5);
+
+        let (i, j) = algo::minmax_element(&arr, arr.start(), arr.start());
+        assert_eq!(i, 0);
+        assert_eq!(j, 0);
+
+        let (i, j) = rng::minmax_element(&arr);
+        assert_eq!(i, 1);
+        assert_eq!(j, 5);
+
+        let (i, j) = arr.minmax_element();
+        assert_eq!(i, 1);
+        assert_eq!(j, 5);
+
+        let arr = [1, 1];
+        let (i, j) = arr.minmax_element();
+        assert_eq!(i, 0);
+        assert_eq!(j, 1);
+
+        let arr = [2, 1];
+        let (i, j) = arr.minmax_element();
+        assert_eq!(i, 1);
+        assert_eq!(j, 0);
+    }
 }

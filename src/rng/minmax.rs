@@ -160,6 +160,93 @@ where
     algo::max_element(rng, rng.start(), rng.end())
 }
 
+/// Returns position of minimum element and maximum element in range by comparator.
+///
+/// # Precondition
+///   - cmp follows strict-weak-ordering relationship.
+///   - If a comes before b then cmp(a, b) == true otherwise false.
+///
+/// # Postcondition
+///   - Returns a pair (i, j) where i denotes the position of minimum element
+///     and j denotes the position of maximum element in rng by cmp.
+///   - If there are multiple equivalent minimum elements, then i denotes
+///     position of first one of them.
+///   - If there are multiple equivalent maximum elements, then j denotes
+///     position of last one of them.
+///   - Complexity: O(n). At most `max(floor(3/2(n - 1)), 0)` comparisions.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [2, 1, 1, 2, 3, 3, 2];
+///
+/// let (i, j) = rng::minmax_element_by(&arr, |x, y| x < y);
+/// assert_eq!(i, 1);
+/// assert_eq!(j, 5);
+///
+/// let (i, j) = arr.minmax_element_by(|x, y| x < y);
+/// assert_eq!(i, 1);
+/// assert_eq!(j, 5);
+/// ```
+pub fn minmax_element_by<Range, Compare>(
+    rng: &Range,
+    cmp: Compare,
+) -> (Range::Position, Range::Position)
+where
+    Range: ForwardRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    algo::minmax_element_by(rng, rng.start(), rng.end(), cmp)
+}
+
+/// Returns position of minimum element and maximum element in range.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns a pair (i, j) where i denotes the position of minimum element
+///     and j denotes the position of maximum element in rng.
+///   - If there are multiple equal minimum elements, then i denotes
+///     position of first one of them.
+///   - If there are multiple equal maximum elements, then j denotes
+///     position of last one of them.
+///   - Complexity: O(n). At most `max(floor(3/2(n - 1)), 0)` comparisions.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [2, 1, 1, 2, 3, 3, 2];
+///
+/// let (i, j) = rng::minmax_element(&arr);
+/// assert_eq!(i, 1);
+/// assert_eq!(j, 5);
+///
+/// let (i, j) = arr.minmax_element();
+/// assert_eq!(i, 1);
+/// assert_eq!(j, 5);
+/// ```
+pub fn minmax_element<Range>(rng: &Range) -> (Range::Position, Range::Position)
+where
+    Range: ForwardRange + ?Sized,
+    Range::Element: Ord,
+{
+    algo::minmax_element(rng, rng.start(), rng.end())
+}
+
 pub mod infix {
     use crate::{rng, ForwardRange};
 
@@ -179,6 +266,17 @@ pub mod infix {
             Compare: Fn(&Self::Element, &Self::Element) -> bool;
 
         fn max_element(&self) -> Self::Position
+        where
+            Self::Element: Ord;
+
+        fn minmax_element_by<Compare>(
+            &self,
+            cmp: Compare,
+        ) -> (Self::Position, Self::Position)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool;
+
+        fn minmax_element(&self) -> (Self::Position, Self::Position)
         where
             Self::Element: Ord;
     }
@@ -213,6 +311,23 @@ pub mod infix {
             Self::Element: Ord,
         {
             rng::max_element(self)
+        }
+
+        fn minmax_element_by<Compare>(
+            &self,
+            cmp: Compare,
+        ) -> (Self::Position, Self::Position)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool,
+        {
+            rng::minmax_element_by(self, cmp)
+        }
+
+        fn minmax_element(&self) -> (Self::Position, Self::Position)
+        where
+            Self::Element: Ord,
+        {
+            rng::minmax_element(self)
         }
     }
 }
