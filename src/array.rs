@@ -30,7 +30,11 @@ impl<T, const N: usize> InputRange for [T; N] {
     }
 }
 
-impl<T, const N: usize> ForwardRange for [T; N] {}
+impl<T, const N: usize> ForwardRange for [T; N] {
+    fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
+        to - from
+    }
+}
 
 impl<T, const N: usize> BidirectionalRange for [T; N] {
     fn before(&self, i: Self::Position) -> Self::Position {

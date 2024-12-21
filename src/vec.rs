@@ -30,7 +30,11 @@ impl<T> InputRange for Vec<T> {
     }
 }
 
-impl<T> ForwardRange for Vec<T> {}
+impl<T> ForwardRange for Vec<T> {
+    fn distance(&self, i: Self::Position, j: Self::Position) -> usize {
+        j - i
+    }
+}
 
 impl<T> BidirectionalRange for Vec<T> {
     fn before(&self, i: Self::Position) -> Self::Position {

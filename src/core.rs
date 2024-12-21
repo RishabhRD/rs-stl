@@ -43,7 +43,13 @@ pub trait InputRange {
 }
 
 /// Models a multi-pass range.
-pub trait ForwardRange: InputRange<Position: Regular> {}
+pub trait ForwardRange: InputRange<Position: Regular> {
+    /// Returns distance between position `[from, to)`.
+    ///
+    /// Requires `[from, to)` represents valid position in range.
+    /// Complexity: O(n)
+    fn distance(&self, from: Self::Position, to: Self::Position) -> usize;
+}
 
 /// Models a bidirectional range, which can be traversed forward as well as backward.
 pub trait BidirectionalRange: ForwardRange {
@@ -55,6 +61,8 @@ pub trait BidirectionalRange: ForwardRange {
 
 /// Models a random access range (similar to array) where any position can be
 /// reached in O(1).
+///
+/// Semantic Requirement: rng.distance(from, to) should work in O(1).
 pub trait RandomAccessRange:
     BidirectionalRange<Position: Regular + Ord>
 {

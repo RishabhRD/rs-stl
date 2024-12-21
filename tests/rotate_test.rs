@@ -29,7 +29,11 @@ impl<const N: usize> InputRange for ForwardArray<N> {
     }
 }
 
-impl<const N: usize> ForwardRange for ForwardArray<N> {}
+impl<const N: usize> ForwardRange for ForwardArray<N> {
+    fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
+        to - from
+    }
+}
 
 impl<const N: usize> OutputRange for ForwardArray<N> {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
