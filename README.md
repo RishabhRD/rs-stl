@@ -9,112 +9,118 @@ concept of `C++-like iterators`.
 C++ STL is a brilliant piece of work by Alex Stepanov and provides highly
 composable algorithms over C++ iterators.
 
-C++ ranges expose iterators for traversal and algorithms. Iterators are generalization
-of pointers. However, pointers would be too unsafe for using as API in rust.
-Instead, rs-stl expose `Positions` and Positions are generalization of indexes.
+rs-stl ports C++ STL algorithms to rust by using concepts of Positions instead
+of Iterators to support rust borrow rules.
 
 ## Documentation
 
-View API documentation at: [rs-stl docs](https://rishabhrd.github.io/rs-stl/).
+View detailed documentation at: [rs-stl docs](https://rishabhrd.github.io/rs-stl/).
 
-## rs-stl model
+## Design
 
-rs-stl defines concept of ranges. A range can be of following types:
+rs-stl is port of STL of C++. C++ STL works over abstraction of iterators.
+Iterators in C++ are generalization of pointers. However, pointers have
+reference semantics so does iterators. Most STL algorithms need 2 iterators
+to work upon. However, this model can't be adopted to rust. As an example,
+in reverse example algorithm needs 2 mutable iterators to data structure.
+However, then there would 2 mutable borrows from same data structure at
+same time. That is not possible in rust.
 
-- **InputRange**: Models single-pass ranges.
-- **ForwardRange**: Models multi-pass ranges. Automatically an input range.
-- **BidirectionalRange**: Models range that also supports forward as well as backward iteration. Automatically a forward range.
-- **RandomAccessRange**: Models range that supports random access iteration. Automatically a bidirectional range.
-- **OutputRange**: Models mutable range. Automatically an forward range.
+Thus rs-stl works with idea of `Positions`. Positions are generalization of
+indexes as iterators were generalization of pointers.
 
-```rust
-pub trait InputRange {
-    type Element;
-    type Position: SemiRegular;
-    fn start(&self) -> Self::Position;
-    fn end(&self) -> Self::Position;
-    fn after(&self, i: Self::Position) -> Self::Position;
-    fn at(&self, i: &Self::Position) -> &Self::Element;
-}
+Considering example of array. In C++ there are 2 ways to traverse array `arr`:
+
+1. Pointer -> \*arr, ++arr
+2. Indexes -> arr[i], ++i;
+
+As iterators are all about abstraction to traverse linear range, a similar
+alternative is required. The above array example suggests, indexes are the
+one. Which is generalized and is called `Position` in rs-stl. Position
+type doesn't need to be integers and can be any type that follows below
+trait requirements.
+
+As from above example, its clear that Position doesn't have reference semantics.
+Position doesn't borrow from data structure. Thus multiple positions can
+be passed to algorithms. Also data structures are required to access
+element at any position. Thus, this solution would not have problem of
+dangling iterator.
+
+rs-stl works with **ranges**. Range models linear sequence of elements.
+
+```
+  _ _ _ _ _
+
+  ^          ^
+  |          |
+start       end
 ```
 
-Every range has 2 typedefs namely `Element` and `Position`.
+Every range has a `start` position, that is position of first element in range,
+and an `end` position, that is position just after last element in range.
 
-`let i = rng.start()` gives start position/index of range. This is analogous to
-`auto itr = rng.begin()` of C++ STL.
+To get start and end position in range `rng`, `rng.start()`, `rng.end()`
+can be used.
 
-Similarily `let end = rng.end()` gives end position/index of range. This is analogous
-to `auto end = rng.end()` of C++ STL.
+To access any element at position `i` in `rng` do:
 
-`[start, end)` position defines possible set of valid positions in range. As
-STL convention, `start` is position of first element and `end` is position past to last element.
+- `rng.at(&i)` -> for immutable access
+- `rng.at_mut(&i)` -> for mutable access
 
-`++itr` for iterator is replaced with `i = rng.after(i)`.
-And `*itr` for iterator is replaced with `rng.at(i)` to access ith element.
+NOTE: end position can not be accessed for element with above methods.
 
-This way positions are not the owner of elements and have not borrowed from
-original range. Ownership of range still lies with range only and range would
-be necessary to access the element at any time.
+To get to next position from current position `i` in range `rng`,
+`rng.after(i)` can be used.
 
-This is important because with iterator model, iterators used to borrow from
-ranges and 2 iterators are needed for most of algorithms.
-However, this would create problem when algorithms need to mutate ranges as
-then 2 mutable iterators are needed to algorithms. However, rust ownership
-model doesn't allow the same.
+See the trait docs for more information.
 
-And surprisingly, this is just enough for porting most of STL algorihtms to rust.
+### How to use
 
-### Sample usage
+rs-stl supports following operation with ranges:
+
+1. Algorithms (algo and rng module)
+
+Please look at module docs for more information for the same.
+
+### Algorithms
+
+Let's take an example of `std::count_if` in rs-stl, how to use this algorithm.
+
+1. algo module
+2. rng module
+
+algo module contains algorithms which require position start and end to
+be passed explicitly. Using that:
+
+```rust
+use stl::*;
+
+let arr = [1, 2, 3];
+let cnt = algo::count_if(&arr, arr.start(), arr.end(), |x| x % 2 == 1);
+assert_eq!(cnt, 2);
+```
+
+rng module contains algo module algorithms overload, which doesn't need
+start and end positions to be passed explicitly.
+
+```rust
+use stl::*;
+
+let arr = [1, 2, 3];
+let cnt = rng::count_if(&arr, |x| x % 2 == 1);
+assert_eq!(cnt, 2);
+```
+
+For many algorithms rng module also provides infix overload inside rng::infix
+module.
 
 ```rust
 use stl::*;
 use rng::infix::*;
 
-let vec = vec![1, 2, 3];
-let cnt = vec.count_if(|x| x % 2 == 1);
-// Or use `algo` or `rng` namespace functions:
-// let cnt = algo::count_if(&vec, vec.start(), vec.end(), |x| x % 2 == 1);
-// let cnt = rng::count_if(&vec, |x| x % 2 == 1);
+let arr = [1, 2, 3];
+let cnt = arr.count_if(|x| x % 2 == 1);
 assert_eq!(cnt, 2);
-```
-
-Similarily, stl defines ForwardRange which mandates Position to be `Regular`
-and a distance algorithm to get distance between 2 positions.
-
-```rust
-pub trait ForwardRange: InputRange<Position: Regular> {
-    fn distance(&self, from: Self::Position, to: Self::Position) -> usize;
-}
-```
-
-BidirectionalRange defines a before function in addition to after function that
-returns position before current position.
-
-```rust
-pub trait BidirectionalRange: ForwardRange
-{
-    fn before(&self, i: Self::Position) -> Self::Position;
-}
-```
-
-RandomAccessRange mandates `Position` type to be `Ord` as well as supports
-function to iterate n steps forward or backward. RandomAccessRange mandates
-the distance algorithm should work in O(1).
-
-```rust
-pub trait RandomAccessRange: BidirectionalRange<Position: Regular + Ord>
-{
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position;
-    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position;
-}
-```
-
-And at last, to support mutation, OutputRange defines at_mut function on `InputRange`.
-
-```rust
-pub trait OutputRange: ForwardRange {
-    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
-}
 ```
 
 ### Support for standard library
@@ -126,7 +132,7 @@ Currently range concepts have been implemented for:
 - Vec<T>
   In future, we plan to support more data structures from standard library.
 
-Not sure, how to deal with
+TODO: Not sure, how to deal with
 
 - str
 - String
