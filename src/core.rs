@@ -1,21 +1,24 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-/// As per Stepanov (not exact)
-/// Types can be:
+/// 1-> Equality Comparable + Movable + Destructable.
+///
+/// As per Stepanov (not exact), Types can be:
 ///   - compared for equality
 ///   - moved
 ///   - destructed
 pub trait SemiRegular: Eq {}
 impl<T> SemiRegular for T where T: Eq {}
 
-/// As per Stepanov (not exact)
-/// Types is semiregular and can be copied.
-/// Copy should have equal value as of original object.
+/// 2-> SemiRegular + Clonable
+///
+/// As per Stepanov (not exact), Types can be:
+///   - SemiRegular
+///   - cloned
 pub trait Regular: SemiRegular + Clone {}
 impl<T> Regular for T where T: SemiRegular + Clone {}
 
-/// Models a single-pass range.
+/// 3-> Models a single-pass range.
 pub trait InputRange {
     /// Type of the element contained in self
     type Element;
@@ -42,7 +45,7 @@ pub trait InputRange {
     fn at(&self, i: &Self::Position) -> &Self::Element;
 }
 
-/// Models a multi-pass range.
+/// 4-> Models a multi-pass range.
 pub trait ForwardRange: InputRange<Position: Regular> {
     /// Returns distance between position `[from, to)`.
     ///
@@ -51,7 +54,7 @@ pub trait ForwardRange: InputRange<Position: Regular> {
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize;
 }
 
-/// Models a bidirectional range, which can be traversed forward as well as backward.
+/// 5-> Models a bidirectional range, which can be traversed forward as well as backward.
 pub trait BidirectionalRange: ForwardRange {
     /// Returns position immediately before i
     ///
@@ -59,7 +62,7 @@ pub trait BidirectionalRange: ForwardRange {
     fn before(&self, i: Self::Position) -> Self::Position;
 }
 
-/// Models a random access range (similar to array) where any position can be
+/// 6-> Models a random access range (similar to array) where any position can be
 /// reached in O(1).
 ///
 /// Semantic Requirement: rng.distance(from, to) should work in O(1).
@@ -77,7 +80,7 @@ pub trait RandomAccessRange:
     fn before_n(&self, i: Self::Position, n: usize) -> Self::Position;
 }
 
-/// Models a mutable range.
+/// 7-> Models a mutable range.
 pub trait OutputRange: ForwardRange {
     /// Access element at position i
     ///
