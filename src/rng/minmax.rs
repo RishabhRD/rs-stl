@@ -10,7 +10,9 @@ use crate::{algo, ForwardRange};
 ///   - If a < b then cmp(a, b) == true otherwise false.
 ///
 /// # Postcondition
-///   - Returns minimum element in rng based on comparator cmp.
+///   - Returns position minimum element in rng based on comparator cmp. If
+///     there are multiple equivalent minimum elements, returns position of
+///     first one of them.
 ///   - If rng is empty then return end position.
 ///   - Complexity: O(n). Exactly max(n - 1, 0) comparisions.
 ///
@@ -24,7 +26,7 @@ use crate::{algo, ForwardRange};
 /// use stl::*;
 /// use rng::infix::*;
 ///
-/// let arr = [2, 1, 3];
+/// let arr = [2, 1, 3, 1];
 ///
 /// let i = rng::min_element_by(&arr, |x, y| x < y);
 /// assert_eq!(i, 1);
@@ -48,7 +50,8 @@ where
 /// # Precondition
 ///
 /// # Postcondition
-///   - Returns minimum element in rng.
+///   - Returns position minimum element in rng. If there are multiple equal
+///     minimum elements, returns the position of first one of them.
 ///   - If rng is empty then return end position.
 ///   - Complexity: O(n). Exactly max(n - 1, 0) comparisions.
 ///
@@ -62,7 +65,7 @@ where
 /// use stl::*;
 /// use rng::infix::*;
 ///
-/// let arr = [2, 1, 3];
+/// let arr = [2, 1, 3, 1];
 ///
 /// let i = rng::min_element(&arr);
 /// assert_eq!(i, 1);

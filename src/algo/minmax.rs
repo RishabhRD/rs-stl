@@ -11,8 +11,9 @@ use crate::ForwardRange;
 ///   - If a < b then cmp(a, b) == true otherwise false.
 ///
 /// # Postcondition
-///   - Returns minimum element in rng from `[start, end)` based on comparator
-///     cmp.
+///   - Returns position of minimum element in rng from `[start, end)` based
+///     on comparator cmp. If there are multiple equivalent minimum elements,
+///     then returns the position of first one of them.
 ///   - If `[start, end)` is empty then return end position.
 ///   - Complexity: O(n). Exactly max(n - 1, 0) comparisions.
 ///
@@ -22,7 +23,7 @@ use crate::ForwardRange;
 /// ```rust
 /// use stl::*;
 ///
-/// let arr = [2, 1, 3];
+/// let arr = [2, 1, 3, 1];
 /// let i = algo::min_element_by(&arr, arr.start(), arr.end(), |x, y| x < y);
 /// assert_eq!(i, 1);
 /// ```
@@ -59,7 +60,9 @@ where
 ///   - `[start, end)` represents valid positions in rng.
 ///
 /// # Postcondition
-///   - Returns minimum element in rng from `[start, end)`.
+///   - Returns position minimum element in rng from `[start, end)`.
+///     If there are multiple equal minimum elements, returns position of
+///     first one of them.
 ///   - If `[start, end)` is empty then return end position.
 ///   - Complexity: O(n). Exactly max(n - 1, 0) comparisions.
 ///
@@ -69,7 +72,7 @@ where
 /// ```rust
 /// use stl::*;
 ///
-/// let arr = [2, 1, 3];
+/// let arr = [2, 1, 3, 1];
 /// let i = algo::min_element(&arr, arr.start(), arr.end());
 /// assert_eq!(i, 1);
 /// ```

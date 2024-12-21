@@ -8,7 +8,7 @@ pub mod tests {
 
     #[test]
     fn min_element() {
-        let arr = [2, 1, 3];
+        let arr = [2, 1, 3, 1];
 
         let i =
             algo::min_element_by(&arr, arr.start(), arr.end(), |x, y| x < y);
