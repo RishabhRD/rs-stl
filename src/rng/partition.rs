@@ -78,6 +78,52 @@ where
     algo::partition(rng, start, end, pred)
 }
 
+/// Partitions range based on given predicate with preserving relative order of elements.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Reorders elements in rng such that all elements
+///     satisfying pred precede elements not satisfying pred.
+///   - Relative order of the elements is preserved.
+///   - Returns position to first element in modified range that doesn't satisfy pred.
+///   - Complexity: O(n.log2(n)). Exactly n applications of pred. Atmost n.log2(n) swaps.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [1, 3, 2, 5, 4];
+/// let i = rng::stable_partition(&mut arr, |x| x % 2 == 1);
+/// assert_eq!(i, 3);
+/// assert!(arr[0..i].equals(&[1, 3, 5]));
+/// assert!(arr[i..].equals(&[2, 4]));
+///
+/// let mut arr = [1, 3, 2, 5, 4];
+/// let i = arr.stable_partition(|x| x % 2 == 1);
+/// assert_eq!(i, 3);
+/// assert!(arr[0..i].equals(&[1, 3, 5]));
+/// assert!(arr[i..].equals(&[2, 4]));
+/// ```
+pub fn stable_partition<Range, Predicate>(
+    rng: &mut Range,
+    pred: Predicate,
+) -> Range::Position
+where
+    Range: OutputRange + ?Sized,
+    Predicate: Fn(&Range::Element) -> bool + Clone,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::stable_partition(rng, start, end, pred)
+}
+
 pub mod infix {
     use crate::{rng, InputRange, OutputRange};
 
@@ -100,11 +146,18 @@ pub mod infix {
         }
     }
 
-    /// `partition`.
+    /// `partition`, `stable_partition`.
     pub trait STLOutputPartitonExt: OutputRange {
         fn partition<Predicate>(&mut self, pred: Predicate) -> Self::Position
         where
             Predicate: Fn(&Self::Element) -> bool;
+
+        fn stable_partition<Predicate>(
+            &mut self,
+            pred: Predicate,
+        ) -> Self::Position
+        where
+            Predicate: Fn(&Self::Element) -> bool + Clone;
     }
 
     impl<R> STLOutputPartitonExt for R
@@ -116,6 +169,16 @@ pub mod infix {
             Predicate: Fn(&Self::Element) -> bool,
         {
             rng::partition(self, pred)
+        }
+
+        fn stable_partition<Predicate>(
+            &mut self,
+            pred: Predicate,
+        ) -> Self::Position
+        where
+            Predicate: Fn(&Self::Element) -> bool + Clone,
+        {
+            rng::stable_partition(self, pred)
         }
     }
 }

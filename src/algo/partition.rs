@@ -3,6 +3,8 @@
 
 use crate::{InputRange, OutputRange};
 
+use super::rotate;
+
 /// Returns true if range is partitioned wrt pred, otherwise false.
 ///
 /// # Precondition
@@ -110,4 +112,61 @@ where
     }
 
     start
+}
+
+/// Partitions range based on given predicate with preserving relative order of elements.
+///
+/// # Precondition
+///   - `[start, end)` represents valid range in rng.
+///
+/// # Postcondition
+///   - Reorders elements in rng at `[start, end)` such that all elements
+///     satisfying pred precede elements not satisfying pred.
+///   - Relative order of the elements is preserved.
+///   - Returns position to first element in modified range that doesn't satisfy pred.
+///   - Complexity: O(n.log2(n)). Exactly n applications of pred. Atmost n.log2(n) swaps.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [1, 3, 2, 5, 4];
+/// let start = arr.start();
+/// let end = arr.end();
+/// let i = algo::stable_partition(&mut arr, start, end, |x| x % 2 == 1);
+/// assert_eq!(i, 3);
+/// assert!(arr[0..i].equals(&[1, 3, 5]));
+/// assert!(arr[i..].equals(&[2, 4]));
+/// ```
+pub fn stable_partition<Range, Predicate>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+    pred: Predicate,
+) -> Range::Position
+where
+    Range: OutputRange + ?Sized,
+    Predicate: Fn(&Range::Element) -> bool + Clone,
+{
+    let n = rng.distance(start.clone(), end.clone());
+
+    if n == 0 {
+        return start;
+    }
+    if n == 1 {
+        return if pred(rng.at(&start)) {
+            rng.after(start)
+        } else {
+            start
+        };
+    }
+
+    let mid = rng.after_n(start.clone(), n / 2);
+
+    let left_start = stable_partition(rng, start, mid.clone(), pred.clone());
+    let right_end = stable_partition(rng, mid.clone(), end, pred);
+    rotate(rng, left_start, mid, right_end)
 }

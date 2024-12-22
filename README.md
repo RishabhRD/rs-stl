@@ -208,7 +208,7 @@ required description would be provided.
 - [x] is_partitioned
 - [x] partition
 - [ ] ~~partition_copy~~ -> Do we need that (copy_if is enough)? If yes, contribute with reason.
-- [ ] stable_partition
+- [x] stable_partition
 - [ ] partition_point
 
 ### Sorting Operations
