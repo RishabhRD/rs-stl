@@ -234,6 +234,15 @@ required description would be provided.
 - [ ] merge
 - [ ] inplace_merge
 
+### Heap Operations
+
+- [ ] push_heap
+- [ ] pop_heap
+- [ ] make_heap
+- [ ] sort_heap
+- [ ] is_heap
+- [ ] is_heap_until
+
 ### Minimum/Maximum Operations
 
 - [x] min_element -> min_element, min_element_by
