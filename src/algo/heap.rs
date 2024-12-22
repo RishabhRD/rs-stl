@@ -75,3 +75,67 @@ where
 {
     is_heap_until_by(rng, start, end, |x, y| x < y)
 }
+
+/// Returns true if given range is a heap wrt comparator.
+///
+/// # Precondition
+///   - `[start, end)` represents valid positions in rng.
+///   - cmp follows strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Returns true if range at `[start, end)` of rng is a heap wrt cmp.
+///   - Otherwise, returns false.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [9, 5, 4, 1, 1, 3, 2];
+/// assert!(algo::is_heap_by(&arr, arr.start(), arr.end(), |x, y| x < y));
+/// ```
+pub fn is_heap_by<Range, Compare>(
+    rng: &Range,
+    start: Range::Position,
+    end: Range::Position,
+    cmp: Compare,
+) -> bool
+where
+    Range: RandomAccessRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    is_heap_until_by(rng, start, end.clone(), cmp) == end
+}
+
+/// Returns true if given range is a heap.
+///
+/// # Precondition
+///   - `[start, end)` represents valid positions in rng.
+///
+/// # Postcondition
+///   - Returns true if range at `[start, end)` of rng is a heap.
+///   - Otherwise, returns false.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [9, 5, 4, 1, 1, 3, 2];
+/// assert!(algo::is_heap(&arr, arr.start(), arr.end()));
+/// ```
+pub fn is_heap<Range>(
+    rng: &Range,
+    start: Range::Position,
+    end: Range::Position,
+) -> bool
+where
+    Range: RandomAccessRange + ?Sized,
+    Range::Element: Ord,
+{
+    is_heap_by(rng, start, end, |x, y| x < y)
+}

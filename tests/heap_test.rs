@@ -57,4 +57,22 @@ pub mod tests {
         let i = arr.is_heap_until();
         assert_eq!(i, 0);
     }
+
+    #[test]
+    fn is_heap() {
+        let arr = [9, 5, 4, 1, 1, 3, 2];
+        assert!(algo::is_heap_by(&arr, arr.start(), arr.end(), |x, y| x < y));
+        assert!(rng::is_heap_by(&arr, |x, y| x < y));
+        assert!(arr.is_heap_by(|x, y| x < y));
+
+        let arr = [9, 5, 4, 1, 9, 3, 2];
+        assert!(!algo::is_heap_by(&arr, arr.start(), arr.end(), |x, y| x < y));
+        assert!(!rng::is_heap_by(&arr, |x, y| x < y));
+        assert!(!arr.is_heap_by(|x, y| x < y));
+
+        let arr: [i32; 0] = [];
+        assert!(algo::is_heap_by(&arr, arr.start(), arr.end(), |x, y| x < y));
+        assert!(rng::is_heap_by(&arr, |x, y| x < y));
+        assert!(arr.is_heap_by(|x, y| x < y));
+    }
 }
