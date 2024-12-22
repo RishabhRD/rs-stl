@@ -109,6 +109,11 @@ pub mod partition;
 #[doc(inline)]
 pub use partition::*;
 
+#[doc(hidden)]
+pub mod sort;
+#[doc(inline)]
+pub use sort::*;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!
@@ -139,6 +144,8 @@ pub mod infix {
     pub use super::reverse::infix::*;
     #[doc(inline)]
     pub use super::rotate::infix::*;
+    #[doc(inline)]
+    pub use super::sort::infix::*;
     #[doc(inline)]
     pub use super::unique::infix::*;
 }
