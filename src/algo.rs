@@ -90,3 +90,11 @@ pub use minmax::*;
 pub mod partition;
 #[doc(inline)]
 pub use partition::*;
+
+#[doc(hidden)]
+pub mod sort;
+#[doc(inline)]
+pub use sort::*;
+
+#[doc(hidden)]
+pub mod details;
