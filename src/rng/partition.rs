@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange, OutputRange};
+use crate::{algo, ForwardRange, InputRange, OutputRange};
 
 /// Returns true if range is partitioned wrt pred, otherwise false.
 ///
@@ -124,8 +124,49 @@ where
     algo::stable_partition(rng, start, end, pred)
 }
 
+/// Returns the position of first such element in partitioned range such that predicate is not
+/// satisfied.
+///
+/// # Precondition
+///   - rng is partitioned based on pred.
+///
+/// # Postcondition
+///   - Returns position of first element in rng such that element at
+///     that position does not satisfy pred.
+///   - If no such element exist, then returns end position.
+///   - Complexity: O(log2(n)). log2(n) applications of pred. For traversal,
+///     if range is RandomAccessRange then O(log2(n)) traversal otherwise
+///     O(n.log2(n)) traversal.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 3, 5, 2, 4];
+///
+/// let i = rng::partition_point(&arr, |x| x % 2 == 1);
+/// assert_eq!(i, 3);
+///
+/// let i = arr.partition_point(|x| x % 2 == 1);
+/// assert_eq!(i, 3);
+/// ```
+pub fn partition_point<Range, Predicate>(
+    rng: &Range,
+    pred: Predicate,
+) -> Range::Position
+where
+    Range: ForwardRange,
+    Predicate: Fn(&Range::Element) -> bool,
+{
+    algo::partition_point(rng, rng.start(), rng.end(), pred)
+}
+
 pub mod infix {
-    use crate::{rng, InputRange, OutputRange};
+    use crate::{rng, ForwardRange, InputRange, OutputRange};
 
     /// `is_partitioned`.
     pub trait STLInputPartitionExt: InputRange {
@@ -179,6 +220,33 @@ pub mod infix {
             Predicate: Fn(&Self::Element) -> bool + Clone,
         {
             rng::stable_partition(self, pred)
+        }
+    }
+
+    /// `partition_point`.
+    pub trait STLForwardPartitonExt: ForwardRange {
+        fn partition_point<Range, Predicate>(
+            rng: &Range,
+            pred: Predicate,
+        ) -> Range::Position
+        where
+            Range: ForwardRange,
+            Predicate: Fn(&Range::Element) -> bool;
+    }
+
+    impl<R> STLForwardPartitonExt for R
+    where
+        R: ForwardRange,
+    {
+        fn partition_point<Range, Predicate>(
+            rng: &Range,
+            pred: Predicate,
+        ) -> Range::Position
+        where
+            Range: ForwardRange,
+            Predicate: Fn(&Range::Element) -> bool,
+        {
+            rng::partition_point(rng, pred)
         }
     }
 }

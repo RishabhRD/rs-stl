@@ -209,7 +209,7 @@ required description would be provided.
 - [x] partition
 - [ ] ~~partition_copy~~ -> Do we need that (copy_if is enough)? If yes, contribute with reason.
 - [x] stable_partition
-- [ ] partition_point
+- [x] partition_point
 
 ### Sorting Operations
 
@@ -223,7 +223,7 @@ required description would be provided.
 
 ### Binary Search Operations
 
-- [ ] partition_point
+- [x] partition_point (Same as above partition_point)
 - [ ] lower_bound
 - [ ] upper_bound
 - [ ] equal_range

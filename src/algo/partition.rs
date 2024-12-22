@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{InputRange, OutputRange};
+use crate::{ForwardRange, InputRange, OutputRange};
 
 use super::rotate;
 
@@ -169,4 +169,53 @@ where
     let left_start = stable_partition(rng, start, mid.clone(), pred.clone());
     let right_end = stable_partition(rng, mid.clone(), end, pred);
     rotate(rng, left_start, mid, right_end)
+}
+
+/// Returns the position of first such element in partitioned range such that predicate is not
+/// satisfied.
+///
+/// # Precondition
+///   - `[start, end)` represents valid positions in rng.
+///   - rng at `[start, end)` is partitioned based on pred.
+///
+/// # Postcondition
+///   - Returns position of first element in rng at `[start, end)` such that
+///     element at that position does not satisfy pred.
+///   - If no such element exist, then returns end position.
+///   - Complexity: O(log2(n)). log2(n) applications of pred. For traversal,
+///     if range is RandomAccessRange then O(log2(n)) traversal otherwise
+///     O(n.log2(n)) traversal.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 3, 5, 2, 4];
+/// let i = algo::partition_point(&arr, arr.start(), arr.end(), |x| x % 2 == 1);
+/// assert_eq!(i, 3);
+/// ```
+pub fn partition_point<Range, Predicate>(
+    rng: &Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    pred: Predicate,
+) -> Range::Position
+where
+    Range: ForwardRange,
+    Predicate: Fn(&Range::Element) -> bool,
+{
+    let mut n = rng.distance(start.clone(), end.clone());
+
+    while n > 0 {
+        let half = n / 2;
+        let mid = rng.after_n(start.clone(), half);
+        if pred(rng.at(&mid)) {
+            start = rng.after(mid);
+            n -= half + 1;
+        } else {
+            n = half;
+        }
+    }
+
+    start
 }
