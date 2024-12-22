@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, BidirectionalRange, OutputRange};
+use crate::{algo, BidirectionalRange, OutputRange, SemiOutputRange};
 
 /// Reverses the given range.
 ///
@@ -31,22 +31,22 @@ use crate::{algo, BidirectionalRange, OutputRange};
 /// ```
 pub fn reverse<Range>(rng: &mut Range)
 where
-    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range: SemiOutputRange + BidirectionalRange + ?Sized,
 {
     algo::reverse(rng, rng.start(), rng.end())
 }
 
 pub mod infix {
-    use crate::{rng, BidirectionalRange, OutputRange};
+    use crate::{rng, BidirectionalRange, SemiOutputRange};
 
     /// `reverse`.
-    pub trait STLReverseExt: OutputRange + BidirectionalRange {
+    pub trait STLReverseExt: SemiOutputRange + BidirectionalRange {
         fn reverse(&mut self);
     }
 
     impl<R> STLReverseExt for R
     where
-        R: OutputRange + BidirectionalRange + ?Sized,
+        R: SemiOutputRange + BidirectionalRange + ?Sized,
     {
         fn reverse(&mut self) {
             rng::reverse(self)

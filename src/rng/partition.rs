@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, ForwardRange, InputRange, OutputRange};
+use crate::{algo, ForwardRange, InputRange, SemiOutputRange};
 
 /// Returns true if range is partitioned wrt pred, otherwise false.
 ///
@@ -70,7 +70,7 @@ pub fn partition<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
     let start = rng.start();
@@ -116,7 +116,7 @@ pub fn stable_partition<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -166,7 +166,7 @@ where
 }
 
 pub mod infix {
-    use crate::{rng, ForwardRange, InputRange, OutputRange};
+    use crate::{rng, ForwardRange, InputRange, SemiOutputRange};
 
     /// `is_partitioned`.
     pub trait STLInputPartitionExt: InputRange {
@@ -188,7 +188,7 @@ pub mod infix {
     }
 
     /// `partition`, `stable_partition`.
-    pub trait STLOutputPartitonExt: OutputRange {
+    pub trait STLSemiOutputPartitonExt: SemiOutputRange {
         fn partition<Predicate>(&mut self, pred: Predicate) -> Self::Position
         where
             Predicate: Fn(&Self::Element) -> bool;
@@ -201,9 +201,9 @@ pub mod infix {
             Predicate: Fn(&Self::Element) -> bool + Clone;
     }
 
-    impl<R> STLOutputPartitonExt for R
+    impl<R> STLSemiOutputPartitonExt for R
     where
-        R: OutputRange + ?Sized,
+        R: SemiOutputRange + ?Sized,
     {
         fn partition<Predicate>(&mut self, pred: Predicate) -> Self::Position
         where

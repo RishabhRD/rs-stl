@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{InputRange, OutputRange, Regular, SemiRegular};
+use crate::{InputRange, OutputRange, Regular, SemiOutputRange, SemiRegular};
 
 /// Moves all except first of adjacent equivalent elements by given equivalence relationship to end
 /// of range.
@@ -39,7 +39,7 @@ pub fn unique_by<Range, BinaryPred>(
     bi_pred: BinaryPred,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     BinaryPred: Fn(&Range::Element, &Range::Element) -> bool,
 {
     if start == end {
@@ -91,7 +91,7 @@ pub fn unique<Range>(
     end: Range::Position,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Range::Element: SemiRegular,
 {
     unique_by(rng, start, end, |x, y| x == y)

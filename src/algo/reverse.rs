@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalRange, OutputRange};
+use crate::{BidirectionalRange, OutputRange, SemiOutputRange};
 
 /// Reverses the given range.
 ///
@@ -30,7 +30,7 @@ pub fn reverse<Range>(
     mut start: Range::Position,
     mut end: Range::Position,
 ) where
-    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range: SemiOutputRange + BidirectionalRange + ?Sized,
 {
     while start != end {
         end = rng.before(end);

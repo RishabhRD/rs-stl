@@ -35,11 +35,7 @@ impl<const N: usize> ForwardRange for ForwardArray<N> {
     }
 }
 
-impl<const N: usize> OutputRange for ForwardArray<N> {
-    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
-        self.arr.at_mut(i)
-    }
-
+impl<const N: usize> SemiOutputRange for ForwardArray<N> {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         self.arr.swap_at(i, j)
     }

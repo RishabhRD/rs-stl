@@ -150,6 +150,7 @@ pub trait BidirectionalRange: ForwardRange {
 /// Models a random access range (similar to array) where jumping to any position from any
 /// other position is O(1) operation.
 ///
+/// - RandomAccessRange is extension of BidirectionalRange.
 /// - RandomAccessRange enforces the Position of range should be ordered.
 /// - RandomAccessRange doesn't add any new method but introduces complexity
 ///   requirements mentioned below. The complexity requirements ensure that
@@ -167,23 +168,14 @@ pub trait RandomAccessRange:
 {
 }
 
-/// Models a mutable range.
+/// Models mutable range that can only be reordered.
 ///
-/// There are 2 types of safe mutation possible for ranges:
-/// 1. Element Assignment: Assign different value to element at any position.
-///    For that `at_mut` is exposed.
-/// 2. Reordering: For supporting reordering, one should be able to swap elements
-///    between 2 positions. For that `swap_at` is exposed.
-pub trait OutputRange: ForwardRange {
-    /// Access element at position i
-    ///
-    /// # Precondition
-    ///   - i is a valid position in self and i != end()
-    ///
-    /// # Complexity Requirement
-    /// O(1)
-    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
-
+/// - SemiOutputRange is extension of ForwardRange.
+/// - SemiOutputRange models primitive mutable range that just supports reordering
+///   of its elements.
+/// - For supporting reordering of elements, `swap_at` function is required.
+///   It allows to swap 2 elements at given positions.
+pub trait SemiOutputRange: ForwardRange {
     /// Swap elements at position i and j
     ///
     /// # Precondition
@@ -192,4 +184,24 @@ pub trait OutputRange: ForwardRange {
     /// # Complexity Requirement
     /// O(1)
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
+}
+
+/// Models a fully mutable range.
+///
+/// OutputRange is extension of SemiOutputRange.
+///
+/// There are 2 types of safe mutation possible for ranges:
+/// 1. Reordering of elements that is provided by SemiOutputRange.
+/// 2. Element Assignment: Assign different value to element at any position.
+///    For the same, `at_mut` function is required that returns mutable
+///    reference to element at any position.
+pub trait OutputRange: SemiOutputRange {
+    /// Access element at position i
+    ///
+    /// # Precondition
+    ///   - i is a valid position in self and i != end()
+    ///
+    /// # Complexity Requirement
+    /// O(1)
+    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
 }

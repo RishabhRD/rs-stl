@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{ForwardRange, OutputRange};
+use crate::{ForwardRange, OutputRange, SemiOutputRange};
 
 use super::copy;
 
@@ -41,7 +41,7 @@ pub fn rotate<Range>(
     end: Range::Position,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
 {
     if start == mid {
         return end;

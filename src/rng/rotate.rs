@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, ForwardRange, OutputRange};
+use crate::{algo, ForwardRange, OutputRange, SemiOutputRange};
 
 /// Rotates the given range at mid.
 ///
@@ -41,7 +41,7 @@ use crate::{algo, ForwardRange, OutputRange};
 ///     RandomAccessRange in rust. How to overload for them in rust?
 pub fn rotate<Range>(rng: &mut Range, mid: Range::Position) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
 {
     algo::rotate(rng, rng.start(), mid, rng.end())
 }
@@ -88,10 +88,10 @@ where
 }
 
 pub mod infix {
-    use crate::{rng, OutputRange};
+    use crate::{rng, SemiOutputRange};
 
     /// `rotate`.
-    pub trait STLRotateExt: OutputRange {
+    pub trait STLRotateExt: SemiOutputRange {
         /// TODO: there are efficient implementations for BidirectionalRange and
         /// RandomAccessRange in rust. How to overload for them in rust?
         fn rotate(&mut self, mid: Self::Position) -> Self::Position {
@@ -99,5 +99,5 @@ pub mod infix {
         }
     }
 
-    impl<R> STLRotateExt for R where R: OutputRange + ?Sized {}
+    impl<R> STLRotateExt for R where R: SemiOutputRange + ?Sized {}
 }

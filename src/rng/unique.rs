@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange, OutputRange, Regular, SemiRegular};
+use crate::{
+    algo, InputRange, OutputRange, Regular, SemiOutputRange, SemiRegular,
+};
 
 /// Moves all except first of adjacent equivalent elements by given equivalence relationship to end
 /// of range.
@@ -44,7 +46,7 @@ pub fn unique_by<Range, BinaryPred>(
     bi_pred: BinaryPred,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     BinaryPred: Fn(&Range::Element, &Range::Element) -> bool,
 {
     algo::unique_by(rng, rng.start(), rng.end(), bi_pred)
@@ -85,17 +87,17 @@ where
 /// ```
 pub fn unique<Range>(rng: &mut Range) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Range::Element: SemiRegular,
 {
     algo::unique(rng, rng.start(), rng.end())
 }
 
 pub mod infix {
-    use crate::{rng, OutputRange, SemiRegular};
+    use crate::{rng, SemiOutputRange, SemiRegular};
 
     /// `unique`, `unique_by`.
-    pub trait STLUniqueExt: OutputRange {
+    pub trait STLUniqueExt: SemiOutputRange {
         fn unique_by<F>(&mut self, bi_pred: F) -> Self::Position
         where
             F: Fn(&Self::Element, &Self::Element) -> bool;
@@ -107,7 +109,7 @@ pub mod infix {
 
     impl<R> STLUniqueExt for R
     where
-        R: OutputRange + ?Sized,
+        R: SemiOutputRange + ?Sized,
     {
         fn unique_by<F>(&mut self, bi_pred: F) -> Self::Position
         where

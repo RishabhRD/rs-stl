@@ -5,7 +5,7 @@
 
 use crate::{
     BidirectionalRange, ForwardRange, InputRange, OutputRange,
-    RandomAccessRange,
+    RandomAccessRange, SemiOutputRange,
 };
 
 impl<T, const N: usize> InputRange for [T; N] {
@@ -52,12 +52,14 @@ impl<T, const N: usize> BidirectionalRange for [T; N] {
 
 impl<T, const N: usize> RandomAccessRange for [T; N] {}
 
+impl<T, const N: usize> SemiOutputRange for [T; N] {
+    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
+        self.swap(*i, *j);
+    }
+}
+
 impl<T, const N: usize> OutputRange for [T; N] {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         &mut self[*i]
-    }
-
-    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
-        self.swap(*i, *j);
     }
 }

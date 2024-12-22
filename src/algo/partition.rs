@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{ForwardRange, InputRange, OutputRange};
+use crate::{ForwardRange, InputRange, SemiOutputRange};
 
 use super::rotate;
 
@@ -88,7 +88,7 @@ pub fn partition<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
     while start != end {
@@ -148,7 +148,7 @@ pub fn stable_partition<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool + Clone,
 {
     let n = rng.distance(start.clone(), end.clone());

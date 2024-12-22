@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange, OutputRange, Regular};
+use crate::{algo, InputRange, OutputRange, Regular, SemiOutputRange};
 
 /// Moves all element satisfying predicate to end of range.
 ///
@@ -37,7 +37,7 @@ use crate::{algo, InputRange, OutputRange, Regular};
 /// ```
 pub fn remove_if<Range, Pred>(rng: &mut Range, pred: Pred) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
     algo::remove_if(rng, rng.start(), rng.end(), pred)
@@ -77,7 +77,7 @@ where
 /// ```
 pub fn remove<Range>(rng: &mut Range, val: &Range::Element) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Range::Element: Eq,
 {
     algo::remove(rng, rng.start(), rng.end(), val)
@@ -162,10 +162,10 @@ where
 }
 
 pub mod infix {
-    use crate::{rng, OutputRange};
+    use crate::{rng, SemiOutputRange};
 
     /// `remove`, `remove_if`.
-    pub trait STLRemoveExt: OutputRange {
+    pub trait STLRemoveExt: SemiOutputRange {
         fn remove_if<F>(&mut self, pred: F) -> Self::Position
         where
             F: Fn(&Self::Element) -> bool;
@@ -177,7 +177,7 @@ pub mod infix {
 
     impl<R> STLRemoveExt for R
     where
-        R: OutputRange + ?Sized,
+        R: SemiOutputRange + ?Sized,
     {
         fn remove_if<F>(&mut self, pred: F) -> Self::Position
         where

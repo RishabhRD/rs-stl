@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{InputRange, OutputRange, Regular};
+use crate::{InputRange, OutputRange, Regular, SemiOutputRange};
 
 /// Moves all element satisfying predicate to end of range.
 ///
@@ -37,7 +37,7 @@ pub fn remove_if<Range, Pred>(
     pred: Pred,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
     while start != end {
@@ -94,7 +94,7 @@ pub fn remove<Range>(
     val: &Range::Element,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Range::Element: Eq,
 {
     remove_if(rng, start, end, |x| x == val)
