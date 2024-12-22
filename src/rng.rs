@@ -109,6 +109,11 @@ pub mod partition;
 #[doc(inline)]
 pub use partition::*;
 
+#[doc(hidden)]
+pub mod heap;
+#[doc(inline)]
+pub use heap::*;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!
@@ -125,6 +130,8 @@ pub mod infix {
     pub use super::fill::infix::*;
     #[doc(inline)]
     pub use super::find::infix::*;
+    #[doc(inline)]
+    pub use super::heap::infix::*;
     #[doc(inline)]
     pub use super::minmax::infix::*;
     #[doc(inline)]

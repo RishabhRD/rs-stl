@@ -241,7 +241,7 @@ required description would be provided.
 - [ ] make_heap
 - [ ] sort_heap
 - [ ] is_heap
-- [ ] is_heap_until
+- [x] is_heap_until -> is_heap_until, is_heap_until_by
 
 ### Minimum/Maximum Operations
 

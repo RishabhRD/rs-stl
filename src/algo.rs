@@ -90,3 +90,8 @@ pub use minmax::*;
 pub mod partition;
 #[doc(inline)]
 pub use partition::*;
+
+#[doc(hidden)]
+pub mod heap;
+#[doc(inline)]
+pub use heap::*;
