@@ -304,31 +304,31 @@ where
     algo::pop_heap(rng, start, end);
 }
 
-/// Converts heap in range into sorted range wrt cmp.
+/// Converts given heap into sorted range wrt cmp.
 ///
 /// # Precondition
 ///  - rng is a heap.
 ///
 /// # Postcondition
-///  - Sorts the elements in rng such that the whole range is in non-decending order.
+///  - Sorts the elements in rng such that the whole range is in non-decending order wrt cmp.
 ///  - Complexity: O(n.log2(n)) comparisions.
 ///
+/// Where n is number of elements in rng.
+/// 
 /// #### Infix Supported
 /// YES
 ///
-/// Example
+/// # Example
 /// ```rust
 /// use stl::*;
 /// use rng::infix::*;
 ///
 /// let mut arr = [8, 7, 2, 5];
-/// let start = arr.start();
-/// let end = arr.end();
 /// rng::sort_heap_by(&mut arr, |x, y| x < y);
 /// assert!(arr.equals(&[2, 5, 7, 8]));
 ///
 /// let mut arr = [9, 8, 7];
-/// arr.sort_heap();
+/// arr.sort_heap_by(|x, y| x < y);
 /// assert!(arr.equals(&[7, 8, 9]));
 /// ```
 pub fn sort_heap_by<Range, Compare>(rng: &mut Range, cmp: Compare)
@@ -341,27 +341,26 @@ where
     algo::sort_heap_by(rng, start, end, cmp);
 }
 
-/// Converts heap in range into sorted range.
+/// Converts given heap into sorted range.
 ///
 /// # Precondition
 ///   - rng is a heap.
-///   - cmp should follow strict-weak-ordering relationship.
 ///
 /// # Postcondition
-///   - Sorts the elements in rng such that the whole range is in non-decending order wrt cmp.
+///   - Sorts the elements in rng such that the whole range is in non-decending order.
 ///   - Complexity: O(n.log2(n)) comparisions.
-///
+/// 
+/// Where n is number of elements in rng.
+/// 
 /// #### Infix Supported
 /// YES
 ///  
-/// Example
+/// # Example
 /// ```rust
 /// use stl::*;
 /// use rng::infix::*;
 ///
 /// let mut arr = [8, 7, 2, 5];
-/// let start = arr.start();
-/// let end = arr.end();
 /// rng::sort_heap(&mut arr);
 /// assert!(arr.equals(&[2, 5, 7, 8]));
 ///

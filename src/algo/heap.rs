@@ -362,17 +362,19 @@ pub fn pop_heap<Range>(
     pop_heap_by(rng, start, end, |x, y| x < y);
 }
 
-/// Converts heap in range into sorted range wrt cmp.
+/// Converts given heap into sorted range wrt cmp.
 ///
 /// # Precondition
 ///  - `[start, end)` represents valid positions in rng.
 ///  - rng at `[start, end)` is a heap.
 ///
 /// # Postcondition
-///  - Sorts the elements in rng such that the whole range is in non-decending order.
+///  - Sorts the element in rng at `[start, end)` such that whole range at `[start, end)` is in non-decreasing order wrt cmp.
 ///  - Complexity: O(n.log2(n)) comparisions.
 ///
-/// Example
+/// Where n is number of elements in `[start, end)`.
+/// 
+/// # Example
 /// ```rust
 /// use stl::*;
 /// use rng::infix::*;
@@ -397,18 +399,20 @@ pub fn sort_heap_by<Range, Compare>(
         end = rng.before(end);
     }
 }
-/// Converts heap in range into sorted range.
+
+/// Converts given heap into sorted range.
 ///
 /// # Precondition
 ///  - `[start, end)` represents valid positions in rng.
 ///  - rng at `[start, end)` is a heap.
-///  - cmp should follow strict-weak-ordering relationship.
 ///
 /// # Postcondition
-///  - Sorts the elements in rng such that the whole range is in non-decending order wrt cmp.
+///  - Sorts the elements in rng such that the whole range is in non-decending order.
 ///  - Complexity: O(n.log2(n)) comparisions.
+/// 
+/// Where n is number of elements in `[start, end)`.
 ///
-/// Example
+/// # Example
 /// ```rust
 /// use stl::*;
 /// use rng::infix::*;
