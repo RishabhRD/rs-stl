@@ -296,6 +296,79 @@ where
     algo::pop_heap(rng, start, end);
 }
 
+/// Reorders the range such that resulting range is heap wrt cmp.
+///
+/// # Precondition
+///   - cmp follows strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Reorders rng such that resulting range at is a heap wrt cmp.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [2, 5, 1, 4];
+/// rng::make_heap_by(&mut arr, |x, y| x < y);
+/// assert!(arr.is_heap_by(|x, y| x < y));
+///
+/// let mut arr = [2, 5, 1, 4];
+/// arr.make_heap_by(|x, y| x < y);
+/// assert!(arr.is_heap_by(|x, y| x < y));
+/// ```
+pub fn make_heap_by<Range, Compare>(rng: &mut Range, cmp: Compare)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::make_heap_by(rng, start, end, cmp);
+}
+
+/// Reorders the range such that resulting range is heap.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Reorders rng such that resulting range is a heap.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [2, 5, 1, 4];
+/// rng::make_heap(&mut arr);
+/// assert!(arr.is_heap());
+///
+/// let mut arr = [2, 5, 1, 4];
+/// arr.make_heap();
+/// assert!(arr.is_heap());
+/// ```
+pub fn make_heap<Range>(rng: &mut Range)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::make_heap(rng, start, end);
+}
+
 pub mod infix {
     use crate::{rng, RandomAccessRange, SemiOutputRange};
 
@@ -368,6 +441,14 @@ pub mod infix {
         fn pop_heap(&mut self)
         where
             Self::Element: Ord;
+
+        fn make_heap_by<Compare>(&mut self, cmp: Compare)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone;
+
+        fn make_heap(&mut self)
+        where
+            Self::Element: Ord;
     }
 
     impl<R> STLOutputHeapExt for R
@@ -400,6 +481,20 @@ pub mod infix {
             Self::Element: Ord,
         {
             rng::pop_heap(self);
+        }
+
+        fn make_heap_by<Compare>(&mut self, cmp: Compare)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
+        {
+            rng::make_heap_by(self, cmp);
+        }
+
+        fn make_heap(&mut self)
+        where
+            Self::Element: Ord,
+        {
+            rng::make_heap(self);
         }
     }
 }

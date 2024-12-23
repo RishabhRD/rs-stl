@@ -175,4 +175,67 @@ pub mod tests {
         arr.pop_heap();
         assert!(arr[0..6].is_heap());
     }
+
+    #[test]
+    fn make_heap() {
+        let mut arr = [5, 1, 1, 2, 9, 4];
+        let start = arr.start();
+        let end = arr.end();
+        algo::make_heap_by(&mut arr, start, end, |x, y| x < y);
+        assert!(arr.is_heap_by(|x, y| x < y));
+
+        let mut arr = [5, 1, 1, 2, 9, 4];
+        rng::make_heap_by(&mut arr, |x, y| x < y);
+        assert!(arr.is_heap_by(|x, y| x < y));
+
+        let mut arr = [5, 1, 1, 2, 9, 4];
+        arr.make_heap_by(|x, y| x < y);
+        assert!(arr.is_heap_by(|x, y| x < y));
+
+        let mut arr = [5, 1, 1, 2, 9, 4];
+        let start = arr.start();
+        let end = arr.end();
+        algo::make_heap(&mut arr, start, end);
+        assert!(arr.is_heap());
+
+        let mut arr = [5, 1, 1, 2, 9, 4];
+        rng::make_heap(&mut arr);
+        assert!(arr.is_heap());
+
+        let mut arr = [5, 1, 1, 2, 9, 4];
+        arr.make_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [1, 1, 2, 4, 5, 9];
+        arr.make_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [9, 5, 4, 1, 1, 3, 2];
+        arr.make_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [1, 1, 2, 4, 5];
+        arr.make_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [1, 1, 2, 4];
+        arr.make_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [1, 1, 2];
+        arr.make_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [1, 1];
+        arr.make_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [1];
+        arr.make_heap();
+        assert!(arr.is_heap());
+
+        let mut arr: [i32; 0] = [];
+        arr.make_heap();
+        assert!(arr.is_heap());
+    }
 }

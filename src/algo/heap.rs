@@ -153,6 +153,8 @@ where
 ///     operation `[start, end)` is a heap wrt cmp.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in `[start, end)`.
+///
 /// # Example
 /// ```rust
 /// use stl::*;
@@ -203,6 +205,8 @@ pub fn push_heap_by<Range, Compare>(
 ///     operation `[start, end)` is a heap.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in `[start, end)`.
+///
 /// # Example
 /// ```rust
 /// use stl::*;
@@ -233,6 +237,8 @@ pub fn push_heap<Range>(
 /// # Postcondition
 ///   - Reorders element in rng such that whole range is a heap.
 ///   - Complexity: O(log n) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
 fn heapify<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
@@ -289,6 +295,8 @@ fn heapify<Range, Compare>(
 ///   - If rng at `[start, end)` is empty, then do nothing.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in `[start, end)`.
+///
 /// # Example
 /// ```rust
 /// use stl::*;
@@ -330,6 +338,8 @@ pub fn pop_heap_by<Range, Compare>(
 ///   - If rng at `[start, end)` is empty, then do nothing.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in `[start, end)`.
+///
 /// # Example
 /// ```rust
 /// use stl::*;
@@ -350,4 +360,86 @@ pub fn pop_heap<Range>(
     Range::Element: Ord,
 {
     pop_heap_by(rng, start, end, |x, y| x < y);
+}
+
+/// Reorders the range such that resulting range is heap wrt cmp.
+///
+/// # Precondition
+///   - `[start, end)` represents valid position in rng.
+///   - cmp follows strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Reorders rng at `[start, end)` such that resulting range at `[start, end)`
+///     is a heap wrt cmp.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [2, 5, 1, 4];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::make_heap_by(&mut arr, start, end, |x, y| x < y);
+/// assert!(arr.is_heap_by(|x, y| x < y));
+/// ```
+pub fn make_heap_by<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+    cmp: Compare,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    let n = rng.distance(start.clone(), end.clone());
+    if n == 0 || n == 1 {
+        return;
+    }
+    let mut root = n / 2;
+    loop {
+        let root_pos = rng.after_n(start.clone(), root);
+        heapify(rng, root_pos.clone(), end.clone(), cmp.clone());
+        if root_pos == start {
+            break;
+        }
+        root -= 1;
+    }
+}
+
+/// Reorders the range such that resulting range is heap.
+///
+/// # Precondition
+///   - `[start, end)` represents valid position in rng.
+///
+/// # Postcondition
+///   - Reorders rng at `[start, end)` such that resulting range at `[start, end)`
+///     is a heap.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [2, 5, 1, 4];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::make_heap(&mut arr, start, end);
+/// assert!(arr.is_heap_by());
+/// ```
+pub fn make_heap<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    make_heap_by(rng, start, end, |x, y| x < y);
 }
