@@ -217,6 +217,85 @@ where
     push_heap_by(rng, |x, y| x < y)
 }
 
+/// Swaps element at `rng.start()` position with element before `rng.end()` position and ensures `[rng.start(), rng.end() - 1)` is a heap wrt cmp.
+///
+/// # Precondition
+///   - rng is a heap wrt cmp.
+///   - cmp should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Swaps element at `rng.start()` position with element before `rng.end()` position
+///     and then ensures `[rng.start(), rng.end() - 1)` is a heap wrt cmp.
+///   - If rng is empty, then do nothing.
+///   - Complexity: O(log n) comparisions.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [9, 8, 7];
+/// rng::pop_heap_by(&mut arr, |x, y| x < y);
+/// assert!(&arr[0..2].is_heap_by(|x, y| x < y));
+/// assert!(arr.equals(&[8, 7, 9]));
+///
+/// let mut arr = [9, 8, 7];
+/// arr.pop_heap_by(|x, y| x < y);
+/// assert!(&arr[0..2].is_heap_by(|x, y| x < y));
+/// assert!(arr.equals(&[8, 7, 9]));
+/// ```
+pub fn pop_heap_by<Range, Compare>(rng: &mut Range, cmp: Compare)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::pop_heap_by(rng, start, end, cmp);
+}
+
+/// Swaps element at `rng.start()` position with element before `rng.end()` position and ensures `[rng.start(), rng.end() - 1)` is a heap.
+///
+/// # Precondition
+///   - rng is a heap.
+///
+/// # Postcondition
+///   - Swaps element at `rng.start()` position with element before `rng.end()` position
+///     and then ensures `[rng.start(), rng.end() - 1)` is a heap.
+///   - If rng is empty, then do nothing.
+///   - Complexity: O(log n) comparisions.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [9, 8, 7];
+/// rng::pop_heap(&mut arr);
+/// assert!(&arr[0..2].is_heap());
+/// assert!(arr.equals(&[8, 7, 9]));
+///
+/// let mut arr = [9, 8, 7];
+/// arr.pop_heap();
+/// assert!(&arr[0..2].is_heap());
+/// assert!(arr.equals(&[8, 7, 9]));
+/// ```
+pub fn pop_heap<Range>(rng: &mut Range)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::pop_heap(rng, start, end);
+}
+
 pub mod infix {
     use crate::{rng, RandomAccessRange, SemiOutputRange};
 
@@ -281,6 +360,14 @@ pub mod infix {
         fn push_heap(&mut self)
         where
             Self::Element: Ord;
+
+        fn pop_heap_by<Compare>(&mut self, cmp: Compare)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool;
+
+        fn pop_heap(&mut self)
+        where
+            Self::Element: Ord;
     }
 
     impl<R> STLOutputHeapExt for R
@@ -299,6 +386,20 @@ pub mod infix {
             Self::Element: Ord,
         {
             rng::push_heap(self);
+        }
+
+        fn pop_heap_by<Compare>(&mut self, cmp: Compare)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool,
+        {
+            rng::pop_heap_by(self, cmp);
+        }
+
+        fn pop_heap(&mut self)
+        where
+            Self::Element: Ord,
+        {
+            rng::pop_heap(self);
         }
     }
 }

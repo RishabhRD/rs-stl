@@ -224,3 +224,130 @@ pub fn push_heap<Range>(
 {
     push_heap_by(rng, start, end, |x, y| x < y)
 }
+
+/// # Precondition
+///   - `[start, end)` represents valid positions in rng.
+///   - children of start element should be a heap wrt cmp.
+///   - cmp should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Reorders element in rng such that whole range is a heap.
+///   - Complexity: O(log n) comparisions.
+fn heapify<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+    cmp: Compare,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    let n = rng.distance(start.clone(), end.clone());
+
+    let mut root = 0;
+
+    loop {
+        let left_child = root * 2 + 1;
+        let right_child = root * 2 + 2;
+
+        let root_pos = rng.after_n(start.clone(), root);
+        let mut largest = root_pos.clone();
+
+        if left_child < n {
+            let left_pos = rng.after_n(start.clone(), left_child);
+            if cmp(rng.at(&largest), rng.at(&left_pos)) {
+                largest = left_pos;
+            }
+        }
+
+        if right_child < n {
+            let right_pos = rng.after_n(start.clone(), right_child);
+            if cmp(rng.at(&largest), rng.at(&right_pos)) {
+                largest = right_pos;
+            }
+        }
+
+        if largest == root_pos {
+            break;
+        }
+
+        rng.swap_at(&root_pos, &largest);
+        root = rng.distance(start.clone(), largest);
+    }
+}
+
+/// Swaps element at `start` position with element before `end` position and ensures `[start, end - 1)` is a heap wrt cmp.
+///
+/// # Precondition
+///   - `[start, end)` represents valid positions in rng.
+///   - rng at `[start, end)` is a heap wrt cmp.
+///   - cmp should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Swaps element at `start` position with element before `end` position
+///     and then ensures `[start, end - 1)` is a heap wrt cmp.
+///   - If rng at `[start, end)` is empty, then do nothing.
+///   - Complexity: O(log n) comparisions.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [9, 8, 7];
+/// algo::pop_heap_by(&mut arr, 0, 3, |x, y| x < y);
+/// assert!(&arr[0..2].is_heap_by(|x, y| x < y));
+/// assert!(arr.equals(&[8, 7, 9]));
+/// ```
+pub fn pop_heap_by<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+    cmp: Compare,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    let n = rng.distance(start.clone(), end.clone());
+    if n == 0 || n == 1 {
+        return;
+    }
+
+    let prev = rng.before(end);
+    rng.swap_at(&start, &prev);
+    heapify(rng, start, prev, cmp);
+}
+
+/// Swaps element at `start` position with element before `end` position and ensures `[start, end - 1)` is a heap.
+///
+/// # Precondition
+///   - `[start, end)` represents valid positions in rng.
+///   - rng at `[start, end)` is a heap.
+///
+/// # Postcondition
+///   - Swaps element at `start` position with element before `end` position
+///     and then ensures `[start, end - 1)` is a heap.
+///   - If rng at `[start, end)` is empty, then do nothing.
+///   - Complexity: O(log n) comparisions.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [9, 8, 7];
+/// algo::pop_heap(&mut arr, 0, 3);
+/// assert!(&arr[0..2].is_heap());
+/// println!("array: {:?}", arr);
+/// assert!(arr.equals(&[8, 7, 9]));
+/// ```
+pub fn pop_heap<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    pop_heap_by(rng, start, end, |x, y| x < y);
+}

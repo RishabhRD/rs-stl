@@ -122,4 +122,57 @@ pub mod tests {
         arr.push_heap();
         assert!(arr.is_heap());
     }
+
+    #[test]
+    fn pop_heap() {
+        let mut arr = [9, 8, 7];
+        let start = arr.start();
+        let end = arr.end();
+        algo::pop_heap_by(&mut arr, start, end, |x, y| x < y);
+        assert!(&arr[0..2].is_heap_by(|x, y| x < y));
+        assert!(arr.equals(&[8, 7, 9]));
+
+        let mut arr = [9, 8, 7];
+        rng::pop_heap_by(&mut arr, |x, y| x < y);
+        assert!(&arr[0..2].is_heap_by(|x, y| x < y));
+        assert!(arr.equals(&[8, 7, 9]));
+
+        let mut arr = [9, 8, 7];
+        arr.pop_heap_by(|x, y| x < y);
+        assert!(&arr[0..2].is_heap_by(|x, y| x < y));
+        assert!(arr.equals(&[8, 7, 9]));
+
+        let mut arr = [9, 8, 7];
+        let start = arr.start();
+        let end = arr.end();
+        algo::pop_heap(&mut arr, start, end);
+        assert!(&arr[0..2].is_heap());
+        assert!(arr.equals(&[8, 7, 9]));
+
+        let mut arr = [9, 8, 7];
+        rng::pop_heap(&mut arr);
+        assert!(&arr[0..2].is_heap());
+        assert!(arr.equals(&[8, 7, 9]));
+
+        let mut arr = [9, 8, 7];
+        arr.pop_heap();
+        assert!(&arr[0..2].is_heap());
+        assert!(arr.equals(&[8, 7, 9]));
+
+        let mut arr = [9, 8];
+        arr.pop_heap();
+        assert!(arr.equals(&[8, 9]));
+
+        let mut arr = [9];
+        arr.pop_heap();
+        assert!(arr.equals(&[9]));
+
+        let mut arr: [i32; 0] = [];
+        arr.pop_heap();
+        assert!(arr.equals(&[]));
+
+        let mut arr = [9, 5, 4, 1, 1, 3, 2];
+        arr.pop_heap();
+        assert!(arr[0..6].is_heap());
+    }
 }
