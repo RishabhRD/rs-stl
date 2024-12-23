@@ -236,7 +236,7 @@ required description would be provided.
 
 ### Heap Operations
 
-- [ ] push_heap
+- [x] push_heap
 - [ ] pop_heap
 - [ ] make_heap
 - [ ] sort_heap

@@ -75,4 +75,51 @@ pub mod tests {
         assert!(rng::is_heap_by(&arr, |x, y| x < y));
         assert!(arr.is_heap_by(|x, y| x < y));
     }
+
+    #[test]
+    fn push_heap() {
+        let mut arr = [8, 2, 9];
+        let start = arr.start();
+        let end = arr.end();
+        algo::push_heap_by(&mut arr, start, end, |x, y| x < y);
+        assert!(arr.is_heap_by(|x, y| x < y));
+
+        let mut arr = [8, 2, 9];
+        rng::push_heap_by(&mut arr, |x, y| x < y);
+        assert!(arr.is_heap_by(|x, y| x < y));
+
+        let mut arr = [8, 2, 9];
+        arr.push_heap_by(|x, y| x < y);
+        assert!(arr.is_heap_by(|x, y| x < y));
+
+        let mut arr = [8, 2, 9];
+        let start = arr.start();
+        let end = arr.end();
+        algo::push_heap(&mut arr, start, end);
+        assert!(arr.is_heap());
+
+        let mut arr = [8, 2, 9];
+        rng::push_heap(&mut arr);
+        assert!(arr.is_heap());
+
+        let mut arr = [8, 2, 9];
+        arr.push_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [8];
+        arr.push_heap();
+        assert!(arr.is_heap());
+
+        let mut arr: [i32; 0] = [];
+        arr.push_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [8, 2];
+        arr.push_heap();
+        assert!(arr.is_heap());
+
+        let mut arr = [2, 8];
+        arr.push_heap();
+        assert!(arr.is_heap());
+    }
 }
