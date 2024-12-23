@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{InputRange, RandomAccessRange, SemiOutputRange};
+use crate::{RandomAccessRange, SemiOutputRange};
 
 /// Finds largest range that from start represents a heap wrt comparator.
 ///
@@ -367,10 +367,10 @@ pub fn pop_heap<Range>(
 /// use stl::*;
 /// use rng::infix::*;
 ///
-/// let mut arr = [5, 7, 2, 8];
+/// let mut arr = [8, 7, 5, 2];
 /// let start = arr.start();
 /// let end = arr.end();
-/// algo::sort_heap_by(&mut arr, start, end);
+/// algo::sort_heap_by(&mut arr, start, end, |x, y| x < y);
 /// assert!(arr.equals(&[2, 5, 7, 8]));
 /// ```
 pub fn sort_heap_by<Range, Compare>(
@@ -403,10 +403,10 @@ pub fn sort_heap_by<Range, Compare>(
 /// use stl::*;
 /// use rng::infix::*;
 ///
-/// let mut arr = [5, 7, 2, 8];
+/// let mut arr = [8, 7, 5, 2];
 /// let start = arr.start();
 /// let end = arr.end();
-/// algo::sort_heap(&mut arr, start, end,|x, y| x < y);
+/// algo::sort_heap(&mut arr, start, end);
 /// assert!(arr.equals(&[2, 5, 7, 8]));
 /// ```
 pub fn sort_heap<Range>(

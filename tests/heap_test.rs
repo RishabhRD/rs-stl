@@ -175,4 +175,51 @@ pub mod tests {
         arr.pop_heap();
         assert!(arr[0..6].is_heap());
     }
+
+    #[test]
+    fn sort_heap(){
+        let mut arr = [9, 8, 7];
+        let start = arr.start();
+        let end = arr.end();
+        algo::sort_heap_by(&mut arr, start, end, |x, y| x < y);
+        assert!(arr.equals(&[7, 8, 9]));
+
+        let mut arr = [9, 8, 7];
+        rng::sort_heap_by(&mut arr, |x, y| x < y);
+        assert!(arr.equals(&[7, 8, 9]));
+
+        let mut arr = [9, 8, 7];
+        arr.sort_heap_by(|x, y| x < y);
+        assert!(arr.equals(&[7, 8, 9]));
+
+        let mut arr = [9, 8, 7];
+        let start = arr.start();
+        let end = arr.end();
+        algo::sort_heap(&mut arr, start, end);
+        assert!(arr.equals(&[7, 8, 9]));
+
+        let mut arr = [9, 8, 7];
+        rng::sort_heap(&mut arr);
+        assert!(arr.equals(&[7, 8, 9]));
+
+        let mut arr = [9, 8, 7];
+        arr.sort_heap();
+        assert!(arr.equals(&[7, 8, 9]));
+
+        let mut arr = [9, 8];
+        arr.sort_heap();
+        assert!(arr.equals(&[8, 9]));
+
+        let mut arr = [9];
+        arr.sort_heap();
+        assert!(arr.equals(&[9]));
+
+        let mut arr: [i32; 0] = [];
+        arr.sort_heap();
+        assert!(arr.equals(&[]));
+
+        let mut arr = [9, 5, 4, 1, 1, 3, 2];
+        arr.sort_heap();
+        assert!(arr.equals(&[1, 1, 2, 3, 4, 5, 9]));
+    }
 }
