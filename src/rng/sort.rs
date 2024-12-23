@@ -3,7 +3,7 @@
 
 use crate::{algo, RandomAccessRange, SemiOutputRange};
 
-/// unstable sort: sort range in non-decreasing order based on comparator.
+/// Unstable sort: sort range in non-decreasing order based on comparator.
 ///
 /// # Precondition
 ///   - cmp follows strict weak ordering relationship, i.e., returns true for
@@ -46,7 +46,7 @@ where
     algo::sort_range_by(rng, start, end, cmp)
 }
 
-/// unstable sort: sort range in non-decreasing order based.
+/// Unstable sort: sort range in non-decreasing order based.
 ///
 /// # Precondition
 ///

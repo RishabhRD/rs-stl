@@ -5,7 +5,7 @@ use crate::{RandomAccessRange, SemiOutputRange};
 
 use super::details::insertion_sort;
 
-/// unstable sort: sort range in non-decreasing order based on comparator.
+/// Unstable sort: sort range in non-decreasing order based on comparator.
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid position in rng.
@@ -46,7 +46,7 @@ pub fn sort_range_by<Range, Compare>(
     insertion_sort(rng, start, end, cmp);
 }
 
-/// unstable sort: sort range in non-decreasing order based.
+/// Unstable sort: sort range in non-decreasing order based.
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid position in rng.
