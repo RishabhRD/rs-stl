@@ -2,6 +2,7 @@ name: Validate PR
 
 on:
   pull_request:
+    types: [opened, synchronize, edited, ready_for_review]
     branches:
       - "*"
 
