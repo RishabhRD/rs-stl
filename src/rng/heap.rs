@@ -304,6 +304,80 @@ where
     algo::pop_heap(rng, start, end);
 }
 
+/// Converts given heap into sorted range wrt cmp.
+///
+/// # Precondition
+///  - rng is a heap wrt cmp.
+///
+/// # Postcondition
+///  - Sorts the elements in rng such that the whole range is in non-decending order wrt cmp.
+///  - Complexity: O(n.log2(n)) comparisions.
+///
+/// Where n is number of elements in rng.
+/// 
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [8, 7, 2, 5];
+/// rng::sort_heap_by(&mut arr, |x, y| x < y);
+/// assert!(arr.equals(&[2, 5, 7, 8]));
+///
+/// let mut arr = [9, 8, 7];
+/// arr.sort_heap_by(|x, y| x < y);
+/// assert!(arr.equals(&[7, 8, 9]));
+/// ```
+pub fn sort_heap_by<Range, Compare>(rng: &mut Range, cmp: Compare)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::sort_heap_by(rng, start, end, cmp);
+}
+
+/// Converts given heap into sorted range.
+///
+/// # Precondition
+///   - rng is a heap.
+///
+/// # Postcondition
+///   - Sorts the elements in rng such that the whole range is in non-decending order.
+///   - Complexity: O(n.log2(n)) comparisions.
+/// 
+/// Where n is number of elements in rng.
+/// 
+/// #### Infix Supported
+/// YES
+///  
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [8, 7, 2, 5];
+/// rng::sort_heap(&mut arr);
+/// assert!(arr.equals(&[2, 5, 7, 8]));
+///
+/// let mut arr = [9, 8, 7];
+/// arr.sort_heap();
+/// assert!(arr.equals(&[7, 8, 9]));
+/// ```
+pub fn sort_heap<Range>(rng: &mut Range)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::sort_heap(rng, start, end);
+}
+
 /// Reorders the range such that resulting range is heap wrt cmp.
 ///
 /// # Precondition
@@ -432,7 +506,7 @@ pub mod infix {
         }
     }
 
-    /// `push_heap`, `push_heap_by`, `pop_heap`, `pop_heap_by`, `make_heap`, `make_heap_by`.
+    /// `push_heap`, `push_heap_by`, `pop_heap`, `pop_heap_by`, `make_heap`, `make_heap_by`, `sort_heap`, `sort_heap_by`.
     pub trait STLOutputHeapExt: RandomAccessRange + SemiOutputRange {
         fn push_heap_by<Compare>(&mut self, cmp: Compare)
         where
@@ -447,6 +521,14 @@ pub mod infix {
             Compare: Fn(&Self::Element, &Self::Element) -> bool;
 
         fn pop_heap(&mut self)
+        where
+            Self::Element: Ord;
+
+        fn sort_heap_by<Compare>(&mut self, cmp: Compare)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone;
+
+        fn sort_heap(&mut self)
         where
             Self::Element: Ord;
 
@@ -489,6 +571,18 @@ pub mod infix {
             Self::Element: Ord,
         {
             rng::pop_heap(self);
+        }
+        fn sort_heap_by<Compare>(&mut self, cmp: Compare)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
+        {
+            rng::sort_heap_by(self, cmp);
+        }
+        fn sort_heap(&mut self)
+        where
+            Self::Element: Ord,
+        {
+            rng::sort_heap(self);
         }
 
         fn make_heap_by<Compare>(&mut self, cmp: Compare)

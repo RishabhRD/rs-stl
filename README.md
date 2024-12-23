@@ -239,7 +239,7 @@ required description would be provided.
 - [x] push_heap -> push_heap, push_heap_by
 - [x] pop_heap -> pop_heap, pop_heap_by
 - [x] make_heap -> make_heap, make_heap_by
-- [ ] sort_heap
+- [x] sort_heap -> sort_heap, sort_heap_by
 - [x] is_heap -> is_heap, is_heap_by
 - [x] is_heap_until -> is_heap_until, is_heap_until_by
 

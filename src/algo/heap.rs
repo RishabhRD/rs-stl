@@ -362,6 +362,78 @@ pub fn pop_heap<Range>(
     pop_heap_by(rng, start, end, |x, y| x < y);
 }
 
+/// Converts given heap into sorted range wrt cmp.
+///
+/// # Precondition
+///  - `[start, end)` represents valid positions in rng.
+///  - rng at `[start, end)` is a heap wrt cmp.
+///
+/// # Postcondition
+///  - Sorts the element in rng at `[start, end)` such that whole range at `[start, end)` is in non-decreasing order wrt cmp.
+///  - Complexity: O(n.log2(n)) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
+/// 
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [8, 7, 5, 2];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::sort_heap_by(&mut arr, start, end, |x, y| x < y);
+/// assert!(arr.equals(&[2, 5, 7, 8]));
+/// ```
+pub fn sort_heap_by<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    mut end: Range::Position,
+    cmp: Compare,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    while start != end {
+        pop_heap_by(rng, start.clone(), end.clone(), cmp.clone());
+        end = rng.before(end);
+    }
+}
+
+/// Converts given heap into sorted range.
+///
+/// # Precondition
+///  - `[start, end)` represents valid positions in rng.
+///  - rng at `[start, end)` is a heap.
+///
+/// # Postcondition
+///  - Sorts the elements in rng at `[start, end)` such that the whole range `[start, end)` is in non-decending order.
+///  - Complexity: O(n.log2(n)) comparisions.
+/// 
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [8, 7, 5, 2];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::sort_heap(&mut arr, start, end);
+/// assert!(arr.equals(&[2, 5, 7, 8]));
+/// ```
+pub fn sort_heap<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    sort_heap_by(rng, start, end, |x, y| x < y);
+}
+
 /// Reorders the range such that resulting range is heap wrt cmp.
 ///
 /// # Precondition
