@@ -431,7 +431,7 @@ pub fn make_heap_by<Range, Compare>(
 /// let start = arr.start();
 /// let end = arr.end();
 /// algo::make_heap(&mut arr, start, end);
-/// assert!(arr.is_heap_by());
+/// assert!(arr.is_heap());
 /// ```
 pub fn make_heap<Range>(
     rng: &mut Range,
