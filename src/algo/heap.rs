@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{RandomAccessRange, SemiOutputRange};
+use crate::{InputRange, RandomAccessRange, SemiOutputRange};
 
 /// Finds largest range that from start represents a heap wrt comparator.
 ///
@@ -350,4 +350,72 @@ pub fn pop_heap<Range>(
     Range::Element: Ord,
 {
     pop_heap_by(rng, start, end, |x, y| x < y);
+}
+
+/// Converts heap in range into sorted range wrt cmp.
+///
+/// # Precondition
+///  - `[start, end)` represents valid positions in rng.
+///  - rng at `[start, end)` is a heap.
+///
+/// # Postcondition
+///  - Sorts the elements in rng such that the whole range is in non-decending order.
+///  - Complexity: O(n.log2(n)) comparisions.
+///
+/// Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [5, 7, 2, 8];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::sort_heap_by(&mut arr, start, end);
+/// assert!(arr.equals(&[2, 5, 7, 8]));
+/// ```
+pub fn sort_heap_by<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    mut end: Range::Position,
+    cmp: Compare,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    while start != end {
+        pop_heap_by(rng, start.clone(), end.clone(), cmp.clone());
+        end = rng.before(end);
+    }
+}
+/// Converts heap in range into sorted range.
+///
+/// # Precondition
+///  - `[start, end)` represents valid positions in rng.
+///  - rng at `[start, end)` is a heap.
+///  - cmp should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///  - Sorts the elements in rng such that the whole range is in non-decending order wrt cmp.
+///  - Complexity: O(n.log2(n)) comparisions.
+///
+/// Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [5, 7, 2, 8];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::sort_heap(&mut arr, start, end,|x, y| x < y);
+/// assert!(arr.equals(&[2, 5, 7, 8]));
+/// ```
+pub fn sort_heap<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    end: Range::Position,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    sort_heap_by(rng, start, end, |x, y| x < y);
 }
