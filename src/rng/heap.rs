@@ -148,6 +148,8 @@ where
 ///     After operation, full rng will be a heap wrt cmp.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in rng.
+///
 /// #### Infix Supported
 /// YES
 ///
@@ -189,6 +191,8 @@ where
 ///     After operation, full rng will be a heap.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in rng.
+///
 /// #### Infix Supported
 /// YES
 ///
@@ -229,6 +233,8 @@ where
 ///   - If rng is empty, then do nothing.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in rng.
+///
 /// #### Infix Supported
 /// YES
 ///
@@ -267,6 +273,8 @@ where
 ///     and then ensures `[rng.start(), rng.end() - 1)` is a heap.
 ///   - If rng is empty, then do nothing.
 ///   - Complexity: O(log n) comparisions.
+///
+/// Where n is number of elements in rng.
 ///
 /// #### Infix Supported
 /// YES
@@ -307,7 +315,7 @@ where
 ///
 /// #### Infix Supported
 /// YES
-/// 
+///
 /// Example
 /// ```rust
 /// use stl::*;
@@ -318,7 +326,7 @@ where
 /// let end = arr.end();
 /// rng::sort_heap_by(&mut arr, |x, y| x < y);
 /// assert!(arr.equals(&[2, 5, 7, 8]));
-/// 
+///
 /// let mut arr = [9, 8, 7];
 /// arr.sort_heap();
 /// assert!(arr.equals(&[7, 8, 9]));
@@ -342,7 +350,7 @@ where
 /// # Postcondition
 ///   - Sorts the elements in rng such that the whole range is in non-decending order wrt cmp.
 ///   - Complexity: O(n.log2(n)) comparisions.
-/// 
+///
 /// #### Infix Supported
 /// YES
 ///  
@@ -356,7 +364,7 @@ where
 /// let end = arr.end();
 /// rng::sort_heap(&mut arr);
 /// assert!(arr.equals(&[2, 5, 7, 8]));
-/// 
+///
 /// let mut arr = [9, 8, 7];
 /// arr.sort_heap();
 /// assert!(arr.equals(&[7, 8, 9]));
@@ -369,6 +377,79 @@ where
     let start = rng.start();
     let end = rng.end();
     algo::sort_heap(rng, start, end);
+}
+
+/// Reorders the range such that resulting range is heap wrt cmp.
+///
+/// # Precondition
+///   - cmp follows strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Reorders rng such that resulting range at is a heap wrt cmp.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [2, 5, 1, 4];
+/// rng::make_heap_by(&mut arr, |x, y| x < y);
+/// assert!(arr.is_heap_by(|x, y| x < y));
+///
+/// let mut arr = [2, 5, 1, 4];
+/// arr.make_heap_by(|x, y| x < y);
+/// assert!(arr.is_heap_by(|x, y| x < y));
+/// ```
+pub fn make_heap_by<Range, Compare>(rng: &mut Range, cmp: Compare)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::make_heap_by(rng, start, end, cmp);
+}
+
+/// Reorders the range such that resulting range is heap.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Reorders rng such that resulting range is a heap.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [2, 5, 1, 4];
+/// rng::make_heap(&mut arr);
+/// assert!(arr.is_heap());
+///
+/// let mut arr = [2, 5, 1, 4];
+/// arr.make_heap();
+/// assert!(arr.is_heap());
+/// ```
+pub fn make_heap<Range>(rng: &mut Range)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::make_heap(rng, start, end);
 }
 
 pub mod infix {
@@ -426,7 +507,7 @@ pub mod infix {
         }
     }
 
-    /// `push_heap`, `push_heap_by`, `sort_heap`, `sort_heap_by`.
+    /// `push_heap`, `push_heap_by`, `pop_heap`, `pop_heap_by`, `make_heap`, `make_heap_by`, `sort_heap`, `sort_heap_by`.
     pub trait STLOutputHeapExt: RandomAccessRange + SemiOutputRange {
         fn push_heap_by<Compare>(&mut self, cmp: Compare)
         where
@@ -443,13 +524,21 @@ pub mod infix {
         fn pop_heap(&mut self)
         where
             Self::Element: Ord;
-        
+
         fn sort_heap_by<Compare>(&mut self, cmp: Compare)
-        where 
+        where
             Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone;
 
         fn sort_heap(&mut self)
-        where 
+        where
+            Self::Element: Ord;
+
+        fn make_heap_by<Compare>(&mut self, cmp: Compare)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone;
+
+        fn make_heap(&mut self)
+        where
             Self::Element: Ord;
     }
 
@@ -485,16 +574,30 @@ pub mod infix {
             rng::pop_heap(self);
         }
         fn sort_heap_by<Compare>(&mut self, cmp: Compare)
-        where 
-            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone, 
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
         {
-            rng::sort_heap_by(self, cmp);   
+            rng::sort_heap_by(self, cmp);
         }
         fn sort_heap(&mut self)
-        where 
-            Self::Element: Ord 
+        where
+            Self::Element: Ord,
         {
-            rng::sort_heap(self);    
+            rng::sort_heap(self);
+        }
+
+        fn make_heap_by<Compare>(&mut self, cmp: Compare)
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
+        {
+            rng::make_heap_by(self, cmp);
+        }
+
+        fn make_heap(&mut self)
+        where
+            Self::Element: Ord,
+        {
+            rng::make_heap(self);
         }
     }
 }
