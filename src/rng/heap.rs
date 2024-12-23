@@ -148,6 +148,8 @@ where
 ///     After operation, full rng will be a heap wrt cmp.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in rng.
+///
 /// #### Infix Supported
 /// YES
 ///
@@ -189,6 +191,8 @@ where
 ///     After operation, full rng will be a heap.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in rng.
+///
 /// #### Infix Supported
 /// YES
 ///
@@ -229,6 +233,8 @@ where
 ///   - If rng is empty, then do nothing.
 ///   - Complexity: O(log n) comparisions.
 ///
+/// Where n is number of elements in rng.
+///
 /// #### Infix Supported
 /// YES
 ///
@@ -267,6 +273,8 @@ where
 ///     and then ensures `[rng.start(), rng.end() - 1)` is a heap.
 ///   - If rng is empty, then do nothing.
 ///   - Complexity: O(log n) comparisions.
+///
+/// Where n is number of elements in rng.
 ///
 /// #### Infix Supported
 /// YES
@@ -424,7 +432,7 @@ pub mod infix {
         }
     }
 
-    /// `push_heap`, `push_heap_by`.
+    /// `push_heap`, `push_heap_by`, `pop_heap`, `pop_heap_by`, `make_heap`, `make_heap_by`.
     pub trait STLOutputHeapExt: RandomAccessRange + SemiOutputRange {
         fn push_heap_by<Compare>(&mut self, cmp: Compare)
         where
