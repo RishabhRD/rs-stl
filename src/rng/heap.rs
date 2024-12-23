@@ -307,7 +307,7 @@ where
 /// Converts given heap into sorted range wrt cmp.
 ///
 /// # Precondition
-///  - rng is a heap.
+///  - rng is a heap wrt cmp.
 ///
 /// # Postcondition
 ///  - Sorts the elements in rng such that the whole range is in non-decending order wrt cmp.

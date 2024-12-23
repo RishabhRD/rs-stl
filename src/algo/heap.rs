@@ -366,7 +366,7 @@ pub fn pop_heap<Range>(
 ///
 /// # Precondition
 ///  - `[start, end)` represents valid positions in rng.
-///  - rng at `[start, end)` is a heap.
+///  - rng at `[start, end)` is a heap wrt cmp.
 ///
 /// # Postcondition
 ///  - Sorts the element in rng at `[start, end)` such that whole range at `[start, end)` is in non-decreasing order wrt cmp.
@@ -407,7 +407,7 @@ pub fn sort_heap_by<Range, Compare>(
 ///  - rng at `[start, end)` is a heap.
 ///
 /// # Postcondition
-///  - Sorts the elements in rng such that the whole range is in non-decending order.
+///  - Sorts the elements in rng at `[start, end)` such that the whole range `[start, end)` is in non-decending order.
 ///  - Complexity: O(n.log2(n)) comparisions.
 /// 
 /// Where n is number of elements in `[start, end)`.
