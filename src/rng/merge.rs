@@ -17,6 +17,9 @@ use crate::{algo, InputRange, OutputRange};
 ///
 /// Where n1 is number of elements in rng1 and n2 is number of elements in rng2.
 ///
+/// #### Infix Supported
+/// NO
+///
 /// # Example
 /// ```rust
 /// use stl::*;
@@ -68,6 +71,9 @@ where
 ///   - Complexity: O(n1 + n2). At most n1 + n2 - 1 comparisions.
 ///
 /// Where n1 is number of elements in rng1 and n2 is number of elements in rng2.
+///
+/// #### Infix Supported
+/// NO
 ///
 /// # Example
 /// ```rust
