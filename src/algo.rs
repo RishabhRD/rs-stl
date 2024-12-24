@@ -100,3 +100,8 @@ pub use heap::*;
 pub mod merge;
 #[doc(inline)]
 pub use merge::*;
+
+#[doc(hidden)]
+pub mod swap_ranges;
+#[doc(inline)]
+pub use swap_ranges::*;
