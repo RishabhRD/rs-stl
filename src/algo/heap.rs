@@ -373,7 +373,7 @@ pub fn pop_heap<Range>(
 ///  - Complexity: O(n.log2(n)) comparisions.
 ///
 /// Where n is number of elements in `[start, end)`.
-/// 
+///
 /// # Example
 /// ```rust
 /// use stl::*;
@@ -409,7 +409,7 @@ pub fn sort_heap_by<Range, Compare>(
 /// # Postcondition
 ///  - Sorts the elements in rng at `[start, end)` such that the whole range `[start, end)` is in non-decending order.
 ///  - Complexity: O(n.log2(n)) comparisions.
-/// 
+///
 /// Where n is number of elements in `[start, end)`.
 ///
 /// # Example

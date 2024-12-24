@@ -114,6 +114,11 @@ pub mod heap;
 #[doc(inline)]
 pub use heap::*;
 
+#[doc(hidden)]
+pub mod merge;
+#[doc(inline)]
+pub use merge::*;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!

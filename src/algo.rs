@@ -95,3 +95,8 @@ pub use partition::*;
 pub mod heap;
 #[doc(inline)]
 pub use heap::*;
+
+#[doc(hidden)]
+pub mod merge;
+#[doc(inline)]
+pub use merge::*;
