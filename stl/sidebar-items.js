@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["algo","rng"],"trait":["BidirectionalRange","ForwardRange","InputRange","OutputRange","RandomAccessRange","Regular","SemiOutputRange","SemiRegular"]};
