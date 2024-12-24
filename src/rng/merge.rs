@@ -39,9 +39,9 @@ pub fn merge_by<R1, R2, DestRange, Compare>(
     cmp: Compare,
 ) -> DestRange::Position
 where
-    R1: InputRange,
-    R2: InputRange<Element = R1::Element>,
-    DestRange: OutputRange<Element = R1::Element>,
+    R1: InputRange + ?Sized,
+    R2: InputRange<Element = R1::Element> + ?Sized,
+    DestRange: OutputRange<Element = R1::Element> + ?Sized,
     R1::Element: Clone,
     Compare: Fn(&R1::Element, &R1::Element) -> bool,
 {
@@ -93,9 +93,9 @@ pub fn merge<R1, R2, DestRange>(
     dest: &mut DestRange,
 ) -> DestRange::Position
 where
-    R1: InputRange,
-    R2: InputRange<Element = R1::Element>,
-    DestRange: OutputRange<Element = R1::Element>,
+    R1: InputRange + ?Sized,
+    R2: InputRange<Element = R1::Element> + ?Sized,
+    DestRange: OutputRange<Element = R1::Element> + ?Sized,
     R1::Element: Clone,
     R1::Element: Ord,
 {
