@@ -3,7 +3,7 @@
 
 use crate::{utils::create_raw_buffer, ForwardRange, InputRange, OutputRange};
 
-use super::copy;
+use super::{copy, swap_ranges};
 
 /// Merges 2 sorted ranges into one sorted range wrt Comparator.
 ///
@@ -177,12 +177,9 @@ pub fn inplace_merge_by<Range, Compare>(
 
     let mut buf = create_raw_buffer::<Range::Element>(n);
     {
-        let i = 0;
-        while i != n {
-            let rng_pos = rng.after_n(start.clone(), i);
-            let buf_pos = buf.after_n(buf.start(), i);
-            std::mem::swap(rng.at_mut(&rng_pos), buf.at_mut(&buf_pos));
-        }
+        let buf_start = buf.start();
+        let buf_end = buf.end();
+        swap_ranges(rng, start, end, &mut buf, buf_start, buf_end);
     }
 }
 
