@@ -23,7 +23,7 @@ use crate::{InputRange, OutputRange};
 ///
 /// let input = [1, 2, 3];
 /// let mut out = [0, 0, 0, 0];
-
+///
 /// let j = algo::transform(&input, 1, 2, &mut out, 1, |x| x + 1);
 /// assert!(out.equals(&[0, 3, 0, 0]));
 /// assert_eq!(j, 2);
@@ -70,7 +70,7 @@ where
 /// let input = [1, 2, 3];
 /// let input1 = [1, 2];
 /// let mut out = [0, 0, 0, 0];
-
+///
 /// let j = algo::zip_transform(&input, 1, 2, &input, 1, &mut out, 1, |x, y| x * y);
 /// assert!(out.equals(&[0, 4, 0, 0]));
 /// assert_eq!(j, 2);
