@@ -172,6 +172,10 @@ required description would be provided.
 - [ ] ~~move~~ -> **NOT POSSIBLE:** Due to rust ownership model.
 - [ ] ~~move_backward~~ -> **NOT POSSIBLE:** Due to rust ownership model.
 
+### Swap Operations
+
+- [x] swap_ranges
+
 ### Transformation Operations
 
 - [x] transform -> transform, zip_transform
@@ -261,10 +265,6 @@ required description would be provided.
 - [ ] transform_reduce
 - [ ] transform_exclusive_scan
 - [ ] transform_inclusive_scan
-
-### Swap Operations
-
-- [ ] swap_ranges
 
 ### Permutation Operations
 
