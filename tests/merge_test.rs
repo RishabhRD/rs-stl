@@ -190,5 +190,19 @@ pub mod tests {
         let end = arr.end();
         algo::inplace_merge_by(&mut arr, start, 3, end, |x, y| x.0 < y.0);
         assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
+
+        let mut arr =
+            [(1, "1"), (1, "3"), (2, "3"), (1, "2"), (2, "2"), (2, "4")];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inplace_merge_by(&mut arr, start, 3, end, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[
+            (1, "1"),
+            (1, "3"),
+            (1, "2"),
+            (2, "3"),
+            (2, "2"),
+            (2, "4")
+        ]));
     }
 }
