@@ -3,8 +3,9 @@
 
 /// Creates a Vec<T> of size n, with all elements uninitialized.
 ///
-/// NOTE: This is an unsafe construct, and should be used carefully for
+/// WARN: This is an unsafe construct, and should be used carefully for
 /// real performance reasons.
+#[allow(clippy::uninit_vec)]
 pub fn create_raw_buffer<T>(n: usize) -> Vec<T> {
     let mut vec = Vec::with_capacity(n);
     unsafe {
