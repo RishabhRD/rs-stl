@@ -41,6 +41,7 @@ use super::{copy, swap_ranges};
 /// assert_eq!(i, 6);
 /// assert!(&dest[0..i].equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
 /// ```
+#[allow(clippy::too_many_arguments)]
 pub fn merge_by<R1, R2, DestRange, Compare>(
     rng1: &R1,
     mut start1: R1::Position,
@@ -109,6 +110,7 @@ where
 /// assert_eq!(i, 6);
 /// assert!(&dest[0..i].equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (2, 4)]));
 /// ```
+#[allow(clippy::too_many_arguments)]
 pub fn merge<R1, R2, DestRange>(
     rng1: &R1,
     start1: R1::Position,

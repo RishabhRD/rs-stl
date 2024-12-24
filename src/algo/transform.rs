@@ -75,6 +75,7 @@ where
 /// assert!(out.equals(&[0, 4, 0, 0]));
 /// assert_eq!(j, 2);
 /// ```
+#[allow(clippy::too_many_arguments)]
 pub fn zip_transform<R1, R2, DestRange, BinaryOp>(
     rng1: &R1,
     mut start1: R1::Position,
