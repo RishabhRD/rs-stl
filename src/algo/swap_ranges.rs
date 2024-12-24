@@ -44,8 +44,8 @@ pub fn swap_ranges<R1, R2>(
     end2: R2::Position,
 ) -> (R1::Position, R2::Position)
 where
-    R1: OutputRange,
-    R2: OutputRange<Element = R1::Element>,
+    R1: OutputRange + ?Sized,
+    R2: OutputRange<Element = R1::Element> + ?Sized,
 {
     while start1 != end1 && start2 != end2 {
         std::mem::swap(rng1.at_mut(&start1), rng2.at_mut(&start2));

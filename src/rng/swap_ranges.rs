@@ -35,8 +35,8 @@ pub fn swap_ranges<R1, R2>(
     rng2: &mut R2,
 ) -> (R1::Position, R2::Position)
 where
-    R1: OutputRange,
-    R2: OutputRange<Element = R1::Element>,
+    R1: OutputRange + ?Sized,
+    R2: OutputRange<Element = R1::Element> + ?Sized,
 {
     let start1 = rng1.start();
     let end1 = rng1.end();
