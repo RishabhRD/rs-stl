@@ -230,7 +230,7 @@ required description would be provided.
 - [x] partition_point (Same as above partition_point)
 - [x] lower_bound -> lower_bound, lower_bound_by
 - [x] upper_bound -> upper_bound, upper_bound_by
-- [ ] equal_range
+- [x] equal_range -> equal_range, equal_range_by
 - [ ] binary_search
 
 ### Merge Operations
