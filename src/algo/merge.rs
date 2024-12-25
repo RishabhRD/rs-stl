@@ -137,7 +137,7 @@ where
 
 /// # Precondition
 ///   - buf should have atleast `[start, mid)` capacity.
-fn inplace_merge_by_left_buffer<Range, Compare>(
+fn merge_inplace_by_left_buffer<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
     mid: Range::Position,
@@ -193,7 +193,7 @@ fn inplace_merge_by_left_buffer<Range, Compare>(
 /// # Precondition
 ///   - buf should have atleast `[mid, end)` capacity.
 #[allow(clippy::clone_on_copy)]
-fn inplace_merge_by_right_buffer<Range, Compare>(
+fn merge_inplace_by_right_buffer<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
     mid: Range::Position,
@@ -265,10 +265,10 @@ fn inplace_merge_by_right_buffer<Range, Compare>(
 ///
 /// # NOTE
 ///   - Algorithm uses min(n1, n2) additional buffer space to acheive O(n) time complexity.
-///     If memory allocation is a concern, consider using `inplace_merge_by_no_alloc` algorithm.
-///     `inplace_merge_by_no_alloc` doesn't do any memory allocation but provides O(n.log2(n)) time complexity.
+///     If memory allocation is a concern, consider using `merge_inplace_by_no_alloc` algorithm.
+///     `merge_inplace_by_no_alloc` doesn't do any memory allocation but provides O(n.log2(n)) time complexity.
 ///   - Algorithm requires `OutputRange` trait to handle reading and writing from additional buffer.
-///     If due to some reason, only `SemiOutputRange` is available use `inplace_merge_by_no_alloc`
+///     If due to some reason, only `SemiOutputRange` is available use `merge_inplace_by_no_alloc`
 ///     instead, with the associated trade-offs.
 ///
 ///   Where n1 is number of elements in `[start, mid)` and n2 is number of elements in `[mid, end)`.
@@ -279,10 +279,10 @@ fn inplace_merge_by_right_buffer<Range, Compare>(
 /// use rng::infix::*;
 ///
 /// let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
-/// algo::inplace_merge_by(&mut arr, 0, 3, 6, |x, y| x.0 < y.0);
+/// algo::merge_inplace_by(&mut arr, 0, 3, 6, |x, y| x.0 < y.0);
 /// assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
 /// ```
-pub fn inplace_merge_by<Range, Compare>(
+pub fn merge_inplace_by<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
     mid: Range::Position,
@@ -300,7 +300,7 @@ pub fn inplace_merge_by<Range, Compare>(
     let right_n = rng.distance(mid.clone(), end.clone());
 
     if left_n <= right_n {
-        inplace_merge_by_left_buffer(
+        merge_inplace_by_left_buffer(
             rng,
             start,
             mid,
@@ -309,7 +309,7 @@ pub fn inplace_merge_by<Range, Compare>(
             Vec::with_capacity(left_n),
         );
     } else {
-        inplace_merge_by_right_buffer(
+        merge_inplace_by_right_buffer(
             rng,
             start,
             mid,
@@ -336,10 +336,10 @@ pub fn inplace_merge_by<Range, Compare>(
 ///
 /// # NOTE
 ///   - Algorithm uses min(n1, n2) additional buffer space to acheive O(n) time complexity.
-///     If memory allocation is a concern, consider using `inplace_merge_no_alloc` algorithm.
-///     `inplace_merge_no_alloc` doesn't do any memory allocation but provides O(n.log2(n)) time complexity.
+///     If memory allocation is a concern, consider using `merge_inplace_no_alloc` algorithm.
+///     `merge_inplace_no_alloc` doesn't do any memory allocation but provides O(n.log2(n)) time complexity.
 ///   - Algorithm requires `OutputRange` trait to handle reading and writing from additional buffer.
-///     If due to some reason, only `SemiOutputRange` is available use `inplace_merge_no_alloc`
+///     If due to some reason, only `SemiOutputRange` is available use `merge_inplace_no_alloc`
 ///     instead, with the associated trade-offs.
 ///
 ///   Where n1 is number of elements in `[start, mid)`, and n2 is number of elements in `[mid, end)`.
@@ -350,10 +350,10 @@ pub fn inplace_merge_by<Range, Compare>(
 /// use rng::infix::*;
 ///
 /// let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
-/// algo::inplace_merge(&mut arr, 0, 3, 6);
+/// algo::merge_inplace(&mut arr, 0, 3, 6);
 /// assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (2, 4)]));
 /// ```
-pub fn inplace_merge<Range>(
+pub fn merge_inplace<Range>(
     rng: &mut Range,
     start: Range::Position,
     mid: Range::Position,
@@ -362,5 +362,5 @@ pub fn inplace_merge<Range>(
     Range: OutputRange + BidirectionalRange + ?Sized,
     Range::Element: Ord,
 {
-    inplace_merge_by(rng, start, mid, end, |x, y| x < y);
+    merge_inplace_by(rng, start, mid, end, |x, y| x < y);
 }

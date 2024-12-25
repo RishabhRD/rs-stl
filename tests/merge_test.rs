@@ -160,36 +160,36 @@ pub mod tests {
     }
 
     #[test]
-    fn inplace_merge_by() {
+    fn merge_inplace_by() {
         let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
         let start = arr.start();
         let end = arr.end();
-        algo::inplace_merge_by(&mut arr, start, 3, end, |x, y| x.0 < y.0);
+        algo::merge_inplace_by(&mut arr, start, 3, end, |x, y| x.0 < y.0);
         assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
 
         let mut arr = [(1, 1), (1, 3), (1, 2), (2, 2), (2, 4)];
         let start = arr.start();
         let end = arr.end();
-        algo::inplace_merge_by(&mut arr, start, 2, end, |x, y| x.0 < y.0);
+        algo::merge_inplace_by(&mut arr, start, 2, end, |x, y| x.0 < y.0);
         assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 2), (2, 4)]));
 
         let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2)];
         let start = arr.start();
         let end = arr.end();
-        algo::inplace_merge_by(&mut arr, start, 3, end, |x, y| x.0 < y.0);
+        algo::merge_inplace_by(&mut arr, start, 3, end, |x, y| x.0 < y.0);
         assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2)]));
 
         let mut arr = [(1, 2), (2, 2), (2, 4)];
-        rng::inplace_merge_by(&mut arr, 0, |x, y| x.0 < y.0);
+        rng::merge_inplace_by(&mut arr, 0, |x, y| x.0 < y.0);
         assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
 
         let mut arr = [(1, 2), (2, 2), (2, 4)];
-        rng::inplace_merge_by(&mut arr, 3, |x, y| x.0 < y.0);
+        rng::merge_inplace_by(&mut arr, 3, |x, y| x.0 < y.0);
         assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
 
         let mut arr =
             [(1, "1"), (1, "3"), (2, "3"), (1, "2"), (2, "2"), (2, "4")];
-        rng::inplace_merge_by(&mut arr, 3, |x, y| x.0 < y.0);
+        rng::merge_inplace_by(&mut arr, 3, |x, y| x.0 < y.0);
         assert!(arr.equals(&[
             (1, "1"),
             (1, "3"),
@@ -201,36 +201,36 @@ pub mod tests {
     }
 
     #[test]
-    fn inplace_merge() {
+    fn merge_inplace() {
         let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
         let start = arr.start();
         let end = arr.end();
-        algo::inplace_merge(&mut arr, start, 3, end);
+        algo::merge_inplace(&mut arr, start, 3, end);
         assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (2, 4)]));
 
         let mut arr = [(1, 1), (1, 3), (1, 2), (2, 2), (2, 4)];
         let start = arr.start();
         let end = arr.end();
-        algo::inplace_merge(&mut arr, start, 2, end);
+        algo::merge_inplace(&mut arr, start, 2, end);
         assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 4)]));
 
         let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2)];
         let start = arr.start();
         let end = arr.end();
-        algo::inplace_merge(&mut arr, start, 3, end);
+        algo::merge_inplace(&mut arr, start, 3, end);
         assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3)]));
 
         let mut arr = [(1, 2), (2, 2), (2, 4)];
-        rng::inplace_merge(&mut arr, 0);
+        rng::merge_inplace(&mut arr, 0);
         assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
 
         let mut arr = [(1, 2), (2, 2), (2, 4)];
-        rng::inplace_merge(&mut arr, 3);
+        rng::merge_inplace(&mut arr, 3);
         assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
 
         let mut arr =
             [(1, "1"), (1, "3"), (2, "3"), (1, "2"), (2, "2"), (2, "4")];
-        rng::inplace_merge(&mut arr, 3);
+        rng::merge_inplace(&mut arr, 3);
         assert!(arr.equals(&[
             (1, "1"),
             (1, "2"),

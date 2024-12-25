@@ -128,10 +128,10 @@ where
 ///
 /// # NOTE
 ///   - Algorithm uses O(n) buffer space to acheive O(n) time complexity.
-///     If allocation is a problem, use `inplace_merge_by_no_alloc` algorithm
+///     If allocation is a problem, use `merge_inplace_by_no_alloc` algorithm
 ///     instead doesn't do any allocation but provided O(n.log2(n)) time complexity.
 ///   - The algorithm requires `OutputRange` trait. If due to somereason,
-///     only `SemiOutputRange` is available use `inplace_merge_by_no_alloc`
+///     only `SemiOutputRange` is available use `merge_inplace_by_no_alloc`
 ///     with same tradeoff.
 ///
 ///   Where n1 is number of elements in `[rng.start(), mid)`, and n2 is number of elements in `[mid, rng.end())`.
@@ -145,10 +145,10 @@ where
 /// use rng::infix::*;
 ///
 /// let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
-/// rng::inplace_merge_by(&mut arr, 3, |x, y| x.0 < y.0);
+/// rng::merge_inplace_by(&mut arr, 3, |x, y| x.0 < y.0);
 /// assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
 /// ```
-pub fn inplace_merge_by<Range, Compare>(
+pub fn merge_inplace_by<Range, Compare>(
     rng: &mut Range,
     mid: Range::Position,
     is_less: Compare,
@@ -158,7 +158,7 @@ pub fn inplace_merge_by<Range, Compare>(
 {
     let start = rng.start();
     let end = rng.end();
-    algo::inplace_merge_by(rng, start, mid, end, is_less);
+    algo::merge_inplace_by(rng, start, mid, end, is_less);
 }
 
 /// Merges 2 consecutive sorted range into one range.
@@ -176,10 +176,10 @@ pub fn inplace_merge_by<Range, Compare>(
 ///
 /// # NOTE
 ///   - Algorithm uses min(n1, n2) additional buffer space to acheive O(n) time complexity.
-///     If memory allocation is a concern, consider using `inplace_merge_by_no_alloc` algorithm.
-///     `inplace_merge_by_no_alloc` doesn't do any memory allocation but provides O(n.log2(n)) time complexity.
+///     If memory allocation is a concern, consider using `merge_inplace_by_no_alloc` algorithm.
+///     `merge_inplace_by_no_alloc` doesn't do any memory allocation but provides O(n.log2(n)) time complexity.
 ///   - Algorithm requires `OutputRange` trait to handle reading and writing from additional buffer.
-///     If due to some reason, only `SemiOutputRange` is available use `inplace_merge_by_no_alloc`
+///     If due to some reason, only `SemiOutputRange` is available use `merge_inplace_by_no_alloc`
 ///     instead, with the associated trade-offs.
 ///
 ///   Where n1 is number of elements in `[rng.start(), mid)`, and n2 is number of elements in `[mid, rng.end())`.
@@ -193,15 +193,15 @@ pub fn inplace_merge_by<Range, Compare>(
 /// use rng::infix::*;
 ///
 /// let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
-/// rng::inplace_merge(&mut arr, 3);
+/// rng::merge_inplace(&mut arr, 3);
 /// assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (2, 4)]));
 /// ```
-pub fn inplace_merge<Range>(rng: &mut Range, mid: Range::Position)
+pub fn merge_inplace<Range>(rng: &mut Range, mid: Range::Position)
 where
     Range: OutputRange + BidirectionalRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
     let end = rng.end();
-    algo::inplace_merge(rng, start, mid, end);
+    algo::merge_inplace(rng, start, mid, end);
 }

@@ -236,7 +236,7 @@ required description would be provided.
 ### Merge Operations
 
 - [x] merge -> merge, merge_by
-- [x] inplace_merge -> inplace_merge, inplace_merge_by
+- [x] inplace_merge -> merge_inplace, merge_inplace_by
 
 ### Heap Operations
 
