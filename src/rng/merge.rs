@@ -7,12 +7,12 @@ use crate::{algo, BidirectionalRange, InputRange, OutputRange};
 ///
 /// # Precondition
 ///   - dest can accomodate n1 + n2 elements starting from out.
-///   - cmp follows strict-weak-ordering.
+///   - is_less follows strict-weak-ordering.
 ///
 /// # Postcondition
-///   - Merges 2 sorted range rng1 and rng2 into one sorted prefix at dest. Sorting is wrt cmp.
+///   - Merges 2 sorted range rng1 and rng2 into one sorted prefix at dest. Sorting is wrt is_less.
 ///   - Returns position immediately after last copied element in dest.
-///   - Relative order of equivalent elements by cmp is preserved.
+///   - Relative order of equivalent elements by is_less is preserved.
 ///   - Complexity: O(n1 + n2). At most n1 + n2 - 1 comparisions.
 ///
 /// Where n1 is number of elements in rng1 and n2 is number of elements in rng2.
@@ -36,7 +36,7 @@ pub fn merge_by<R1, R2, DestRange, Compare>(
     rng1: &R1,
     rng2: &R2,
     dest: &mut DestRange,
-    cmp: Compare,
+    is_less: Compare,
 ) -> DestRange::Position
 where
     R1: InputRange + ?Sized,
@@ -55,7 +55,7 @@ where
         rng2.end(),
         dest,
         out,
-        cmp,
+        is_less,
     )
 }
 
@@ -116,12 +116,12 @@ where
 ///
 /// # Precondition
 ///   - mid is valid position in rng.
-///   - cmp follows strict-weak-ordering.
+///   - is_less follows strict-weak-ordering.
 ///
 /// # Postcondition
 ///   - Merges 2 consecutive sorted range in rng at `[rng.start(), mid)` and `[mid, rng.end())`
-///     into one sorted range rng wrt cmp.
-///   - Relative order of equivalent elements by cmp is preserved.
+///     into one sorted range rng wrt is_less.
+///   - Relative order of equivalent elements by is_less is preserved.
 ///   - Complexity: O(n). Exactly n - 1 comparisions.
 ///
 /// Where n in number of elements in rng.
@@ -151,14 +151,14 @@ where
 pub fn inplace_merge_by<Range, Compare>(
     rng: &mut Range,
     mid: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) where
     Range: OutputRange + BidirectionalRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
     let start = rng.start();
     let end = rng.end();
-    algo::inplace_merge_by(rng, start, mid, end, cmp);
+    algo::inplace_merge_by(rng, start, mid, end, is_less);
 }
 
 /// Merges 2 consecutive sorted range into one range.

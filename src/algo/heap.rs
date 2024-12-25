@@ -7,11 +7,11 @@ use crate::{RandomAccessRange, SemiOutputRange};
 ///
 /// # Precondition
 ///   - `[start, end)` reperesents valid position in rng.
-///   - cmp follows strict-weak-ordering relationship.
+///   - is_less follows strict-weak-ordering relationship.
 ///
 /// # Postcondition
 ///   - Returns last position `i` in `[start, end)` of rng such that
-///     rng at `[start, i)` is a heap with respect to cmp.
+///     rng at `[start, i)` is a heap with respect to is_less.
 ///   - Complexity: O(n) comparisions.
 ///
 /// Where n is number of elements in `[start, end)`.
@@ -26,7 +26,7 @@ pub fn is_heap_until_by<Range, Compare>(
     rng: &Range,
     start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) -> Range::Position
 where
     Range: RandomAccessRange + ?Sized,
@@ -37,7 +37,7 @@ where
     for son in 1..n {
         let son_pos = rng.after_n(start.clone(), son);
         let dad_pos = rng.after_n(start.clone(), dad);
-        if cmp(rng.at(&dad_pos), rng.at(&son_pos)) {
+        if is_less(rng.at(&dad_pos), rng.at(&son_pos)) {
             return son_pos;
         } else if son % 2 == 0 {
             dad += 1;
@@ -80,10 +80,10 @@ where
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
-///   - cmp follows strict-weak-ordering relationship.
+///   - is_less follows strict-weak-ordering relationship.
 ///
 /// # Postcondition
-///   - Returns true if range at `[start, end)` of rng is a heap wrt cmp.
+///   - Returns true if range at `[start, end)` of rng is a heap wrt is_less.
 ///   - Otherwise, returns false.
 ///   - Complexity: O(n) comparisions.
 ///
@@ -100,13 +100,13 @@ pub fn is_heap_by<Range, Compare>(
     rng: &Range,
     start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) -> bool
 where
     Range: RandomAccessRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    is_heap_until_by(rng, start, end.clone(), cmp) == end
+    is_heap_until_by(rng, start, end.clone(), is_less) == end
 }
 
 /// Returns true if given range is a heap.
@@ -140,17 +140,17 @@ where
     is_heap_by(rng, start, end, |x, y| x < y)
 }
 
-/// Inserts last element in specified range into a heap wrt cmp. After insertion, full range would
-/// be heap wrt cmp.
+/// Inserts last element in specified range into a heap wrt is_less. After insertion, full range would
+/// be heap wrt is_less.
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid range in rng.
-///   - `start == end` || `[start, end - 1)` should be a heap wrt cmp.
-///   - cmp follows strict-weak-ordering relationship.
+///   - `start == end` || `[start, end - 1)` should be a heap wrt is_less.
+///   - is_less follows strict-weak-ordering relationship.
 ///
 /// # Postcondition
 ///   - Inserts element at `end - 1` to heap at `[start, end - 1)` in rng. After
-///     operation `[start, end)` is a heap wrt cmp.
+///     operation `[start, end)` is a heap wrt is_less.
 ///   - Complexity: O(log n) comparisions.
 ///
 /// Where n is number of elements in `[start, end)`.
@@ -170,7 +170,7 @@ pub fn push_heap_by<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) where
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
@@ -184,7 +184,7 @@ pub fn push_heap_by<Range, Compare>(
         let parent = (cur - 1) / 2;
         let parent_pos = rng.after_n(start.clone(), parent);
         let cur_pos = rng.after_n(start.clone(), cur);
-        if cmp(rng.at(&parent_pos), rng.at(&cur_pos)) {
+        if is_less(rng.at(&parent_pos), rng.at(&cur_pos)) {
             rng.swap_at(&parent_pos, &cur_pos);
             cur = parent;
         } else {
@@ -231,8 +231,8 @@ pub fn push_heap<Range>(
 
 /// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
-///   - children of start element should be a heap wrt cmp.
-///   - cmp should follow strict-weak-ordering relationship.
+///   - children of start element should be a heap wrt is_less.
+///   - is_less should follow strict-weak-ordering relationship.
 ///
 /// # Postcondition
 ///   - Reorders element in rng such that whole range is a heap.
@@ -243,7 +243,7 @@ fn heapify<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) where
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
@@ -261,14 +261,14 @@ fn heapify<Range, Compare>(
 
         if left_child < n {
             let left_pos = rng.after_n(start.clone(), left_child);
-            if cmp(rng.at(&largest), rng.at(&left_pos)) {
+            if is_less(rng.at(&largest), rng.at(&left_pos)) {
                 largest = left_pos;
             }
         }
 
         if right_child < n {
             let right_pos = rng.after_n(start.clone(), right_child);
-            if cmp(rng.at(&largest), rng.at(&right_pos)) {
+            if is_less(rng.at(&largest), rng.at(&right_pos)) {
                 largest = right_pos;
             }
         }
@@ -282,16 +282,16 @@ fn heapify<Range, Compare>(
     }
 }
 
-/// Swaps element at `start` position with element before `end` position and ensures `[start, end - 1)` is a heap wrt cmp.
+/// Swaps element at `start` position with element before `end` position and ensures `[start, end - 1)` is a heap wrt is_less.
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
-///   - rng at `[start, end)` is a heap wrt cmp.
-///   - cmp should follow strict-weak-ordering relationship.
+///   - rng at `[start, end)` is a heap wrt is_less.
+///   - is_less should follow strict-weak-ordering relationship.
 ///
 /// # Postcondition
 ///   - Swaps element at `start` position with element before `end` position
-///     and then ensures `[start, end - 1)` is a heap wrt cmp.
+///     and then ensures `[start, end - 1)` is a heap wrt is_less.
 ///   - If rng at `[start, end)` is empty, then do nothing.
 ///   - Complexity: O(log n) comparisions.
 ///
@@ -311,7 +311,7 @@ pub fn pop_heap_by<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) where
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
@@ -323,7 +323,7 @@ pub fn pop_heap_by<Range, Compare>(
 
     let prev = rng.before(end);
     rng.swap_at(&start, &prev);
-    heapify(rng, start, prev, cmp);
+    heapify(rng, start, prev, is_less);
 }
 
 /// Swaps element at `start` position with element before `end` position and ensures `[start, end - 1)` is a heap.
@@ -362,14 +362,14 @@ pub fn pop_heap<Range>(
     pop_heap_by(rng, start, end, |x, y| x < y);
 }
 
-/// Converts given heap into sorted range wrt cmp.
+/// Converts given heap into sorted range wrt is_less.
 ///
 /// # Precondition
 ///  - `[start, end)` represents valid positions in rng.
-///  - rng at `[start, end)` is a heap wrt cmp.
+///  - rng at `[start, end)` is a heap wrt is_less.
 ///
 /// # Postcondition
-///  - Sorts the element in rng at `[start, end)` such that whole range at `[start, end)` is in non-decreasing order wrt cmp.
+///  - Sorts the element in rng at `[start, end)` such that whole range at `[start, end)` is in non-decreasing order wrt is_less.
 ///  - Complexity: O(n.log2(n)) comparisions.
 ///
 /// Where n is number of elements in `[start, end)`.
@@ -389,13 +389,13 @@ pub fn sort_heap_by<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
     mut end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) where
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     while start != end {
-        pop_heap_by(rng, start.clone(), end.clone(), cmp.clone());
+        pop_heap_by(rng, start.clone(), end.clone(), is_less.clone());
         end = rng.before(end);
     }
 }
@@ -434,15 +434,15 @@ pub fn sort_heap<Range>(
     sort_heap_by(rng, start, end, |x, y| x < y);
 }
 
-/// Reorders the range such that resulting range is heap wrt cmp.
+/// Reorders the range such that resulting range is heap wrt is_less.
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid position in rng.
-///   - cmp follows strict-weak-ordering relationship.
+///   - is_less follows strict-weak-ordering relationship.
 ///
 /// # Postcondition
 ///   - Reorders rng at `[start, end)` such that resulting range at `[start, end)`
-///     is a heap wrt cmp.
+///     is a heap wrt is_less.
 ///   - Complexity: O(n) comparisions.
 ///
 /// Where n is number of elements in `[start, end)`.
@@ -462,7 +462,7 @@ pub fn make_heap_by<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) where
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
@@ -474,7 +474,7 @@ pub fn make_heap_by<Range, Compare>(
     let mut root = n / 2;
     loop {
         let root_pos = rng.after_n(start.clone(), root);
-        heapify(rng, root_pos.clone(), end.clone(), cmp.clone());
+        heapify(rng, root_pos.clone(), end.clone(), is_less.clone());
         if root_pos == start {
             break;
         }

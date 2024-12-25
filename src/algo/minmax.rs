@@ -7,12 +7,12 @@ use crate::ForwardRange;
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
-///   - cmp follows strict-weak-ordering.
-///   - If a comes before b then cmp(a, b) == true otherwise false.
+///   - is_less follows strict-weak-ordering.
+///   - If a comes before b then is_less(a, b) == true otherwise false.
 ///
 /// # Postcondition
 ///   - Returns position of minimum element in rng from `[start, end)` based
-///     on comparator cmp. If there are multiple equivalent minimum elements,
+///     on comparator is_less. If there are multiple equivalent minimum elements,
 ///     then returns the position of first one of them.
 ///   - If `[start, end)` is empty then return end position.
 ///   - Complexity: O(n). Exactly `max(n - 1, 0)` comparisions.
@@ -31,7 +31,7 @@ pub fn min_element_by<Range, Compare>(
     rng: &Range,
     mut start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) -> Range::Position
 where
     Range: ForwardRange + ?Sized,
@@ -45,7 +45,7 @@ where
     start = rng.after(start);
 
     while start != end {
-        if cmp(rng.at(&start), rng.at(&smallest)) {
+        if is_less(rng.at(&start), rng.at(&smallest)) {
             smallest = start.clone();
         }
         start = rng.after(start);
@@ -92,8 +92,8 @@ where
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid position in rng.
-///   - cmp should follow strict-weak-ordering.
-///   - If a comes before b, then cmp(a, b) == true otherwise false.
+///   - is_less should follow strict-weak-ordering.
+///   - If a comes before b, then is_less(a, b) == true otherwise false.
 ///
 /// # Postcondition
 ///   - Returns position of maximum element in rng `[start, end)`. If there
@@ -116,7 +116,7 @@ pub fn max_element_by<Range, Compare>(
     rng: &Range,
     mut start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) -> Range::Position
 where
     Range: ForwardRange + ?Sized,
@@ -130,7 +130,7 @@ where
     start = rng.after(start);
 
     while start != end {
-        if !cmp(rng.at(&start), rng.at(&max)) {
+        if !is_less(rng.at(&start), rng.at(&max)) {
             max = start.clone();
         }
         start = rng.after(start);
@@ -177,12 +177,12 @@ where
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
-///   - cmp follows strict-weak-ordering relationship.
-///   - If a comes before b then cmp(a, b) == true otherwise false.
+///   - is_less follows strict-weak-ordering relationship.
+///   - If a comes before b then is_less(a, b) == true otherwise false.
 ///
 /// # Postcondition
 ///   - Returns a pair (i, j) where i denotes the position of minimum element
-///     and j denotes the position of maximum element in `[start, end)` by cmp.
+///     and j denotes the position of maximum element in `[start, end)` by is_less.
 ///   - If there are multiple equivalent minimum elements, then i denotes
 ///     position of first one of them.
 ///   - If there are multiple equivalent maximum elements, then j denotes
@@ -204,7 +204,7 @@ pub fn minmax_element_by<Range, Compare>(
     rng: &Range,
     mut start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) -> (Range::Position, Range::Position)
 where
     Range: ForwardRange + ?Sized,
@@ -223,7 +223,7 @@ where
         return (min, max);
     }
 
-    if cmp(rng.at(&start), rng.at(&min)) {
+    if is_less(rng.at(&start), rng.at(&min)) {
         min = start.clone();
     } else {
         max = start.clone();
@@ -235,24 +235,24 @@ where
         let i = start.clone();
         start = rng.after(start);
         if start == end {
-            if cmp(rng.at(&i), rng.at(&min)) {
+            if is_less(rng.at(&i), rng.at(&min)) {
                 min = i;
-            } else if !cmp(rng.at(&i), rng.at(&max)) {
+            } else if !is_less(rng.at(&i), rng.at(&max)) {
                 max = i;
             }
             break;
-        } else if cmp(rng.at(&start), rng.at(&i)) {
-            if cmp(rng.at(&start), rng.at(&min)) {
+        } else if is_less(rng.at(&start), rng.at(&i)) {
+            if is_less(rng.at(&start), rng.at(&min)) {
                 min = start.clone();
             }
-            if !cmp(rng.at(&i), rng.at(&max)) {
+            if !is_less(rng.at(&i), rng.at(&max)) {
                 max = i;
             }
         } else {
-            if cmp(rng.at(&i), rng.at(&min)) {
+            if is_less(rng.at(&i), rng.at(&min)) {
                 min = i;
             }
-            if !cmp(rng.at(&start), rng.at(&max)) {
+            if !is_less(rng.at(&start), rng.at(&max)) {
                 max = start.clone();
             }
         }

@@ -13,13 +13,13 @@ use super::copy;
 ///   - `[start1, end1)` represents valid positions in rng1.
 ///   - `[start2, end2)` represents valid positions in rng2.
 ///   - dest can accomodate n1 + n2 elements starting from out.
-///   - cmp follows strict-weak-ordering.
+///   - is_less follows strict-weak-ordering.
 ///
 /// # Postcondition
 ///   - Merges 2 sorted range at `[start1, end1)` of rng1 and `[start2, end2)`
-///     at rng2 into one sorted range dest starting at out. Sorting is wrt cmp.
+///     at rng2 into one sorted range dest starting at out. Sorting is wrt is_less.
 ///   - Returns position immediately after last copied element in dest.
-///   - Relative order of equivalent elements by cmp is preserved.
+///   - Relative order of equivalent elements by is_less is preserved.
 ///   - Complexity: O(n1 + n2). At most n1 + n2 - 1 comparisions.
 ///
 /// Where n1 is number of elements in `[start1, end1)` and n2 is number of
@@ -53,7 +53,7 @@ pub fn merge_by<R1, R2, DestRange, Compare>(
     end2: R2::Position,
     dest: &mut DestRange,
     mut out: DestRange::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) -> DestRange::Position
 where
     R1: InputRange + ?Sized,
@@ -66,7 +66,7 @@ where
         if start2 == end2 {
             return copy(rng1, start1, end1, dest, out);
         }
-        if cmp(rng2.at(&start2), rng1.at(&start1)) {
+        if is_less(rng2.at(&start2), rng1.at(&start1)) {
             *dest.at_mut(&out) = rng2.at(&start2).clone();
             start2 = rng2.after(start2);
         } else {
@@ -142,7 +142,7 @@ fn inplace_merge_by_left_buffer<Range, Compare>(
     start: Range::Position,
     mid: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
     mut buf: Vec<MaybeUninit<Range::Element>>,
 ) where
     Range: OutputRange + ?Sized,
@@ -169,7 +169,7 @@ fn inplace_merge_by_left_buffer<Range, Compare>(
             let left_elem = buf.at(&left_pos).assume_init_ref();
             let right_elem = rng.at(&right_pos);
 
-            if cmp(right_elem, left_elem) {
+            if is_less(right_elem, left_elem) {
                 *rng.at_mut(&merge) = std::ptr::read(right_elem);
                 right_pos = rng.after(right_pos);
             } else {
@@ -198,7 +198,7 @@ fn inplace_merge_by_right_buffer<Range, Compare>(
     start: Range::Position,
     mid: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
     mut buf: Vec<MaybeUninit<Range::Element>>,
 ) where
     Range: OutputRange + BidirectionalRange + ?Sized,
@@ -226,7 +226,7 @@ fn inplace_merge_by_right_buffer<Range, Compare>(
             let right_elem =
                 buf.at(&buf.before(right_pos.clone())).assume_init_ref();
 
-            if !cmp(right_elem, left_elem) {
+            if !is_less(right_elem, left_elem) {
                 merge = rng.before(merge);
                 *rng.at_mut(&merge) = std::ptr::read(right_elem);
                 right_pos = buf.before(right_pos);
@@ -253,12 +253,12 @@ fn inplace_merge_by_right_buffer<Range, Compare>(
 /// # Precondition
 ///   - `[start, mid)` represents valid positions in rng.
 ///   - `[mid, end)` represents valid positions in rng.
-///   - cmp follows strict-weak-ordering.
+///   - is_less follows strict-weak-ordering.
 ///
 /// # Postcondition
 ///   - Merges 2 consecutive sorted range in rng at `[start, mid)` and `[mid, end)`
-///     into one sorted range `[start, end)` wrt cmp.
-///   - Relative order of equivalent elements by cmp is preserved.
+///     into one sorted range `[start, end)` wrt is_less.
+///   - Relative order of equivalent elements by is_less is preserved.
 ///   - Complexity: O(n). Exactly n - 1 comparisions.
 ///
 /// Where n in number of elements in `[start, end)`.
@@ -287,7 +287,7 @@ pub fn inplace_merge_by<Range, Compare>(
     start: Range::Position,
     mid: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) where
     Range: OutputRange + BidirectionalRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
@@ -305,7 +305,7 @@ pub fn inplace_merge_by<Range, Compare>(
             start,
             mid,
             end,
-            cmp,
+            is_less,
             Vec::with_capacity(left_n),
         );
     } else {
@@ -314,7 +314,7 @@ pub fn inplace_merge_by<Range, Compare>(
             start,
             mid,
             end,
-            cmp,
+            is_less,
             Vec::with_capacity(right_n),
         );
     }

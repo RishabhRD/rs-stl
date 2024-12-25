@@ -6,11 +6,11 @@ use crate::{algo, ForwardRange};
 /// Returns position of mimimum element in range by comparator.
 ///
 /// # Precondition
-///   - cmp follows strict-weak-ordering.
-///   - If a comes before b then cmp(a, b) == true otherwise false.
+///   - is_less follows strict-weak-ordering.
+///   - If a comes before b then is_less(a, b) == true otherwise false.
 ///
 /// # Postcondition
-///   - Returns position minimum element in rng based on comparator cmp. If
+///   - Returns position minimum element in rng based on comparator is_less. If
 ///     there are multiple equivalent minimum elements, returns position of
 ///     first one of them.
 ///   - If rng is empty then return end position.
@@ -36,13 +36,13 @@ use crate::{algo, ForwardRange};
 /// ```
 pub fn min_element_by<Range, Compare>(
     rng: &Range,
-    cmp: Compare,
+    is_less: Compare,
 ) -> Range::Position
 where
     Range: ForwardRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::min_element_by(rng, rng.start(), rng.end(), cmp)
+    algo::min_element_by(rng, rng.start(), rng.end(), is_less)
 }
 
 /// Returns position of mimimum element in range.
@@ -84,8 +84,8 @@ where
 /// Returns position of maximum element in the range by comparator.
 ///
 /// # Precondition
-///   - cmp should follow strict-weak-ordering.
-///   - If a comes before b, then cmp(a, b) == true otherwise false.
+///   - is_less should follow strict-weak-ordering.
+///   - If a comes before b, then is_less(a, b) == true otherwise false.
 ///
 /// # Postcondition
 ///   - Returns position of maximum element in rng. If there
@@ -114,13 +114,13 @@ where
 /// ```
 pub fn max_element_by<Range, Compare>(
     rng: &Range,
-    cmp: Compare,
+    is_less: Compare,
 ) -> Range::Position
 where
     Range: ForwardRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::max_element_by(rng, rng.start(), rng.end(), cmp)
+    algo::max_element_by(rng, rng.start(), rng.end(), is_less)
 }
 
 /// Returns position of maximum element in the range.
@@ -163,12 +163,12 @@ where
 /// Returns position of minimum element and maximum element in range by comparator.
 ///
 /// # Precondition
-///   - cmp follows strict-weak-ordering relationship.
-///   - If a comes before b then cmp(a, b) == true otherwise false.
+///   - is_less follows strict-weak-ordering relationship.
+///   - If a comes before b then is_less(a, b) == true otherwise false.
 ///
 /// # Postcondition
 ///   - Returns a pair (i, j) where i denotes the position of minimum element
-///     and j denotes the position of maximum element in rng by cmp.
+///     and j denotes the position of maximum element in rng by is_less.
 ///   - If there are multiple equivalent minimum elements, then i denotes
 ///     position of first one of them.
 ///   - If there are multiple equivalent maximum elements, then j denotes
@@ -197,13 +197,13 @@ where
 /// ```
 pub fn minmax_element_by<Range, Compare>(
     rng: &Range,
-    cmp: Compare,
+    is_less: Compare,
 ) -> (Range::Position, Range::Position)
 where
     Range: ForwardRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::minmax_element_by(rng, rng.start(), rng.end(), cmp)
+    algo::minmax_element_by(rng, rng.start(), rng.end(), is_less)
 }
 
 /// Returns position of minimum element and maximum element in range.
@@ -253,7 +253,7 @@ pub mod infix {
     /// `min_element`, `min_element_by`, `max_element`, `max_element_by`, `minmax_element`,
     /// `minmax_element_by`.
     pub trait STLMinMaxExt: ForwardRange {
-        fn min_element_by<Compare>(&self, cmp: Compare) -> Self::Position
+        fn min_element_by<Compare>(&self, is_less: Compare) -> Self::Position
         where
             Compare: Fn(&Self::Element, &Self::Element) -> bool;
 
@@ -261,7 +261,7 @@ pub mod infix {
         where
             Self::Element: Ord;
 
-        fn max_element_by<Compare>(&self, cmp: Compare) -> Self::Position
+        fn max_element_by<Compare>(&self, is_less: Compare) -> Self::Position
         where
             Compare: Fn(&Self::Element, &Self::Element) -> bool;
 
@@ -271,7 +271,7 @@ pub mod infix {
 
         fn minmax_element_by<Compare>(
             &self,
-            cmp: Compare,
+            is_less: Compare,
         ) -> (Self::Position, Self::Position)
         where
             Compare: Fn(&Self::Element, &Self::Element) -> bool;
@@ -285,11 +285,11 @@ pub mod infix {
     where
         R: ForwardRange + ?Sized,
     {
-        fn min_element_by<Compare>(&self, cmp: Compare) -> Self::Position
+        fn min_element_by<Compare>(&self, is_less: Compare) -> Self::Position
         where
             Compare: Fn(&Self::Element, &Self::Element) -> bool,
         {
-            rng::min_element_by(self, cmp)
+            rng::min_element_by(self, is_less)
         }
 
         fn min_element(&self) -> Self::Position
@@ -299,11 +299,11 @@ pub mod infix {
             rng::min_element(self)
         }
 
-        fn max_element_by<Compare>(&self, cmp: Compare) -> Self::Position
+        fn max_element_by<Compare>(&self, is_less: Compare) -> Self::Position
         where
             Compare: Fn(&Self::Element, &Self::Element) -> bool,
         {
-            rng::max_element_by(self, cmp)
+            rng::max_element_by(self, is_less)
         }
 
         fn max_element(&self) -> Self::Position
@@ -315,12 +315,12 @@ pub mod infix {
 
         fn minmax_element_by<Compare>(
             &self,
-            cmp: Compare,
+            is_less: Compare,
         ) -> (Self::Position, Self::Position)
         where
             Compare: Fn(&Self::Element, &Self::Element) -> bool,
         {
-            rng::minmax_element_by(self, cmp)
+            rng::minmax_element_by(self, is_less)
         }
 
         fn minmax_element(&self) -> (Self::Position, Self::Position)
