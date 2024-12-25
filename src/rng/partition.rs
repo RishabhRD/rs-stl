@@ -159,7 +159,7 @@ pub fn partition_point<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: ForwardRange,
+    Range: ForwardRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
     algo::partition_point(rng, rng.start(), rng.end(), pred)
@@ -188,7 +188,7 @@ pub mod infix {
     }
 
     /// `partition`, `stable_partition`.
-    pub trait STLSemiOutputPartitonExt: SemiOutputRange {
+    pub trait STLSemiOutputPartitionExt: SemiOutputRange {
         fn partition<Predicate>(&mut self, pred: Predicate) -> Self::Position
         where
             Predicate: Fn(&Self::Element) -> bool;
@@ -201,7 +201,7 @@ pub mod infix {
             Predicate: Fn(&Self::Element) -> bool + Clone;
     }
 
-    impl<R> STLSemiOutputPartitonExt for R
+    impl<R> STLSemiOutputPartitionExt for R
     where
         R: SemiOutputRange + ?Sized,
     {
@@ -236,7 +236,7 @@ pub mod infix {
 
     impl<R> STLForwardPartitonExt for R
     where
-        R: ForwardRange,
+        R: ForwardRange + ?Sized,
     {
         fn partition_point<Range, Predicate>(
             rng: &Range,

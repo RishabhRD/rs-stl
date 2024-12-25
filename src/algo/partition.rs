@@ -201,7 +201,7 @@ pub fn partition_point<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: ForwardRange,
+    Range: ForwardRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
     let mut n = rng.distance(start.clone(), end.clone());
