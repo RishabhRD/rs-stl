@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{InputRange, OutputRange};
+use std::mem::MaybeUninit;
+
+use crate::{BidirectionalRange, InputRange, OutputRange};
 
 use super::copy;
 
@@ -41,6 +43,7 @@ use super::copy;
 /// assert_eq!(i, 6);
 /// assert!(&dest[0..i].equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
 /// ```
+#[allow(clippy::too_many_arguments)]
 pub fn merge_by<R1, R2, DestRange, Compare>(
     rng1: &R1,
     mut start1: R1::Position,
@@ -109,6 +112,7 @@ where
 /// assert_eq!(i, 6);
 /// assert!(&dest[0..i].equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (2, 4)]));
 /// ```
+#[allow(clippy::too_many_arguments)]
 pub fn merge<R1, R2, DestRange>(
     rng1: &R1,
     start1: R1::Position,
@@ -129,4 +133,230 @@ where
     merge_by(rng1, start1, end1, rng2, start2, end2, dest, out, |x, y| {
         x < y
     })
+}
+
+/// # Precondition
+///   - buf should have atleast `[start, mid)` capacity.
+fn inplace_merge_by_left_buffer<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+    cmp: Compare,
+    mut buf: Vec<MaybeUninit<Range::Element>>,
+) where
+    Range: OutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    {
+        let mut i = start.clone();
+        while i != mid {
+            unsafe {
+                buf.push(MaybeUninit::new(std::ptr::read(rng.at(&i))));
+            }
+            i = rng.after(i);
+        }
+    }
+
+    let mut left_pos = buf.start();
+    let left_end = buf.end();
+    let mut right_pos = mid.clone();
+    let right_end = end.clone();
+    let mut merge = start.clone();
+
+    while left_pos != left_end && right_pos != right_end {
+        unsafe {
+            let left_elem = buf.at(&left_pos).assume_init_ref();
+            let right_elem = rng.at(&right_pos);
+
+            if cmp(right_elem, left_elem) {
+                *rng.at_mut(&merge) = std::ptr::read(right_elem);
+                right_pos = rng.after(right_pos);
+            } else {
+                *rng.at_mut(&merge) = std::ptr::read(left_elem);
+                left_pos = buf.after(left_pos);
+            }
+        }
+        merge = rng.after(merge);
+    }
+
+    while left_pos != left_end {
+        unsafe {
+            *rng.at_mut(&merge) =
+                std::ptr::read(buf.at(&left_pos).assume_init_ref());
+        }
+        left_pos = buf.after(left_pos);
+        merge = rng.after(merge);
+    }
+}
+
+/// # Precondition
+///   - buf should have atleast `[mid, end)` capacity.
+#[allow(clippy::clone_on_copy)]
+fn inplace_merge_by_right_buffer<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+    cmp: Compare,
+    mut buf: Vec<MaybeUninit<Range::Element>>,
+) where
+    Range: OutputRange + BidirectionalRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    {
+        let mut i = mid.clone();
+        while i != end {
+            unsafe {
+                buf.push(MaybeUninit::new(std::ptr::read(rng.at(&i))));
+            }
+            i = rng.after(i);
+        }
+    }
+
+    let mut left_pos = mid;
+    let left_start = start;
+    let mut right_pos = buf.end();
+    let right_start = buf.start();
+    let mut merge = end;
+
+    while left_pos != left_start && right_pos != right_start {
+        unsafe {
+            let left_elem = rng.at(&rng.before(left_pos.clone()));
+            let right_elem =
+                buf.at(&buf.before(right_pos.clone())).assume_init_ref();
+
+            if !cmp(right_elem, left_elem) {
+                merge = rng.before(merge);
+                *rng.at_mut(&merge) = std::ptr::read(right_elem);
+                right_pos = buf.before(right_pos);
+            } else {
+                merge = rng.before(merge);
+                *rng.at_mut(&merge) = std::ptr::read(left_elem);
+                left_pos = rng.before(left_pos);
+            }
+        }
+    }
+
+    while right_pos != right_start {
+        right_pos = buf.before(right_pos);
+        merge = rng.before(merge);
+        unsafe {
+            *rng.at_mut(&merge) =
+                std::ptr::read(buf.at(&right_pos).assume_init_ref());
+        }
+    }
+}
+
+/// Merges 2 consecutive sorted range into one range wrt comparator.
+///
+/// # Precondition
+///   - `[start, mid)` represents valid positions in rng.
+///   - `[mid, end)` represents valid positions in rng.
+///   - cmp follows strict-weak-ordering.
+///
+/// # Postcondition
+///   - Merges 2 consecutive sorted range in rng at `[start, mid)` and `[mid, end)`
+///     into one sorted range `[start, end)` wrt cmp.
+///   - Relative order of equivalent elements by cmp is preserved.
+///   - Complexity: O(n). Exactly n - 1 comparisions.
+///
+/// Where n in number of elements in `[start, end)`.
+///
+/// # NOTE
+///   - Algorithm uses O(n) buffer space to acheive O(n) time complexity.
+///     If allocation is a problem, use `inplace_merge_by_no_alloc` algorithm
+///     instead doesn't do any allocation but provided O(n.log2(n)) time complexity.
+///   - The algorithm requires `OutputRange` trait. If due to somereason,
+///     only `SemiOutputRange` is available use `inplace_merge_by_no_alloc`
+///     with same tradeoff.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
+/// algo::inplace_merge_by(&mut arr, 0, 3, 6, |x, y| x.0 < y.0);
+/// assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
+/// ```
+pub fn inplace_merge_by<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+    cmp: Compare,
+) where
+    Range: OutputRange + BidirectionalRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    if start == end {
+        return;
+    }
+
+    let left_n = rng.distance(start.clone(), mid.clone());
+    let right_n = rng.distance(mid.clone(), end.clone());
+
+    if left_n <= right_n {
+        inplace_merge_by_left_buffer(
+            rng,
+            start,
+            mid,
+            end,
+            cmp,
+            Vec::with_capacity(left_n),
+        );
+    } else {
+        inplace_merge_by_right_buffer(
+            rng,
+            start,
+            mid,
+            end,
+            cmp,
+            Vec::with_capacity(right_n),
+        );
+    }
+}
+
+/// Merges 2 consecutive sorted range into one range.
+///
+/// # Precondition
+///   - `[start, mid)` represents valid positions in rng.
+///   - `[mid, end)` represents valid positions in rng.
+///
+/// # Postcondition
+///   - Merges 2 consecutive sorted range in rng at `[start, mid)` and `[mid, end)`
+///     into one sorted range `[start, end)`.
+///   - Relative order of equal elements is preserved.
+///   - Complexity: O(n). Exactly n - 1 comparisions.
+///
+/// Where n in number of elements in `[start, end)`.
+///
+/// # NOTE
+///   - Algorithm uses O(n) buffer space to acheive O(n) time complexity.
+///     If allocation is a problem, use `inplace_merge_no_alloc` algorithm
+///     instead doesn't do any allocation but provided O(n.log2(n)) time complexity.
+///   - The algorithm requires `OutputRange` trait. If due to somereason,
+///     only `SemiOutputRange` is available use `inplace_merge_no_alloc`
+///     with same tradeoff.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
+/// algo::inplace_merge(&mut arr, 0, 3, 6);
+/// assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (2, 4)]));
+/// ```
+pub fn inplace_merge<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+) where
+    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range::Element: Ord,
+{
+    inplace_merge_by(rng, start, mid, end, |x, y| x < y);
 }

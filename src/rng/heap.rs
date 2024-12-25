@@ -314,7 +314,7 @@ where
 ///  - Complexity: O(n.log2(n)) comparisions.
 ///
 /// Where n is number of elements in rng.
-/// 
+///
 /// #### Infix Supported
 /// YES
 ///
@@ -349,12 +349,12 @@ where
 /// # Postcondition
 ///   - Sorts the elements in rng such that the whole range is in non-decending order.
 ///   - Complexity: O(n.log2(n)) comparisions.
-/// 
+///
 /// Where n is number of elements in rng.
-/// 
+///
 /// #### Infix Supported
 /// YES
-///  
+///
 /// # Example
 /// ```rust
 /// use stl::*;

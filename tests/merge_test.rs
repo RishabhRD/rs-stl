@@ -158,4 +158,86 @@ pub mod tests {
         assert_eq!(i, 0);
         assert!(&dest[0..i].equals(&[]));
     }
+
+    #[test]
+    fn inplace_merge_by() {
+        let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inplace_merge_by(&mut arr, start, 3, end, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 1), (1, 3), (1, 2), (2, 2), (2, 4)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inplace_merge_by(&mut arr, start, 2, end, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inplace_merge_by(&mut arr, start, 3, end, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2)]));
+
+        let mut arr = [(1, 2), (2, 2), (2, 4)];
+        rng::inplace_merge_by(&mut arr, 0, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 2), (2, 2), (2, 4)];
+        rng::inplace_merge_by(&mut arr, 3, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
+
+        let mut arr =
+            [(1, "1"), (1, "3"), (2, "3"), (1, "2"), (2, "2"), (2, "4")];
+        rng::inplace_merge_by(&mut arr, 3, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[
+            (1, "1"),
+            (1, "3"),
+            (1, "2"),
+            (2, "3"),
+            (2, "2"),
+            (2, "4")
+        ]));
+    }
+
+    #[test]
+    fn inplace_merge() {
+        let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inplace_merge(&mut arr, start, 3, end);
+        assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (2, 4)]));
+
+        let mut arr = [(1, 1), (1, 3), (1, 2), (2, 2), (2, 4)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inplace_merge(&mut arr, start, 2, end);
+        assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inplace_merge(&mut arr, start, 3, end);
+        assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3)]));
+
+        let mut arr = [(1, 2), (2, 2), (2, 4)];
+        rng::inplace_merge(&mut arr, 0);
+        assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 2), (2, 2), (2, 4)];
+        rng::inplace_merge(&mut arr, 3);
+        assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
+
+        let mut arr =
+            [(1, "1"), (1, "3"), (2, "3"), (1, "2"), (2, "2"), (2, "4")];
+        rng::inplace_merge(&mut arr, 3);
+        assert!(arr.equals(&[
+            (1, "1"),
+            (1, "2"),
+            (1, "3"),
+            (2, "2"),
+            (2, "3"),
+            (2, "4")
+        ]));
+    }
 }
