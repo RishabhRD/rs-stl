@@ -105,6 +105,7 @@ pub mod tests {
         let i = arr.upper_bound(&4);
         assert_eq!(i, 0);
     }
+
     #[test]
     pub fn equal_range() {
         let arr = [2, 1, 4, 4, 8, 7];
@@ -165,5 +166,40 @@ pub mod tests {
         let (i, j) = arr.equal_range(&4);
         assert_eq!(i, 0);
         assert_eq!(j, 0);
+    }
+
+    #[test]
+    pub fn binary_search() {
+        let arr = [2, 1, 4, 4, 8, 7];
+
+        assert!(algo::binary_search_by(
+            &arr,
+            arr.start(),
+            arr.end(),
+            &4,
+            |x, y| x < y
+        ));
+
+        assert!(rng::binary_search_by(&arr, &4, |x, y| x < y));
+
+        assert!(arr.binary_search_by(&4, |x, y| x < y));
+
+        assert!(algo::binary_search(&arr, arr.start(), arr.end(), &4,));
+
+        assert!(rng::binary_search(&arr, &4));
+
+        assert!(arr.binary_search(&4));
+
+        let arr = [2, 1, 4, 8, 7];
+        assert!(arr.binary_search(&4));
+
+        let arr = [2, 1, 8, 7];
+        assert!(!arr.binary_search(&4));
+
+        let arr = [];
+        assert!(!arr.binary_search(&4));
+
+        let arr = [(1, 3)];
+        assert!(arr.binary_search_by(&(1, 2), |x, y| x.0 < y.0));
     }
 }

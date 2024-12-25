@@ -207,7 +207,7 @@ where
     algo::equal_range_by(rng, rng.start(), rng.end(), ele, is_less)
 }
 
-/// Returns a pair of positions representing position of all elements equivalent to ele in partitioned range.
+/// Returns a pair of positions representing position of all elements equal to ele in partitioned range.
 ///
 /// # Precondition
 ///   - rng should be partitioned wrt expression `rng.at(&i) < ele`.
@@ -252,11 +252,77 @@ where
     algo::equal_range(rng, rng.start(), rng.end(), ele)
 }
 
+/// Checks if element equivalent to `ele` wrt comparator appears within range.
+///
+/// # Precondition
+///   - rng should be partitioned wrt expression `is_less(rng.at(&i), ele)`.
+///
+/// # Postcondition
+///   - Returns true if element equivalent to `ele` wrt is_less appears
+///     within rng, otherwise returns false.
+///   - Complexity: O(log2(n)) comparisions. If rng is not a RandomAccessRange,
+///     then number of position increment is O(n).
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [2, 1, 4, 8, 7];
+/// assert!(rng::binary_search_by(&arr, &4, |x, y| x < y));
+/// assert!(arr.binary_search_by(&4, |x, y| x < y));
+/// ```
+pub fn binary_search_by<Range, Compare>(
+    rng: &Range,
+    ele: &Range::Element,
+    is_less: Compare,
+) -> bool
+where
+    Range: ForwardRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    algo::binary_search_by(rng, rng.start(), rng.end(), ele, is_less)
+}
+
+/// Checks if element equal to `ele` wrt comparator appears within range.
+///
+/// # Precondition
+///   - rng should be partitioned wrt expression `rng.at(&i) <  ele`.
+///
+/// # Postcondition
+///   - Returns true if element equal to `ele` appears within rng, otherwise returns false.
+///   - Complexity: O(log2(n)) comparisions. If rng is not a RandomAccessRange,
+///     then number of position increment is O(n).
+///
+/// Where n is number of elements in rng.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [2, 1, 4, 8, 7];
+/// assert!(rng::binary_search(&arr, &4));
+/// assert!(arr.binary_search(&4));
+/// ```
+pub fn binary_search<Range>(rng: &Range, ele: &Range::Element) -> bool
+where
+    Range: ForwardRange + ?Sized,
+    Range::Element: Ord,
+{
+    algo::binary_search(rng, rng.start(), rng.end(), ele)
+}
+
 pub mod infix {
     use crate::{rng, ForwardRange};
 
     /// `lower_bound`, `lower_bound_by`, `upper_bound`, `upper_bound_by`, `equal_range`,
-    /// `equal_range_by`.
+    /// `equal_range_by`, `binary_search`, `binary_search_by`.
     pub trait STLBinarySearchExt: ForwardRange {
         fn lower_bound_by<Compare>(
             &self,
@@ -294,6 +360,18 @@ pub mod infix {
             &self,
             ele: &Self::Element,
         ) -> (Self::Position, Self::Position)
+        where
+            Self::Element: Ord;
+
+        fn binary_search_by<Compare>(
+            &self,
+            ele: &Self::Element,
+            is_less: Compare,
+        ) -> bool
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone;
+
+        fn binary_search(&self, ele: &Self::Element) -> bool
         where
             Self::Element: Ord;
     }
@@ -357,6 +435,24 @@ pub mod infix {
             Self::Element: Ord,
         {
             rng::equal_range(self, ele)
+        }
+
+        fn binary_search_by<Compare>(
+            &self,
+            ele: &Self::Element,
+            is_less: Compare,
+        ) -> bool
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
+        {
+            rng::binary_search_by(self, ele, is_less)
+        }
+
+        fn binary_search(&self, ele: &Self::Element) -> bool
+        where
+            Self::Element: Ord,
+        {
+            rng::binary_search(self, ele)
         }
     }
 }

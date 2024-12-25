@@ -231,7 +231,7 @@ required description would be provided.
 - [x] lower_bound -> lower_bound, lower_bound_by
 - [x] upper_bound -> upper_bound, upper_bound_by
 - [x] equal_range -> equal_range, equal_range_by
-- [ ] binary_search
+- [x] binary_search -> binary_search, binary_search_by
 
 ### Merge Operations
 
