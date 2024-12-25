@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange, OutputRange};
+use crate::{algo, BidirectionalRange, InputRange, OutputRange};
 
 /// Merges 2 sorted ranges into one sorted range wrt Comparator.
 ///
@@ -151,7 +151,7 @@ pub fn inplace_merge_by<Range, Compare>(
     mid: Range::Position,
     cmp: Compare,
 ) where
-    Range: OutputRange + ?Sized,
+    Range: OutputRange + BidirectionalRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
     let start = rng.start();
@@ -194,7 +194,7 @@ pub fn inplace_merge_by<Range, Compare>(
 /// ```
 pub fn inplace_merge<Range>(rng: &mut Range, mid: Range::Position)
 where
-    Range: OutputRange + ?Sized,
+    Range: OutputRange + BidirectionalRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();

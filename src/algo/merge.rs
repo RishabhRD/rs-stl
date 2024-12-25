@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{utils::create_raw_buffer, InputRange, OutputRange};
+use std::mem::MaybeUninit;
 
-use super::{copy, swap_ranges};
+use crate::{BidirectionalRange, InputRange, OutputRange};
+
+use super::copy;
 
 /// Merges 2 sorted ranges into one sorted range wrt Comparator.
 ///
@@ -133,6 +135,119 @@ where
     })
 }
 
+/// # Precondition
+///   - buf should have atleast `[start, mid)` capacity.
+fn inplace_merge_by_left_buffer<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+    cmp: Compare,
+    mut buf: Vec<MaybeUninit<Range::Element>>,
+) where
+    Range: OutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    {
+        let mut i = start.clone();
+        while i != mid {
+            unsafe {
+                buf.push(MaybeUninit::new(std::ptr::read(rng.at(&i))));
+            }
+            i = rng.after(i);
+        }
+    }
+
+    let mut left_pos = buf.start();
+    let left_end = buf.end();
+    let mut right_pos = mid.clone();
+    let right_end = end.clone();
+    let mut merge = start.clone();
+
+    while left_pos != left_end && right_pos != right_end {
+        unsafe {
+            let left_elem = buf.at(&left_pos).assume_init_ref();
+            let right_elem = rng.at(&right_pos);
+
+            if cmp(right_elem, left_elem) {
+                *rng.at_mut(&merge) = std::ptr::read(right_elem);
+                right_pos = rng.after(right_pos);
+            } else {
+                *rng.at_mut(&merge) = std::ptr::read(left_elem);
+                left_pos = buf.after(left_pos);
+            }
+        }
+        merge = rng.after(merge);
+    }
+
+    while left_pos != left_end {
+        unsafe {
+            *rng.at_mut(&merge) =
+                std::ptr::read(buf.at(&left_pos).assume_init_ref());
+        }
+        left_pos = buf.after(left_pos);
+        merge = rng.after(merge);
+    }
+}
+
+/// # Precondition
+///   - buf should have atleast `[mid, end)` capacity.
+#[allow(clippy::clone_on_copy)]
+fn inplace_merge_by_right_buffer<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+    cmp: Compare,
+    mut buf: Vec<MaybeUninit<Range::Element>>,
+) where
+    Range: OutputRange + BidirectionalRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    {
+        let mut i = mid.clone();
+        while i != end {
+            unsafe {
+                buf.push(MaybeUninit::new(std::ptr::read(rng.at(&i))));
+            }
+            i = rng.after(i);
+        }
+    }
+
+    let mut left_pos = mid;
+    let left_start = start;
+    let mut right_pos = buf.end();
+    let right_start = buf.start();
+    let mut merge = end;
+
+    while left_pos != left_start && right_pos != right_start {
+        unsafe {
+            let left_elem = rng.at(&rng.before(left_pos.clone()));
+            let right_elem =
+                buf.at(&buf.before(right_pos.clone())).assume_init_ref();
+
+            if !cmp(right_elem, left_elem) {
+                merge = rng.before(merge);
+                *rng.at_mut(&merge) = std::ptr::read(right_elem);
+                right_pos = buf.before(right_pos);
+            } else {
+                merge = rng.before(merge);
+                *rng.at_mut(&merge) = std::ptr::read(left_elem);
+                left_pos = rng.before(left_pos);
+            }
+        }
+    }
+
+    while right_pos != right_start {
+        right_pos = buf.before(right_pos);
+        merge = rng.before(merge);
+        unsafe {
+            *rng.at_mut(&merge) =
+                std::ptr::read(buf.at(&right_pos).assume_init_ref());
+        }
+    }
+}
+
 /// Merges 2 consecutive sorted range into one range wrt comparator.
 ///
 /// # Precondition
@@ -165,64 +280,42 @@ where
 /// algo::inplace_merge_by(&mut arr, 0, 3, 6, |x, y| x.0 < y.0);
 /// assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
 /// ```
-#[allow(clippy::clone_on_copy)]
 pub fn inplace_merge_by<Range, Compare>(
     rng: &mut Range,
-    mut start: Range::Position,
+    start: Range::Position,
     mid: Range::Position,
     end: Range::Position,
     cmp: Compare,
 ) where
-    Range: OutputRange + ?Sized,
+    Range: OutputRange + BidirectionalRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
     if start == end {
         return;
     }
 
-    let n = rng.distance(start.clone(), end.clone());
-    let mut buf = create_raw_buffer::<Range::Element>(n);
-    {
-        let buf_start = buf.start();
-        let buf_end = buf.end();
-        // TODO: is it even safe?
-        swap_ranges(
+    let left_n = rng.distance(start.clone(), mid.clone());
+    let right_n = rng.distance(mid.clone(), end.clone());
+
+    if left_n <= right_n {
+        inplace_merge_by_left_buffer(
             rng,
-            start.clone(),
-            end.clone(),
-            &mut buf,
-            buf_start,
-            buf_end,
+            start,
+            mid,
+            end,
+            cmp,
+            Vec::with_capacity(left_n),
+        );
+    } else {
+        inplace_merge_by_right_buffer(
+            rng,
+            start,
+            mid,
+            end,
+            cmp,
+            Vec::with_capacity(right_n),
         );
     }
-
-    let mut start1 = buf.start();
-    let end1 = buf.after_n(start1.clone(), rng.distance(start.clone(), mid));
-    let mut start2 = end1;
-    let end2 = buf.end();
-
-    while start1 != end1 {
-        if start2 == end2 {
-            swap_ranges(
-                &mut buf,
-                start1.clone(),
-                end1.clone(),
-                rng,
-                start.clone(),
-                end.clone(),
-            );
-            return;
-        }
-        if cmp(buf.at(&start2), buf.at(&start1)) {
-            std::mem::swap(rng.at_mut(&start), buf.at_mut(&start2));
-            start2 = buf.after(start2);
-        } else {
-            std::mem::swap(rng.at_mut(&start), buf.at_mut(&start1));
-            start1 = buf.after(start1);
-        }
-        start = rng.after(start);
-    }
-    swap_ranges(&mut buf, start2, end2, rng, start, end);
 }
 
 /// Merges 2 consecutive sorted range into one range.
@@ -262,7 +355,7 @@ pub fn inplace_merge<Range>(
     mid: Range::Position,
     end: Range::Position,
 ) where
-    Range: OutputRange + ?Sized,
+    Range: OutputRange + BidirectionalRange + ?Sized,
     Range::Element: Ord,
 {
     inplace_merge_by(rng, start, mid, end, |x, y| x < y);

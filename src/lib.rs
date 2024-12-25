@@ -119,8 +119,6 @@ pub mod array;
 pub mod core;
 pub mod rng;
 pub mod slice;
-#[doc(hidden)]
-pub mod utils;
 pub mod vec;
 
 #[doc(inline)]
