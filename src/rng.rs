@@ -124,6 +124,11 @@ pub mod swap_ranges;
 #[doc(inline)]
 pub use swap_ranges::*;
 
+#[doc(hidden)]
+pub mod binary_search;
+#[doc(inline)]
+pub use binary_search::*;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!
@@ -132,6 +137,8 @@ pub mod infix {
 
     #[doc(inline)]
     pub use super::adjacent_find::infix::*;
+    #[doc(inline)]
+    pub use super::binary_search::infix::*;
     #[doc(inline)]
     pub use super::count::infix::*;
     #[doc(inline)]

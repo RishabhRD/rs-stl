@@ -228,7 +228,7 @@ required description would be provided.
 ### Binary Search Operations
 
 - [x] partition_point (Same as above partition_point)
-- [ ] lower_bound
+- [x] lower_bound
 - [ ] upper_bound
 - [ ] equal_range
 - [ ] binary_search

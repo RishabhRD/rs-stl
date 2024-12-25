@@ -105,3 +105,8 @@ pub use merge::*;
 pub mod swap_ranges;
 #[doc(inline)]
 pub use swap_ranges::*;
+
+#[doc(hidden)]
+pub mod binary_search;
+#[doc(inline)]
+pub use binary_search::*;
