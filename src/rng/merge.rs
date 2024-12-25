@@ -134,6 +134,8 @@ where
 ///     only `SemiOutputRange` is available use `inplace_merge_by_no_alloc`
 ///     with same tradeoff.
 ///
+///   Where n1 is number of elements in `[rng.start(), mid)`, and n2 is number of elements in `[mid, rng.end())`.
+///
 /// #### Infix Supported
 /// NO
 ///
@@ -173,12 +175,14 @@ pub fn inplace_merge_by<Range, Compare>(
 /// Where n in number of elements in rng.
 ///
 /// # NOTE
-///   - Algorithm uses O(n) buffer space to acheive O(n) time complexity.
-///     If allocation is a problem, use `inplace_merge_no_alloc` algorithm
-///     instead doesn't do any allocation but provided O(n.log2(n)) time complexity.
-///   - The algorithm requires `OutputRange` trait. If due to somereason,
-///     only `SemiOutputRange` is available use `inplace_merge_no_alloc`
-///     with same tradeoff.
+///   - Algorithm uses min(n1, n2) additional buffer space to acheive O(n) time complexity.
+///     If memory allocation is a concern, consider using `inplace_merge_by_no_alloc` algorithm.
+///     `inplace_merge_by_no_alloc` doesn't do any memory allocation but provides O(n.log2(n)) time complexity.
+///   - Algorithm requires `OutputRange` trait to handle reading and writing from additional buffer.
+///     If due to some reason, only `SemiOutputRange` is available use `inplace_merge_by_no_alloc`
+///     instead, with the associated trade-offs.
+///
+///   Where n1 is number of elements in `[rng.start(), mid)`, and n2 is number of elements in `[mid, rng.end())`.
 ///
 /// #### Infix Supported
 /// NO
