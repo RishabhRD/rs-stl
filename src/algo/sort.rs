@@ -3,8 +3,6 @@
 
 use crate::{RandomAccessRange, SemiOutputRange};
 
-use super::details::insertion_sort;
-
 /// Unstable sort: sorts range in non-decreasing order based on comparator.
 ///
 /// # Precondition
@@ -43,7 +41,7 @@ pub fn sort_range_by<Range, Compare>(
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    insertion_sort(rng, start, end, cmp);
+    details::insertion_sort(rng, start, end, cmp);
 }
 
 /// Unstable sort: sorts range in non-decreasing order.
@@ -80,4 +78,31 @@ pub fn sort_range<Range>(
     Range::Element: Ord,
 {
     sort_range_by(rng, start, end, |x, y| x < y)
+}
+
+// TODO: details can only be accessed from current file or from tests.
+pub mod details {
+    use crate::{RandomAccessRange, SemiOutputRange};
+
+    pub fn insertion_sort<Range, Compare>(
+        rng: &mut Range,
+        start: Range::Position,
+        end: Range::Position,
+        cmp: Compare,
+    ) where
+        Range: RandomAccessRange + SemiOutputRange + ?Sized,
+        Compare: Fn(&Range::Element, &Range::Element) -> bool,
+    {
+        let mut i = start.clone();
+        while i != end {
+            let mut j = i.clone();
+            while j != start && cmp(rng.at(&j), rng.at(&rng.before(j.clone())))
+            {
+                let prev = rng.before(j.clone());
+                rng.swap_at(&prev, &j);
+                j = prev;
+            }
+            i = rng.after(i);
+        }
+    }
 }

@@ -97,9 +97,6 @@ pub mod sort;
 pub use sort::*;
 
 #[doc(hidden)]
-pub mod details;
-
-#[doc(hidden)]
 pub mod heap;
 #[doc(inline)]
 pub use heap::*;

@@ -4,7 +4,7 @@
 #[cfg(test)]
 pub mod tests {
     use rng::infix::*;
-    use stl::algo::details::*;
+    use stl::algo::sort::*;
     use stl::*;
 
     #[test]
@@ -12,7 +12,7 @@ pub mod tests {
         let mut arr = [(2, 4), (2, 3), (1, 2), (1, 3)];
         let start = arr.start();
         let end = arr.end();
-        sort::insertion_sort(&mut arr, start, end, |x, y| x.0 < y.0);
+        details::insertion_sort(&mut arr, start, end, |x, y| x.0 < y.0);
         assert!(arr.equals(&[(1, 2), (1, 3), (2, 4), (2, 3)]));
     }
 
@@ -21,7 +21,7 @@ pub mod tests {
         let mut arr: [i32; 0] = [];
         let start = arr.start();
         let end = arr.end();
-        sort::insertion_sort(&mut arr, start, end, |x, y| x < y);
+        details::insertion_sort(&mut arr, start, end, |x, y| x < y);
         assert!(arr.equals(&[]));
     }
 }
