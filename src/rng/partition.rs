@@ -98,6 +98,9 @@ where
 ///   - The algorithm provides O(n) time complexity with O(n) additional memory allocation.
 ///     If memory allocation is a concern, consider using `stable_partition_no_alloc` algorithm, which
 ///     provides O(n.log2(n)) time complexity with no memory allocation.
+///   - The algorithm requires `OutputRange` trait for reading and writing to buffer.
+///     If only `SemiOutputRange` is available, consider using `stable_partition_no_alloc`
+///     algorithm with given tradeoffs.
 ///
 /// # Example
 /// ```rust
