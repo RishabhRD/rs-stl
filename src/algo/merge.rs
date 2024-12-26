@@ -417,7 +417,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
     }
 
     let (left_half, left_end, right_start, right_half) = if n0 < n1 {
-        let half = n0 / 2;
+        let half = n0 >> 1;
         let left_half = rng.after_n(start.clone(), half);
         let right_half = lower_bound_by(
             rng,

@@ -181,7 +181,7 @@ pub fn push_heap_by<Range, Compare>(
 
     let mut cur = rng.distance(start.clone(), end) - 1;
     while cur > 0 {
-        let parent = (cur - 1) / 2;
+        let parent = (cur - 1) >> 1;
         let parent_pos = rng.after_n(start.clone(), parent);
         let cur_pos = rng.after_n(start.clone(), cur);
         if is_less(rng.at(&parent_pos), rng.at(&cur_pos)) {
@@ -471,7 +471,7 @@ pub fn make_heap_by<Range, Compare>(
     if n == 0 || n == 1 {
         return;
     }
-    let mut root = n / 2;
+    let mut root = n >> 1;
     loop {
         let root_pos = rng.after_n(start.clone(), root);
         heapify(rng, root_pos.clone(), end.clone(), is_less.clone());
