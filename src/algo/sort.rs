@@ -7,13 +7,13 @@ use crate::{RandomAccessRange, SemiOutputRange};
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid position in rng.
-///   - cmp follows strict weak ordering relationship, i.e., returns true for
-///     cmp(a, b) if a comes before b otherwise false.
-///   - Also if cmp(a, b) == false && cmp(b, a) == false, then a is equivalent
+///   - is_less follows strict weak ordering relationship, i.e., returns true for
+///     is_less(a, b) if a comes before b otherwise false.
+///   - Also if is_less(a, b) == false && is_less(b, a) == false, then a is equivalent
 ///     to b.
 ///
 /// # Postcondition
-///   - sorts range at `[start, end)` in non-decreasing order by comparator cmp.
+///   - sorts range at `[start, end)` in non-decreasing order by comparator is_less.
 ///   - Relative order of equivalent elements are NOT preserved.
 ///   - Complexity: O(n.log2(n)) comparisions.
 ///
@@ -36,12 +36,12 @@ pub fn sort_range_by<Range, Compare>(
     rng: &mut Range,
     start: Range::Position,
     end: Range::Position,
-    cmp: Compare,
+    is_less: Compare,
 ) where
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    details::insertion_sort(rng, start, end, cmp);
+    details::insertion_sort(rng, start, end, is_less);
 }
 
 /// Unstable sort: sorts range in non-decreasing order.
@@ -88,7 +88,7 @@ pub mod details {
         rng: &mut Range,
         start: Range::Position,
         end: Range::Position,
-        cmp: Compare,
+        is_less: Compare,
     ) where
         Range: RandomAccessRange + SemiOutputRange + ?Sized,
         Compare: Fn(&Range::Element, &Range::Element) -> bool,
@@ -96,7 +96,8 @@ pub mod details {
         let mut i = start.clone();
         while i != end {
             let mut j = i.clone();
-            while j != start && cmp(rng.at(&j), rng.at(&rng.before(j.clone())))
+            while j != start
+                && is_less(rng.at(&j), rng.at(&rng.before(j.clone())))
             {
                 let prev = rng.before(j.clone());
                 rng.swap_at(&prev, &j);
