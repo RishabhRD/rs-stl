@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, BidirectionalRange, InputRange, OutputRange};
+use crate::{
+    algo, BidirectionalRange, InputRange, OutputRange, SemiOutputRange,
+};
 
 /// Merges 2 sorted ranges into one sorted range wrt Comparator.
 ///
@@ -244,7 +246,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
     mid: Range::Position,
     is_less: Compare,
 ) where
-    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range: SemiOutputRange + BidirectionalRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -286,7 +288,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
 /// ```
 pub fn merge_inplace_no_alloc<Range>(rng: &mut Range, mid: Range::Position)
 where
-    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range: SemiOutputRange + BidirectionalRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();

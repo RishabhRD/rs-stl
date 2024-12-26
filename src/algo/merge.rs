@@ -3,7 +3,7 @@
 
 use std::mem::MaybeUninit;
 
-use crate::{BidirectionalRange, InputRange, OutputRange};
+use crate::{BidirectionalRange, InputRange, OutputRange, SemiOutputRange};
 
 use super::{copy, lower_bound_by, rotate, upper_bound_by};
 
@@ -403,7 +403,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
     end: Range::Position,
     is_less: Compare,
 ) where
-    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range: SemiOutputRange + BidirectionalRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     if start == end {
@@ -488,7 +488,7 @@ pub fn merge_inplace_no_alloc<Range>(
     mid: Range::Position,
     end: Range::Position,
 ) where
-    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range: SemiOutputRange + BidirectionalRange + ?Sized,
     Range::Element: Ord,
 {
     merge_inplace_by_no_alloc(rng, start, mid, end, |x, y| x < y);
