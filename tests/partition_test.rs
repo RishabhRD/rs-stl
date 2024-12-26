@@ -114,6 +114,24 @@ pub mod tests {
         assert_eq!(i, 4);
         assert!(&arr[0..i].equals(&[(1, "1"), (3, "3"), (3, "2"), (5, "5")]));
         assert!(&arr[i..].equals(&[(4, "4")]));
+
+        // Test double free due to unsafe code
+        let mut arr = [
+            (1, String::from("1")),
+            (3, String::from("3")),
+            (4, String::from("4")),
+            (3, String::from("2")),
+            (5, String::from("5")),
+        ];
+        let i = arr.stable_partition(|x| x.0 % 2 == 1);
+        assert_eq!(i, 4);
+        assert!(&arr[0..i].equals(&[
+            (1, String::from("1")),
+            (3, String::from("3")),
+            (3, String::from("2")),
+            (5, String::from("5"))
+        ]));
+        assert!(&arr[i..].equals(&[(4, String::from("4"))]));
     }
 
     #[test]

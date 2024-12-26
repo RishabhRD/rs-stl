@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use std::mem::MaybeUninit;
+use std::{cmp::min, mem::MaybeUninit, slice};
 
 use crate::{BidirectionalRange, InputRange, OutputRange, SemiOutputRange};
 
@@ -137,24 +137,27 @@ where
 
 /// # Precondition
 ///   - buf should have atleast `[start, mid)` capacity.
-fn merge_inplace_by_left_buffer<Range, Compare>(
+fn merge_inplace_by_left_buffer<Range, Compare, Buffer>(
     rng: &mut Range,
     start: Range::Position,
     mid: Range::Position,
     end: Range::Position,
     is_less: Compare,
-    mut buf: Vec<MaybeUninit<Range::Element>>,
+    buf: &mut Buffer,
 ) where
     Range: OutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
+    Buffer: OutputRange<Element = MaybeUninit<Range::Element>> + ?Sized,
 {
     {
         let mut i = start.clone();
+        let mut j = buf.start();
         while i != mid {
             unsafe {
-                buf.push(MaybeUninit::new(std::ptr::read(rng.at(&i))));
+                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(rng.at(&i)));
             }
             i = rng.after(i);
+            j = buf.after(j);
         }
     }
 
@@ -166,14 +169,14 @@ fn merge_inplace_by_left_buffer<Range, Compare>(
 
     while left_pos != left_end && right_pos != right_end {
         unsafe {
-            let left_elem = buf.at(&left_pos).assume_init_ref();
+            let left_elem = buf.at_mut(&left_pos).assume_init_mut();
             let right_elem = rng.at(&right_pos);
 
             if is_less(right_elem, left_elem) {
-                *rng.at_mut(&merge) = std::ptr::read(right_elem);
+                rng.swap_at(&merge, &right_pos);
                 right_pos = rng.after(right_pos);
             } else {
-                *rng.at_mut(&merge) = std::ptr::read(left_elem);
+                std::mem::swap(rng.at_mut(&merge), left_elem);
                 left_pos = buf.after(left_pos);
             }
         }
@@ -182,8 +185,10 @@ fn merge_inplace_by_left_buffer<Range, Compare>(
 
     while left_pos != left_end {
         unsafe {
-            *rng.at_mut(&merge) =
-                std::ptr::read(buf.at(&left_pos).assume_init_ref());
+            std::mem::swap(
+                rng.at_mut(&merge),
+                buf.at_mut(&left_pos).assume_init_mut(),
+            );
         }
         left_pos = buf.after(left_pos);
         merge = rng.after(merge);
@@ -193,24 +198,29 @@ fn merge_inplace_by_left_buffer<Range, Compare>(
 /// # Precondition
 ///   - buf should have atleast `[mid, end)` capacity.
 #[allow(clippy::clone_on_copy)]
-fn merge_inplace_by_right_buffer<Range, Compare>(
+fn merge_inplace_by_right_buffer<Range, Compare, Buffer>(
     rng: &mut Range,
     start: Range::Position,
     mid: Range::Position,
     end: Range::Position,
     is_less: Compare,
-    mut buf: Vec<MaybeUninit<Range::Element>>,
+    buf: &mut Buffer,
 ) where
     Range: OutputRange + BidirectionalRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
+    Buffer: OutputRange<Element = MaybeUninit<Range::Element>>
+        + BidirectionalRange
+        + ?Sized,
 {
     {
         let mut i = mid.clone();
+        let mut j = buf.start();
         while i != end {
             unsafe {
-                buf.push(MaybeUninit::new(std::ptr::read(rng.at(&i))));
+                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(rng.at(&i)));
             }
             i = rng.after(i);
+            j = buf.after(j);
         }
     }
 
@@ -224,16 +234,16 @@ fn merge_inplace_by_right_buffer<Range, Compare>(
         unsafe {
             let left_elem = rng.at(&rng.before(left_pos.clone()));
             let right_elem =
-                buf.at(&buf.before(right_pos.clone())).assume_init_ref();
+                buf.at_mut(&buf.before(right_pos.clone())).assume_init_mut();
 
             if !is_less(right_elem, left_elem) {
                 merge = rng.before(merge);
-                *rng.at_mut(&merge) = std::ptr::read(right_elem);
+                std::mem::swap(rng.at_mut(&merge), right_elem);
                 right_pos = buf.before(right_pos);
             } else {
                 merge = rng.before(merge);
-                *rng.at_mut(&merge) = std::ptr::read(left_elem);
                 left_pos = rng.before(left_pos);
+                rng.swap_at(&merge, &left_pos)
             }
         }
     }
@@ -242,8 +252,10 @@ fn merge_inplace_by_right_buffer<Range, Compare>(
         right_pos = buf.before(right_pos);
         merge = rng.before(merge);
         unsafe {
-            *rng.at_mut(&merge) =
-                std::ptr::read(buf.at(&right_pos).assume_init_ref());
+            std::mem::swap(
+                rng.at_mut(&merge),
+                buf.at_mut(&right_pos).assume_init_mut(),
+            );
         }
     }
 }
@@ -298,25 +310,17 @@ pub fn merge_inplace_by<Range, Compare>(
 
     let left_n = rng.distance(start.clone(), mid.clone());
     let right_n = rng.distance(mid.clone(), end.clone());
+    let mut scratch: Vec<MaybeUninit<Range::Element>> =
+        Vec::with_capacity(min(left_n, right_n));
+
+    let buf = unsafe {
+        slice::from_raw_parts_mut(scratch.as_mut_ptr(), scratch.capacity())
+    };
 
     if left_n <= right_n {
-        merge_inplace_by_left_buffer(
-            rng,
-            start,
-            mid,
-            end,
-            is_less,
-            Vec::with_capacity(left_n),
-        );
+        merge_inplace_by_left_buffer(rng, start, mid, end, is_less, buf);
     } else {
-        merge_inplace_by_right_buffer(
-            rng,
-            start,
-            mid,
-            end,
-            is_less,
-            Vec::with_capacity(right_n),
-        );
+        merge_inplace_by_right_buffer(rng, start, mid, end, is_less, buf);
     }
 }
 

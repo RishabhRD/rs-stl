@@ -217,7 +217,7 @@ required description would be provided.
 
 ### Sorting Operations
 
-- [ ] sort
+- [x] sort -> sort_range, sort_range_by
 - [ ] stable_sort
 - [ ] partial_sort
 - [ ] partial_sort_copy

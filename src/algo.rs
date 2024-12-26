@@ -92,6 +92,11 @@ pub mod partition;
 pub use partition::*;
 
 #[doc(hidden)]
+pub mod sort;
+#[doc(inline)]
+pub use sort::*;
+
+#[doc(hidden)]
 pub mod heap;
 #[doc(inline)]
 pub use heap::*;
