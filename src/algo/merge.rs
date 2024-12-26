@@ -5,7 +5,7 @@ use std::mem::MaybeUninit;
 
 use crate::{BidirectionalRange, InputRange, OutputRange};
 
-use super::copy;
+use super::{copy, lower_bound_by, rotate, upper_bound_by};
 
 /// Merges 2 sorted ranges into one sorted range wrt Comparator.
 ///
@@ -363,4 +363,133 @@ pub fn merge_inplace<Range>(
     Range::Element: Ord,
 {
     merge_inplace_by(rng, start, mid, end, |x, y| x < y);
+}
+
+/// Merges 2 consecutive sorted range into one range wrt comparator.
+///
+/// # Precondition
+///   - `[start, mid)` represents valid positions in rng.
+///   - `[mid, end)` represents valid positions in rng.
+///   - is_less follows strict-weak-ordering.
+///
+/// # Postcondition
+///   - Merges 2 consecutive sorted range in rng at `[start, mid)` and `[mid, end)`
+///     into one sorted range `[start, end)` wrt is_less.
+///   - Relative order of equivalent elements by is_less is preserved.
+///   - Complexity: O(n.log2(n - 1)) comparisions.
+///
+/// Where n in number of elements in `[start, end)`.
+///
+/// # NOTE
+///   - Algorithm provides O(n.log2(n)) time complexity, but O(1) additional space.
+///     If memory allocation is not a concern, consider using `merge_inplace_by`
+///     algorithm instead, that provides O(n) time complexity but O(min(n1, n2)) allocations.
+///
+///   Where n1 is number of elements in `[start, mid)` and n2 is number of elements in `[mid, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
+/// algo::merge_inplace_by_no_alloc(&mut arr, 0, 3, 6, |x, y| x.0 < y.0);
+/// assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
+/// ```
+pub fn merge_inplace_by_no_alloc<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+    is_less: Compare,
+) where
+    Range: OutputRange + BidirectionalRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    if start == end {
+        return;
+    }
+    let n0 = rng.distance(start.clone(), mid.clone());
+    let n1 = rng.distance(mid.clone(), end.clone());
+
+    if n0 == 0 || n1 == 0 {
+        return;
+    }
+
+    let (left_half, left_end, right_start, right_half) = if n0 < n1 {
+        let half = n0 / 2;
+        let left_half = rng.after_n(start.clone(), half);
+        let right_half = lower_bound_by(
+            rng,
+            mid.clone(),
+            end.clone(),
+            rng.at(&left_half),
+            is_less.clone(),
+        );
+        let mut right_start =
+            rotate(rng, left_half.clone(), mid, right_half.clone());
+        let left_end = right_start.clone();
+        right_start = rng.after(right_start);
+        (left_half, left_end, right_start, right_half)
+    } else {
+        let half = n1 >> 1;
+        let mut right_half = rng.after_n(mid.clone(), half);
+        let left_half = upper_bound_by(
+            rng,
+            start.clone(),
+            mid.clone(),
+            rng.at(&right_half),
+            is_less.clone(),
+        );
+        let left_end = rng.after_n(left_half.clone(), half);
+        right_half = rng.after(right_half);
+        let right_start =
+            rotate(rng, left_half.clone(), mid, right_half.clone());
+        (left_half, left_end, right_start, right_half)
+    };
+
+    merge_inplace_by_no_alloc(rng, start, left_half, left_end, is_less.clone());
+    merge_inplace_by_no_alloc(rng, right_start, right_half, end, is_less);
+}
+
+/// Merges 2 consecutive sorted range into one range.
+///
+/// # Precondition
+///   - `[start, mid)` represents valid positions in rng.
+///   - `[mid, end)` represents valid positions in rng.
+///
+/// # Postcondition
+///   - Merges 2 consecutive sorted range in rng at `[start, mid)` and `[mid, end)`
+///     into one sorted range `[start, end)`.
+///   - Relative order of equal elements is preserved.
+///   - Complexity: O(n). Exactly n - 1 comparisions.
+///
+/// Where n in number of elements in `[start, end)`.
+///
+/// # NOTE
+///   - Algorithm provides O(n.log2(n)) time complexity, but O(1) additional space.
+///     If memory allocation is not a concern, consider using `merge_inplace`
+///     algorithm instead, that provides O(n) time complexity but O(min(n1, n2)) allocations.
+///
+///   Where n1 is number of elements in `[start, mid)`, and n2 is number of elements in `[mid, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
+/// algo::merge_inplace_no_alloc(&mut arr, 0, 3, 6);
+/// assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (2, 4)]));
+/// ```
+pub fn merge_inplace_no_alloc<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+) where
+    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range::Element: Ord,
+{
+    merge_inplace_by_no_alloc(rng, start, mid, end, |x, y| x < y);
 }

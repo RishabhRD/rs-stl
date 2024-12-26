@@ -240,4 +240,92 @@ pub mod tests {
             (2, "4")
         ]));
     }
+
+    #[test]
+    fn merge_inplace_by_no_alloc() {
+        let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::merge_inplace_by_no_alloc(&mut arr, start, 3, end, |x, y| {
+            x.0 < y.0
+        });
+        assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 1), (1, 3), (1, 2), (2, 2), (2, 4)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::merge_inplace_by_no_alloc(&mut arr, start, 2, end, |x, y| {
+            x.0 < y.0
+        });
+        assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::merge_inplace_by_no_alloc(&mut arr, start, 3, end, |x, y| {
+            x.0 < y.0
+        });
+        assert!(arr.equals(&[(1, 1), (1, 3), (1, 2), (2, 3), (2, 2)]));
+
+        let mut arr = [(1, 2), (2, 2), (2, 4)];
+        rng::merge_inplace_by_no_alloc(&mut arr, 0, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 2), (2, 2), (2, 4)];
+        rng::merge_inplace_by_no_alloc(&mut arr, 3, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
+
+        let mut arr =
+            [(1, "1"), (1, "3"), (2, "3"), (1, "2"), (2, "2"), (2, "4")];
+        rng::merge_inplace_by_no_alloc(&mut arr, 3, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[
+            (1, "1"),
+            (1, "3"),
+            (1, "2"),
+            (2, "3"),
+            (2, "2"),
+            (2, "4")
+        ]));
+    }
+
+    #[test]
+    fn merge_inplace_no_alloc() {
+        let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2), (2, 4)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::merge_inplace_no_alloc(&mut arr, start, 3, end);
+        assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3), (2, 4)]));
+
+        let mut arr = [(1, 1), (1, 3), (1, 2), (2, 2), (2, 4)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::merge_inplace_no_alloc(&mut arr, start, 2, end);
+        assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 1), (1, 3), (2, 3), (1, 2), (2, 2)];
+        let start = arr.start();
+        let end = arr.end();
+        algo::merge_inplace_no_alloc(&mut arr, start, 3, end);
+        assert!(arr.equals(&[(1, 1), (1, 2), (1, 3), (2, 2), (2, 3)]));
+
+        let mut arr = [(1, 2), (2, 2), (2, 4)];
+        rng::merge_inplace_no_alloc(&mut arr, 0);
+        assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
+
+        let mut arr = [(1, 2), (2, 2), (2, 4)];
+        rng::merge_inplace_no_alloc(&mut arr, 3);
+        assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
+
+        let mut arr =
+            [(1, "1"), (1, "3"), (2, "3"), (1, "2"), (2, "2"), (2, "4")];
+        rng::merge_inplace_no_alloc(&mut arr, 3);
+        assert!(arr.equals(&[
+            (1, "1"),
+            (1, "2"),
+            (1, "3"),
+            (2, "2"),
+            (2, "3"),
+            (2, "4")
+        ]));
+    }
 }
