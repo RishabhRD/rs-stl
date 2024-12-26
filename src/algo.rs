@@ -98,3 +98,23 @@ pub use sort::*;
 
 #[doc(hidden)]
 pub mod details;
+
+#[doc(hidden)]
+pub mod heap;
+#[doc(inline)]
+pub use heap::*;
+
+#[doc(hidden)]
+pub mod merge;
+#[doc(inline)]
+pub use merge::*;
+
+#[doc(hidden)]
+pub mod swap_ranges;
+#[doc(inline)]
+pub use swap_ranges::*;
+
+#[doc(hidden)]
+pub mod binary_search;
+#[doc(inline)]
+pub use binary_search::*;

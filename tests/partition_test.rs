@@ -108,6 +108,61 @@ pub mod tests {
         assert_eq!(i, 0);
         assert!(&arr[0..i].equals(&[]));
         assert!(&arr[i..].equals(&[2, 4]));
+
+        let mut arr = [(1, "1"), (3, "3"), (4, "4"), (3, "2"), (5, "5")];
+        let i = arr.stable_partition(|x| x.0 % 2 == 1);
+        assert_eq!(i, 4);
+        assert!(&arr[0..i].equals(&[(1, "1"), (3, "3"), (3, "2"), (5, "5")]));
+        assert!(&arr[i..].equals(&[(4, "4")]));
+    }
+
+    #[test]
+    fn stable_partition_no_alloc() {
+        let mut arr = [1, 3, 2, 5, 4];
+        let start = arr.start();
+        let end = arr.end();
+        let i = algo::stable_partition_no_alloc(&mut arr, start, end, |x| {
+            x % 2 == 1
+        });
+        assert_eq!(i, 3);
+        assert!(&arr[0..i].equals(&[1, 3, 5]));
+        assert!(&arr[i..].equals(&[2, 4]));
+
+        let mut arr = [1, 3, 2, 5, 4];
+        let i = rng::stable_partition_no_alloc(&mut arr, |x| x % 2 == 1);
+        assert_eq!(i, 3);
+        assert!(&arr[0..i].equals(&[1, 3, 5]));
+        assert!(&arr[i..].equals(&[2, 4]));
+
+        let mut arr = [1, 3, 2, 5, 4];
+        let i = arr.stable_partition_no_alloc(|x| x % 2 == 1);
+        assert_eq!(i, 3);
+        assert!(&arr[0..i].equals(&[1, 3, 5]));
+        assert!(&arr[i..].equals(&[2, 4]));
+
+        let mut arr: [i32; 0] = [];
+        let i = arr.stable_partition_no_alloc(|x| x % 2 == 1);
+        assert_eq!(i, 0);
+        assert!(&arr[0..i].equals(&[]));
+        assert!(&arr[i..].equals(&[]));
+
+        let mut arr = [1, 3, 5];
+        let i = arr.stable_partition_no_alloc(|x| x % 2 == 1);
+        assert_eq!(i, 3);
+        assert!(&arr[0..i].equals(&[1, 3, 5]));
+        assert!(&arr[i..].equals(&[]));
+
+        let mut arr = [2, 4];
+        let i = arr.stable_partition_no_alloc(|x| x % 2 == 1);
+        assert_eq!(i, 0);
+        assert!(&arr[0..i].equals(&[]));
+        assert!(&arr[i..].equals(&[2, 4]));
+
+        let mut arr = [(1, "1"), (3, "3"), (4, "4"), (3, "2"), (5, "5")];
+        let i = arr.stable_partition_no_alloc(|x| x.0 % 2 == 1);
+        assert_eq!(i, 4);
+        assert!(&arr[0..i].equals(&[(1, "1"), (3, "3"), (3, "2"), (5, "5")]));
+        assert!(&arr[i..].equals(&[(4, "4")]));
     }
 
     #[test]

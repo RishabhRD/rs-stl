@@ -114,6 +114,26 @@ pub mod sort;
 #[doc(inline)]
 pub use sort::*;
 
+#[doc(hidden)]
+pub mod heap;
+#[doc(inline)]
+pub use heap::*;
+
+#[doc(hidden)]
+pub mod merge;
+#[doc(inline)]
+pub use merge::*;
+
+#[doc(hidden)]
+pub mod swap_ranges;
+#[doc(inline)]
+pub use swap_ranges::*;
+
+#[doc(hidden)]
+pub mod binary_search;
+#[doc(inline)]
+pub use binary_search::*;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!
@@ -123,6 +143,8 @@ pub mod infix {
     #[doc(inline)]
     pub use super::adjacent_find::infix::*;
     #[doc(inline)]
+    pub use super::binary_search::infix::*;
+    #[doc(inline)]
     pub use super::count::infix::*;
     #[doc(inline)]
     pub use super::equals::infix::*;
@@ -130,6 +152,8 @@ pub mod infix {
     pub use super::fill::infix::*;
     #[doc(inline)]
     pub use super::find::infix::*;
+    #[doc(inline)]
+    pub use super::heap::infix::*;
     #[doc(inline)]
     pub use super::minmax::infix::*;
     #[doc(inline)]

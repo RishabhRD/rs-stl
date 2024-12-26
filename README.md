@@ -172,6 +172,10 @@ required description would be provided.
 - [ ] ~~move~~ -> **NOT POSSIBLE:** Due to rust ownership model.
 - [ ] ~~move_backward~~ -> **NOT POSSIBLE:** Due to rust ownership model.
 
+### Swap Operations
+
+- [x] swap_ranges
+
 ### Transformation Operations
 
 - [x] transform -> transform, zip_transform
@@ -208,7 +212,7 @@ required description would be provided.
 - [x] is_partitioned
 - [x] partition
 - [ ] ~~partition_copy~~ -> Do we need that (copy_if is enough)? If yes, contribute with reason.
-- [x] stable_partition
+- [x] stable_partition -> stable_partition, stable_partition_no_alloc
 - [x] partition_point
 
 ### Sorting Operations
@@ -224,15 +228,24 @@ required description would be provided.
 ### Binary Search Operations
 
 - [x] partition_point (Same as above partition_point)
-- [ ] lower_bound
-- [ ] upper_bound
-- [ ] equal_range
-- [ ] binary_search
+- [x] lower_bound -> lower_bound, lower_bound_by
+- [x] upper_bound -> upper_bound, upper_bound_by
+- [x] equal_range -> equal_range, equal_range_by
+- [x] binary_search -> binary_search, binary_search_by
 
 ### Merge Operations
 
-- [ ] merge
-- [ ] inplace_merge
+- [x] merge -> merge, merge_by
+- [x] inplace_merge -> merge_inplace, merge_inplace_by, merge_inplace_no_alloc, merge_inplace_by_no_alloc
+
+### Heap Operations
+
+- [x] push_heap -> push_heap, push_heap_by
+- [x] pop_heap -> pop_heap, pop_heap_by
+- [x] make_heap -> make_heap, make_heap_by
+- [x] sort_heap -> sort_heap, sort_heap_by
+- [x] is_heap -> is_heap, is_heap_by
+- [x] is_heap_until -> is_heap_until, is_heap_until_by
 
 ### Minimum/Maximum Operations
 
@@ -252,10 +265,6 @@ required description would be provided.
 - [ ] transform_reduce
 - [ ] transform_exclusive_scan
 - [ ] transform_inclusive_scan
-
-### Swap Operations
-
-- [ ] swap_ranges
 
 ### Permutation Operations
 

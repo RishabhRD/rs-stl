@@ -1,0 +1,53 @@
+name: Validate PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, edited, ready_for_review]
+    branches:
+      - "*"
+
+jobs:
+  lint-and-test:
+    name: Lint, Format Check, and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Rust environment
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable # Use stable Rust. Adjust to 'nightly' if needed.
+          override: true
+
+      # Step 3: Cache Cargo dependencies for faster builds
+      - name: Cache Cargo Registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache Cargo Index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/index
+          key: ${{ runner.os }}-cargo-index
+          restore-keys: |
+            ${{ runner.os }}-cargo-index
+
+      # Step 4: Run formatting check
+      - name: Run cargo fmt
+        run: cargo fmt --all -- --check
+
+      # Step 5: Run Clippy linting
+      - name: Run cargo clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      # Step 6: Run tests
+      - name: Run cargo test
+        run: cargo test --all --verbose
