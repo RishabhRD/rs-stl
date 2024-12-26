@@ -240,6 +240,7 @@ pub mod tests {
             (2, "4")
         ]));
 
+        // To test double free because of unsafe code.
         let mut arr = [
             (1, String::from("1")),
             (1, String::from("3")),

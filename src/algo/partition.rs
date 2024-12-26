@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
+use core::slice;
 use std::mem::MaybeUninit;
 
 use crate::{ForwardRange, InputRange, OutputRange, SemiOutputRange};
@@ -177,36 +178,44 @@ where
         };
     }
 
-    let mut buf: Vec<MaybeUninit<Range::Element>> = Vec::with_capacity(n);
+    let mut scratch: Vec<MaybeUninit<Range::Element>> = Vec::with_capacity(n);
+    let buf = unsafe {
+        slice::from_raw_parts_mut(scratch.as_mut_ptr(), scratch.capacity())
+    };
 
     let mut rng_write = start.clone();
     let mut buf_write = buf.start();
 
-    unsafe {
-        while start != end {
-            if pred(rng.at(&start)) {
-                if start != rng_write {
-                    *rng.at_mut(&rng_write) = std::ptr::read(rng.at(&start));
-                    rng_write = rng.after(rng_write);
-                }
-            } else {
-                buf.push(MaybeUninit::new(std::ptr::read(rng.at(&start))));
-                buf_write = buf.after(buf_write);
+    while start != end {
+        if pred(rng.at(&start)) {
+            if start != rng_write {
+                rng.swap_at(&rng_write, &start);
+                rng_write = rng.after(rng_write);
             }
-            start = rng.after(start)
+        } else {
+            unsafe {
+                *buf.at_mut(&buf_write) =
+                    MaybeUninit::new(std::ptr::read(rng.at(&start)));
+            }
+            buf_write = buf.after(buf_write);
         }
-
-        let res = rng_write.clone();
-
-        let mut buf_cur = buf.start();
-        while buf_cur != buf_write {
-            *rng.at_mut(&rng_write) =
-                std::ptr::read(buf.at(&buf_cur).assume_init_ref());
-            rng_write = rng.after(rng_write);
-            buf_cur = buf.after(buf_cur);
-        }
-        res
+        start = rng.after(start)
     }
+
+    let res = rng_write.clone();
+
+    let mut buf_cur = buf.start();
+    while buf_cur != buf_write {
+        unsafe {
+            std::mem::swap(
+                rng.at_mut(&rng_write),
+                buf.at_mut(&buf_cur).assume_init_mut(),
+            );
+        }
+        rng_write = rng.after(rng_write);
+        buf_cur = buf.after(buf_cur);
+    }
+    res
 }
 
 /// Partitions range based on given predicate with preserving relative order of elements.
