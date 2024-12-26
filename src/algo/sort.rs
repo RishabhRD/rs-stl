@@ -82,7 +82,7 @@ pub fn sort_range<Range>(
 
 // TODO: details can only be accessed from current file or from tests.
 pub mod details {
-    use crate::{RandomAccessRange, SemiOutputRange};
+    use crate::{algo::partition, RandomAccessRange, SemiOutputRange};
 
     pub fn insertion_sort<Range, Compare>(
         rng: &mut Range,
@@ -105,5 +105,50 @@ pub mod details {
             }
             i = rng.after(i);
         }
+    }
+
+    pub fn quick_sort_till_depth<Range, Compare>(
+        rng: &mut Range,
+        start: Range::Position,
+        end: Range::Position,
+        is_less: Compare,
+        depth: usize,
+    ) -> bool
+    where
+        Range: RandomAccessRange + SemiOutputRange + ?Sized,
+        Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+    {
+        if start == end || rng.after(start.clone()) == end {
+            return true;
+        }
+
+        if depth == 0 {
+            return false;
+        }
+
+        let pivot = start.clone();
+        let pivot_ele = unsafe { std::ptr::read(rng.at(&pivot)) };
+        let partition_start = rng.after(pivot.clone());
+        let partition_point =
+            partition(rng, partition_start, end.clone(), |x| {
+                is_less(x, &pivot_ele)
+            });
+        let left_end = rng.before(partition_point.clone());
+        rng.swap_at(&pivot, &left_end);
+        let left = quick_sort_till_depth(
+            rng,
+            start,
+            left_end,
+            is_less.clone(),
+            depth - 1,
+        );
+        let right = quick_sort_till_depth(
+            rng,
+            partition_point,
+            end,
+            is_less,
+            depth - 1,
+        );
+        left && right
     }
 }
