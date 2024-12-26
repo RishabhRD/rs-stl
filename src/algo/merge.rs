@@ -267,7 +267,7 @@ fn merge_inplace_by_right_buffer<Range, Compare>(
 ///   - Algorithm uses min(n1, n2) additional buffer space to acheive O(n) time complexity.
 ///     If memory allocation is a concern, consider using `merge_inplace_by_no_alloc` algorithm.
 ///     `merge_inplace_by_no_alloc` doesn't do any memory allocation but provides O(n.log2(n)) time complexity.
-///   - Algorithm requires `OutputRange` trait to handle reading and writing from additional buffer.
+///   - Algorithm requires `OutputRange` and `BidirectionalRange` trait to handle reading and writing from additional buffer.
 ///     If due to some reason, only `SemiOutputRange` is available use `merge_inplace_by_no_alloc`
 ///     instead, with the associated trade-offs.
 ///
@@ -338,7 +338,7 @@ pub fn merge_inplace_by<Range, Compare>(
 ///   - Algorithm uses min(n1, n2) additional buffer space to acheive O(n) time complexity.
 ///     If memory allocation is a concern, consider using `merge_inplace_no_alloc` algorithm.
 ///     `merge_inplace_no_alloc` doesn't do any memory allocation but provides O(n.log2(n)) time complexity.
-///   - Algorithm requires `OutputRange` trait to handle reading and writing from additional buffer.
+///   - Algorithm requires `OutputRange` and `BidirectionalRange` trait to handle reading and writing from additional buffer.
 ///     If due to some reason, only `SemiOutputRange` is available use `merge_inplace_no_alloc`
 ///     instead, with the associated trade-offs.
 ///
@@ -403,7 +403,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
     end: Range::Position,
     is_less: Compare,
 ) where
-    Range: SemiOutputRange + BidirectionalRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     if start == end {
@@ -488,7 +488,7 @@ pub fn merge_inplace_no_alloc<Range>(
     mid: Range::Position,
     end: Range::Position,
 ) where
-    Range: SemiOutputRange + BidirectionalRange + ?Sized,
+    Range: SemiOutputRange + ?Sized,
     Range::Element: Ord,
 {
     merge_inplace_by_no_alloc(rng, start, mid, end, |x, y| x < y);
