@@ -212,7 +212,7 @@ required description would be provided.
 - [x] is_partitioned
 - [x] partition
 - [ ] ~~partition_copy~~ -> Do we need that (copy_if is enough)? If yes, contribute with reason.
-- [x] stable_partition
+- [x] stable_partition -> stable_partition, stable_partition_no_alloc
 - [x] partition_point
 
 ### Sorting Operations

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, ForwardRange, InputRange, SemiOutputRange};
+use crate::{algo, ForwardRange, InputRange, OutputRange, SemiOutputRange};
 
 /// Returns true if range is partitioned wrt pred, otherwise false.
 ///
@@ -87,12 +87,17 @@ where
 ///     satisfying pred precede elements not satisfying pred.
 ///   - Relative order of the elements is preserved.
 ///   - Returns position to first element in modified range that doesn't satisfy pred.
-///   - Complexity: O(n.log2(n)). Exactly n applications of pred. Atmost n.log2(n) swaps.
+///   - Complexity: O(n). Exactly n applications of pred. O(n) swaps.
 ///
 /// Where n is number of elements in rng.
 ///
 /// #### Infix Supported
 /// YES
+///
+/// # NOTE
+///   - The algorithm provides O(n) time complexity with O(n) additional memory allocation.
+///     If memory allocation is a concern, consider using `stable_partition_no_alloc` algorithm, which
+///     provides O(n.log2(n)) time complexity with no memory allocation.
 ///
 /// # Example
 /// ```rust
@@ -116,12 +121,63 @@ pub fn stable_partition<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: SemiOutputRange + ?Sized,
+    Range: OutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool + Clone,
 {
     let start = rng.start();
     let end = rng.end();
     algo::stable_partition(rng, start, end, pred)
+}
+
+/// Partitions range based on given predicate with preserving relative order of elements.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Reorders elements in rng such that all elements
+///     satisfying pred precede elements not satisfying pred.
+///   - Relative order of the elements is preserved.
+///   - Returns position to first element in modified range that doesn't satisfy pred.
+///   - Complexity: O(n.log2(n)). Exactly n applications of pred. Atmost n.log2(n) swaps.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # NOTE
+///   - The algorithm provides O(n.log2(n)) time complexity with no additional memory allocation.
+///     If memory allocation is not a concern, consider using `stable_partition` algorithm, which
+///     provides O(n) time complexity with O(n) additional space.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [1, 3, 2, 5, 4];
+/// let i = rng::stable_partition_no_alloc(&mut arr, |x| x % 2 == 1);
+/// assert_eq!(i, 3);
+/// assert!(arr[0..i].equals(&[1, 3, 5]));
+/// assert!(arr[i..].equals(&[2, 4]));
+///
+/// let mut arr = [1, 3, 2, 5, 4];
+/// let i = arr.stable_partition_no_alloc(|x| x % 2 == 1);
+/// assert_eq!(i, 3);
+/// assert!(arr[0..i].equals(&[1, 3, 5]));
+/// assert!(arr[i..].equals(&[2, 4]));
+/// ```
+pub fn stable_partition_no_alloc<Range, Predicate>(
+    rng: &mut Range,
+    pred: Predicate,
+) -> Range::Position
+where
+    Range: SemiOutputRange + ?Sized,
+    Predicate: Fn(&Range::Element) -> bool + Clone,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::stable_partition_no_alloc(rng, start, end, pred)
 }
 
 /// Returns the position of first such element in partitioned range such that predicate is not
@@ -166,7 +222,7 @@ where
 }
 
 pub mod infix {
-    use crate::{rng, ForwardRange, InputRange, SemiOutputRange};
+    use crate::{rng, ForwardRange, InputRange, OutputRange, SemiOutputRange};
 
     /// `is_partitioned`.
     pub trait STLInputPartitionExt: InputRange {
@@ -187,13 +243,13 @@ pub mod infix {
         }
     }
 
-    /// `partition`, `stable_partition`.
+    /// `partition`, `stable_partition_no_alloc`.
     pub trait STLSemiOutputPartitionExt: SemiOutputRange {
         fn partition<Predicate>(&mut self, pred: Predicate) -> Self::Position
         where
             Predicate: Fn(&Self::Element) -> bool;
 
-        fn stable_partition<Predicate>(
+        fn stable_partition_no_alloc<Predicate>(
             &mut self,
             pred: Predicate,
         ) -> Self::Position
@@ -212,6 +268,31 @@ pub mod infix {
             rng::partition(self, pred)
         }
 
+        fn stable_partition_no_alloc<Predicate>(
+            &mut self,
+            pred: Predicate,
+        ) -> Self::Position
+        where
+            Predicate: Fn(&Self::Element) -> bool + Clone,
+        {
+            rng::stable_partition_no_alloc(self, pred)
+        }
+    }
+
+    /// `stable_partition`.
+    pub trait STLOutputPartitionExt: OutputRange {
+        fn stable_partition<Predicate>(
+            &mut self,
+            pred: Predicate,
+        ) -> Self::Position
+        where
+            Predicate: Fn(&Self::Element) -> bool + Clone;
+    }
+
+    impl<R> STLOutputPartitionExt for R
+    where
+        R: OutputRange + ?Sized,
+    {
         fn stable_partition<Predicate>(
             &mut self,
             pred: Predicate,
