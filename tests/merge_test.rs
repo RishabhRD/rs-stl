@@ -239,6 +239,24 @@ pub mod tests {
             (2, "3"),
             (2, "4")
         ]));
+
+        let mut arr = [
+            (1, String::from("1")),
+            (1, String::from("3")),
+            (2, String::from("3")),
+            (1, String::from("2")),
+            (2, String::from("2")),
+            (2, String::from("4")),
+        ];
+        rng::merge_inplace(&mut arr, 3);
+        assert!(arr.equals(&[
+            (1, String::from("1")),
+            (1, String::from("2")),
+            (1, String::from("3")),
+            (2, String::from("2")),
+            (2, String::from("3")),
+            (2, String::from("4"))
+        ]));
     }
 
     #[test]
@@ -316,16 +334,22 @@ pub mod tests {
         rng::merge_inplace_no_alloc(&mut arr, 3);
         assert!(arr.equals(&[(1, 2), (2, 2), (2, 4)]));
 
-        let mut arr =
-            [(1, "1"), (1, "3"), (2, "3"), (1, "2"), (2, "2"), (2, "4")];
+        let mut arr = [
+            (1, String::from("1")),
+            (1, String::from("3")),
+            (2, String::from("3")),
+            (1, String::from("2")),
+            (2, String::from("2")),
+            (2, String::from("4")),
+        ];
         rng::merge_inplace_no_alloc(&mut arr, 3);
         assert!(arr.equals(&[
-            (1, "1"),
-            (1, "2"),
-            (1, "3"),
-            (2, "2"),
-            (2, "3"),
-            (2, "4")
+            (1, String::from("1")),
+            (1, String::from("2")),
+            (1, String::from("3")),
+            (2, String::from("2")),
+            (2, String::from("3")),
+            (2, String::from("4"))
         ]));
     }
 }
