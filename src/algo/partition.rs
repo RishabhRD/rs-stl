@@ -1,12 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use core::slice;
-use std::mem::MaybeUninit;
-
 use crate::{ForwardRange, InputRange, OutputRange, SemiOutputRange};
-
-use super::{find_if, rotate};
 
 /// Returns true if range is partitioned wrt pred, otherwise false.
 ///
@@ -86,7 +81,7 @@ where
 /// ```
 pub fn partition<Range, Predicate>(
     rng: &mut Range,
-    mut start: Range::Position,
+    start: Range::Position,
     end: Range::Position,
     pred: Predicate,
 ) -> Range::Position
@@ -94,27 +89,7 @@ where
     Range: SemiOutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
-    while start != end {
-        if !pred(rng.at(&start)) {
-            break;
-        }
-        start = rng.after(start);
-    }
-
-    if start == end {
-        return start;
-    }
-
-    let mut i = rng.after(start.clone());
-    while i != end {
-        if pred(rng.at(&i)) {
-            rng.swap_at(&i, &start);
-            start = rng.after(start);
-        }
-        i = rng.after(i);
-    }
-
-    start
+    partition_details::partition_pos(rng, start, end, |r, i| pred(r.at(i)))
 }
 
 /// Partitions range based on given predicate with preserving relative order of elements.
@@ -154,7 +129,7 @@ where
 /// ```
 pub fn stable_partition<Range, Predicate>(
     rng: &mut Range,
-    mut start: Range::Position,
+    start: Range::Position,
     end: Range::Position,
     pred: Predicate,
 ) -> Range::Position
@@ -162,60 +137,9 @@ where
     Range: OutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool + Clone,
 {
-    start = find_if(rng, start.clone(), end.clone(), |x| !pred(x));
-
-    let n = rng.distance(start.clone(), end.clone());
-
-    if n == 0 {
-        return start;
-    }
-
-    if n == 1 {
-        return if pred(rng.at(&start)) {
-            rng.after(start)
-        } else {
-            start
-        };
-    }
-
-    let mut scratch: Vec<MaybeUninit<Range::Element>> = Vec::with_capacity(n);
-    let buf = unsafe {
-        slice::from_raw_parts_mut(scratch.as_mut_ptr(), scratch.capacity())
-    };
-
-    let mut rng_write = start.clone();
-    let mut buf_write = buf.start();
-
-    while start != end {
-        if pred(rng.at(&start)) {
-            if start != rng_write {
-                rng.swap_at(&rng_write, &start);
-                rng_write = rng.after(rng_write);
-            }
-        } else {
-            unsafe {
-                *buf.at_mut(&buf_write) =
-                    MaybeUninit::new(std::ptr::read(rng.at(&start)));
-            }
-            buf_write = buf.after(buf_write);
-        }
-        start = rng.after(start)
-    }
-
-    let res = rng_write.clone();
-
-    let mut buf_cur = buf.start();
-    while buf_cur != buf_write {
-        unsafe {
-            std::mem::swap(
-                rng.at_mut(&rng_write),
-                buf.at_mut(&buf_cur).assume_init_mut(),
-            );
-        }
-        rng_write = rng.after(rng_write);
-        buf_cur = buf.after(buf_cur);
-    }
-    res
+    partition_details::stable_partition_pos(rng, start, end, |r, i| {
+        pred(r.at(i))
+    })
 }
 
 /// Partitions range based on given predicate with preserving relative order of elements.
@@ -260,25 +184,9 @@ where
     Range: SemiOutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool + Clone,
 {
-    let n = rng.distance(start.clone(), end.clone());
-
-    if n == 0 {
-        return start;
-    }
-    if n == 1 {
-        return if pred(rng.at(&start)) {
-            rng.after(start)
-        } else {
-            start
-        };
-    }
-
-    let mid = rng.after_n(start.clone(), n / 2);
-
-    let left_start =
-        stable_partition_no_alloc(rng, start, mid.clone(), pred.clone());
-    let right_end = stable_partition_no_alloc(rng, mid.clone(), end, pred);
-    rotate(rng, left_start, mid, right_end)
+    partition_details::stable_partition_no_alloc_pos(rng, start, end, |r, i| {
+        pred(r.at(i))
+    })
 }
 
 /// Returns the position of first such element in partitioned range such that predicate is not
@@ -328,4 +236,155 @@ where
     }
 
     start
+}
+
+// TODO: Only rs-stl modules or tests should be able to access it.
+pub mod partition_details {
+    use std::io::Write;
+    use std::slice;
+    use std::{io, mem::MaybeUninit};
+
+    use crate::{algo::rotate, InputRange, OutputRange, SemiOutputRange};
+
+    pub fn partition_pos<Range, Predicate>(
+        rng: &mut Range,
+        mut start: Range::Position,
+        end: Range::Position,
+        pred: Predicate,
+    ) -> Range::Position
+    where
+        Range: SemiOutputRange + ?Sized,
+        Predicate: Fn(&Range, &Range::Position) -> bool,
+    {
+        while start != end {
+            if !pred(rng, &start) {
+                break;
+            }
+            start = rng.after(start);
+        }
+
+        if start == end {
+            return start;
+        }
+
+        let mut i = rng.after(start.clone());
+        while i != end {
+            if pred(rng, &i) {
+                rng.swap_at(&i, &start);
+                start = rng.after(start);
+            }
+            i = rng.after(i);
+        }
+
+        start
+    }
+
+    pub fn stable_partition_pos<Range, Predicate>(
+        rng: &mut Range,
+        mut start: Range::Position,
+        end: Range::Position,
+        pred: Predicate,
+    ) -> Range::Position
+    where
+        Range: OutputRange + ?Sized,
+        Predicate: Fn(&Range, &Range::Position) -> bool + Clone,
+    {
+        while start != end {
+            if !pred(rng, &start) {
+                break;
+            }
+            start = rng.after(start);
+        }
+
+        let n = rng.distance(start.clone(), end.clone());
+
+        if n == 0 {
+            return start;
+        }
+
+        if n == 1 {
+            return if pred(rng, &start) {
+                rng.after(start)
+            } else {
+                start
+            };
+        }
+
+        let mut scratch: Vec<MaybeUninit<Range::Element>> =
+            Vec::with_capacity(n);
+        let buf = unsafe {
+            slice::from_raw_parts_mut(scratch.as_mut_ptr(), scratch.capacity())
+        };
+
+        let mut rng_write = start.clone();
+        let mut buf_write = buf.start();
+
+        while start != end {
+            if pred(rng, &start) {
+                if start != rng_write {
+                    rng.swap_at(&rng_write, &start);
+                    rng_write = rng.after(rng_write);
+                }
+            } else {
+                unsafe {
+                    *buf.at_mut(&buf_write) =
+                        MaybeUninit::new(std::ptr::read(rng.at(&start)));
+                }
+                buf_write = buf.after(buf_write);
+            }
+            start = rng.after(start)
+        }
+
+        let res = rng_write.clone();
+
+        let mut buf_cur = buf.start();
+        while buf_cur != buf_write {
+            unsafe {
+                std::mem::swap(
+                    rng.at_mut(&rng_write),
+                    buf.at_mut(&buf_cur).assume_init_mut(),
+                );
+            }
+            rng_write = rng.after(rng_write);
+            buf_cur = buf.after(buf_cur);
+        }
+        res
+    }
+
+    pub fn stable_partition_no_alloc_pos<Range, Predicate>(
+        rng: &mut Range,
+        start: Range::Position,
+        end: Range::Position,
+        pred: Predicate,
+    ) -> Range::Position
+    where
+        Range: SemiOutputRange + ?Sized,
+        Predicate: Fn(&Range, &Range::Position) -> bool + Clone,
+    {
+        io::stdout().flush().unwrap();
+        let n = rng.distance(start.clone(), end.clone());
+
+        if n == 0 {
+            return start;
+        }
+        if n == 1 {
+            return if pred(rng, &start) {
+                rng.after(start)
+            } else {
+                start
+            };
+        }
+
+        let mid = rng.after_n(start.clone(), n / 2);
+
+        let left_start = stable_partition_no_alloc_pos(
+            rng,
+            start,
+            mid.clone(),
+            pred.clone(),
+        );
+        let right_end =
+            stable_partition_no_alloc_pos(rng, mid.clone(), end, pred);
+        rotate(rng, left_start, mid, right_end)
+    }
 }
