@@ -221,7 +221,7 @@ required description would be provided.
 - [x] stable_sort -> stable_sort, stable_sort_by, stable_sort_no_alloc, stable_sort_by_no_alloc
 - [ ] partial_sort
 - [ ] partial_sort_copy
-- [ ] is_sorted
+- [x] is_sorted -> is_sorted, is_sorted_by
 - [x] is_sorted_until -> is_sorted_until, is_sorted_until_by
 - [ ] nth_element
 

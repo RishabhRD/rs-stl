@@ -353,7 +353,6 @@ where
 ///
 /// # Precondition
 ///   - `[start, end)` should represent valid positions in rng.
-///   - is_less should follow strict-weak-ordering relationship.
 ///
 /// # Postcondition
 ///   - Returns last such position i, so that `[start, i)` is in non-decreasing order.
@@ -379,6 +378,68 @@ where
     Range::Element: Ord,
 {
     is_sorted_until_by(rng, start, end, |x, y| x < y)
+}
+
+/// Returns true if given range is sorted in non-decreasing order wrt comparator.
+///
+/// # Precondition
+///   - `[start, end)` should represent valid positions in rng.
+///   - is_less should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Returns true if given range is sorted in non-decreasing order wrt comparator.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 1, 2];
+/// assert!(algo::is_sorted_by(&arr, arr.start(), arr.end(), |x, y| x < y));
+/// ```
+pub fn is_sorted_by<Range, Compare>(
+    rng: &Range,
+    start: Range::Position,
+    end: Range::Position,
+    is_less: Compare,
+) -> bool
+where
+    Range: ForwardRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    is_sorted_until_by(rng, start, end.clone(), is_less) == end
+}
+
+/// Returns true if given range is sorted in non-decreasing order.
+///
+/// # Precondition
+///   - `[start, end)` should represent valid positions in rng.
+///
+/// # Postcondition
+///   - Returns true if given range is sorted in non-decreasing order.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 1, 2];
+/// assert!(algo::is_sorted(&arr, arr.start(), arr.end()));
+/// ```
+pub fn is_sorted<Range>(
+    rng: &Range,
+    start: Range::Position,
+    end: Range::Position,
+) -> bool
+where
+    Range: ForwardRange + ?Sized,
+    Range::Element: Ord,
+{
+    is_sorted_by(rng, start, end, |x, y| x < y)
 }
 
 // TODO: details can only be accessed from current file or from tests.

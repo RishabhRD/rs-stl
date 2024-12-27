@@ -211,4 +211,38 @@ pub mod tests {
         let i = arr.is_sorted_until();
         assert_eq!(i, 1);
     }
+
+    #[test]
+    fn is_sorted() {
+        let arr = [1, 2, 3];
+        assert!(algo::is_sorted_by(&arr, arr.start(), arr.end(), |x, y| x < y));
+        assert!(rng::is_sorted_by(&arr, |x, y| x < y));
+        assert!(arr.is_sorted_by(|x, y| x < y));
+
+        assert!(algo::is_sorted(&arr, arr.start(), arr.end()));
+        assert!(rng::is_sorted(&arr));
+        assert!(arr.is_sorted());
+
+        let arr = [1, 2, 3, 0];
+        assert!(algo::is_sorted_by(
+            &arr,
+            arr.start(),
+            arr.end() - 1,
+            |x, y| x < y
+        ));
+
+        let arr = [3, 2, 1];
+        assert!(!arr.is_sorted());
+        assert!(arr.is_sorted_by(|x, y| x > y));
+
+        let arr: [i32; 0] = [];
+        assert!(arr.is_sorted());
+
+        let arr = [1, 1, 2, 3];
+        assert!(arr.is_sorted());
+
+        let arr = [(1, 2), (1, 1)];
+        assert!(arr.is_sorted_by(|x, y| x.0 < y.0));
+        assert!(!arr.is_sorted());
+    }
 }

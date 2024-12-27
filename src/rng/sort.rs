@@ -297,9 +297,14 @@ where
 /// # Example
 /// ```rust
 /// use stl::*;
+/// use rng::infix::*;
 ///
 /// let arr = [1, 1, 2, 0];
+///
 /// let i = rng::is_sorted_until_by(&arr, |x, y| x < y);
+/// assert_eq!(i, 3)
+///
+/// let i = arr.is_sorted_until_by(|x, y| x < y);
 /// assert_eq!(i, 3)
 /// ```
 pub fn is_sorted_until_by<Range, Compare>(
@@ -316,7 +321,6 @@ where
 /// Finds the largest prefix in range such that elements in the prefix are in non-decreasing order.
 ///
 /// # Precondition
-///   - is_less should follow strict-weak-ordering relationship.
 ///
 /// # Postcondition
 ///   - Returns last such position i, so that `[rng.start(), i)` is in non-decreasing order.
@@ -330,9 +334,14 @@ where
 /// # Example
 /// ```rust
 /// use stl::*;
+/// use rng::infix::*;
 ///
 /// let arr = [1, 1, 2, 0];
+///
 /// let i = rng::is_sorted_until(&arr);
+/// assert_eq!(i, 3)
+///
+/// let i = arr.is_sorted_until();
 /// assert_eq!(i, 3)
 /// ```
 pub fn is_sorted_until<Range>(rng: &Range) -> Range::Position
@@ -341,6 +350,66 @@ where
     Range::Element: Ord,
 {
     algo::is_sorted_until(rng, rng.start(), rng.end())
+}
+
+/// Returns true if given range is sorted in non-decreasing order wrt comparator.
+///
+/// # Precondition
+///   - is_less should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Returns true if given range is sorted in non-decreasing order wrt comparator.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [1, 1, 2];
+/// assert!(rng::is_sorted_by(&arr, |x, y| x < y));
+/// assert!(arr.is_sorted_by(|x, y| x < y));
+/// ```
+pub fn is_sorted_by<Range, Compare>(rng: &Range, is_less: Compare) -> bool
+where
+    Range: ForwardRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    algo::is_sorted_by(rng, rng.start(), rng.end(), is_less)
+}
+
+/// Returns true if given range is sorted in non-decreasing order.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns true if given range is sorted in non-decreasing order.
+///   - Complexity: O(n) comparisions.
+///
+/// #### Infix Supported
+/// YES
+///
+/// Where n is number of elements in rng.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 1, 2];
+/// assert!(rng::is_sorted(&arr));
+/// assert!(arr.is_sorted());
+/// ```
+pub fn is_sorted<Range>(rng: &Range) -> bool
+where
+    Range: ForwardRange + ?Sized,
+    Range::Element: Ord,
+{
+    algo::is_sorted(rng, rng.start(), rng.end())
 }
 
 pub mod infix {
@@ -400,7 +469,7 @@ pub mod infix {
 
     impl<R> STLSortOutputExt for R where R: RandomAccessRange + OutputRange + ?Sized {}
 
-    /// `is_sorted_until`, `is_sorted_until_by`.
+    /// `is_sorted_until`, `is_sorted_until_by`, `is_sorted`, `is_sorted_by`.
     pub trait STLSortForwardExt: ForwardRange {
         fn is_sorted_until_by<Compare>(
             &self,
@@ -417,6 +486,20 @@ pub mod infix {
             Self::Element: Ord,
         {
             rng::is_sorted_until(self)
+        }
+
+        fn is_sorted_by<Compare>(&self, is_less: Compare) -> bool
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool,
+        {
+            rng::is_sorted_by(self, is_less)
+        }
+
+        fn is_sorted(&self) -> bool
+        where
+            Self::Element: Ord,
+        {
+            rng::is_sorted(self)
         }
     }
 
