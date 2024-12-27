@@ -219,7 +219,7 @@ required description would be provided.
 
 - [x] sort -> sort_range, sort_range_by
 - [x] stable_sort -> stable_sort, stable_sort_by, stable_sort_no_alloc, stable_sort_by_no_alloc
-- [ ] partial_sort
+- [x] partial_sort -> partial_sort, partial_sort_by
 - [ ] partial_sort_copy
 - [x] is_sorted -> is_sorted, is_sorted_by
 - [x] is_sorted_until -> is_sorted_until, is_sorted_until_by

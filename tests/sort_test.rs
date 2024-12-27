@@ -245,4 +245,58 @@ pub mod tests {
         assert!(arr.is_sorted_by(|x, y| x.0 < y.0));
         assert!(!arr.is_sorted());
     }
+
+    #[test]
+    fn partial_sort() {
+        let mut arr = [4, 1, 5, 1, 2];
+        let start = arr.start();
+        let mid = arr.after_n(start, 3);
+        let end = arr.end();
+        algo::partial_sort_by(&mut arr, start, mid, end, |x, y| x < y);
+        assert!(&arr[0..3].equals(&[1, 1, 2]));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let mid = arr.after_n(start, 3);
+        rng::partial_sort_by(&mut arr, mid, |x, y| x < y);
+        assert!(&arr[0..3].equals(&[1, 1, 2]));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let mid = arr.after_n(start, 3);
+        arr.partial_sort_by(mid, |x, y| x < y);
+        assert!(&arr[0..3].equals(&[1, 1, 2]));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let start = arr.start();
+        let mid = arr.after_n(start, 3);
+        let end = arr.end();
+        algo::partial_sort(&mut arr, start, mid, end);
+        assert!(&arr[0..3].equals(&[1, 1, 2]));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let mid = arr.after_n(start, 3);
+        rng::partial_sort(&mut arr, mid);
+        assert!(&arr[0..3].equals(&[1, 1, 2]));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let mid = arr.after_n(start, 3);
+        arr.partial_sort(mid);
+        assert!(&arr[0..3].equals(&[1, 1, 2]));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let mid = arr.after_n(start, 3);
+        arr.partial_sort_by(mid, |x, y| x > y);
+        assert!(&arr[0..3].equals(&[5, 4, 2]));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        arr.partial_sort(arr.start());
+        assert!(&arr[0..0].equals(&[]));
+
+        let mut arr: [i32; 0] = [];
+        arr.partial_sort(arr.start());
+        assert!(&arr[0..0].equals(&[]));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        arr.partial_sort(arr.end());
+        assert!(arr.equals(&[1, 1, 2, 4, 5]));
+    }
 }

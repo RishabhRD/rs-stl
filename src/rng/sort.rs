@@ -302,10 +302,10 @@ where
 /// let arr = [1, 1, 2, 0];
 ///
 /// let i = rng::is_sorted_until_by(&arr, |x, y| x < y);
-/// assert_eq!(i, 3)
+/// assert_eq!(i, 3);
 ///
 /// let i = arr.is_sorted_until_by(|x, y| x < y);
-/// assert_eq!(i, 3)
+/// assert_eq!(i, 3);
 /// ```
 pub fn is_sorted_until_by<Range, Compare>(
     rng: &Range,
@@ -339,10 +339,10 @@ where
 /// let arr = [1, 1, 2, 0];
 ///
 /// let i = rng::is_sorted_until(&arr);
-/// assert_eq!(i, 3)
+/// assert_eq!(i, 3);
 ///
 /// let i = arr.is_sorted_until();
-/// assert_eq!(i, 3)
+/// assert_eq!(i, 3);
 /// ```
 pub fn is_sorted_until<Range>(rng: &Range) -> Range::Position
 where
@@ -412,6 +412,97 @@ where
     algo::is_sorted(rng, rng.start(), rng.end())
 }
 
+/// Reorders elements in range such that `[rng.start(), mid)` contains `distance(rng.start(), mid)` smallest
+/// elements in range wrt comparator.
+///
+/// # Precondition
+///   - mid is a valid position in rng.
+///   - is_less follows strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Reorders elements in range such that `[rng.start(), mid)` contains
+///     `distance(rng.start(), mid)` smallest elements in range wrt is_less.
+///   - Relative order of equivalent elements are NOT preserved.
+///   - Order of elements at [mid, rng.end()) is unspecified.
+///   - Complexity: O(n.log(m)) comparisions.
+///
+/// Where n = distance(rng.start(), rng.end()), m = distance(rng.start(), mid).
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let mid = arr.after_n(arr.start(), 3);
+/// rng::partial_sort_by(&mut arr, mid, |x, y| x < y);
+/// assert!(&arr[0..3].equals(&[1, 1, 2]));
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let mid = arr.after_n(arr.start(), 3);
+/// arr.partial_sort_by(mid, |x, y| x < y);
+/// assert!(&arr[0..3].equals(&[1, 1, 2]));
+/// ```
+pub fn partial_sort_by<Range, Compare>(
+    rng: &mut Range,
+    mid: Range::Position,
+    is_less: Compare,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::partial_sort_by(rng, start, mid, end, is_less);
+}
+
+/// Reorders elements in range such that `[rng.start(), mid)` contains `distance(rng.start(), mid)` smallest
+/// elements in range.
+///
+/// # Precondition
+///   - `[rng.start(), mid)` represents valid positions in rng.
+///   - `[mid, rng.end())` represents valid positions in rng.
+///
+/// # Postcondition
+///   - Reorders elements in range such that `[rng.start(), mid)` contains
+///     `distance(rng.start(), mid)` smallest elements in range.
+///   - Relative order of equivalent elements are NOT preserved.
+///   - Order of elements at [mid, rng.end()) is unspecified.
+///   - Complexity: O(n.log(m)) comparisions.
+///
+/// Where n = distance(rng.start(), rng.end(0), m = distance(rng.start(), mid).
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let mid = arr.after_n(arr.start(), 3);
+/// rng::partial_sort(&mut arr, mid);
+/// assert!(&arr[0..3].equals(&[1, 1, 2]));
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let mid = arr.after_n(arr.start(), 3);
+/// arr.partial_sort(mid);
+/// assert!(&arr[0..3].equals(&[1, 1, 2]));
+/// ```
+pub fn partial_sort<Range>(rng: &mut Range, mid: Range::Position)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::partial_sort(rng, start, mid, end)
+}
+
 pub mod infix {
     use crate::{
         rng, ForwardRange, OutputRange, RandomAccessRange, SemiOutputRange,
@@ -446,6 +537,23 @@ pub mod infix {
         {
             rng::stable_sort_no_alloc(self);
         }
+
+        fn partial_sort_by<Compare>(
+            &mut self,
+            mid: Self::Position,
+            is_less: Compare,
+        ) where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
+        {
+            rng::partial_sort_by(self, mid, is_less)
+        }
+
+        fn partial_sort(&mut self, mid: Self::Position)
+        where
+            Self::Element: Ord,
+        {
+            rng::partial_sort(self, mid)
+        }
     }
 
     impl<R> STLSortExt for R where R: RandomAccessRange + SemiOutputRange + ?Sized {}
@@ -469,7 +577,8 @@ pub mod infix {
 
     impl<R> STLSortOutputExt for R where R: RandomAccessRange + OutputRange + ?Sized {}
 
-    /// `is_sorted_until`, `is_sorted_until_by`, `is_sorted`, `is_sorted_by`.
+    /// `is_sorted_until`, `is_sorted_until_by`, `is_sorted`, `is_sorted_by`, `partial_sort`,
+    /// `partial_sort_by`.
     pub trait STLSortForwardExt: ForwardRange {
         fn is_sorted_until_by<Compare>(
             &self,

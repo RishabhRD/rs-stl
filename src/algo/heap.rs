@@ -229,59 +229,6 @@ pub fn push_heap<Range>(
     push_heap_by(rng, start, end, |x, y| x < y)
 }
 
-/// # Precondition
-///   - `[start, end)` represents valid positions in rng.
-///   - children of start element should be a heap wrt is_less.
-///   - is_less should follow strict-weak-ordering relationship.
-///
-/// # Postcondition
-///   - Reorders element in rng such that whole range is a heap.
-///   - Complexity: O(log n) comparisions.
-///
-/// Where n is number of elements in `[start, end)`.
-fn heapify<Range, Compare>(
-    rng: &mut Range,
-    start: Range::Position,
-    end: Range::Position,
-    is_less: Compare,
-) where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
-    Compare: Fn(&Range::Element, &Range::Element) -> bool,
-{
-    let n = rng.distance(start.clone(), end.clone());
-
-    let mut root = 0;
-
-    loop {
-        let left_child = root * 2 + 1;
-        let right_child = root * 2 + 2;
-
-        let root_pos = rng.after_n(start.clone(), root);
-        let mut largest = root_pos.clone();
-
-        if left_child < n {
-            let left_pos = rng.after_n(start.clone(), left_child);
-            if is_less(rng.at(&largest), rng.at(&left_pos)) {
-                largest = left_pos;
-            }
-        }
-
-        if right_child < n {
-            let right_pos = rng.after_n(start.clone(), right_child);
-            if is_less(rng.at(&largest), rng.at(&right_pos)) {
-                largest = right_pos;
-            }
-        }
-
-        if largest == root_pos {
-            break;
-        }
-
-        rng.swap_at(&root_pos, &largest);
-        root = rng.distance(start.clone(), largest);
-    }
-}
-
 /// Swaps element at `start` position with element before `end` position and ensures `[start, end - 1)` is a heap wrt is_less.
 ///
 /// # Precondition
@@ -323,7 +270,7 @@ pub fn pop_heap_by<Range, Compare>(
 
     let prev = rng.before(end);
     rng.swap_at(&start, &prev);
-    heapify(rng, start, prev, is_less);
+    heap_details::heapify(rng, start, prev, is_less);
 }
 
 /// Swaps element at `start` position with element before `end` position and ensures `[start, end - 1)` is a heap.
@@ -474,7 +421,12 @@ pub fn make_heap_by<Range, Compare>(
     let mut root = n >> 1;
     loop {
         let root_pos = rng.after_n(start.clone(), root);
-        heapify(rng, root_pos.clone(), end.clone(), is_less.clone());
+        heap_details::heapify(
+            rng,
+            root_pos.clone(),
+            end.clone(),
+            is_less.clone(),
+        );
         if root_pos == start {
             break;
         }
@@ -514,4 +466,84 @@ pub fn make_heap<Range>(
     Range::Element: Ord,
 {
     make_heap_by(rng, start, end, |x, y| x < y);
+}
+
+pub mod heap_details {
+    use crate::{RandomAccessRange, SemiOutputRange};
+
+    use super::make_heap_by;
+
+    /// # Precondition
+    ///   - `[start, end)` represents valid positions in rng.
+    ///   - children of start element should be a heap wrt is_less.
+    ///   - is_less should follow strict-weak-ordering relationship.
+    ///
+    /// # Postcondition
+    ///   - Reorders element in rng such that whole range is a heap.
+    ///   - Complexity: O(log n) comparisions.
+    ///
+    /// Where n is number of elements in `[start, end)`.
+    pub fn heapify<Range, Compare>(
+        rng: &mut Range,
+        start: Range::Position,
+        end: Range::Position,
+        is_less: Compare,
+    ) where
+        Range: RandomAccessRange + SemiOutputRange + ?Sized,
+        Compare: Fn(&Range::Element, &Range::Element) -> bool,
+    {
+        let n = rng.distance(start.clone(), end.clone());
+
+        let mut root = 0;
+
+        loop {
+            let left_child = root * 2 + 1;
+            let right_child = root * 2 + 2;
+
+            let root_pos = rng.after_n(start.clone(), root);
+            let mut largest = root_pos.clone();
+
+            if left_child < n {
+                let left_pos = rng.after_n(start.clone(), left_child);
+                if is_less(rng.at(&largest), rng.at(&left_pos)) {
+                    largest = left_pos;
+                }
+            }
+
+            if right_child < n {
+                let right_pos = rng.after_n(start.clone(), right_child);
+                if is_less(rng.at(&largest), rng.at(&right_pos)) {
+                    largest = right_pos;
+                }
+            }
+
+            if largest == root_pos {
+                break;
+            }
+
+            rng.swap_at(&root_pos, &largest);
+            root = rng.distance(start.clone(), largest);
+        }
+    }
+
+    pub fn heap_select_by<Range, Compare>(
+        rng: &mut Range,
+        start: Range::Position,
+        mid: Range::Position,
+        end: Range::Position,
+        is_less: Compare,
+    ) where
+        Range: RandomAccessRange + SemiOutputRange + ?Sized,
+        Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+    {
+        make_heap_by(rng, start.clone(), mid.clone(), is_less.clone());
+        let mut cur = mid.clone();
+        while cur != end {
+            if is_less(rng.at(&cur), rng.at(&start)) {
+                rng.swap_at(&cur, &start);
+                heapify(rng, start.clone(), mid.clone(), is_less.clone());
+            }
+            cur = rng.after(cur);
+        }
+    }
 }

@@ -3,6 +3,8 @@
 
 use crate::{ForwardRange, OutputRange, RandomAccessRange, SemiOutputRange};
 
+use super::{heap_details, sort_heap_by};
+
 /// Unstable sort: sorts range in non-decreasing order based on comparator.
 ///
 /// # Precondition
@@ -440,6 +442,95 @@ where
     Range::Element: Ord,
 {
     is_sorted_by(rng, start, end, |x, y| x < y)
+}
+
+/// Reorders elements in range such that `[start, mid)` contains `distance(start, mid)` smallest
+/// elements in range wrt comparator
+///
+/// # Precondition
+///   - `[start, mid)` represents valid positions in rng.
+///   - `[mid, end)` represents valid positions in rng.
+///   - is_less follows strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Reorders elements in range such that `[start, mid)` contains
+///     `distance(start, mid)` smallest elements in range wrt is_less.
+///   - Relative order of equivalent elements are NOT preserved.
+///   - Order of elements at [mid, end) is unspecified.
+///   - Complexity: O(n.log(m)) comparisions.
+///
+/// Where n = distance(start, end), m = distance(start, mid).
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let start = arr.start();
+/// let mid = arr.after_n(start, 3);
+/// let end = arr.end();
+/// algo::partial_sort_by(&mut arr, start, mid, end, |x, y| x < y);
+/// assert!(&arr[0..3].equals(&[1, 1, 2]));
+/// ```
+pub fn partial_sort_by<Range, Compare>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+    is_less: Compare,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+{
+    heap_details::heap_select_by(
+        rng,
+        start.clone(),
+        mid.clone(),
+        end,
+        is_less.clone(),
+    );
+    sort_heap_by(rng, start, mid, is_less);
+}
+
+/// Reorders elements in range such that `[start, mid)` contains `distance(start, mid)` smallest
+/// elements in range.
+///
+/// # Precondition
+///   - `[start, mid)` represents valid positions in rng.
+///   - `[mid, end)` represents valid positions in rng.
+///
+/// # Postcondition
+///   - Reorders elements in range such that `[start, mid)` contains
+///     `distance(start, mid)` smallest elements in range.
+///   - Relative order of equivalent elements are NOT preserved.
+///   - Order of elements at [mid, end) is unspecified.
+///   - Complexity: O(n.log(m)) comparisions.
+///
+/// Where n = distance(start, end), m = distance(start, mid).
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let start = arr.start();
+/// let mid = arr.after_n(start, 3);
+/// let end = arr.end();
+/// algo::partial_sort(&mut arr, start, mid, end);
+/// assert!(&arr[0..3].equals(&[1, 1, 2]));
+/// ```
+pub fn partial_sort<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    mid: Range::Position,
+    end: Range::Position,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    partial_sort_by(rng, start, mid, end, |x, y| x < y)
 }
 
 // TODO: details can only be accessed from current file or from tests.
