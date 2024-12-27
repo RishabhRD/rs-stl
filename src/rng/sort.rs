@@ -39,7 +39,7 @@ use crate::{algo, RandomAccessRange, SemiOutputRange};
 pub fn sort_range_by<Range, Compare>(rng: &mut Range, cmp: Compare)
 where
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
-    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let start = rng.start();
     let end = rng.end();
@@ -92,7 +92,7 @@ pub mod infix {
     pub trait STLSortExt: RandomAccessRange + SemiOutputRange {
         fn sort_range_by<Compare>(&mut self, cmp: Compare)
         where
-            Compare: Fn(&Self::Element, &Self::Element) -> bool;
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone;
 
         fn sort_range(&mut self)
         where
@@ -105,7 +105,7 @@ pub mod infix {
     {
         fn sort_range_by<Compare>(&mut self, cmp: Compare)
         where
-            Compare: Fn(&Self::Element, &Self::Element) -> bool,
+            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
         {
             rng::sort_range_by(self, cmp)
         }

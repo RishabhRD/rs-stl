@@ -39,9 +39,23 @@ pub fn sort_range_by<Range, Compare>(
     is_less: Compare,
 ) where
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
-    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
-    details::insertion_sort(rng, start, end, is_less);
+    let n = rng.distance(start.clone(), end.clone());
+    if n <= 16 {
+        sort_details::insertion_sort(rng, start, end, is_less);
+    } else {
+        let quick_sort_depth = 2 * n.ilog2() as usize;
+        if !sort_details::quick_sort_till_depth(
+            rng,
+            start.clone(),
+            end.clone(),
+            is_less.clone(),
+            quick_sort_depth,
+        ) {
+            sort_details::heap_sort(rng, start, end, is_less);
+        }
+    }
 }
 
 /// Unstable sort: sorts range in non-decreasing order.
@@ -81,8 +95,11 @@ pub fn sort_range<Range>(
 }
 
 // TODO: details can only be accessed from current file or from tests.
-pub mod details {
-    use crate::{algo::partition, RandomAccessRange, SemiOutputRange};
+pub mod sort_details {
+    use crate::{
+        algo::{self, partition::partition_details::*},
+        RandomAccessRange, SemiOutputRange,
+    };
 
     pub fn insertion_sort<Range, Compare>(
         rng: &mut Range,
@@ -127,11 +144,10 @@ pub mod details {
         }
 
         let pivot = start.clone();
-        let pivot_ele = unsafe { std::ptr::read(rng.at(&pivot)) };
         let partition_start = rng.after(pivot.clone());
         let partition_point =
-            partition(rng, partition_start, end.clone(), |x| {
-                is_less(x, &pivot_ele)
+            partition_pos(rng, partition_start, end.clone(), |r, i| {
+                is_less(r.at(i), r.at(&pivot))
             });
         let left_end = rng.before(partition_point.clone());
         rng.swap_at(&pivot, &left_end);
@@ -150,5 +166,18 @@ pub mod details {
             depth - 1,
         );
         left && right
+    }
+
+    pub fn heap_sort<Range, Compare>(
+        rng: &mut Range,
+        start: Range::Position,
+        end: Range::Position,
+        is_less: Compare,
+    ) where
+        Range: RandomAccessRange + SemiOutputRange + ?Sized,
+        Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
+    {
+        algo::make_heap_by(rng, start.clone(), end.clone(), is_less.clone());
+        algo::sort_heap_by(rng, start.clone(), end.clone(), is_less);
     }
 }
