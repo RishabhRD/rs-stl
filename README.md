@@ -218,7 +218,7 @@ required description would be provided.
 ### Sorting Operations
 
 - [x] sort -> sort_range, sort_range_by
-- [x] stable_sort -> stable_sort, stable_sort_by
+- [x] stable_sort -> stable_sort, stable_sort_by, stable_sort_no_alloc, stable_sort_by_no_alloc
 - [ ] partial_sort
 - [ ] partial_sort_copy
 - [ ] is_sorted

@@ -98,4 +98,62 @@ pub mod tests {
         arr.stable_sort();
         assert!(arr.equals(&[]));
     }
+
+    #[test]
+    fn stable_sort_by_no_alloc() {
+        let mut arr = [(3, "1"), (1, "2"), (2, "2"), (1, "1")];
+        let start = arr.start();
+        let end = arr.end();
+        algo::stable_sort_by_no_alloc(&mut arr, start, end, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, "2"), (1, "1"), (2, "2"), (3, "1")]));
+
+        let mut arr = [(3, "1"), (1, "2"), (2, "2"), (1, "1")];
+        rng::stable_sort_by_no_alloc(&mut arr, |x, y| x < y);
+        assert!(arr.equals(&[(1, "1"), (1, "2"), (2, "2"), (3, "1")]));
+
+        let mut arr = [(1, "2"), (2, "2"), (1, "1")];
+        arr.stable_sort_by_no_alloc(|x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, "2"), (1, "1"), (2, "2")]));
+
+        let mut arr = [(1, "2"), (1, "1")];
+        arr.stable_sort_by_no_alloc(|x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, "2"), (1, "1")]));
+
+        let mut arr = [(1, "2")];
+        arr.stable_sort_by_no_alloc(|x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, "2")]));
+
+        let mut arr: [i32; 0] = [];
+        arr.stable_sort_by_no_alloc(|x, y| x < y);
+        assert!(arr.equals(&[]));
+    }
+
+    #[test]
+    fn stable_sort_no_alloc() {
+        let mut arr = [(3, "1"), (1, "2"), (2, "2"), (1, "1")];
+        let start = arr.start();
+        let end = arr.end();
+        algo::stable_sort_no_alloc(&mut arr, start, end);
+        assert!(arr.equals(&[(1, "1"), (1, "2"), (2, "2"), (3, "1")]));
+
+        let mut arr = [(3, "1"), (1, "2"), (2, "2"), (1, "1")];
+        rng::stable_sort_no_alloc(&mut arr);
+        assert!(arr.equals(&[(1, "1"), (1, "2"), (2, "2"), (3, "1")]));
+
+        let mut arr = [(1, "2"), (2, "2"), (1, "1")];
+        arr.stable_sort_no_alloc();
+        assert!(arr.equals(&[(1, "1"), (1, "2"), (2, "2")]));
+
+        let mut arr = [(1, "2"), (1, "1")];
+        arr.stable_sort_no_alloc();
+        assert!(arr.equals(&[(1, "1"), (1, "2")]));
+
+        let mut arr = [(1, "2")];
+        arr.stable_sort_no_alloc();
+        assert!(arr.equals(&[(1, "2")]));
+
+        let mut arr: [i32; 0] = [];
+        arr.stable_sort_no_alloc();
+        assert!(arr.equals(&[]));
+    }
 }
