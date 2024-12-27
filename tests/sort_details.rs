@@ -68,4 +68,74 @@ pub mod tests {
         heap_sort(&mut arr, start, end, |x, y| x < y);
         assert!(arr.equals(&[]));
     }
+
+    #[test]
+    fn merge_sort_test() {
+        let mut arr = [(3, "1"), (1, "2"), (2, "2"), (1, "1")];
+        let start = arr.start();
+        let end = arr.end();
+        merge_sort(&mut arr, start, end, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, "2"), (1, "1"), (2, "2"), (3, "1")]));
+
+        let mut arr = [(3, "1"), (1, "2"), (2, "2"), (1, "1")];
+        let start = arr.start();
+        let end = arr.end();
+        merge_sort(&mut arr, start, end, |x, y| x < y);
+        assert!(arr.equals(&[(1, "1"), (1, "2"), (2, "2"), (3, "1")]));
+
+        let mut arr = [(1, "2"), (2, "2"), (1, "1")];
+        let start = arr.start();
+        let end = arr.end();
+        merge_sort(&mut arr, start, end, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, "2"), (1, "1"), (2, "2")]));
+
+        let mut arr = [(1, "2"), (1, "1")];
+        let start = arr.start();
+        let end = arr.end();
+        merge_sort(&mut arr, start, end, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, "2"), (1, "1")]));
+
+        let mut arr = [(1, "2")];
+        let start = arr.start();
+        let end = arr.end();
+        merge_sort(&mut arr, start, end, |x, y| x.0 < y.0);
+        assert!(arr.equals(&[(1, "2")]));
+
+        let mut arr: [i32; 0] = [];
+        let start = arr.start();
+        let end = arr.end();
+        merge_sort(&mut arr, start, end, |x, y| x < y);
+        assert!(arr.equals(&[]));
+    }
+
+    #[test]
+    fn stable_quick_sort_till_depth_test() {
+        let mut arr = [(3, 3), (1, 2), (1, 1)];
+        let start = arr.start();
+        let end = arr.end();
+        let res = stable_quick_sort_till_depth(
+            &mut arr,
+            start,
+            end,
+            |x, y| x.0 < y.0,
+            9,
+        );
+        assert!(res);
+        assert!(arr.equals(&[(1, 2), (1, 1), (3, 3)]));
+
+        let mut arr: [i32; 0] = [];
+        let start = arr.start();
+        let end = arr.end();
+        let res =
+            stable_quick_sort_till_depth(&mut arr, start, end, |x, y| x < y, 0);
+        assert!(res);
+        assert!(arr.equals(&[]));
+
+        let mut arr = [5, 4, 3, 2, 1];
+        let start = arr.start();
+        let end = arr.end();
+        let res =
+            stable_quick_sort_till_depth(&mut arr, start, end, |x, y| x < y, 1);
+        assert!(!res);
+    }
 }
