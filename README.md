@@ -222,7 +222,7 @@ required description would be provided.
 - [ ] partial_sort
 - [ ] partial_sort_copy
 - [ ] is_sorted
-- [ ] is_sorted_until
+- [x] is_sorted_until -> is_sorted_until, is_sorted_until_by
 - [ ] nth_element
 
 ### Binary Search Operations

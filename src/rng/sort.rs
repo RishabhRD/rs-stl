@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, OutputRange, RandomAccessRange, SemiOutputRange};
+use crate::{
+    algo, ForwardRange, OutputRange, RandomAccessRange, SemiOutputRange,
+};
 
 /// Unstable sort: sorts range in non-decreasing order based on comparator.
 ///
@@ -277,8 +279,74 @@ where
     algo::stable_sort_no_alloc(rng, start, end);
 }
 
+/// Finds the largest prefix in range such that elements in the prefix are in non-decreasing order
+/// wrt comparator.
+///
+/// # Precondition
+///   - is_less should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Returns last such position i, so that `[rng.start(), i)` is in non-decreasing order wrt is_less.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 1, 2, 0];
+/// let i = rng::is_sorted_until_by(&arr, |x, y| x < y);
+/// assert_eq!(i, 3)
+/// ```
+pub fn is_sorted_until_by<Range, Compare>(
+    rng: &Range,
+    is_less: Compare,
+) -> Range::Position
+where
+    Range: ForwardRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    algo::is_sorted_until_by(rng, rng.start(), rng.end(), is_less)
+}
+
+/// Finds the largest prefix in range such that elements in the prefix are in non-decreasing order.
+///
+/// # Precondition
+///   - is_less should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Returns last such position i, so that `[rng.start(), i)` is in non-decreasing order.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in rng.
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 1, 2, 0];
+/// let i = rng::is_sorted_until(&arr);
+/// assert_eq!(i, 3)
+/// ```
+pub fn is_sorted_until<Range>(rng: &Range) -> Range::Position
+where
+    Range: ForwardRange + ?Sized,
+    Range::Element: Ord,
+{
+    algo::is_sorted_until(rng, rng.start(), rng.end())
+}
+
 pub mod infix {
-    use crate::{rng, OutputRange, RandomAccessRange, SemiOutputRange};
+    use crate::{
+        rng, ForwardRange, OutputRange, RandomAccessRange, SemiOutputRange,
+    };
 
     /// `sort_range`, `sort_range_by`, `stable_sort_no_alloc`, `stable_sort_by_no_alloc`.
     pub trait STLSortExt: RandomAccessRange + SemiOutputRange {
@@ -331,4 +399,26 @@ pub mod infix {
     }
 
     impl<R> STLSortOutputExt for R where R: RandomAccessRange + OutputRange + ?Sized {}
+
+    /// `is_sorted_until`, `is_sorted_until_by`.
+    pub trait STLSortForwardExt: ForwardRange {
+        fn is_sorted_until_by<Compare>(
+            &self,
+            is_less: Compare,
+        ) -> Self::Position
+        where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool,
+        {
+            rng::is_sorted_until_by(self, is_less)
+        }
+
+        fn is_sorted_until(&self) -> Self::Position
+        where
+            Self::Element: Ord,
+        {
+            rng::is_sorted_until(self)
+        }
+    }
+
+    impl<R> STLSortForwardExt for R where R: ForwardRange + ?Sized {}
 }

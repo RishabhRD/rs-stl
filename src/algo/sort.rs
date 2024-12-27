@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{OutputRange, RandomAccessRange, SemiOutputRange};
+use crate::{ForwardRange, OutputRange, RandomAccessRange, SemiOutputRange};
 
 /// Unstable sort: sorts range in non-decreasing order based on comparator.
 ///
@@ -300,6 +300,85 @@ pub fn stable_sort_no_alloc<Range>(
     Range::Element: Ord,
 {
     stable_sort_by_no_alloc(rng, start, end, |x, y| x < y);
+}
+
+/// Finds the largest prefix in range such that elements in the prefix are in non-decreasing order
+/// wrt comparator.
+///
+/// # Precondition
+///   - `[start, end)` should represent valid positions in rng.
+///   - is_less should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Returns last such position i, so that `[start, i)` is in non-decreasing order wrt is_less.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 1, 2, 0];
+/// let i = algo::is_sorted_until_by(&arr, arr.start(), arr.end(), |x, y| x < y);
+/// assert_eq!(i, 3)
+/// ```
+pub fn is_sorted_until_by<Range, Compare>(
+    rng: &Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    is_less: Compare,
+) -> Range::Position
+where
+    Range: ForwardRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    if start == end {
+        return end;
+    }
+
+    let mut prev = start.clone();
+    start = rng.after(start);
+    while start != end {
+        if is_less(rng.at(&start), rng.at(&prev)) {
+            return start;
+        }
+        prev = start.clone();
+        start = rng.after(start);
+    }
+    end
+}
+
+/// Finds the largest prefix in range such that elements in the prefix are in non-decreasing order.
+///
+/// # Precondition
+///   - `[start, end)` should represent valid positions in rng.
+///   - is_less should follow strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Returns last such position i, so that `[start, i)` is in non-decreasing order.
+///   - Complexity: O(n) comparisions.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let arr = [1, 1, 2, 0];
+/// let i = algo::is_sorted_until(&arr, arr.start(), arr.end());
+/// assert_eq!(i, 3)
+/// ```
+pub fn is_sorted_until<Range>(
+    rng: &Range,
+    start: Range::Position,
+    end: Range::Position,
+) -> Range::Position
+where
+    Range: ForwardRange + ?Sized,
+    Range::Element: Ord,
+{
+    is_sorted_until_by(rng, start, end, |x, y| x < y)
 }
 
 // TODO: details can only be accessed from current file or from tests.

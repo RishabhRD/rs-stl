@@ -156,4 +156,59 @@ pub mod tests {
         arr.stable_sort_no_alloc();
         assert!(arr.equals(&[]));
     }
+
+    #[test]
+    fn is_sorted_until() {
+        let arr = [1, 2, 3];
+
+        let i =
+            algo::is_sorted_until_by(&arr, arr.start(), arr.end(), |x, y| {
+                x < y
+            });
+        assert_eq!(i, 3);
+
+        let i = rng::is_sorted_until_by(&arr, |x, y| x < y);
+        assert_eq!(i, 3);
+
+        let i = arr.is_sorted_until_by(|x, y| x < y);
+        assert_eq!(i, 3);
+
+        let i = algo::is_sorted_until(&arr, arr.start(), arr.end());
+        assert_eq!(i, 3);
+
+        let i = rng::is_sorted_until(&arr);
+        assert_eq!(i, 3);
+
+        let i = arr.is_sorted_until();
+        assert_eq!(i, 3);
+
+        let arr = [9, 1, 2, 1];
+        let i = algo::is_sorted_until_by(
+            &arr,
+            arr.start() + 1,
+            arr.end(),
+            |x, y| x < y,
+        );
+        assert_eq!(i, 3);
+
+        let arr: [i32; 0] = [];
+        let i = arr.is_sorted_until();
+        assert_eq!(i, 0);
+
+        let arr = [1, 1, 2, 3];
+        let i = arr.is_sorted_until();
+        assert_eq!(i, 4);
+
+        let arr = [3, 2, 1, 1];
+        let i = arr.is_sorted_until_by(|x, y| x > y);
+        assert_eq!(i, 4);
+
+        let arr = [(1, 2), (1, 1)];
+        let i = arr.is_sorted_until_by(|x, y| x.0 < y.0);
+        assert_eq!(i, 2);
+
+        let arr = [(1, 2), (1, 1)];
+        let i = arr.is_sorted_until();
+        assert_eq!(i, 1);
+    }
 }
