@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{ForwardRange, OutputRange, RandomAccessRange, SemiOutputRange};
+use crate::{
+    ForwardRange, InputRange, OutputRange, RandomAccessRange, SemiOutputRange,
+};
 
-use super::{heap_details, sort_heap_by};
+use super::{
+    heap_details::{self, heap_select_copy_by},
+    sort_heap_by,
+};
 
 /// Unstable sort: sorts range in non-decreasing order based on comparator.
 ///
@@ -531,6 +536,121 @@ pub fn partial_sort<Range>(
     Range::Element: Ord,
 {
     partial_sort_by(rng, start, mid, end, |x, y| x < y)
+}
+
+/// Stores d top minimum elements in non decreasing order wrt comparator of source range to destination range where d is
+/// number of elements in destination range.
+///
+/// # Precondition
+///   - `[src_start, src_end)` represents valid positions in src.
+///   - `[dest_start, dest_end)` represents valid positions in dest.
+///   - is_less follows strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - Stores d top minimum elements in non decreasing order wrt comparator of
+///     src range at `[src_start, src_end)` to dest range `[dest_start, dest_end)`
+///     where d is number of elements in destination range.
+///   - Relative order of equivalent elements are NOT preserved.
+///   - Returns the position after last copied element in dest.
+///   - Complexity: O(n.log2(min(n, d))) comparisions.
+///
+/// Where n = distance(src_start, src_end), d = distance(dest_start, dest_end).
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [4, 1, 5, 1, 2];
+/// let mut dest = [0, 0, 0];
+/// let dest_start = dest.start();
+/// let dest_end = dest.end();
+/// let i = algo::partial_sort_copy_by(&arr, arr.start(), arr.end(), &mut dest, dest_start, dest_end, |x, y| x < y);
+/// assert_eq!(i, 3);
+/// assert!(dest.equals(&[1, 1, 2]));
+/// ```
+pub fn partial_sort_copy_by<SrcRange, DestRange, Compare>(
+    src: &SrcRange,
+    src_start: SrcRange::Position,
+    src_end: SrcRange::Position,
+    dest: &mut DestRange,
+    dest_start: DestRange::Position,
+    dest_end: DestRange::Position,
+    is_less: Compare,
+) -> DestRange::Position
+where
+    DestRange: RandomAccessRange + OutputRange + ?Sized,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    Compare: Fn(&SrcRange::Element, &SrcRange::Element) -> bool + Clone,
+{
+    let i = heap_select_copy_by(
+        src,
+        src_start,
+        src_end,
+        dest,
+        dest_start.clone(),
+        dest_end,
+        is_less.clone(),
+    );
+
+    sort_heap_by(dest, dest_start, i.clone(), is_less);
+
+    i
+}
+
+/// Stores d top minimum elements in non decreasing order of source range to destination range where d is
+/// number of elements in destination range.
+///
+/// # Precondition
+///   - `[src_start, src_end)` represents valid positions in src.
+///   - `[dest_start, dest_end)` represents valid positions in dest.
+///
+/// # Postcondition
+///   - Stores d top minimum elements in non decreasing order of
+///     src range at `[src_start, src_end)` to destination range
+///     at `[dest_start, dest_end)` where d is number of elements in dest range.
+///   - Relative order of equivalent elements are NOT preserved.
+///   - Returns the position after last copied element in dest.
+///   - Complexity: O(n.log2(min(n, d))) comparisions.
+///
+/// Where n = distance(src_start, src_end), d = distance(dest_start, dest_end).
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let arr = [4, 1, 5, 1, 2];
+/// let mut dest = [0, 0, 0];
+/// let dest_start = dest.start();
+/// let dest_end = dest.end();
+/// let i = algo::partial_sort_copy(&arr, arr.start(), arr.end(), &mut dest, dest_start, dest_end);
+/// assert_eq!(i, 3);
+/// assert!(dest.equals(&[1, 1, 2]));
+/// ```
+pub fn partial_sort_copy<SrcRange, DestRange>(
+    src: &SrcRange,
+    src_start: SrcRange::Position,
+    src_end: SrcRange::Position,
+    dest: &mut DestRange,
+    dest_start: DestRange::Position,
+    dest_end: DestRange::Position,
+) -> DestRange::Position
+where
+    DestRange: RandomAccessRange + OutputRange + ?Sized,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
+    SrcRange::Element: Clone + Ord,
+{
+    partial_sort_copy_by(
+        src,
+        src_start,
+        src_end,
+        dest,
+        dest_start,
+        dest_end,
+        |x, y| x < y,
+    )
 }
 
 // TODO: details can only be accessed from current file or from tests.

@@ -299,4 +299,68 @@ pub mod tests {
         arr.partial_sort(arr.end());
         assert!(arr.equals(&[1, 1, 2, 4, 5]));
     }
+
+    #[test]
+    fn partial_sort_copy() {
+        let arr = [4, 1, 5, 1, 2];
+        let mut dest = [0, 0, 0, 0];
+        let dest_start = dest.start();
+        let dest_end = dest.end();
+        let i = algo::partial_sort_copy_by(
+            &arr,
+            arr.start(),
+            arr.end(),
+            &mut dest,
+            dest_start,
+            dest_end,
+            |x, y| x < y,
+        );
+        assert_eq!(i, 4);
+        assert!(dest.equals(&[1, 1, 2, 4]));
+
+        let arr = [4, 1, 5, 1, 2];
+        let mut dest = [0, 0, 0, 0];
+        let i = rng::partial_sort_copy_by(&arr, &mut dest, |x, y| x < y);
+        assert_eq!(i, 4);
+        assert!(dest.equals(&[1, 1, 2, 4]));
+
+        let arr = [4, 1, 5, 1, 2];
+        let mut dest = [0, 0, 0, 0];
+        let dest_start = dest.start();
+        let dest_end = dest.end();
+        let i = algo::partial_sort_copy(
+            &arr,
+            arr.start(),
+            arr.end(),
+            &mut dest,
+            dest_start,
+            dest_end,
+        );
+        assert_eq!(i, 4);
+        assert!(dest.equals(&[1, 1, 2, 4]));
+
+        let arr = [4, 1, 5, 1, 2];
+        let mut dest = [0, 0, 0, 0];
+        let i = rng::partial_sort_copy(&arr, &mut dest);
+        assert_eq!(i, 4);
+        assert!(dest.equals(&[1, 1, 2, 4]));
+
+        let arr = [4, 1, 5];
+        let mut dest = [0, 0, 0, 0];
+        let i = rng::partial_sort_copy(&arr, &mut dest);
+        assert_eq!(i, 3);
+        assert!(dest.equals(&[1, 4, 5, 0]));
+
+        let arr = [];
+        let mut dest = [0, 0, 0, 0];
+        let i = rng::partial_sort_copy(&arr, &mut dest);
+        assert_eq!(i, 0);
+        assert!(dest.equals(&[0, 0, 0, 0]));
+
+        let arr = [4, 1, 5, 1, 2];
+        let mut dest = [0, 0, 0, 0, 0, 0];
+        let i = rng::partial_sort_copy(&arr, &mut dest);
+        assert_eq!(i, 5);
+        assert!(dest.equals(&[1, 1, 2, 4, 5, 0]));
+    }
 }
