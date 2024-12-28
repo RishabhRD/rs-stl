@@ -223,7 +223,7 @@ required description would be provided.
 - [x] partial_sort_copy -> partial_sort_copy, partial_sort_copy_by
 - [x] is_sorted -> is_sorted, is_sorted_by
 - [x] is_sorted_until -> is_sorted_until, is_sorted_until_by
-- [ ] nth_element
+- [x] nth_element -> nth_element, nth_element_by
 
 ### Binary Search Operations
 

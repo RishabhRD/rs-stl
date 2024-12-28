@@ -603,12 +603,118 @@ where
     algo::partial_sort_copy(src, src.start(), src.end(), dest, start, end)
 }
 
+/// Rearranges the elements in range st:
+///   - element at nth position is changed to whatever element if range is sorted wrt comparator.
+///   - resulting range would be patitioned on nth element wrt comparator.
+///
+/// # Precondition
+///   - nth is a valid position in rng.
+///   - is_less follows strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - element in rng is ordered as such, element at nth position would change
+///     to whatever element if rng was sorted wrt is_less.
+///   - Resulting range rng at would be partitioned by element
+///     at nth_position, i.e., for any position j > nth,
+///     `is_less(rng.at(&j), rng.at(&nth)) == false`.
+///   - if nth == end, do nothing.
+///   - Stability of equivalent is not guaranteed.
+///   - Comlexity: O(n) comparisions on **average**.
+///
+/// Where n == `rng.distance(rng.start(), rng.end())`
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let nth = arr.after_n(arr.start(), 2);
+/// rng::nth_element_by(&mut arr, nth,|x, y| x < y);
+/// assert_eq!(arr.at(&nth), &2);
+/// assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+/// assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let nth = arr.after_n(arr.start(), 2);
+/// arr.nth_element_by(nth,|x, y| x < y);
+/// assert_eq!(arr.at(&nth), &2);
+/// assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+/// assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+/// ```
+pub fn nth_element_by<Range, Compare>(
+    rng: &mut Range,
+    nth: Range::Position,
+    is_less: Compare,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::nth_element_by(rng, start, nth, end, is_less);
+}
+
+/// Rearranges the elements in range st:
+///   - element at nth position is changed to whatever element if range is sorted.
+///   - resulting range would be patitioned on nth element.
+///
+/// # Precondition
+///   - nth represents valid position in rng.
+///
+/// # Postcondition
+///   - elements in rng is ordered as such, element at nth position would
+///     change to whatever element if rng was sorted.
+///   - Resulting range rng would be partitioned by element at nth_position,
+///     i.e., for any position j > nth, `rng.at(&j) >= rng.at(&nth)`.
+///   - if nth == end, do nothing.
+///   - Stability of equal elements is not guaranteed.
+///   - Comlexity: O(n) comparisions on **average**.
+///
+/// Where n == `rng.distance(rng.start(), rng.end())`
+///
+/// #### Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let nth = arr.after_n(arr.start(), 2);
+/// rng::nth_element(&mut arr, nth);
+/// assert_eq!(arr.at(&nth), &2);
+/// assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+/// assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let nth = arr.after_n(arr.start(), 2);
+/// arr.nth_element(nth);
+/// assert_eq!(arr.at(&nth), &2);
+/// assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+/// assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+/// ```
+pub fn nth_element<Range>(rng: &mut Range, nth: Range::Position)
+where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    let start = rng.start();
+    let end = rng.end();
+    algo::nth_element(rng, start, nth, end);
+}
+
 pub mod infix {
     use crate::{
         rng, ForwardRange, OutputRange, RandomAccessRange, SemiOutputRange,
     };
 
-    /// `sort_range`, `sort_range_by`, `stable_sort_no_alloc`, `stable_sort_by_no_alloc`.
+    /// `sort_range`, `sort_range_by`, `stable_sort_no_alloc`, `stable_sort_by_no_alloc`,
+    /// `partial_sort`, `partial_sort_by`, `nth_element`, `nth_element_by`.
     pub trait STLSortExt: RandomAccessRange + SemiOutputRange {
         fn sort_range_by<Compare>(&mut self, is_less: Compare)
         where
@@ -653,6 +759,23 @@ pub mod infix {
             Self::Element: Ord,
         {
             rng::partial_sort(self, mid)
+        }
+
+        fn nth_element_by<Compare>(
+            &mut self,
+            nth: Self::Position,
+            is_less: Compare,
+        ) where
+            Compare: Fn(&Self::Element, &Self::Element) -> bool,
+        {
+            rng::nth_element_by(self, nth, is_less);
+        }
+
+        fn nth_element(&mut self, nth: Self::Position)
+        where
+            Self::Element: Ord,
+        {
+            rng::nth_element(self, nth);
         }
     }
 

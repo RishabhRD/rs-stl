@@ -468,6 +468,7 @@ pub fn make_heap<Range>(
     make_heap_by(rng, start, end, |x, y| x < y);
 }
 
+#[doc(hidden)]
 pub mod heap_details {
     use crate::{InputRange, OutputRange, RandomAccessRange, SemiOutputRange};
 

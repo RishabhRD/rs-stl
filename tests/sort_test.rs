@@ -363,4 +363,65 @@ pub mod tests {
         assert_eq!(i, 5);
         assert!(dest.equals(&[1, 1, 2, 4, 5, 0]));
     }
+
+    #[test]
+    fn nth_element() {
+        let mut arr = [4, 1, 5, 1, 2];
+        let start = arr.start();
+        let nth = arr.after_n(start, 2);
+        let end = arr.end();
+        algo::nth_element_by(&mut arr, start, nth, end, |x, y| x < y);
+        assert_eq!(arr.at(&nth), &2);
+        assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+        assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let nth = arr.after_n(arr.start(), 2);
+        rng::nth_element_by(&mut arr, nth, |x, y| x < y);
+        assert_eq!(arr.at(&nth), &2);
+        assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+        assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let nth = arr.after_n(arr.start(), 2);
+        arr.nth_element_by(nth, |x, y| x < y);
+        assert_eq!(arr.at(&nth), &2);
+        assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+        assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let start = arr.start();
+        let nth = arr.after_n(start, 2);
+        let end = arr.end();
+        algo::nth_element(&mut arr, start, nth, end);
+        assert_eq!(arr.at(&nth), &2);
+        assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+        assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let nth = arr.after_n(arr.start(), 2);
+        rng::nth_element(&mut arr, nth);
+        assert_eq!(arr.at(&nth), &2);
+        assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+        assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let nth = arr.start();
+        arr.nth_element(nth);
+        assert_eq!(arr.at(&nth), &1);
+        assert!(&arr[0..nth].is_partitioned(|x| *x < 1));
+        assert!(&arr[nth..].is_partitioned(|x| *x >= 1));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let nth = arr.after(arr.start());
+        arr.nth_element(nth);
+        assert_eq!(arr.at(&nth), &1);
+        assert!(&arr[0..nth].is_partitioned(|x| *x < 1));
+        assert!(&arr[nth..].is_partitioned(|x| *x >= 1));
+
+        let mut arr = [4, 1, 5, 1, 2];
+        let nth = arr.end();
+        arr.nth_element(nth);
+        arr.equals(&[4, 1, 5, 1, 2]);
+    }
 }

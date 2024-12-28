@@ -7,6 +7,7 @@ use crate::{
 
 use super::{
     heap_details::{self, heap_select_copy_by},
+    partition_details::partition_pos,
     sort_heap_by,
 };
 
@@ -653,7 +654,124 @@ where
     )
 }
 
+/// Rearranges the elements in range st:
+///   - element at nth position is changed to whatever element if range is sorted wrt comparator.
+///   - resulting range would be patitioned on nth element wrt comparator.
+///
+/// # Precondition
+///   - `[start, nth)` reperesents valid position in rng.
+///   - `[nth, end)` represents valid position in rng.
+///   - is_less follows strict-weak-ordering relationship.
+///
+/// # Postcondition
+///   - element at `[start, end)` in rng is ordered as such, element at nth
+///     position would change to whatever element if rng `[start, end)` was
+///     sorted wrt is_less.
+///   - Resulting range rng at `[start, end)` would be partitioned by element
+///     at nth_position, i.e., for any position j > nth,
+///     `is_less(rng.at(&j), rng.at(&nth)) == false`.
+///   - if nth == end, do nothing.
+///   - Stability of equivalent elements is not guaranteed.
+///   - Comlexity: O(n) comparisions on **average**.
+///
+/// Where n == `rng.distance(start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let start = arr.start();
+/// let nth = arr.after_n(start, 2);
+/// let end = arr.end();
+/// algo::nth_element_by(&mut arr, start, nth, end, |x, y| x < y);
+/// assert_eq!(arr.at(&nth), &2);
+/// assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+/// assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+/// ```
+pub fn nth_element_by<Range, Compare>(
+    rng: &mut Range,
+    mut start: Range::Position,
+    nth: Range::Position,
+    mut end: Range::Position,
+    is_less: Compare,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Compare: Fn(&Range::Element, &Range::Element) -> bool,
+{
+    // TODO: should it use itro-select rather than quick-select?
+    if nth == end {
+        return;
+    }
+    while start != end {
+        let last_ele_pos = rng.before(end.clone());
+        let n = rng.distance(start.clone(), end.clone());
+        let mut pivot = rng.after_n(start.clone(), n >> 1);
+        rng.swap_at(&pivot, &last_ele_pos);
+        pivot =
+            partition_pos(rng, start.clone(), last_ele_pos.clone(), |r, i| {
+                is_less(r.at(i), r.at(&last_ele_pos))
+            });
+        rng.swap_at(&pivot, &last_ele_pos);
+
+        match nth.cmp(&pivot) {
+            std::cmp::Ordering::Equal => return,
+            std::cmp::Ordering::Less => end = pivot,
+            std::cmp::Ordering::Greater => start = rng.after(pivot),
+        }
+    }
+}
+
+/// Rearranges the elements in range st:
+///   - element at nth position is changed to whatever element if range is sorted.
+///   - resulting range would be patitioned on nth element.
+///
+/// # Precondition
+///   - `[start, nth)` reperesents valid position in rng.
+///   - `[nth, end)` represents valid position in rng.
+///
+/// # Postcondition
+///   - element at `[start, end)` in rng is ordered as such, element at nth
+///     position would change to whatever element if rng `[start, end)` was
+///     sorted.
+///   - Resulting range rng at `[start, end)` would be partitioned by element
+///     at nth_position, i.e., for any position j > nth,
+///     `rng.at(&j) >= rng.at(&nth)`
+///   - if nth == end, do nothing.
+///   - Stability of equal elements is not guaranteed.
+///   - Comlexity: O(n) comparisions on **average**.
+///
+/// Where n == `rng.distance(start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [4, 1, 5, 1, 2];
+/// let start = arr.start();
+/// let nth = arr.after_n(start, 2);
+/// let end = arr.end();
+/// algo::nth_element(&mut arr, start, nth,end);
+/// assert_eq!(arr.at(&nth), &2);
+/// assert!(&arr[0..nth].is_partitioned(|x| *x < 2));
+/// assert!(&arr[nth..].is_partitioned(|x| *x >= 2));
+/// ```
+pub fn nth_element<Range>(
+    rng: &mut Range,
+    start: Range::Position,
+    nth: Range::Position,
+    end: Range::Position,
+) where
+    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range::Element: Ord,
+{
+    nth_element_by(rng, start, nth, end, |x, y| x < y);
+}
+
 // TODO: details can only be accessed from current file or from tests.
+#[doc(hidden)]
 pub mod sort_details {
     use crate::{
         algo::{
@@ -860,6 +978,7 @@ pub mod sort_details {
             end.clone(),
             |r, i| is_less(r.at(i), r.at(&pivot)),
         );
+
         let left_end = rng.before(partition_point.clone());
         rotate(rng, pivot, partition_start, partition_point.clone());
         let left = stable_quick_sort_till_depth_no_alloc(
