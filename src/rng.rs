@@ -139,6 +139,11 @@ pub mod numeric;
 #[doc(inline)]
 pub use numeric::*;
 
+#[doc(hidden)]
+pub mod for_each;
+#[doc(inline)]
+pub use for_each::*;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!
@@ -159,6 +164,8 @@ pub mod infix {
     pub use super::fill::infix::*;
     #[doc(inline)]
     pub use super::find::infix::*;
+    #[doc(inline)]
+    pub use super::for_each::infix::*;
     #[doc(inline)]
     pub use super::heap::infix::*;
     #[doc(inline)]

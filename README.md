@@ -179,6 +179,7 @@ required description would be provided.
 ### Transformation Operations
 
 - [x] transform -> transform, zip_transform
+- [x] for_each -> for_each, for_each_mut
 - [x] replace
 - [x] replace_if
 - [x] replace_copy

@@ -120,3 +120,8 @@ pub use binary_search::*;
 pub mod numeric;
 #[doc(inline)]
 pub use numeric::*;
+
+#[doc(hidden)]
+pub mod for_each;
+#[doc(inline)]
+pub use for_each::*;
