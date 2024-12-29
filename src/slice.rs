@@ -4,7 +4,7 @@
 #![doc(hidden)]
 
 use crate::{
-    BidirectionalRange, ForwardRange, InputRange, OutputRange,
+    BidirectionalRange, BoundedRange, ForwardRange, InputRange, OutputRange,
     RandomAccessRange, SemiOutputRange,
 };
 
@@ -15,10 +15,6 @@ impl<T> InputRange for [T] {
 
     fn start(&self) -> Self::Position {
         0
-    }
-
-    fn end(&self) -> Self::Position {
-        self.len()
     }
 
     fn after(&self, i: Self::Position) -> Self::Position {
@@ -32,11 +28,21 @@ impl<T> InputRange for [T] {
     fn at(&self, i: &Self::Position) -> &Self::Element {
         &self[*i]
     }
+
+    fn is_end(&self, i: Self::Position) -> bool {
+        i == self.len()
+    }
 }
 
 impl<T> ForwardRange for [T] {
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
         to - from
+    }
+}
+
+impl<T> BoundedRange for [T] {
+    fn end(&self) -> Self::Position {
+        self.len()
     }
 }
 

@@ -44,9 +44,10 @@ pub trait InputRange {
     /// or if self is empty then start() == end()
     fn start(&self) -> Self::Position;
 
-    /// Returns the "past the end" position in self, that is, the position
-    /// immediately after the last element in self
-    fn end(&self) -> Self::Position;
+    /// Returns if the given position is position past the last element in range.
+    ///
+    /// TODO: is default impl for bounded range possible?
+    fn is_end(&self, i: Self::Position) -> bool;
 
     /// Returns position immediately after i
     ///
@@ -104,6 +105,17 @@ pub trait ForwardRange: InputRange<Position: Regular> {
         }
         res
     }
+}
+
+/// Models a bounded range.
+///
+/// - BoundedRange is an extension of ForwardRange.
+/// - Provides an `end()` function to provide the end bound, i.e., the range
+///   would be bounded by `[rng.start(), rng.end())`.
+pub trait BoundedRange: ForwardRange {
+    /// Returns the "past the end" position in self, that is, the position
+    /// immediately after the last element in self
+    fn end(&self) -> Self::Position;
 }
 
 /// Models a bidirectional range, which can be traversed forward as well as backward.

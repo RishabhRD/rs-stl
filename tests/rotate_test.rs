@@ -16,16 +16,16 @@ impl<const N: usize> InputRange for ForwardArray<N> {
         0
     }
 
-    fn end(&self) -> Self::Position {
-        N
-    }
-
     fn after(&self, i: Self::Position) -> Self::Position {
         i + 1
     }
 
     fn at(&self, i: &Self::Position) -> &Self::Element {
         &self.arr[*i]
+    }
+
+    fn is_end(&self, i: Self::Position) -> bool {
+        i == N
     }
 }
 
