@@ -1,20 +1,19 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange, OutputRange};
+use crate::{InputRange, OutputRange};
 
 /// Copies elements from src to out of dest if it satisfies predicate.
 ///
 /// # Precondition
-///   - dest should be able to accomodate all copied elements starting from out.
 ///
 /// # Postcondition
 ///   - copies elements from src satisfying `pred` to out position of
 ///     dest.
 ///   - Returns the position of dest just after last copy position.
-///   - Complexity: O(n). Total n pred applications and maximum n copy operations.
+///   - Complexity: O(n). Total n copy operations and maximum N pred applications.
 ///
-/// where n is number of elements in src.
+/// Where n is number of elements in dest and N is number of elements in src.
 ///
 /// #### Infix Supported
 /// YES
@@ -63,14 +62,13 @@ where
 /// Copies elements from src to dest.
 ///
 /// # Precondition
-///   - dest should be able to accomodate n elements
 ///
 /// # Postcondition
 ///   - copies elements from src to dest.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n copy operations.
 ///
-/// where n is number of elements in src.
+/// where n is number of elements in dest.
 ///
 /// #### Infix Supported
 /// YES
