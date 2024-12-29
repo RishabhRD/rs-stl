@@ -150,6 +150,8 @@ pub mod infix {
     #[doc(inline)]
     pub use super::binary_search::infix::*;
     #[doc(inline)]
+    pub use super::copy::infix::*;
+    #[doc(inline)]
     pub use super::count::infix::*;
     #[doc(inline)]
     pub use super::equals::infix::*;

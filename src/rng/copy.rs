@@ -17,7 +17,7 @@ use crate::{algo, InputRange, OutputRange};
 /// where n is number of elements in src.
 ///
 /// #### Infix Supported
-/// NO
+/// YES
 ///
 /// # Example
 /// ```rust
@@ -25,9 +25,13 @@ use crate::{algo, InputRange, OutputRange};
 /// use rng::infix::*;
 ///
 /// let src = [1, 2, 3];
-///
 /// let mut dest = [0, 0];
+///
 /// let i = rng::copy_if(&src, &mut dest, |x| x % 2 == 1);
+/// assert!(dest.equals(&[1, 3]));
+/// assert_eq!(i, 2);
+///
+/// let i = src.copy_if(&mut dest, |x| x % 2 == 1);
 /// assert!(dest.equals(&[1, 3]));
 /// assert_eq!(i, 2);
 /// ```
@@ -42,7 +46,18 @@ where
     DestRange: OutputRange + ?Sized,
     Pred: Fn(&SrcRange::Element) -> bool,
 {
-    algo::copy_if(src, src.start(), src.end(), dest, dest.start(), pred)
+    let mut start = src.start();
+    let end = src.end();
+    let mut write = dest.start();
+    let d_end = dest.end();
+    while start != end && write != d_end {
+        if pred(src.at(&start)) {
+            *dest.at_mut(&write) = src.at(&start).clone();
+            write = dest.after(write);
+        }
+        start = src.after(start);
+    }
+    write
 }
 
 /// Copies elements from src to dest.
@@ -58,7 +73,7 @@ where
 /// where n is number of elements in src.
 ///
 /// #### Infix Supported
-/// NO
+/// YES
 ///
 /// # Example
 /// ```rust
@@ -66,14 +81,19 @@ where
 /// use rng::infix::*;
 ///
 /// let src = [1, 2, 3];
-/// let mut dest = [0, 0, 0];
 ///
+/// let mut dest = [0, 0, 0];
 /// let i = rng::copy(&src, &mut dest);
+/// assert!(dest.equals(&[1, 2, 3]));
+/// assert_eq!(i, 3);
+///
+/// let mut dest = [0, 0, 0];
+/// let i = src.copy(&mut dest);
 /// assert!(dest.equals(&[1, 2, 3]));
 /// assert_eq!(i, 3);
 /// ```
 pub fn copy<SrcRange, DestRange>(
-    rng: &SrcRange,
+    src: &SrcRange,
     dest: &mut DestRange,
 ) -> DestRange::Position
 where
@@ -81,5 +101,44 @@ where
     SrcRange::Element: Clone,
     DestRange: OutputRange + ?Sized,
 {
-    algo::copy(rng, rng.start(), rng.end(), dest, dest.start())
+    let mut start = src.start();
+    let end = src.end();
+    let mut write = dest.start();
+    let d_end = dest.end();
+    while start != end && write != d_end {
+        *dest.at_mut(&write) = src.at(&start).clone();
+        start = src.after(start);
+        write = dest.after(write);
+    }
+    write
+}
+
+pub mod infix {
+    use crate::{rng, InputRange, OutputRange};
+
+    /// `copy`, `copy_if`.
+    pub trait STLCopyExt: InputRange {
+        fn copy<DestRange>(&self, dest: &mut DestRange) -> DestRange::Position
+        where
+            DestRange: OutputRange<Element = Self::Element> + ?Sized,
+            DestRange::Element: Clone,
+        {
+            rng::copy(self, dest)
+        }
+
+        fn copy_if<DestRange, Pred>(
+            &self,
+            dest: &mut DestRange,
+            pred: Pred,
+        ) -> DestRange::Position
+        where
+            DestRange: OutputRange<Element = Self::Element> + ?Sized,
+            DestRange::Element: Clone,
+            Pred: Fn(&Self::Element) -> bool,
+        {
+            rng::copy_if(self, dest, pred)
+        }
+    }
+
+    impl<R> STLCopyExt for R where R: InputRange + ?Sized {}
 }
