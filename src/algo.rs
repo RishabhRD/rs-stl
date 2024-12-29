@@ -32,19 +32,9 @@ pub mod mismatch;
 pub use mismatch::*;
 
 #[doc(hidden)]
-pub mod adjacent_find;
-#[doc(inline)]
-pub use adjacent_find::*;
-
-#[doc(hidden)]
 pub mod equals;
 #[doc(inline)]
 pub use equals::*;
-
-#[doc(hidden)]
-pub mod copy;
-#[doc(inline)]
-pub use copy::*;
 
 #[doc(hidden)]
 pub mod transform;
@@ -110,11 +100,6 @@ pub use merge::*;
 pub mod swap_ranges;
 #[doc(inline)]
 pub use swap_ranges::*;
-
-#[doc(hidden)]
-pub mod binary_search;
-#[doc(inline)]
-pub use binary_search::*;
 
 #[doc(hidden)]
 pub mod numeric;
