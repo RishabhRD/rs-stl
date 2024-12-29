@@ -115,3 +115,8 @@ pub use swap_ranges::*;
 pub mod binary_search;
 #[doc(inline)]
 pub use binary_search::*;
+
+#[doc(hidden)]
+pub mod numeric;
+#[doc(inline)]
+pub use numeric::*;

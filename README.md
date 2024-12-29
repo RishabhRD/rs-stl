@@ -256,7 +256,7 @@ required description would be provided.
 ### Numeric Operations
 
 - [ ] iota
-- [ ] accumulate/reduce
+- [x] accumulate/reduce -> fold_left, fold_right
 - [ ] inner_product
 - [ ] adjacent_difference
 - [ ] partial_sum

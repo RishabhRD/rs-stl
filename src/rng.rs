@@ -134,6 +134,11 @@ pub mod binary_search;
 #[doc(inline)]
 pub use binary_search::*;
 
+#[doc(hidden)]
+pub mod numeric;
+#[doc(inline)]
+pub use numeric::*;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!
@@ -156,6 +161,8 @@ pub mod infix {
     pub use super::heap::infix::*;
     #[doc(inline)]
     pub use super::minmax::infix::*;
+    #[doc(inline)]
+    pub use super::numeric::infix::*;
     #[doc(inline)]
     pub use super::of::infix::*;
     #[doc(inline)]
