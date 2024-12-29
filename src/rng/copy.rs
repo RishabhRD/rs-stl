@@ -10,6 +10,8 @@ use crate::{InputRange, OutputRange};
 /// # Postcondition
 ///   - copies elements from src satisfying `pred` to out position of
 ///     dest.
+///   - If elements to be copied are more than dest can occupy, then drop the
+///     exceeding elements from last.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n copy operations and maximum N pred applications.
 ///
@@ -65,6 +67,8 @@ where
 ///
 /// # Postcondition
 ///   - copies elements from src to dest.
+///   - If elements to be copied are more than dest can occupy, then drop the
+///     exceeding elements from last.
 ///   - Returns the position of dest just after last copy position.
 ///   - Complexity: O(n). Total n copy operations.
 ///
