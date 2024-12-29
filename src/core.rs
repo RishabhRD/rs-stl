@@ -42,25 +42,16 @@ pub trait InputRange {
 
     /// Returns the position of first element in self,
     /// or if self is empty then start() == end()
-    ///
-    /// # Complexity Requirement
-    /// O(1).
     fn start(&self) -> Self::Position;
 
     /// Returns the "past the end" position in self, that is, the position
     /// immediately after the last element in self
-    ///
-    /// # Complexity Requirement
-    /// O(1).
     fn end(&self) -> Self::Position;
 
     /// Returns position immediately after i
     ///
     /// # Precondition
     ///   - i != end()
-    ///
-    /// # Complexity Requirement
-    /// O(1).
     fn after(&self, i: Self::Position) -> Self::Position;
 
     /// Returns nth position after i.
@@ -69,7 +60,7 @@ pub trait InputRange {
     ///   - There are n valid positions in self after i.
     ///
     /// # Complexity
-    /// O(n).
+    /// n applications of after().
     fn after_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
         while n > 0 {
             i = self.after(i);
@@ -126,9 +117,6 @@ pub trait BidirectionalRange: ForwardRange {
     ///
     /// # Precondition
     ///   - i != start()
-    ///
-    /// # Complexity Requirement
-    /// O(1)
     fn before(&self, i: Self::Position) -> Self::Position;
 
     /// Returns nth position before i
@@ -137,7 +125,7 @@ pub trait BidirectionalRange: ForwardRange {
     ///   - self has n valid positions before i.
     ///
     /// # Complexity
-    /// O(n)
+    /// n applications of before.
     fn before_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
         while n > 0 {
             i = self.before(i);
