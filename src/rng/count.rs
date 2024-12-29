@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange};
+use crate::BoundedRange;
 
 /// Counts elements in rng that satisfies predicate.
 ///
@@ -28,12 +28,20 @@ use crate::{algo, InputRange};
 /// let cnt = arr.count_if(|x| x % 2 == 1);
 /// assert_eq!(cnt, 2);
 /// ```
-pub fn count_if<Range, Pred>(rng: &Range, f: Pred) -> u32
+pub fn count_if<Range, Pred>(rng: &Range, pred: Pred) -> usize
 where
-    Range: InputRange + ?Sized,
+    Range: BoundedRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::count_if(rng, rng.start(), rng.end(), f)
+    let mut start = rng.start();
+    let mut cnt: usize = 0;
+    while rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            cnt += 1;
+        }
+        start = rng.after(start);
+    }
+    cnt
 }
 
 /// Counts elements in rng equals given element.
@@ -62,45 +70,42 @@ where
 /// let cnt = arr.count(&2);
 /// assert_eq!(cnt, 2);
 /// ```
-pub fn count<R>(rng: &R, e: &R::Element) -> u32
+pub fn count<R>(rng: &R, e: &R::Element) -> usize
 where
-    R: InputRange + ?Sized,
+    R: BoundedRange + ?Sized,
     R::Element: Eq,
 {
-    algo::count(rng, rng.start(), rng.end(), e)
+    let mut start = rng.start();
+    let mut cnt: usize = 0;
+    while rng.is_end(&start) {
+        if rng.at(&start) == e {
+            cnt += 1;
+        }
+        start = rng.after(start);
+    }
+    cnt
 }
 
 pub mod infix {
     use crate::rng;
-    use crate::InputRange;
+    use crate::BoundedRange;
 
     /// `count_if`, `count`.
-    pub trait STLCountExt: InputRange {
-        fn count_if<F>(&self, pred: F) -> u32
-        where
-            F: Fn(&Self::Element) -> bool;
-
-        fn count(&self, e: &Self::Element) -> u32
-        where
-            Self::Element: Eq;
-    }
-
-    impl<R> STLCountExt for R
-    where
-        R: InputRange + ?Sized,
-    {
-        fn count_if<F>(&self, pred: F) -> u32
+    pub trait STLCountExt: BoundedRange {
+        fn count_if<F>(&self, pred: F) -> usize
         where
             F: Fn(&Self::Element) -> bool,
         {
             rng::count_if(self, pred)
         }
 
-        fn count(&self, e: &Self::Element) -> u32
+        fn count(&self, e: &Self::Element) -> usize
         where
             Self::Element: Eq,
         {
             rng::count(self, e)
         }
     }
+
+    impl<R> STLCountExt for R where R: BoundedRange + ?Sized {}
 }
