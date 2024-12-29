@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, ForwardRange};
+use crate::{BoundedRange, ForwardRange};
+
+use super::partition_point;
 
 /// Returns the position of first element in partitioned range which is not ordered before value
 /// wrt comparator.
@@ -39,10 +41,10 @@ pub fn lower_bound_by<Range, Compare>(
     is_less: Compare,
 ) -> Range::Position
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::lower_bound_by(rng, rng.start(), rng.end(), ele, is_less)
+    partition_point(rng, |x| is_less(x, ele))
 }
 
 /// Returns the position of first element in partitioned range which is not ordered before value.
@@ -76,10 +78,10 @@ where
 /// ```
 pub fn lower_bound<Range>(rng: &Range, ele: &Range::Element) -> Range::Position
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
-    algo::lower_bound(rng, rng.start(), rng.end(), ele)
+    lower_bound_by(rng, ele, |x, y| x < y)
 }
 
 /// Returns the position of first element in partitioned range which is not ordered after value
@@ -118,10 +120,10 @@ pub fn upper_bound_by<Range, Compare>(
     is_less: Compare,
 ) -> Range::Position
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::upper_bound_by(rng, rng.start(), rng.end(), ele, is_less)
+    partition_point(rng, |x| !is_less(ele, x))
 }
 
 /// Returns the position of first element in partitioned range which is not ordered after value.
@@ -155,10 +157,10 @@ where
 /// ```
 pub fn upper_bound<Range>(rng: &Range, ele: &Range::Element) -> Range::Position
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
-    algo::upper_bound(rng, rng.start(), rng.end(), ele)
+    upper_bound_by(rng, ele, |x, y| x < y)
 }
 
 /// Returns a pair of positions representing position of all elements equivalent to ele in partitioned range wrt comparator.
@@ -201,10 +203,12 @@ pub fn equal_range_by<Range, Compare>(
     is_less: Compare,
 ) -> (Range::Position, Range::Position)
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
-    algo::equal_range_by(rng, rng.start(), rng.end(), ele, is_less)
+    let i = lower_bound_by(rng, ele, is_less.clone());
+    let j = upper_bound_by(rng, ele, is_less);
+    (i, j)
 }
 
 /// Returns a pair of positions representing position of all elements equal to ele in partitioned range.
@@ -246,10 +250,10 @@ pub fn equal_range<Range>(
     ele: &Range::Element,
 ) -> (Range::Position, Range::Position)
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
-    algo::equal_range(rng, rng.start(), rng.end(), ele)
+    equal_range_by(rng, ele, |x, y| x < y)
 }
 
 /// Checks if element equivalent to `ele` wrt comparator appears within range.
@@ -283,10 +287,11 @@ pub fn binary_search_by<Range, Compare>(
     is_less: Compare,
 ) -> bool
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
-    algo::binary_search_by(rng, rng.start(), rng.end(), ele, is_less)
+    let i = lower_bound_by(rng, ele, is_less.clone());
+    !rng.is_end(&i) && !is_less(ele, rng.at(&i))
 }
 
 /// Checks if element equal to `ele` wrt comparator appears within range.
@@ -312,18 +317,18 @@ where
 /// ```
 pub fn binary_search<Range>(rng: &Range, ele: &Range::Element) -> bool
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
-    algo::binary_search(rng, rng.start(), rng.end(), ele)
+    binary_search_by(rng, ele, |x, y| x < y)
 }
 
 pub mod infix {
-    use crate::{rng, ForwardRange};
+    use crate::{rng, BoundedRange, ForwardRange};
 
     /// `lower_bound`, `lower_bound_by`, `upper_bound`, `upper_bound_by`, `equal_range`,
     /// `equal_range_by`, `binary_search`, `binary_search_by`.
-    pub trait STLBinarySearchExt: ForwardRange {
+    pub trait STLBinarySearchExt: ForwardRange + BoundedRange {
         fn lower_bound_by<Compare>(
             &self,
             ele: &Self::Element,
@@ -378,7 +383,7 @@ pub mod infix {
 
     impl<R> STLBinarySearchExt for R
     where
-        R: ForwardRange + ?Sized,
+        R: ForwardRange + BoundedRange + ?Sized,
     {
         fn lower_bound_by<Compare>(
             &self,

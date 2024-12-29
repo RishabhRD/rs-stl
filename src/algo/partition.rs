@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{ForwardRange, InputRange, OutputRange, SemiOutputRange};
+use crate::{
+    BoundedRange, ForwardRange, InputRange, OutputRange, SemiOutputRange,
+};
 
 /// Returns true if range is partitioned wrt pred, otherwise false.
 ///
@@ -219,7 +221,7 @@ pub fn partition_point<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
     let mut n = rng.distance(start.clone(), end.clone());
