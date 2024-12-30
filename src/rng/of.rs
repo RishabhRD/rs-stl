@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange};
+use crate::InputRange;
 
 /// Returns true if all elements in range satisfies the predicate.
 ///
@@ -31,7 +31,14 @@ where
     Range: InputRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::all_of(rng, rng.start(), rng.end(), pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if !pred(rng.at(&start)) {
+            return false;
+        }
+        start = rng.after(start);
+    }
+    true
 }
 
 /// Returns true if atleast one element in range satisfies the predicate.
@@ -62,7 +69,14 @@ where
     Range: InputRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::any_of(rng, rng.start(), rng.end(), pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            return true;
+        }
+        start = rng.after(start);
+    }
+    false
 }
 
 /// Returns true if no element in range satisfies the predicate.
@@ -93,7 +107,14 @@ where
     Range: InputRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::none_of(rng, rng.start(), rng.end(), pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            return false;
+        }
+        start = rng.after(start);
+    }
+    true
 }
 
 pub mod infix {
