@@ -33,6 +33,24 @@ pub mod view_details {
         pub range: &'a mut Range,
     }
 
+    impl<'a, R> Clone for RangeView<'a, R>
+    where
+        R: InputRange + ?Sized,
+    {
+        fn clone(&self) -> Self {
+            Self { range: self.range }
+        }
+    }
+
+    impl<'a, R> Clone for RangeMutView<'a, R>
+    where
+        R: InputRange + ?Sized,
+    {
+        fn clone(&mut self) -> Self {
+            Self { range: self.range }
+        }
+    }
+
     impl<'a, R> View for RangeView<'a, R> where R: InputRange + ?Sized {}
     impl<'a, R> View for RangeMutView<'a, R> where R: InputRange + ?Sized {}
 

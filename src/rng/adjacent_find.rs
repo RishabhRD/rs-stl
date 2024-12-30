@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::ForwardRange;
+use crate::{ForwardRange, View};
 
 /// Returns first position in range such that element at that position and element after
 /// that position satisfies binary predicate.
@@ -35,7 +35,7 @@ pub fn adjacent_find_if<Range, BinaryPred>(
     bi_pred: BinaryPred,
 ) -> Range::Position
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + View + ?Sized,
     BinaryPred: Fn(&Range::Element, &Range::Element) -> bool,
 {
     let mut start = rng.start();
@@ -44,7 +44,7 @@ where
     }
     let mut prev = start.clone();
     start = rng.after(start);
-    while rng.is_end(&start) {
+    while !rng.is_end(&start) {
         if bi_pred(rng.at(&prev), rng.at(&start)) {
             return prev;
         }
@@ -55,10 +55,10 @@ where
 }
 
 pub mod infix {
-    use crate::{rng, ForwardRange};
+    use crate::{rng, ForwardRange, View};
 
     /// `adjacent_find`.
-    pub trait STLAdjacentFindExt: ForwardRange {
+    pub trait STLAdjacentFindExt: ForwardRange + View {
         fn adjacent_find_if<BinaryPred>(
             &self,
             bi_pred: BinaryPred,
@@ -70,5 +70,5 @@ pub mod infix {
         }
     }
 
-    impl<R> STLAdjacentFindExt for R where R: ForwardRange + ?Sized {}
+    impl<R> STLAdjacentFindExt for R where R: ForwardRange + View + ?Sized {}
 }

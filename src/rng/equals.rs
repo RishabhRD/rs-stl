@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::InputRange;
+use crate::View;
 
 /// Returns true if rng1 elements are equivalent to elements of rng2 by relationship bi_pred and have same length.
 ///
@@ -39,8 +39,8 @@ pub fn equals_by<R1, R2, Binaryred>(
     bi_pred: Binaryred,
 ) -> bool
 where
-    R1: InputRange + ?Sized,
-    R2: InputRange + ?Sized,
+    R1: View + ?Sized,
+    R2: View + ?Sized,
     Binaryred: Fn(&R1::Element, &R2::Element) -> bool,
 {
     let mut start1 = rng1.start();
@@ -84,8 +84,8 @@ where
 /// ```
 pub fn equals<R1, R2>(rng1: &R1, rng2: &R2) -> bool
 where
-    R1: InputRange + ?Sized,
-    R2: InputRange + ?Sized,
+    R1: View + ?Sized,
+    R2: View + ?Sized,
     R1::Element: PartialEq<R2::Element>,
 {
     equals_by(rng1, rng2, |x, y| x == y)
@@ -128,8 +128,8 @@ pub fn equals_prefix_by<R1, R2, Binaryred>(
     bi_pred: Binaryred,
 ) -> bool
 where
-    R1: InputRange + ?Sized,
-    R2: InputRange + ?Sized,
+    R1: View + ?Sized,
+    R2: View + ?Sized,
     Binaryred: Fn(&R1::Element, &R2::Element) -> bool,
 {
     let mut start1 = rng1.start();
@@ -174,22 +174,21 @@ where
 /// ```
 pub fn equals_prefix<R1, R2>(rng1: &R1, rng2: &R2) -> bool
 where
-    R1: InputRange + ?Sized,
-    R2: InputRange + ?Sized,
+    R1: View + ?Sized,
+    R2: View + ?Sized,
     R1::Element: PartialEq<R2::Element>,
 {
     equals_prefix_by(rng1, rng2, |x, y| x == y)
 }
 
 pub mod infix {
-    use crate::rng;
-    use crate::InputRange;
+    use crate::{rng, View};
 
     /// `equals`, `equals_by`, `equals_prefix`, `equals_prefix_by`.
-    pub trait STLEqualsExt: InputRange {
+    pub trait STLEqualsExt: View {
         fn equals_by<R, F>(&self, rng: &R, bi_pred: F) -> bool
         where
-            R: InputRange,
+            R: View,
             F: Fn(&Self::Element, &R::Element) -> bool,
         {
             rng::equals_by(self, rng, bi_pred)
@@ -197,7 +196,7 @@ pub mod infix {
 
         fn equals<R>(&self, rng: &R) -> bool
         where
-            R: InputRange,
+            R: View,
             Self::Element: PartialEq<R::Element>,
         {
             rng::equals(self, rng)
@@ -205,7 +204,7 @@ pub mod infix {
 
         fn equals_prefix_by<R, F>(&self, rng: &R, bi_pred: F) -> bool
         where
-            R: InputRange,
+            R: View,
             F: Fn(&Self::Element, &R::Element) -> bool,
         {
             rng::equals_prefix_by(self, rng, bi_pred)
@@ -213,12 +212,12 @@ pub mod infix {
 
         fn equals_prefix<R>(&self, rng: &R) -> bool
         where
-            R: InputRange,
+            R: View,
             Self::Element: PartialEq<R::Element>,
         {
             rng::equals_prefix(self, rng)
         }
     }
 
-    impl<T> STLEqualsExt for T where T: InputRange + ?Sized {}
+    impl<T> STLEqualsExt for T where T: View + ?Sized {}
 }

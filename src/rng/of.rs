@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange};
+use crate::View;
 
 /// Returns true if all elements in range satisfies the predicate.
 ///
@@ -28,10 +28,17 @@ use crate::{algo, InputRange};
 /// ```
 pub fn all_of<Range, Pred>(rng: &Range, pred: Pred) -> bool
 where
-    Range: InputRange + ?Sized,
+    Range: View + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::all_of(rng, rng.start(), rng.end(), pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if !pred(rng.at(&start)) {
+            return false;
+        }
+        start = rng.after(start);
+    }
+    true
 }
 
 /// Returns true if atleast one element in range satisfies the predicate.
@@ -59,10 +66,17 @@ where
 /// ```
 pub fn any_of<Range, Pred>(rng: &Range, pred: Pred) -> bool
 where
-    Range: InputRange + ?Sized,
+    Range: View + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::any_of(rng, rng.start(), rng.end(), pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            return true;
+        }
+        start = rng.after(start);
+    }
+    false
 }
 
 /// Returns true if no element in range satisfies the predicate.
@@ -90,35 +104,25 @@ where
 /// ```
 pub fn none_of<Range, Pred>(rng: &Range, pred: Pred) -> bool
 where
-    Range: InputRange + ?Sized,
+    Range: View + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::none_of(rng, rng.start(), rng.end(), pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            return false;
+        }
+        start = rng.after(start);
+    }
+    true
 }
 
 pub mod infix {
     use crate::rng;
-    use crate::InputRange;
+    use crate::View;
 
     /// `all_of`, `any_of`, `none_of`.
-    pub trait STLOfExt: InputRange {
-        fn all_of<F>(&self, pred: F) -> bool
-        where
-            F: Fn(&Self::Element) -> bool;
-
-        fn any_of<F>(&self, pred: F) -> bool
-        where
-            F: Fn(&Self::Element) -> bool;
-
-        fn none_of<F>(&self, pred: F) -> bool
-        where
-            F: Fn(&Self::Element) -> bool;
-    }
-
-    impl<T> STLOfExt for T
-    where
-        T: InputRange + ?Sized,
-    {
+    pub trait STLOfExt: View {
         fn all_of<F>(&self, pred: F) -> bool
         where
             F: Fn(&Self::Element) -> bool,
@@ -140,4 +144,6 @@ pub mod infix {
             rng::none_of(self, pred)
         }
     }
+
+    impl<T> STLOfExt for T where T: View + ?Sized {}
 }

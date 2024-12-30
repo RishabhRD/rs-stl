@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::BoundedRange;
+use crate::View;
 
 /// Counts elements in rng that satisfies predicate.
 ///
@@ -30,12 +30,12 @@ use crate::BoundedRange;
 /// ```
 pub fn count_if<Range, Pred>(rng: &Range, pred: Pred) -> usize
 where
-    Range: BoundedRange + ?Sized,
+    Range: View + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
     let mut start = rng.start();
     let mut cnt: usize = 0;
-    while rng.is_end(&start) {
+    while !rng.is_end(&start) {
         if pred(rng.at(&start)) {
             cnt += 1;
         }
@@ -72,12 +72,12 @@ where
 /// ```
 pub fn count<R>(rng: &R, e: &R::Element) -> usize
 where
-    R: BoundedRange + ?Sized,
+    R: View + ?Sized,
     R::Element: Eq,
 {
     let mut start = rng.start();
     let mut cnt: usize = 0;
-    while rng.is_end(&start) {
+    while !rng.is_end(&start) {
         if rng.at(&start) == e {
             cnt += 1;
         }
@@ -87,11 +87,10 @@ where
 }
 
 pub mod infix {
-    use crate::rng;
-    use crate::BoundedRange;
+    use crate::{rng, View};
 
     /// `count_if`, `count`.
-    pub trait STLCountExt: BoundedRange {
+    pub trait STLCountExt: View {
         fn count_if<F>(&self, pred: F) -> usize
         where
             F: Fn(&Self::Element) -> bool,
@@ -107,5 +106,5 @@ pub mod infix {
         }
     }
 
-    impl<R> STLCountExt for R where R: BoundedRange + ?Sized {}
+    impl<R> STLCountExt for R where R: View + ?Sized {}
 }

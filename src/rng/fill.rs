@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::OutputRange;
+use crate::{OutputRange, View};
 
 /// Fills rng with given value.
 ///
@@ -29,9 +29,9 @@ use crate::OutputRange;
 /// arr.fill_value(&2);
 /// assert!(arr.equals(&[2, 2, 2]));
 /// ```
-pub fn fill_value<Range>(rng: &mut Range, e: &Range::Element)
+pub fn fill<Range>(rng: &mut Range, e: &Range::Element)
 where
-    Range: OutputRange + ?Sized,
+    Range: View + OutputRange + ?Sized,
     Range::Element: Clone,
 {
     let mut start = rng.start();
@@ -69,7 +69,7 @@ where
 /// ```
 pub fn fill_by<Range, Gen>(rng: &mut Range, gen: Gen)
 where
-    Range: OutputRange + ?Sized,
+    Range: View + OutputRange + ?Sized,
     Gen: Fn() -> Range::Element,
 {
     let mut start = rng.start();
@@ -80,29 +80,15 @@ where
 }
 
 pub mod infix {
-    use crate::{rng, OutputRange};
+    use crate::{rng, OutputRange, View};
 
-    /// `fill_value`, `fill_by`.
-    pub trait STLFillExt: OutputRange {
-        fn fill_value(&mut self, e: &Self::Element)
-        where
-            Self::Element: Clone;
-
-        fn fill_by<Gen>(&mut self, gen: Gen)
-        where
-            Self::Element: Clone,
-            Gen: Fn() -> Self::Element;
-    }
-
-    impl<R> STLFillExt for R
-    where
-        R: OutputRange + ?Sized,
-    {
-        fn fill_value(&mut self, e: &Self::Element)
+    /// `fill`, `fill_by`.
+    pub trait STLFillExt: View + OutputRange {
+        fn fill(&mut self, e: &Self::Element)
         where
             Self::Element: Clone,
         {
-            rng::fill_value(self, e)
+            rng::fill(self, e)
         }
 
         fn fill_by<Gen>(&mut self, gen: Gen)
@@ -113,4 +99,6 @@ pub mod infix {
             rng::fill_by(self, gen)
         }
     }
+
+    impl<R> STLFillExt for R where R: OutputRange + View + ?Sized {}
 }

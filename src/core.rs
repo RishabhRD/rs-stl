@@ -209,4 +209,4 @@ pub trait OutputRange: SemiOutputRange {
 /// A marker trait for views.
 ///
 /// For any struct to be a view, this marker is necessary.
-pub trait View {}
+pub trait View: InputRange + Clone {}

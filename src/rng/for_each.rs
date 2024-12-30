@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange, OutputRange};
+use crate::{OutputRange, View};
 
 /// Applies given operation on each element in range from left to right.
 ///
@@ -30,7 +30,7 @@ use crate::{algo, InputRange, OutputRange};
 /// ```
 pub fn for_each<Range, UnaryOp>(rng: &Range, mut op: UnaryOp)
 where
-    Range: InputRange + ?Sized,
+    Range: View + ?Sized,
     UnaryOp: FnMut(&Range::Element),
 {
     let mut start = rng.start();
@@ -65,7 +65,7 @@ where
 /// ```
 pub fn for_each_mut<Range, UnaryOp>(rng: &mut Range, mut op: UnaryOp)
 where
-    Range: OutputRange + ?Sized,
+    Range: View + OutputRange + ?Sized,
     UnaryOp: FnMut(&mut Range::Element),
 {
     let mut start = rng.start();
@@ -76,10 +76,10 @@ where
 }
 
 pub mod infix {
-    use crate::{rng, InputRange, OutputRange};
+    use crate::{rng, OutputRange, View};
 
     /// `for_each`.
-    pub trait STLForEachInputExt: InputRange {
+    pub trait STLForEachInputExt: View {
         fn for_each<UnaryOp>(&self, op: UnaryOp)
         where
             UnaryOp: FnMut(&Self::Element),
@@ -88,10 +88,10 @@ pub mod infix {
         }
     }
 
-    impl<R> STLForEachInputExt for R where R: InputRange + ?Sized {}
+    impl<R> STLForEachInputExt for R where R: View + ?Sized {}
 
     /// `for_each_mut`.
-    pub trait STLForEachOutputExt: OutputRange {
+    pub trait STLForEachOutputExt: View + OutputRange {
         fn for_each_mut<UnaryOp>(&mut self, op: UnaryOp)
         where
             UnaryOp: FnMut(&mut Self::Element),
@@ -99,5 +99,5 @@ pub mod infix {
             rng::for_each_mut(self, op)
         }
     }
-    impl<R> STLForEachOutputExt for R where R: OutputRange + ?Sized {}
+    impl<R> STLForEachOutputExt for R where R: View + OutputRange + ?Sized {}
 }

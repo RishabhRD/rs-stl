@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange};
+use crate::View;
 
 /// Finds first mismatch position between 2 ranges by given equivalence relation.
 ///
@@ -36,19 +36,20 @@ pub fn mismatch_by<R1, R2, BinaryPred>(
     bi_pred: BinaryPred,
 ) -> (R1::Position, R2::Position)
 where
-    R1: InputRange + ?Sized,
-    R2: InputRange + ?Sized,
+    R1: View + ?Sized,
+    R2: View + ?Sized,
     BinaryPred: Fn(&R1::Element, &R2::Element) -> bool,
 {
-    algo::mismatch_by(
-        rng1,
-        rng1.start(),
-        rng1.end(),
-        rng2,
-        rng2.start(),
-        rng2.end(),
-        bi_pred,
-    )
+    let mut start1 = rng1.start();
+    let mut start2 = rng2.start();
+    while !rng1.is_end(&start1) && !rng2.is_end(&start2) {
+        if !bi_pred(rng1.at(&start1), rng2.at(&start2)) {
+            return (start1, start2);
+        }
+        start1 = rng1.after(start1);
+        start2 = rng2.after(start2);
+    }
+    (start1, start2)
 }
 
 /// Finds first mismatch position between 2 ranges by equality.
@@ -79,16 +80,9 @@ where
 /// ```
 pub fn mismatch<R1, R2>(rng1: &R1, rng2: &R2) -> (R1::Position, R2::Position)
 where
-    R1: InputRange + ?Sized,
-    R2: InputRange + ?Sized,
+    R1: View + ?Sized,
+    R2: View + ?Sized,
     R1::Element: PartialEq<R2::Element>,
 {
-    algo::mismatch(
-        rng1,
-        rng1.start(),
-        rng1.end(),
-        rng2,
-        rng2.start(),
-        rng2.end(),
-    )
+    mismatch_by(rng1, rng2, |x, y| x == y)
 }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::InputRange;
+use crate::View;
 
 /// Finds position of first element satisfying predicate.
 ///
@@ -32,7 +32,7 @@ use crate::InputRange;
 /// ```
 pub fn find_if<Range, Pred>(rng: &Range, pred: Pred) -> Range::Position
 where
-    Range: InputRange + ?Sized,
+    Range: View + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
     let mut start = rng.start();
@@ -74,7 +74,7 @@ where
 /// ```
 pub fn find_if_not<Range, Pred>(rng: &Range, pred: Pred) -> Range::Position
 where
-    Range: InputRange + ?Sized,
+    Range: View + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
     find_if(rng, |x| !pred(x))
@@ -109,7 +109,7 @@ where
 /// ```
 pub fn find<Range>(rng: &Range, e: &Range::Element) -> Range::Position
 where
-    Range: InputRange + ?Sized,
+    Range: View + ?Sized,
     Range::Element: Eq,
 {
     find_if(rng, |x| x == e)
@@ -117,10 +117,10 @@ where
 
 pub mod infix {
     use crate::rng;
-    use crate::InputRange;
+    use crate::View;
 
     /// `find_if`, `find_if_not`, `find`.
-    pub trait STLFindExt: InputRange {
+    pub trait STLFindExt: View {
         fn find_if<F>(&self, pred: F) -> Self::Position
         where
             F: Fn(&Self::Element) -> bool;
@@ -136,7 +136,7 @@ pub mod infix {
 
     impl<T> STLFindExt for T
     where
-        T: InputRange + ?Sized,
+        T: View + ?Sized,
     {
         fn find_if<F>(&self, pred: F) -> Self::Position
         where
