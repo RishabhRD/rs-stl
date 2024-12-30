@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, ForwardRange, OutputRange, SemiOutputRange};
+use crate::{
+    algo::{self, copy, copy_till},
+    BoundedRange, ForwardRange, OutputRange, SemiOutputRange,
+};
 
 /// Rotates the given range at mid.
 ///
@@ -41,7 +44,7 @@ use crate::{algo, ForwardRange, OutputRange, SemiOutputRange};
 ///     RandomAccessRange in rust. How to overload for them in rust?
 pub fn rotate<Range>(rng: &mut Range, mid: Range::Position) -> Range::Position
 where
-    Range: SemiOutputRange + ?Sized,
+    Range: SemiOutputRange + BoundedRange + ?Sized,
 {
     algo::rotate(rng, rng.start(), mid, rng.end())
 }
@@ -84,14 +87,17 @@ where
     SrcRange::Element: Clone,
     DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
 {
-    algo::rotate_copy(src, src.start(), mid, src.end(), dest, dest.start())
+    let start = src.start();
+    let mut out = dest.start();
+    out = copy_till(src, mid.clone(), |i| src.is_end(i), dest, out);
+    copy(src, start, mid, dest, out)
 }
 
 pub mod infix {
-    use crate::{rng, SemiOutputRange};
+    use crate::{rng, BoundedRange, SemiOutputRange};
 
     /// `rotate`.
-    pub trait STLRotateExt: SemiOutputRange {
+    pub trait STLRotateExt: SemiOutputRange + BoundedRange {
         /// TODO: there are efficient implementations for BidirectionalRange and
         /// RandomAccessRange in rust. How to overload for them in rust?
         fn rotate(&mut self, mid: Self::Position) -> Self::Position {
@@ -99,5 +105,5 @@ pub mod infix {
         }
     }
 
-    impl<R> STLRotateExt for R where R: SemiOutputRange + ?Sized {}
+    impl<R> STLRotateExt for R where R: SemiOutputRange + BoundedRange + ?Sized {}
 }
