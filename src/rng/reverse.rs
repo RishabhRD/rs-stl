@@ -87,7 +87,7 @@ pub fn reverse_copy<SrcRange, DestRange>(
     dest: &mut DestRange,
 ) -> DestRange::Position
 where
-    SrcRange: BidirectionalRange + ?Sized,
+    SrcRange: BidirectionalRange + BoundedRange + ?Sized,
     DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
     SrcRange::Element: Clone,
 {
