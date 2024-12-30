@@ -144,3 +144,51 @@ where
     }
     out
 }
+
+/// Copies elements from src to out of dest till the given condition satisfies.
+///
+/// # Precondition
+///   - `[start, till())` represent valid positions in src.
+///   - dest should be able to accomodate n elements starting from out where n
+///     is number of elements in `[start, end)` of src.
+///
+/// # Postcondition
+///   - copies elements from `[start, till())` to out position of dest.
+///   - Returns the position of dest just after last copy position.
+///   - Complexity: O(n). Total n copy operations.
+///
+/// where n is number of elements in `[start, end)`.
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let src = [1, 2, 3];
+/// let mut dest = [0, 0, 0];
+///
+/// let out = dest.start();
+/// let i = algo::copy_till(&src, src.start(), |i| i == src.end(), &mut dest, out);
+/// assert!(dest.equals(&[1, 2, 3]));
+/// assert_eq!(i, 3);
+/// ```
+pub fn copy_till<SrcRange, DestRange, TillFn>(
+    src: &SrcRange,
+    mut start: SrcRange::Position,
+    till: TillFn,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+) -> DestRange::Position
+where
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    DestRange: OutputRange + ?Sized,
+    TillFn: Fn(&SrcRange::Position) -> bool,
+{
+    // TODO: Add test cases
+    while !till(&start) {
+        *dest.at_mut(&out) = src.at(&start).clone();
+        out = dest.after(out);
+        start = src.after(start);
+    }
+    out
+}
