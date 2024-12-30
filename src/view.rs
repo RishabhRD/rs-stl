@@ -185,8 +185,8 @@ pub mod view_details {
 }
 
 /// Provides `view` method for ranges.
-#[doc(hidden)]
 pub trait ViewExt: InputRange {
+    /// Returns view that immutably borrows from self.
     fn view(&self) -> view_details::RangeView<Self> {
         view_details::RangeView { range: self }
     }
@@ -194,8 +194,8 @@ pub trait ViewExt: InputRange {
 impl<R> ViewExt for R where R: InputRange {}
 
 /// Provides `view_mut` method for ranges.
-#[doc(hidden)]
 pub trait MutableViewExt: SemiOutputRange {
+    /// Returns view that mutably borrows from self.
     fn view_mut(&mut self) -> view_details::RangeMutView<Self> {
         view_details::RangeMutView { range: self }
     }
