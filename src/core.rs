@@ -205,3 +205,8 @@ pub trait OutputRange: SemiOutputRange {
     /// O(1)
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
 }
+
+/// A marker trait for views.
+///
+/// For any struct to be a view, this marker is necessary.
+pub trait View {}
