@@ -38,11 +38,14 @@ where
     R1: OutputRange + ?Sized,
     R2: OutputRange<Element = R1::Element> + ?Sized,
 {
-    let start1 = rng1.start();
-    let end1 = rng1.end();
+    let mut start1 = rng1.start();
+    let mut start2 = rng2.start();
 
-    let start2 = rng2.start();
-    let end2 = rng2.end();
+    while !rng1.is_end(&start1) && !rng2.is_end(&start2) {
+        std::mem::swap(rng1.at_mut(&start1), rng2.at_mut(&start2));
+        start1 = rng1.after(start1);
+        start2 = rng2.after(start2);
+    }
 
-    algo::swap_ranges(rng1, start1, end1, rng2, start2, end2)
+    (start1, start2)
 }
