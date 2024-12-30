@@ -9,10 +9,6 @@ pub mod tests {
     #[test]
     fn fill_value() {
         let mut arr = [0, 0, 0];
-        algo::fill_value(&mut arr[..], 0, 2, &1);
-        assert!(arr.equals(&[1, 1, 0]));
-
-        let mut arr = [0, 0, 0];
         rng::fill_value(&mut arr[1..], &1);
         assert!(arr.equals(&[0, 1, 1]));
 
@@ -23,10 +19,6 @@ pub mod tests {
 
     #[test]
     fn fill_by() {
-        let mut arr = [0, 0, 0];
-        algo::fill_by(&mut arr[..], 0, 2, || 1);
-        assert!(arr.equals(&[1, 1, 0]));
-
         let mut arr = [0, 0, 0];
         rng::fill_by(&mut arr[1..], || 1);
         assert!(arr.equals(&[0, 1, 1]));

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, OutputRange};
+use crate::OutputRange;
 
 /// Fills rng with given value.
 ///
@@ -34,7 +34,11 @@ where
     Range: OutputRange + ?Sized,
     Range::Element: Clone,
 {
-    algo::fill_value(rng, rng.start(), rng.end(), e);
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        *rng.at_mut(&start) = e.clone();
+        start = rng.after(start);
+    }
 }
 
 /// Fills rng using given generator.
@@ -68,7 +72,11 @@ where
     Range: OutputRange + ?Sized,
     Gen: Fn() -> Range::Element,
 {
-    algo::fill_by(rng, rng.start(), rng.end(), gen);
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        *rng.at_mut(&start) = gen();
+        start = rng.after(start);
+    }
 }
 
 pub mod infix {
