@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, BidirectionalRange, InputRange};
+use crate::{algo, BidirectionalRange, BoundedRange, InputRange};
 
 /// Returns generalized sum with given binary operation of init and all elements in given range in
 /// left to right order.
@@ -39,14 +39,19 @@ use crate::{algo, BidirectionalRange, InputRange};
 /// ```
 pub fn fold_left<Range, Result, BinaryOp>(
     rng: &Range,
-    init: Result,
+    mut init: Result,
     op: BinaryOp,
 ) -> Result
 where
     Range: InputRange + ?Sized,
     BinaryOp: Fn(Result, &Range::Element) -> Result,
 {
-    algo::fold_left(rng, rng.start(), rng.end(), init, op)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        init = op(init, rng.at(&start));
+        start = rng.after(start);
+    }
+    init
 }
 
 /// Returns generalized sum with given binary operation of init and all elements in given range in
@@ -89,14 +94,14 @@ pub fn fold_right<Range, Result, BinaryOp>(
     op: BinaryOp,
 ) -> Result
 where
-    Range: BidirectionalRange + ?Sized,
+    Range: BidirectionalRange + BoundedRange + ?Sized,
     BinaryOp: Fn(&Range::Element, Result) -> Result,
 {
     algo::fold_right(rng, rng.start(), rng.end(), init, op)
 }
 
 pub mod infix {
-    use crate::{rng, BidirectionalRange, InputRange};
+    use crate::{rng, BidirectionalRange, BoundedRange, InputRange};
 
     /// `fold_left`.
     pub trait STLNumericInputExt: InputRange {
@@ -115,7 +120,7 @@ pub mod infix {
     impl<R> STLNumericInputExt for R where R: InputRange + ?Sized {}
 
     /// `fold_right`.
-    pub trait STLNumericBidirExt: BidirectionalRange {
+    pub trait STLNumericBidirExt: BidirectionalRange + BoundedRange {
         fn fold_right<Result, BinaryOp>(
             &self,
             init: Result,
@@ -128,5 +133,8 @@ pub mod infix {
         }
     }
 
-    impl<R> STLNumericBidirExt for R where R: BidirectionalRange + ?Sized {}
+    impl<R> STLNumericBidirExt for R where
+        R: BidirectionalRange + BoundedRange + ?Sized
+    {
+    }
 }
