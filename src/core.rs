@@ -4,19 +4,19 @@
 /// Equality Comparable + Movable + Destructable.
 ///
 /// As per Stepanov (not exact), Types can be:
-///   - compared for equality
 ///   - moved
 ///   - destructed
-pub trait SemiRegular: Eq {}
-impl<T> SemiRegular for T where T: Eq {}
+pub trait SemiRegular {}
+impl<T> SemiRegular for T {}
 
 /// SemiRegular + Clonable
 ///
 /// As per Stepanov (not exact), Types can be:
 ///   - SemiRegular
 ///   - cloned
-pub trait Regular: SemiRegular + Clone {}
-impl<T> Regular for T where T: SemiRegular + Clone {}
+///   - equality comparable
+pub trait Regular: SemiRegular + Clone + Eq {}
+impl<T> Regular for T where T: SemiRegular + Clone + Eq {}
 
 /// Models a single-pass range.
 ///
