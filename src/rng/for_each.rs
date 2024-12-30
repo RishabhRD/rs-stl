@@ -11,7 +11,7 @@ use crate::{algo, InputRange, OutputRange};
 ///   - Applies `op` on each elements of rng from left to right.
 ///   - Complexity: O(n) applications of op.
 ///
-/// Where n == `rng.distance(rng.start(), rng.end())`.
+/// Where n is number of elements in rng.
 ///
 /// # Example
 /// ```rust
@@ -28,12 +28,16 @@ use crate::{algo, InputRange, OutputRange};
 /// arr.for_each(|x| sum += *x);
 /// assert_eq!(sum, 6);
 /// ```
-pub fn for_each<Range, UnaryOp>(rng: &Range, op: UnaryOp)
+pub fn for_each<Range, UnaryOp>(rng: &Range, mut op: UnaryOp)
 where
     Range: InputRange + ?Sized,
     UnaryOp: FnMut(&Range::Element),
 {
-    algo::for_each(rng, rng.start(), rng.end(), op)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        op(rng.at(&start));
+        start = rng.after(start);
+    }
 }
 
 /// Applies given operation on each element in range from left to right.
@@ -59,14 +63,16 @@ where
 /// arr.for_each_mut(|x| *x += 1);
 /// assert_eq!(arr, [2, 3, 4]);
 /// ```
-pub fn for_each_mut<Range, UnaryOp>(rng: &mut Range, op: UnaryOp)
+pub fn for_each_mut<Range, UnaryOp>(rng: &mut Range, mut op: UnaryOp)
 where
     Range: OutputRange + ?Sized,
     UnaryOp: FnMut(&mut Range::Element),
 {
-    let start = rng.start();
-    let end = rng.end();
-    algo::for_each_mut(rng, start, end, op)
+    let mut start = rng.start();
+    while !(rng.is_end(&start)) {
+        op(rng.at_mut(&start));
+        start = rng.after(start);
+    }
 }
 
 pub mod infix {
