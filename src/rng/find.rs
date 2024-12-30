@@ -35,7 +35,14 @@ where
     Range: InputRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::find_if(rng, rng.start(), rng.end(), pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            break;
+        }
+        start = rng.after(start)
+    }
+    start
 }
 
 /// Finds position of first element not satisfying predicate.
@@ -70,7 +77,7 @@ where
     Range: InputRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::find_if_not(rng, rng.start(), rng.end(), pred)
+    find_if(rng, |x| !pred(x))
 }
 
 /// Finds position of first element equals given element.
@@ -105,7 +112,7 @@ where
     Range: InputRange + ?Sized,
     Range::Element: Eq,
 {
-    algo::find(rng, rng.start(), rng.end(), e)
+    find_if(rng, |x| x == e)
 }
 
 pub mod infix {
