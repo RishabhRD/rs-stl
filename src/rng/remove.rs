@@ -47,7 +47,7 @@ where
         }
         start = rng.after(start);
     }
-    if rng.is_end(&start) {
+    if !rng.is_end(&start) {
         let mut i = rng.after(start.clone());
         while !rng.is_end(&i) {
             if !pred(rng.at(&i)) {

@@ -167,7 +167,7 @@ where
 /// let mut dest = [0, 0, 0];
 ///
 /// let out = dest.start();
-/// let i = algo::copy_till(&src, src.start(), |i| i == src.end(), &mut dest, out);
+/// let i = algo::copy_till(&src, src.start(), |i| *i == src.end(), &mut dest, out);
 /// assert!(dest.equals(&[1, 2, 3]));
 /// assert_eq!(i, 3);
 /// ```
