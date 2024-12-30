@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange, OutputRange, Regular, SemiOutputRange};
+use crate::{InputRange, OutputRange, Regular, SemiOutputRange};
 
 /// Moves all element satisfying predicate to end of range.
 ///
@@ -40,7 +40,25 @@ where
     Range: SemiOutputRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::remove_if(rng, rng.start(), rng.end(), pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            break;
+        }
+        start = rng.after(start);
+    }
+    if rng.is_end(&start) {
+        let mut i = rng.after(start.clone());
+        while !rng.is_end(&i) {
+            if !pred(rng.at(&i)) {
+                rng.swap_at(&i, &start);
+                start = rng.after(start);
+            }
+            i = rng.after(i);
+        }
+    }
+
+    start
 }
 
 /// Moves all element equals given element to end of range.
@@ -80,7 +98,7 @@ where
     Range: SemiOutputRange + ?Sized,
     Range::Element: Eq,
 {
-    algo::remove(rng, rng.start(), rng.end(), val)
+    remove_if(rng, |x| x == val)
 }
 
 /// Copies elements from src to dest omitting elements satisfying given predicate.
@@ -122,7 +140,16 @@ where
     DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
     Pred: Fn(&SrcRange::Element) -> bool,
 {
-    algo::remove_copy_if(src, src.start(), src.end(), dest, dest.start(), pred)
+    let mut start = src.start();
+    let mut out = dest.start();
+    while !src.is_end(&start) {
+        if !pred(src.at(&start)) {
+            *dest.at_mut(&out) = src.at(&start).clone();
+            out = dest.after(out);
+        }
+        start = src.after(start);
+    }
+    out
 }
 
 /// Copies elements from src to dest omitting elements equals given element.
@@ -158,7 +185,7 @@ where
     R::Element: Regular,
     D: OutputRange<Element = R::Element> + ?Sized,
 {
-    algo::remove_copy(rng, rng.start(), rng.end(), dest, dest.start(), val)
+    remove_copy_if(rng, dest, |x| x == val)
 }
 
 pub mod infix {
