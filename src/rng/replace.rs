@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange, OutputRange, Regular};
+use crate::{InputRange, OutputRange, Regular};
 
 /// Replaces elements of range satisfying predicate with new element.
 ///
@@ -38,7 +38,13 @@ pub fn replace_if<Range, Pred>(
     Range::Element: Clone,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::replace_if(rng, rng.start(), rng.end(), pred, new_e);
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            *rng.at_mut(&start) = new_e.clone();
+        }
+        start = rng.after(start);
+    }
 }
 
 /// Replaces elements of range equals old element with new element.
@@ -75,7 +81,7 @@ pub fn replace<Range>(
     Range: OutputRange + ?Sized,
     Range::Element: Regular,
 {
-    algo::replace(rng, rng.start(), rng.end(), old_e, new_e)
+    replace_if(rng, |x| x == old_e, new_e)
 }
 
 /// Copies elements from src to dest with replacing the elements satisfying predicate with new
@@ -116,15 +122,18 @@ where
     SrcRange::Element: Clone,
     Pred: Fn(&SrcRange::Element) -> bool,
 {
-    algo::replace_copy_if(
-        src,
-        src.start(),
-        src.end(),
-        dest,
-        dest.start(),
-        pred,
-        new_e,
-    )
+    let mut start = src.start();
+    let mut out = dest.start();
+    while !src.is_end(&start) {
+        if pred(src.at(&start)) {
+            *dest.at_mut(&out) = new_e.clone();
+        } else {
+            *dest.at_mut(&out) = src.at(&start).clone();
+        }
+        out = dest.after(out);
+        start = src.after(start);
+    }
+    out
 }
 
 /// Copies elements from src to dest with replacing the elements equals given element with new
@@ -163,15 +172,7 @@ where
     DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
     SrcRange::Element: Regular,
 {
-    algo::replace_copy(
-        src,
-        src.start(),
-        src.end(),
-        dest,
-        dest.start(),
-        old_e,
-        new_e,
-    )
+    replace_copy_if(src, dest, |x| x == old_e, new_e)
 }
 
 pub mod infix {
