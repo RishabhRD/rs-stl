@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, OutputRange};
+use crate::OutputRange;
 
 /// Swaps elements of 2 ranges.
 ///
