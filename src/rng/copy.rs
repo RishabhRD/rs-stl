@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BoundedRange, InputRange, OutputRange};
+use crate::{InputRange, OutputRange};
 
 /// Copies elements from src to out of dest if it satisfies predicate.
 ///
@@ -42,7 +42,7 @@ pub fn copy_if<SrcRange, DestRange, Pred>(
     pred: Pred,
 ) -> DestRange::Position
 where
-    SrcRange: InputRange<Element = DestRange::Element> + BoundedRange + ?Sized,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
     SrcRange::Element: Clone,
     DestRange: OutputRange + ?Sized,
     Pred: Fn(&SrcRange::Element) -> bool,
@@ -97,7 +97,7 @@ pub fn copy<SrcRange, DestRange>(
     dest: &mut DestRange,
 ) -> DestRange::Position
 where
-    SrcRange: InputRange<Element = DestRange::Element> + BoundedRange + ?Sized,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
     SrcRange::Element: Clone,
     DestRange: OutputRange + ?Sized,
 {
@@ -112,10 +112,10 @@ where
 }
 
 pub mod infix {
-    use crate::{rng, BoundedRange, InputRange, OutputRange};
+    use crate::{rng, InputRange, OutputRange};
 
     /// `copy`, `copy_if`.
-    pub trait STLCopyExt: InputRange + BoundedRange {
+    pub trait STLCopyExt: InputRange {
         fn copy<DestRange>(&self, dest: &mut DestRange) -> DestRange::Position
         where
             DestRange: OutputRange<Element = Self::Element> + ?Sized,
@@ -138,5 +138,5 @@ pub mod infix {
         }
     }
 
-    impl<R> STLCopyExt for R where R: InputRange + BoundedRange + ?Sized {}
+    impl<R> STLCopyExt for R where R: InputRange + ?Sized {}
 }
