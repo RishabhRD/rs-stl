@@ -191,7 +191,7 @@ pub trait ViewExt: InputRange {
         view_details::RangeView { range: self }
     }
 }
-impl<R> ViewExt for R where R: InputRange {}
+impl<R> ViewExt for R where R: InputRange + ?Sized {}
 
 /// Provides `view_mut` method for ranges.
 pub trait MutableViewExt: SemiOutputRange {
@@ -201,7 +201,7 @@ pub trait MutableViewExt: SemiOutputRange {
     }
 }
 
-impl<R> MutableViewExt for R where R: SemiOutputRange {}
+impl<R> MutableViewExt for R where R: SemiOutputRange + ?Sized {}
 
 #[doc(hidden)]
 pub mod subrange;
