@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, ForwardRange, OutputRange, SemiOutputRange};
+use crate::{BoundedRange, ForwardRange, OutputRange, SemiOutputRange};
+
+use super::__details_copy;
 
 /// Rotates the given range at mid.
 ///
@@ -41,9 +43,9 @@ use crate::{algo, ForwardRange, OutputRange, SemiOutputRange};
 ///     RandomAccessRange in rust. How to overload for them in rust?
 pub fn rotate<Range>(rng: &mut Range, mid: Range::Position) -> Range::Position
 where
-    Range: SemiOutputRange + ?Sized,
+    Range: SemiOutputRange + BoundedRange + ?Sized,
 {
-    algo::rotate(rng, rng.start(), mid, rng.end())
+    __details_rotate::__rotate(rng, rng.start(), mid, rng.end())
 }
 
 /// Copies the given range to dest as if it is rotated at mid.
@@ -80,18 +82,20 @@ pub fn rotate_copy<SrcRange, DestRange>(
     dest: &mut DestRange,
 ) -> DestRange::Position
 where
-    SrcRange: ForwardRange + ?Sized,
+    SrcRange: ForwardRange + BoundedRange + ?Sized,
     SrcRange::Element: Clone,
     DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
 {
-    algo::rotate_copy(src, src.start(), mid, src.end(), dest, dest.start())
+    let mut out = dest.start();
+    out = __details_copy::__copy(src, mid.clone(), src.end(), dest, out);
+    __details_copy::__copy(src, src.start(), mid, dest, out)
 }
 
 pub mod infix {
-    use crate::{rng, SemiOutputRange};
+    use crate::{rng, BoundedRange, SemiOutputRange};
 
     /// `rotate`.
-    pub trait STLRotateExt: SemiOutputRange {
+    pub trait STLRotateExt: SemiOutputRange + BoundedRange {
         /// TODO: there are efficient implementations for BidirectionalRange and
         /// RandomAccessRange in rust. How to overload for them in rust?
         fn rotate(&mut self, mid: Self::Position) -> Self::Position {
@@ -99,5 +103,39 @@ pub mod infix {
         }
     }
 
-    impl<R> STLRotateExt for R where R: SemiOutputRange + ?Sized {}
+    impl<R> STLRotateExt for R where R: SemiOutputRange + BoundedRange + ?Sized {}
+}
+
+pub mod __details_rotate {
+    use crate::{BoundedRange, SemiOutputRange};
+
+    pub fn __rotate<Range>(
+        rng: &mut Range,
+        start: Range::Position,
+        mid: Range::Position,
+        end: Range::Position,
+    ) -> Range::Position
+    where
+        Range: SemiOutputRange + BoundedRange + ?Sized,
+    {
+        if start == mid {
+            return end;
+        }
+        if mid == end {
+            return start;
+        }
+        let mut write = start.clone();
+        let mut next_read = start;
+        let mut read = mid.clone();
+        while read != end {
+            if write == next_read {
+                next_read = read.clone();
+            }
+            rng.swap_at(&write, &read);
+            write = rng.after(write);
+            read = rng.after(read);
+        }
+        __rotate(rng, write.clone(), next_read, end);
+        write
+    }
 }
