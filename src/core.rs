@@ -44,9 +44,8 @@ pub trait InputRange {
     /// or if self is empty then start() == end()
     fn start(&self) -> Self::Position;
 
-    /// Returns the "past the end" position in self, that is, the position
-    /// immediately after the last element in self
-    fn end(&self) -> Self::Position;
+    /// Returns true if i is the end position of range.
+    fn is_end(&self, i: &Self::Position) -> bool;
 
     /// Returns position immediately after i
     ///
@@ -77,6 +76,12 @@ pub trait InputRange {
     /// # Complexity Requirement
     /// O(1)
     fn at(&self, i: &Self::Position) -> &Self::Element;
+}
+
+/// Models a bounded range, i.e., the range whose end position is known.
+pub trait BoundedRange: InputRange {
+    /// Returns position immediately after position of last element.
+    fn end(&self) -> Self::Position;
 }
 
 /// Models a multi-pass range.
