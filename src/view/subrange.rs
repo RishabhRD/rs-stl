@@ -11,7 +11,7 @@ pub mod subrange_details {
         OutputRange, RandomAccessRange, SemiOutputRange, View,
     };
     pub struct SubRangeView<Range: ForwardRange + View> {
-        pub rng: Range,
+        pub range: Range,
         pub start: Range::Position,
         pub end: Range::Position,
     }
@@ -35,15 +35,15 @@ pub mod subrange_details {
         }
 
         fn after(&self, i: Self::Position) -> Self::Position {
-            self.rng.after(i)
+            self.range.after(i)
         }
 
         fn at(&self, i: &Self::Position) -> &Self::Element {
-            self.rng.at(i)
+            self.range.at(i)
         }
 
         fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-            self.rng.after_n(i, n)
+            self.range.after_n(i, n)
         }
     }
 
@@ -61,7 +61,7 @@ pub mod subrange_details {
         R: ForwardRange + View,
     {
         fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-            self.rng.distance(from, to)
+            self.range.distance(from, to)
         }
     }
 
@@ -70,11 +70,11 @@ pub mod subrange_details {
         R: BidirectionalRange + View,
     {
         fn before(&self, i: Self::Position) -> Self::Position {
-            self.rng.before(i)
+            self.range.before(i)
         }
 
         fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-            self.rng.before_n(i, n)
+            self.range.before_n(i, n)
         }
     }
 
@@ -85,7 +85,7 @@ pub mod subrange_details {
         R: SemiOutputRange + View,
     {
         fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
-            self.rng.swap_at(i, j);
+            self.range.swap_at(i, j);
         }
     }
 
@@ -94,36 +94,23 @@ pub mod subrange_details {
         R: OutputRange + View,
     {
         fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
-            self.rng.at_mut(i)
+            self.range.at_mut(i)
         }
     }
 }
 
-pub fn subrange<Range>(
-    rng: Range,
-    start: Range::Position,
-    end: Range::Position,
-) -> subrange_details::SubRangeView<Range>
-where
-    Range: ForwardRange + View,
-{
-    subrange_details::SubRangeView { rng, start, end }
-}
-
-pub mod infix {
-    use crate::{view, ForwardRange, View};
-
-    use super::subrange_details;
-
-    pub trait STLSubRangeExt: ForwardRange + View + Sized {
-        fn subrange(
-            self,
-            start: Self::Position,
-            end: Self::Position,
-        ) -> subrange_details::SubRangeView<Self> {
-            view::subrange(self, start, end)
+pub trait STLSubRangeExt: ForwardRange + View + Sized {
+    fn subrange(
+        self,
+        start: Self::Position,
+        end: Self::Position,
+    ) -> subrange_details::SubRangeView<Self> {
+        subrange_details::SubRangeView {
+            range: self,
+            start,
+            end,
         }
     }
-
-    impl<R> STLSubRangeExt for R where R: ForwardRange + View {}
 }
+
+impl<R> STLSubRangeExt for R where R: ForwardRange + View {}
