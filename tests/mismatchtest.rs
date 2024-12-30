@@ -3,7 +3,7 @@
 
 #[cfg(test)]
 pub mod tests {
-    use stl::{algo, rng, InputRange};
+    use stl::*;
     #[test]
     fn mismatch_unbounded_by_in_mid() {
         let v1 = vec![1, 2, 3, 4];

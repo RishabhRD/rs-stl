@@ -28,7 +28,7 @@ impl<const N: usize> InputRange for ForwardArray<N> {
         *i == N
     }
 
-    fn after_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
+    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
         i + n
     }
 }

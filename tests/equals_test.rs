@@ -6,9 +6,9 @@ pub mod tests {
     use rng::infix::*;
     use stl::*;
 
-    fn assert_equals_prefix_by<const N: usize>(
-        arr1: [i32; N],
-        arr2: [i32; N],
+    fn assert_equals_prefix_by<const N1: usize, const N2: usize>(
+        arr1: [i32; N1],
+        arr2: [i32; N2],
         expected: bool,
     ) {
         let res = algo::equals_prefix_by(
@@ -29,9 +29,9 @@ pub mod tests {
         assert_eq!(res, expected);
     }
 
-    fn assert_equals_prefix<const N: usize>(
-        arr1: [i32; N],
-        arr2: [i32; N],
+    fn assert_equals_prefix<const N1: usize, const N2: usize>(
+        arr1: [i32; N1],
+        arr2: [i32; N2],
         expected: bool,
     ) {
         let res = algo::equals_prefix(
@@ -51,9 +51,9 @@ pub mod tests {
         assert_eq!(res, expected);
     }
 
-    fn assert_equals_by<const N: usize>(
-        arr1: [i32; N],
-        arr2: [i32; N],
+    fn assert_equals_by<const N1: usize, const N2: usize>(
+        arr1: [i32; N1],
+        arr2: [i32; N2],
         expected: bool,
     ) {
         let res = algo::equals_by(
@@ -74,9 +74,9 @@ pub mod tests {
         assert_eq!(res, expected);
     }
 
-    fn assert_equals<const N: usize>(
-        arr1: [i32; N],
-        arr2: [i32; N],
+    fn assert_equals<const N1: usize, const N2: usize>(
+        arr1: [i32; N1],
+        arr2: [i32; N2],
         expected: bool,
     ) {
         let res = algo::equals(
