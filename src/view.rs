@@ -212,3 +212,8 @@ pub use subrange::*;
 pub mod prefix;
 #[doc(inline)]
 pub use prefix::*;
+
+#[doc(hidden)]
+pub mod suffix;
+#[doc(inline)]
+pub use suffix::*;
