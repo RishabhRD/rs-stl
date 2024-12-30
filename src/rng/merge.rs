@@ -2,7 +2,8 @@
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    algo, BidirectionalRange, InputRange, OutputRange, SemiOutputRange,
+    algo::{self, copy_till},
+    BidirectionalRange, BoundedRange, InputRange, OutputRange, SemiOutputRange,
 };
 
 /// Merges 2 sorted ranges into one sorted range wrt Comparator.
@@ -47,18 +48,23 @@ where
     R1::Element: Clone,
     Compare: Fn(&R1::Element, &R1::Element) -> bool,
 {
-    let out = dest.start();
-    algo::merge_by(
-        rng1,
-        rng1.start(),
-        rng1.end(),
-        rng2,
-        rng2.start(),
-        rng2.end(),
-        dest,
-        out,
-        is_less,
-    )
+    let mut start1 = rng1.start();
+    let mut start2 = rng2.start();
+    let mut out = dest.start();
+    while !rng1.is_end(&start1) {
+        if rng2.is_end(&start2) {
+            return copy_till(rng1, start1, |i| rng1.is_end(i), dest, out);
+        }
+        if is_less(rng2.at(&start2), rng1.at(&start1)) {
+            *dest.at_mut(&out) = rng2.at(&start2).clone();
+            start2 = rng2.after(start2);
+        } else {
+            *dest.at_mut(&out) = rng1.at(&start1).clone();
+            start1 = rng1.after(start1);
+        }
+        out = dest.after(out);
+    }
+    copy_till(rng2, start2, |i| rng2.is_end(i), dest, out)
 }
 
 /// Merges 2 sorted ranges into one sorted range.
@@ -101,17 +107,7 @@ where
     R1::Element: Clone,
     R1::Element: Ord,
 {
-    let out = dest.start();
-    algo::merge(
-        rng1,
-        rng1.start(),
-        rng1.end(),
-        rng2,
-        rng2.start(),
-        rng2.end(),
-        dest,
-        out,
-    )
+    merge_by(rng1, rng2, dest, |x, y| x < y)
 }
 
 /// Merges 2 consecutive sorted range into one range wrt comparator.
@@ -155,7 +151,7 @@ pub fn merge_inplace_by<Range, Compare>(
     mid: Range::Position,
     is_less: Compare,
 ) where
-    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range: OutputRange + BoundedRange + BidirectionalRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
     let start = rng.start();
@@ -200,7 +196,7 @@ pub fn merge_inplace_by<Range, Compare>(
 /// ```
 pub fn merge_inplace<Range>(rng: &mut Range, mid: Range::Position)
 where
-    Range: OutputRange + BidirectionalRange + ?Sized,
+    Range: OutputRange + BoundedRange + BidirectionalRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
@@ -246,7 +242,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
     mid: Range::Position,
     is_less: Compare,
 ) where
-    Range: SemiOutputRange + ?Sized,
+    Range: SemiOutputRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -288,7 +284,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
 /// ```
 pub fn merge_inplace_no_alloc<Range>(rng: &mut Range, mid: Range::Position)
 where
-    Range: SemiOutputRange + ?Sized,
+    Range: SemiOutputRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
