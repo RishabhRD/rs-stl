@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange, OutputRange};
+use crate::{InputRange, OutputRange};
 
 /// Copies elements of src to dest with applying unary operation on it.
 ///
@@ -40,7 +40,14 @@ where
     DestRange: OutputRange + ?Sized,
     UnaryOp: Fn(&SrcRange::Element) -> DestRange::Element,
 {
-    algo::transform(src, src.start(), src.end(), dest, dest.start(), unary_op)
+    let mut start = src.start();
+    let mut out = dest.start();
+    while !src.is_end(&start) {
+        *dest.at_mut(&out) = unary_op(src.at(&start));
+        start = src.after(start);
+        out = dest.after(out);
+    }
+    out
 }
 
 /// Stores result in dest after applying binary operation on zipped elements of given ranges.
@@ -83,11 +90,9 @@ where
     BinaryOp: Fn(&R1::Element, &R2::Element) -> DestRange::Element,
 {
     let mut start1 = rng1.start();
-    let end1 = rng1.end();
     let mut start2 = rng2.start();
-    let end2 = rng2.end();
     let mut out = dest.start();
-    while start1 != end1 && start2 != end2 {
+    while !rng1.is_end(&start1) && !rng2.is_end(&start2) {
         *dest.at_mut(&out) = binary_op(rng1.at(&start1), rng2.at(&start2));
         start1 = rng1.after(start1);
         start2 = rng2.after(start2);
