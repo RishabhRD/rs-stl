@@ -2,8 +2,9 @@
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    algo, BoundedRange, ForwardRange, InputRange, OutputRange,
-    RandomAccessRange, SemiOutputRange,
+    algo::{self, heap_details::heap_select_copy_by, sort_heap_by},
+    BoundedRange, ForwardRange, InputRange, OutputRange, RandomAccessRange,
+    SemiOutputRange,
 };
 
 /// Unstable sort: sorts range in non-decreasing order based on comparator.
@@ -555,21 +556,26 @@ pub fn partial_sort_copy_by<SrcRange, DestRange, Compare>(
 ) -> DestRange::Position
 where
     DestRange: RandomAccessRange + OutputRange + BoundedRange + ?Sized,
-    SrcRange: InputRange<Element = DestRange::Element> + BoundedRange + ?Sized,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
     SrcRange::Element: Clone,
     Compare: Fn(&SrcRange::Element, &SrcRange::Element) -> bool + Clone,
 {
-    let start = dest.start();
-    let end = dest.end();
-    algo::partial_sort_copy_by(
+    let src_start = src.start();
+    let dest_start = dest.start();
+    let dest_end = dest.end();
+    let i = heap_select_copy_by(
         src,
-        src.start(),
-        src.end(),
+        src_start,
+        |i| src.is_end(i),
         dest,
-        start,
-        end,
-        is_less,
-    )
+        dest_start.clone(),
+        dest_end,
+        is_less.clone(),
+    );
+
+    sort_heap_by(dest, dest_start, i.clone(), is_less);
+
+    i
 }
 
 /// Stores d top minimum elements in non decreasing order of source range to destination range where d is
@@ -609,12 +615,10 @@ pub fn partial_sort_copy<SrcRange, DestRange>(
 ) -> DestRange::Position
 where
     DestRange: RandomAccessRange + OutputRange + BoundedRange + ?Sized,
-    SrcRange: InputRange<Element = DestRange::Element> + BoundedRange + ?Sized,
+    SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
     SrcRange::Element: Clone + Ord,
 {
-    let start = dest.start();
-    let end = dest.end();
-    algo::partial_sort_copy(src, src.start(), src.end(), dest, start, end)
+    partial_sort_copy_by(src, dest, |x, y| x < y)
 }
 
 /// Rearranges the elements in range st:
