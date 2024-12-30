@@ -4,21 +4,23 @@
 use crate::{ForwardRange, View};
 
 #[doc(hidden)]
-pub mod __details_subrange {
-
+pub mod __details_prefix_view {
     use crate::{
         BidirectionalRange, BoundedRange, ForwardRange, InputRange,
         OutputRange, RandomAccessRange, SemiOutputRange, View,
     };
-    pub struct SubRangeView<Range: ForwardRange + View> {
+
+    pub struct PrefixView<Range>
+    where
+        Range: ForwardRange + View,
+    {
         pub range: Range,
-        pub start: Range::Position,
-        pub end: Range::Position,
+        pub till: Range::Position,
     }
 
-    impl<R> View for SubRangeView<R> where R: ForwardRange + View {}
+    impl<R> View for PrefixView<R> where R: ForwardRange + View {}
 
-    impl<R> InputRange for SubRangeView<R>
+    impl<R> InputRange for PrefixView<R>
     where
         R: ForwardRange + View,
     {
@@ -27,11 +29,11 @@ pub mod __details_subrange {
         type Position = R::Position;
 
         fn start(&self) -> Self::Position {
-            self.start.clone()
+            self.range.start()
         }
 
         fn is_end(&self, i: &Self::Position) -> bool {
-            *i == self.end
+            i == &self.till
         }
 
         fn after(&self, i: Self::Position) -> Self::Position {
@@ -47,16 +49,16 @@ pub mod __details_subrange {
         }
     }
 
-    impl<R> BoundedRange for SubRangeView<R>
+    impl<R> BoundedRange for PrefixView<R>
     where
         R: ForwardRange + View,
     {
         fn end(&self) -> Self::Position {
-            self.end.clone()
+            self.till.clone()
         }
     }
 
-    impl<R> ForwardRange for SubRangeView<R>
+    impl<R> ForwardRange for PrefixView<R>
     where
         R: ForwardRange + View,
     {
@@ -65,7 +67,7 @@ pub mod __details_subrange {
         }
     }
 
-    impl<R> BidirectionalRange for SubRangeView<R>
+    impl<R> BidirectionalRange for PrefixView<R>
     where
         R: BidirectionalRange + View,
     {
@@ -78,18 +80,18 @@ pub mod __details_subrange {
         }
     }
 
-    impl<R> RandomAccessRange for SubRangeView<R> where R: RandomAccessRange + View {}
+    impl<R> RandomAccessRange for PrefixView<R> where R: RandomAccessRange + View {}
 
-    impl<R> SemiOutputRange for SubRangeView<R>
+    impl<R> SemiOutputRange for PrefixView<R>
     where
         R: SemiOutputRange + View,
     {
         fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
-            self.range.swap_at(i, j);
+            self.range.swap_at(i, j)
         }
     }
 
-    impl<R> OutputRange for SubRangeView<R>
+    impl<R> OutputRange for PrefixView<R>
     where
         R: OutputRange + View,
     {
@@ -100,22 +102,17 @@ pub mod __details_subrange {
 }
 
 #[doc(hidden)]
-pub trait STLSubRangeExt: ForwardRange + View + Sized {
-    /// Returns subrange view `[start, end)` of given view.
+pub trait STLPrefixViewExt: ForwardRange + View + Sized {
+    /// Returns prefix view `[self.start(), till)` of given view.
     ///
     /// # Precondition
-    ///   - `[start, end)` should represent valid positions in self.
-    fn subrange(
+    ///   - till is a valid position in self.
+    fn prefix(
         self,
-        start: Self::Position,
-        end: Self::Position,
-    ) -> __details_subrange::SubRangeView<Self> {
-        __details_subrange::SubRangeView {
-            range: self,
-            start,
-            end,
-        }
+        till: Self::Position,
+    ) -> __details_prefix_view::PrefixView<Self> {
+        __details_prefix_view::PrefixView { range: self, till }
     }
 }
 
-impl<R> STLSubRangeExt for R where R: ForwardRange + View {}
+impl<R> STLPrefixViewExt for R where R: ForwardRange + View {}

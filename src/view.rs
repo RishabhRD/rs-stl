@@ -208,7 +208,7 @@ pub mod subrange;
 #[doc(inline)]
 pub use subrange::*;
 
-pub mod infix {
-    #[doc(inline)]
-    pub use super::subrange::infix::*;
-}
+#[doc(hidden)]
+pub mod prefix;
+#[doc(inline)]
+pub use prefix::*;
