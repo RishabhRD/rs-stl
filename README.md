@@ -18,9 +18,11 @@ View detailed documentation at: [rs-stl docs](https://rishabhrd.github.io/rs-stl
 
 ## Design
 
-View design at: [rs-stl design](./docs/design.md)
+View design at: [rs-stl design](./docs/design.md).
 
 ## Sample Usage
+
+For detailed usage see: [rs-stl how to use](./docs/how_to_use.md).
 
 ### Algorithms
 
@@ -237,6 +239,19 @@ for any of these algorithms.
 - [ ] next_permutation
 - [ ] prev_permutation
 - [ ] is_permutation
+
+## Contribution
+
+The scope of project is quite large and surely need contributions from other
+experienced programmers. Feel free to contribute in terms of:
+
+- Bugs
+- Design
+- Documents
+- Feature Request
+
+[Goals](./docs/goals.md) lists future goals for project. The list might not
+cover all use-case, feel free to raise feature request with supporting use-case.
 
 ## Motivations
 
