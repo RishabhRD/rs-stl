@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange};
+use crate::InputRange;
 
 /// Finds first mismatch position between 2 ranges by given equivalence relation.
 ///
@@ -40,15 +40,17 @@ where
     R2: InputRange + ?Sized,
     BinaryPred: Fn(&R1::Element, &R2::Element) -> bool,
 {
-    algo::mismatch_by(
-        rng1,
-        rng1.start(),
-        rng1.end(),
-        rng2,
-        rng2.start(),
-        rng2.end(),
-        bi_pred,
-    )
+    let mut start1 = rng1.start();
+    let mut start2 = rng2.start();
+
+    while !rng1.is_end(&start1) && !rng2.is_end(&start2) {
+        if !bi_pred(rng1.at(&start1), rng2.at(&start2)) {
+            return (start1, start2);
+        }
+        start1 = rng1.after(start1);
+        start2 = rng2.after(start2);
+    }
+    (start1, start2)
 }
 
 /// Finds first mismatch position between 2 ranges by equality.
@@ -83,12 +85,5 @@ where
     R2: InputRange + ?Sized,
     R1::Element: PartialEq<R2::Element>,
 {
-    algo::mismatch(
-        rng1,
-        rng1.start(),
-        rng1.end(),
-        rng2,
-        rng2.start(),
-        rng2.end(),
-    )
+    mismatch_by(rng1, rng2, |x, y| x == y)
 }

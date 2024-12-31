@@ -6,268 +6,171 @@ pub mod tests {
     use rng::infix::*;
     use stl::*;
 
-    #[test]
-    fn algo_equals_unbounded_by_true() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![3, 4, 6];
-
-        let res = algo::equals_unbounded_by(&vec1, 1, 2, &vec2, 1, |x, y| {
-            *y == *x + 1
-        });
-        assert!(res);
-    }
-
-    #[test]
-    fn equals_unbounded_by_true() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![2, 4, 6, 8];
-
-        let res = algo::equals_unbounded_by(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-            |x, y| *y == *x + 1,
+    fn assert_equals_prefix_by<const N1: usize, const N2: usize>(
+        arr1: [i32; N1],
+        arr2: [i32; N2],
+        expected: bool,
+    ) {
+        let res = algo::equals_prefix_by(
+            &arr1,
+            arr1.start(),
+            arr1.end(),
+            &arr2,
+            arr2.start(),
+            arr2.end(),
+            |x, y| x == y,
         );
-        assert!(res);
+        assert_eq!(res, expected);
 
-        let res =
-            rng::equals_unbounded_by(&vec1, &vec2, vec2.start(), |x, y| {
-                *y == *x + 1
-            });
-        assert!(res);
+        let res = rng::equals_prefix_by(&arr1, &arr2, |x, y| x == y);
+        assert_eq!(res, expected);
+
+        let res = arr1.equals_prefix_by(&arr2, |x, y| x == y);
+        assert_eq!(res, expected);
     }
 
-    #[test]
-    fn equals_unbounded_by_false() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![2, 4, 7, 8];
-
-        let res = algo::equals_unbounded_by(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-            |x, y| *y == *x + 1,
+    fn assert_equals_prefix<const N1: usize, const N2: usize>(
+        arr1: [i32; N1],
+        arr2: [i32; N2],
+        expected: bool,
+    ) {
+        let res = algo::equals_prefix(
+            &arr1,
+            arr1.start(),
+            arr1.end(),
+            &arr2,
+            arr2.start(),
+            arr2.end(),
         );
-        assert!(!res);
+        assert_eq!(res, expected);
 
-        let res =
-            rng::equals_unbounded_by(&vec1, &vec2, vec2.start(), |x, y| {
-                *y == *x + 1
-            });
-        assert!(!res);
+        let res = rng::equals_prefix(&arr1, &arr2);
+        assert_eq!(res, expected);
+
+        let res = arr1.equals_prefix(&arr2);
+        assert_eq!(res, expected);
     }
 
-    #[test]
-    fn algo_equals_unbounded_true() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![3, 3, 5];
-
-        let res = algo::equals_unbounded(&vec1, 1, 2, &vec2, 1);
-        assert!(res);
-    }
-
-    #[test]
-    fn equals_unbounded_true() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![1, 3, 5, 7];
-
-        let res = algo::equals_unbounded(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-        );
-        assert!(res);
-
-        let res = rng::equals_unbounded(&vec1, &vec2, vec2.start());
-        assert!(res);
-    }
-
-    #[test]
-    fn equals_unbounded_false() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![1, 3, 4, 7];
-
-        let res = algo::equals_unbounded(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-        );
-        assert!(!res);
-
-        let res = rng::equals_unbounded(&vec1, &vec2, vec2.start());
-        assert!(!res);
-    }
-
-    #[test]
-    fn algo_equals_by_true() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![3, 4, 6];
-
-        let res =
-            algo::equals_by(&vec1, 1, 2, &vec2, 1, 2, |x, y| *y == *x + 1);
-        assert!(res);
-    }
-
-    #[test]
-    fn algo_equals_by_false() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![3, 4, 6];
-
-        let res =
-            algo::equals_by(&vec1, 1, 2, &vec2, 1, 1, |x, y| *y == *x + 1);
-        assert!(!res);
-    }
-
-    #[test]
-    fn equals_by_true() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![2, 4, 6, 8];
-
+    fn assert_equals_by<const N1: usize, const N2: usize>(
+        arr1: [i32; N1],
+        arr2: [i32; N2],
+        expected: bool,
+    ) {
         let res = algo::equals_by(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-            vec2.end(),
-            |x, y| *y == *x + 1,
+            &arr1,
+            arr1.start(),
+            arr1.end(),
+            &arr2,
+            arr2.start(),
+            arr2.end(),
+            |x, y| x == y,
         );
-        assert!(res);
+        assert_eq!(res, expected);
 
-        let res = rng::equals_by(&vec1, &vec2, |x, y| *y == *x + 1);
-        assert!(res);
+        let res = rng::equals_by(&arr1, &arr2, |x, y| x == y);
+        assert_eq!(res, expected);
 
-        let res = vec1.equals_by(&vec2, |x, y| *y == *x + 1);
-        assert!(res);
+        let res = arr1.equals_by(&arr2, |x, y| x == y);
+        assert_eq!(res, expected);
     }
 
-    #[test]
-    fn equals_by_false() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![2, 4, 7, 8];
-
-        let res = algo::equals_by(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-            vec2.end(),
-            |x, y| *y == *x + 1,
-        );
-        assert!(!res);
-
-        let res = rng::equals_by(&vec1, &vec2, |x, y| *y == *x + 1);
-        assert!(!res);
-        let res = vec1.equals_by(&vec2, |x, y| *y == *x + 1);
-        assert!(!res);
-    }
-
-    #[test]
-    fn algo_equals_true() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![3, 3, 5];
-
-        let res = algo::equals(&vec1, 1, 2, &vec2, 1, 2);
-        assert!(res);
-    }
-
-    #[test]
-    fn algo_equals_false() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![3, 3, 5];
-
-        let res = algo::equals(&vec1, 1, 1, &vec2, 1, 2);
-        assert!(!res);
-    }
-
-    #[test]
-    fn equals_true() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![1, 3, 5, 7];
-
+    fn assert_equals<const N1: usize, const N2: usize>(
+        arr1: [i32; N1],
+        arr2: [i32; N2],
+        expected: bool,
+    ) {
         let res = algo::equals(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-            vec2.end(),
+            &arr1,
+            arr1.start(),
+            arr1.end(),
+            &arr2,
+            arr2.start(),
+            arr2.end(),
         );
-        assert!(res);
+        assert_eq!(res, expected);
 
-        let res = rng::equals(&vec1, &vec2);
-        assert!(res);
-        let res = vec1.equals(&vec2);
-        assert!(res);
+        let res = rng::equals(&arr1, &arr2);
+        assert_eq!(res, expected);
+
+        let res = arr1.equals(&arr2);
+        assert_eq!(res, expected);
     }
 
     #[test]
-    fn equals_false() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![1, 3, 4, 7];
+    fn equals_prefix_by() {
+        let arr1 = [1, 2, 3, 4];
+        let arr2 = [1, 2, 3, 4];
+        assert_equals_prefix_by(arr1, arr2, true);
 
-        let res = algo::equals(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-            vec2.end(),
-        );
-        assert!(!res);
+        let arr2 = [1, 2, 3];
+        assert_equals_prefix_by(arr1, arr2, false);
 
-        let res = rng::equals(&vec1, &vec2);
-        assert!(!res);
-        let res = vec1.equals(&vec2);
-        assert!(!res);
+        let arr1 = [1, 2];
+        assert_equals_prefix_by(arr1, arr2, true);
+
+        let arr2 = [2, 2];
+        assert_equals_prefix_by(arr1, arr2, false);
+
+        let arr1 = [];
+        assert_equals_prefix_by(arr1, arr2, true);
+
+        let arr2 = [];
+        assert_equals_prefix_by(arr1, arr2, true);
     }
 
     #[test]
-    fn equals_false_different_len() {
-        let vec1 = vec![1, 3, 5, 7];
-        let vec2 = vec![1, 3, 5];
+    fn equals_prefix() {
+        let arr1 = [1, 2, 3, 4];
+        let arr2 = [1, 2, 3, 4];
+        assert_equals_prefix(arr1, arr2, true);
 
-        let res = algo::equals(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-            vec2.end(),
-        );
-        assert!(!res);
+        let arr2 = [1, 2, 3];
+        assert_equals_prefix(arr1, arr2, false);
 
-        let res = rng::equals(&vec1, &vec2);
-        assert!(!res);
+        let arr1 = [1, 2];
+        assert_equals_prefix(arr1, arr2, true);
 
-        let vec1 = vec![1, 3, 5];
-        let vec2 = vec![1, 3, 5, 7];
+        let arr2 = [2, 2];
+        assert_equals_prefix(arr1, arr2, false);
 
-        let res = algo::equals(
-            &vec1,
-            vec1.start(),
-            vec1.end(),
-            &vec2,
-            vec2.start(),
-            vec2.end(),
-        );
-        assert!(!res);
+        let arr1 = [];
+        assert_equals_prefix(arr1, arr2, true);
 
-        let res = rng::equals(&vec1, &vec2);
-        assert!(!res);
+        let arr2 = [];
+        assert_equals_prefix(arr1, arr2, true);
+    }
 
-        let res = vec1.equals(&vec2);
-        assert!(!res);
-        let res = vec2.equals(&vec1);
-        assert!(!res);
+    #[test]
+    fn equals_by() {
+        let arr1 = [1, 2, 3, 4];
+        let arr2 = [1, 2, 3, 4];
+        assert_equals_by(arr1, arr2, true);
+
+        let arr2 = [2, 2, 3, 4];
+        assert_equals_by(arr1, arr2, false);
+
+        let arr2 = [1, 2];
+        assert_equals_by(arr1, arr2, false);
+
+        let arr1 = [1];
+        assert_equals_by(arr1, arr2, false);
+        assert_equals_by([], [], true);
+    }
+
+    #[test]
+    fn equals() {
+        let arr1 = [1, 2, 3, 4];
+        let arr2 = [1, 2, 3, 4];
+        assert_equals(arr1, arr2, true);
+
+        let arr2 = [2, 2, 3, 4];
+        assert_equals(arr1, arr2, false);
+
+        let arr2 = [1, 2];
+        assert_equals(arr1, arr2, false);
+
+        let arr1 = [1];
+        assert_equals(arr1, arr2, false);
+        assert_equals([], [], true);
     }
 }

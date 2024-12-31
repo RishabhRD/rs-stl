@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, ForwardRange};
+use crate::ForwardRange;
 
 /// Returns first position in range such that element at that position and element after
 /// that position satisfies binary predicate.
@@ -38,7 +38,20 @@ where
     Range: ForwardRange + ?Sized,
     BinaryPred: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::adjacent_find_if(rng, rng.start(), rng.end(), bi_pred)
+    let mut start = rng.start();
+    if rng.is_end(&start) {
+        return start;
+    }
+    let mut prev = start.clone();
+    start = rng.after(start);
+    while !rng.is_end(&start) {
+        if bi_pred(rng.at(&prev), rng.at(&start)) {
+            return prev;
+        }
+        prev = start.clone();
+        start = rng.after(start);
+    }
+    start
 }
 
 pub mod infix {

@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, BidirectionalRange, OutputRange, SemiOutputRange};
+use crate::{
+    algo, BidirectionalRange, BoundedRange, OutputRange, SemiOutputRange,
+};
 
 /// Reverses the given range.
 ///
@@ -31,26 +33,26 @@ use crate::{algo, BidirectionalRange, OutputRange, SemiOutputRange};
 /// ```
 pub fn reverse<Range>(rng: &mut Range)
 where
-    Range: SemiOutputRange + BidirectionalRange + ?Sized,
+    Range: SemiOutputRange + BidirectionalRange + BoundedRange + ?Sized,
 {
     algo::reverse(rng, rng.start(), rng.end())
 }
 
 pub mod infix {
-    use crate::{rng, BidirectionalRange, SemiOutputRange};
+    use crate::{rng, BidirectionalRange, BoundedRange, SemiOutputRange};
 
     /// `reverse`.
-    pub trait STLReverseExt: SemiOutputRange + BidirectionalRange {
-        fn reverse(&mut self);
-    }
-
-    impl<R> STLReverseExt for R
-    where
-        R: SemiOutputRange + BidirectionalRange + ?Sized,
+    pub trait STLReverseExt:
+        SemiOutputRange + BidirectionalRange + BoundedRange
     {
         fn reverse(&mut self) {
             rng::reverse(self)
         }
+    }
+
+    impl<R> STLReverseExt for R where
+        R: SemiOutputRange + BidirectionalRange + BoundedRange + ?Sized
+    {
     }
 }
 
@@ -85,7 +87,7 @@ pub fn reverse_copy<SrcRange, DestRange>(
     dest: &mut DestRange,
 ) -> DestRange::Position
 where
-    SrcRange: BidirectionalRange + ?Sized,
+    SrcRange: BidirectionalRange + BoundedRange + ?Sized,
     DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
     SrcRange::Element: Clone,
 {

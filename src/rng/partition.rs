@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, ForwardRange, InputRange, OutputRange, SemiOutputRange};
+use crate::{
+    algo, BoundedRange, ForwardRange, InputRange, OutputRange, SemiOutputRange,
+};
 
 /// Returns true if range is partitioned wrt pred, otherwise false.
 ///
@@ -29,7 +31,22 @@ where
     Range: InputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
-    algo::is_partitioned(rng, rng.start(), rng.end(), pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if !pred(rng.at(&start)) {
+            break;
+        }
+        start = rng.after(start);
+    }
+
+    while !rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            return false;
+        }
+        start = rng.after(start);
+    }
+
+    true
 }
 
 /// Partitions range based on given predicate.
@@ -73,9 +90,28 @@ where
     Range: SemiOutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
-    let start = rng.start();
-    let end = rng.end();
-    algo::partition(rng, start, end, pred)
+    let mut start = rng.start();
+    while !rng.is_end(&start) {
+        if !pred(rng.at(&start)) {
+            break;
+        }
+        start = rng.after(start);
+    }
+
+    if rng.is_end(&start) {
+        return start;
+    }
+
+    let mut i = rng.after(start.clone());
+    while !rng.is_end(&i) {
+        if pred(rng.at(&i)) {
+            rng.swap_at(&i, &start);
+            start = rng.after(start);
+        }
+        i = rng.after(i);
+    }
+
+    start
 }
 
 /// Partitions range based on given predicate with preserving relative order of elements.
@@ -124,7 +160,7 @@ pub fn stable_partition<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: OutputRange + ?Sized,
+    Range: OutputRange + BoundedRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -175,7 +211,7 @@ pub fn stable_partition_no_alloc<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: SemiOutputRange + ?Sized,
+    Range: SemiOutputRange + BoundedRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -218,26 +254,20 @@ pub fn partition_point<Range, Predicate>(
     pred: Predicate,
 ) -> Range::Position
 where
-    Range: ForwardRange + ?Sized,
+    Range: ForwardRange + BoundedRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
     algo::partition_point(rng, rng.start(), rng.end(), pred)
 }
 
 pub mod infix {
-    use crate::{rng, ForwardRange, InputRange, OutputRange, SemiOutputRange};
+    use crate::{
+        rng, BoundedRange, ForwardRange, InputRange, OutputRange,
+        SemiOutputRange,
+    };
 
     /// `is_partitioned`.
     pub trait STLInputPartitionExt: InputRange {
-        fn is_partitioned<Predicate>(&self, pred: Predicate) -> bool
-        where
-            Predicate: Fn(&Self::Element) -> bool;
-    }
-
-    impl<R> STLInputPartitionExt for R
-    where
-        R: InputRange + ?Sized,
-    {
         fn is_partitioned<Predicate>(&self, pred: Predicate) -> bool
         where
             Predicate: Fn(&Self::Element) -> bool,
@@ -246,31 +276,24 @@ pub mod infix {
         }
     }
 
-    /// `partition`, `stable_partition_no_alloc`.
+    impl<R> STLInputPartitionExt for R where R: InputRange + ?Sized {}
+
+    /// `partition`.
     pub trait STLSemiOutputPartitionExt: SemiOutputRange {
-        fn partition<Predicate>(&mut self, pred: Predicate) -> Self::Position
-        where
-            Predicate: Fn(&Self::Element) -> bool;
-
-        fn stable_partition_no_alloc<Predicate>(
-            &mut self,
-            pred: Predicate,
-        ) -> Self::Position
-        where
-            Predicate: Fn(&Self::Element) -> bool + Clone;
-    }
-
-    impl<R> STLSemiOutputPartitionExt for R
-    where
-        R: SemiOutputRange + ?Sized,
-    {
         fn partition<Predicate>(&mut self, pred: Predicate) -> Self::Position
         where
             Predicate: Fn(&Self::Element) -> bool,
         {
             rng::partition(self, pred)
         }
+    }
 
+    impl<R> STLSemiOutputPartitionExt for R where R: SemiOutputRange + ?Sized {}
+
+    /// `stable_partition_no_alloc`.
+    pub trait STLSemiOutputBoundedPartitionExt:
+        SemiOutputRange + BoundedRange
+    {
         fn stable_partition_no_alloc<Predicate>(
             &mut self,
             pred: Predicate,
@@ -282,20 +305,13 @@ pub mod infix {
         }
     }
 
-    /// `stable_partition`.
-    pub trait STLOutputPartitionExt: OutputRange {
-        fn stable_partition<Predicate>(
-            &mut self,
-            pred: Predicate,
-        ) -> Self::Position
-        where
-            Predicate: Fn(&Self::Element) -> bool + Clone;
+    impl<R> STLSemiOutputBoundedPartitionExt for R where
+        R: SemiOutputRange + BoundedRange + ?Sized
+    {
     }
 
-    impl<R> STLOutputPartitionExt for R
-    where
-        R: OutputRange + ?Sized,
-    {
+    /// `stable_partition`.
+    pub trait STLOutputPartitionExt: BoundedRange + OutputRange {
         fn stable_partition<Predicate>(
             &mut self,
             pred: Predicate,
@@ -307,30 +323,18 @@ pub mod infix {
         }
     }
 
-    /// `partition_point`.
-    pub trait STLForwardPartitonExt: ForwardRange {
-        fn partition_point<Range, Predicate>(
-            rng: &Range,
-            pred: Predicate,
-        ) -> Range::Position
-        where
-            Range: ForwardRange,
-            Predicate: Fn(&Range::Element) -> bool;
-    }
+    impl<R> STLOutputPartitionExt for R where R: BoundedRange + OutputRange + ?Sized {}
 
-    impl<R> STLForwardPartitonExt for R
-    where
-        R: ForwardRange + ?Sized,
-    {
-        fn partition_point<Range, Predicate>(
-            rng: &Range,
-            pred: Predicate,
-        ) -> Range::Position
+    /// `partition_point`.
+    pub trait STLForwardPartitonExt: ForwardRange + BoundedRange {
+        fn partition_point<Predicate>(&self, pred: Predicate) -> Self::Position
         where
-            Range: ForwardRange,
-            Predicate: Fn(&Range::Element) -> bool,
+            Predicate: Fn(&Self::Element) -> bool,
         {
-            rng::partition_point(rng, pred)
+            rng::partition_point(self, pred)
         }
     }
+
+    impl<R> STLForwardPartitonExt for R where R: ForwardRange + BoundedRange + ?Sized
+    {}
 }

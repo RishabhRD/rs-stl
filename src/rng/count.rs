@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, InputRange};
+use crate::InputRange;
 
 /// Counts elements in rng that satisfies predicate.
 ///
@@ -28,12 +28,20 @@ use crate::{algo, InputRange};
 /// let cnt = arr.count_if(|x| x % 2 == 1);
 /// assert_eq!(cnt, 2);
 /// ```
-pub fn count_if<Range, Pred>(rng: &Range, f: Pred) -> u32
+pub fn count_if<Range, Pred>(rng: &Range, pred: Pred) -> u32
 where
     Range: InputRange + ?Sized,
     Pred: Fn(&Range::Element) -> bool,
 {
-    algo::count_if(rng, rng.start(), rng.end(), f)
+    let mut start = rng.start();
+    let mut cnt: u32 = 0;
+    while !rng.is_end(&start) {
+        if pred(rng.at(&start)) {
+            cnt += 1;
+        }
+        start = rng.after(start);
+    }
+    cnt
 }
 
 /// Counts elements in rng equals given element.
@@ -67,7 +75,7 @@ where
     R: InputRange + ?Sized,
     R::Element: Eq,
 {
-    algo::count(rng, rng.start(), rng.end(), e)
+    count_if(rng, |x| x == e)
 }
 
 pub mod infix {

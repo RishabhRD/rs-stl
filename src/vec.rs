@@ -4,7 +4,7 @@
 #![doc(hidden)]
 
 use crate::{
-    BidirectionalRange, ForwardRange, InputRange, OutputRange,
+    BidirectionalRange, BoundedRange, ForwardRange, InputRange, OutputRange,
     RandomAccessRange, SemiOutputRange,
 };
 
@@ -17,10 +17,6 @@ impl<T> InputRange for Vec<T> {
         0
     }
 
-    fn end(&self) -> Self::Position {
-        self.len()
-    }
-
     fn after(&self, i: Self::Position) -> Self::Position {
         i + 1
     }
@@ -31,6 +27,16 @@ impl<T> InputRange for Vec<T> {
 
     fn at(&self, i: &Self::Position) -> &Self::Element {
         &self[*i]
+    }
+
+    fn is_end(&self, i: &Self::Position) -> bool {
+        *i == self.len()
+    }
+}
+
+impl<T> BoundedRange for Vec<T> {
+    fn end(&self) -> Self::Position {
+        self.len()
     }
 }
 

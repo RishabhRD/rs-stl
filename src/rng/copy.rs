@@ -48,10 +48,8 @@ where
     Pred: Fn(&SrcRange::Element) -> bool,
 {
     let mut start = src.start();
-    let end = src.end();
     let mut write = dest.start();
-    let d_end = dest.end();
-    while start != end && write != d_end {
+    while !src.is_end(&start) && !dest.is_end(&write) {
         if pred(src.at(&start)) {
             *dest.at_mut(&write) = src.at(&start).clone();
             write = dest.after(write);
@@ -104,10 +102,8 @@ where
     DestRange: OutputRange + ?Sized,
 {
     let mut start = src.start();
-    let end = src.end();
     let mut write = dest.start();
-    let d_end = dest.end();
-    while start != end && write != d_end {
+    while !src.is_end(&start) && !dest.is_end(&write) {
         *dest.at_mut(&write) = src.at(&start).clone();
         start = src.after(start);
         write = dest.after(write);

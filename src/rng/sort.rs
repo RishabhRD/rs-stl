@@ -2,7 +2,8 @@
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    algo, ForwardRange, InputRange, OutputRange, RandomAccessRange,
+    algo::{self, heap_details::heap_select_copy_by, sort_heap_by},
+    BoundedRange, ForwardRange, InputRange, OutputRange, RandomAccessRange,
     SemiOutputRange,
 };
 
@@ -43,7 +44,7 @@ use crate::{
 /// ```
 pub fn sort_range_by<Range, Compare>(rng: &mut Range, is_less: Compare)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + SemiOutputRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -84,7 +85,7 @@ where
 /// ```
 pub fn sort_range<Range>(rng: &mut Range)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + SemiOutputRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
@@ -134,7 +135,7 @@ where
 /// ```
 pub fn stable_sort_by<Range, Compare>(rng: &mut Range, is_less: Compare)
 where
-    Range: RandomAccessRange + OutputRange + ?Sized,
+    Range: RandomAccessRange + OutputRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -177,7 +178,7 @@ where
 /// ```
 pub fn stable_sort<Range>(rng: &mut Range)
 where
-    Range: RandomAccessRange + OutputRange + ?Sized,
+    Range: RandomAccessRange + OutputRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
@@ -226,7 +227,7 @@ pub fn stable_sort_by_no_alloc<Range, Compare>(
     rng: &mut Range,
     is_less: Compare,
 ) where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + SemiOutputRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -272,7 +273,7 @@ pub fn stable_sort_by_no_alloc<Range, Compare>(
 /// ```
 pub fn stable_sort_no_alloc<Range>(rng: &mut Range)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + SemiOutputRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
@@ -316,7 +317,21 @@ where
     Range: ForwardRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::is_sorted_until_by(rng, rng.start(), rng.end(), is_less)
+    let mut start = rng.start();
+    if rng.is_end(&start) {
+        return start;
+    }
+
+    let mut prev = start.clone();
+    start = rng.after(start);
+    while !rng.is_end(&start) {
+        if is_less(rng.at(&start), rng.at(&prev)) {
+            return start;
+        }
+        prev = start.clone();
+        start = rng.after(start);
+    }
+    start
 }
 
 /// Finds the largest prefix in range such that elements in the prefix are in non-decreasing order.
@@ -350,7 +365,7 @@ where
     Range: ForwardRange + ?Sized,
     Range::Element: Ord,
 {
-    algo::is_sorted_until(rng, rng.start(), rng.end())
+    is_sorted_until_by(rng, |x, y| x < y)
 }
 
 /// Returns true if given range is sorted in non-decreasing order wrt comparator.
@@ -381,7 +396,7 @@ where
     Range: ForwardRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::is_sorted_by(rng, rng.start(), rng.end(), is_less)
+    rng.is_end(&is_sorted_until_by(rng, is_less))
 }
 
 /// Returns true if given range is sorted in non-decreasing order.
@@ -410,7 +425,7 @@ where
     Range: ForwardRange + ?Sized,
     Range::Element: Ord,
 {
-    algo::is_sorted(rng, rng.start(), rng.end())
+    is_sorted_by(rng, |x, y| x < y)
 }
 
 /// Reorders elements in range such that `[rng.start(), mid)` contains `distance(rng.start(), mid)` smallest
@@ -452,7 +467,7 @@ pub fn partial_sort_by<Range, Compare>(
     mid: Range::Position,
     is_less: Compare,
 ) where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + SemiOutputRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -496,7 +511,7 @@ pub fn partial_sort_by<Range, Compare>(
 /// ```
 pub fn partial_sort<Range>(rng: &mut Range, mid: Range::Position)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + SemiOutputRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
@@ -540,22 +555,27 @@ pub fn partial_sort_copy_by<SrcRange, DestRange, Compare>(
     is_less: Compare,
 ) -> DestRange::Position
 where
-    DestRange: RandomAccessRange + OutputRange + ?Sized,
+    DestRange: RandomAccessRange + OutputRange + BoundedRange + ?Sized,
     SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
     SrcRange::Element: Clone,
     Compare: Fn(&SrcRange::Element, &SrcRange::Element) -> bool + Clone,
 {
-    let start = dest.start();
-    let end = dest.end();
-    algo::partial_sort_copy_by(
+    let src_start = src.start();
+    let dest_start = dest.start();
+    let dest_end = dest.end();
+    let i = heap_select_copy_by(
         src,
-        src.start(),
-        src.end(),
+        src_start,
+        |i| src.is_end(i),
         dest,
-        start,
-        end,
-        is_less,
-    )
+        dest_start.clone(),
+        dest_end,
+        is_less.clone(),
+    );
+
+    sort_heap_by(dest, dest_start, i.clone(), is_less);
+
+    i
 }
 
 /// Stores d top minimum elements in non decreasing order of source range to destination range where d is
@@ -594,13 +614,11 @@ pub fn partial_sort_copy<SrcRange, DestRange>(
     dest: &mut DestRange,
 ) -> DestRange::Position
 where
-    DestRange: RandomAccessRange + OutputRange + ?Sized,
+    DestRange: RandomAccessRange + OutputRange + BoundedRange + ?Sized,
     SrcRange: InputRange<Element = DestRange::Element> + ?Sized,
     SrcRange::Element: Clone + Ord,
 {
-    let start = dest.start();
-    let end = dest.end();
-    algo::partial_sort_copy(src, src.start(), src.end(), dest, start, end)
+    partial_sort_copy_by(src, dest, |x, y| x < y)
 }
 
 /// Rearranges the elements in range st:
@@ -650,7 +668,7 @@ pub fn nth_element_by<Range, Compare>(
     nth: Range::Position,
     is_less: Compare,
 ) where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + SemiOutputRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
     let start = rng.start();
@@ -700,7 +718,7 @@ pub fn nth_element_by<Range, Compare>(
 /// ```
 pub fn nth_element<Range>(rng: &mut Range, nth: Range::Position)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + SemiOutputRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
@@ -710,12 +728,15 @@ where
 
 pub mod infix {
     use crate::{
-        rng, ForwardRange, OutputRange, RandomAccessRange, SemiOutputRange,
+        rng, BoundedRange, ForwardRange, OutputRange, RandomAccessRange,
+        SemiOutputRange,
     };
 
     /// `sort_range`, `sort_range_by`, `stable_sort_no_alloc`, `stable_sort_by_no_alloc`,
     /// `partial_sort`, `partial_sort_by`, `nth_element`, `nth_element_by`.
-    pub trait STLSortExt: RandomAccessRange + SemiOutputRange {
+    pub trait STLSortExt:
+        RandomAccessRange + SemiOutputRange + BoundedRange
+    {
         fn sort_range_by<Compare>(&mut self, is_less: Compare)
         where
             Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
@@ -779,10 +800,15 @@ pub mod infix {
         }
     }
 
-    impl<R> STLSortExt for R where R: RandomAccessRange + SemiOutputRange + ?Sized {}
+    impl<R> STLSortExt for R where
+        R: RandomAccessRange + SemiOutputRange + BoundedRange + ?Sized
+    {
+    }
 
     /// `stable_sort`, `stable_sort_by`.
-    pub trait STLSortOutputExt: RandomAccessRange + OutputRange {
+    pub trait STLSortOutputExt:
+        RandomAccessRange + OutputRange + BoundedRange
+    {
         fn stable_sort_by<Compare>(&mut self, is_less: Compare)
         where
             Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
@@ -798,7 +824,10 @@ pub mod infix {
         }
     }
 
-    impl<R> STLSortOutputExt for R where R: RandomAccessRange + OutputRange + ?Sized {}
+    impl<R> STLSortOutputExt for R where
+        R: RandomAccessRange + OutputRange + BoundedRange + ?Sized
+    {
+    }
 
     /// `is_sorted_until`, `is_sorted_until_by`, `is_sorted`, `is_sorted_by`, `partial_sort`,
     /// `partial_sort_by`.

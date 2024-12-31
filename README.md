@@ -53,14 +53,23 @@ rs-stl works with **ranges**. Range models linear sequence of elements.
 
   ^          ^
   |          |
-start       end
+start   end/is_end(pos)
 ```
 
 Every range has a `start` position, that is position of first element in range,
 and an `end` position, that is position just after last element in range.
+Usually end position is not known upfront and thus a range is identified with
+`[start, is_end(i))`. If end position is known upfront, range can be identified
+with `[start, end)`.
 
-To get start and end position in range `rng`, `rng.start()`, `rng.end()`
-can be used.
+By default, rs-stl assumes that end position is not known upfront. If end position
+is known upfront, that is an enhanced capability of `BoundedRange`.
+end position for non-bounded range can be known by advancing start position
+until it stops satisfying is_end.
+
+To get start position in range `rng`, `rng.start()` can be used. For checking
+if current position is end position use `rng.is_end(pos)`. If range is bounded
+use `rng.end()` to get the end position.
 
 To access any element at position `i` in `rng` do:
 
@@ -159,7 +168,7 @@ required description would be provided.
 - [x] mismatch -> mismatch_unbounded, mismatch_unbounded_by, mismatch, mismatch_by
 - [ ] find_end
 - [x] adjacent_find -> adjacent_find_if
-- [x] equal -> equals, equals_by, equals_unbounded, equals_unbounded_by
+- [x] equal -> equals, equals_by, equals_prefix, equals_prefix_by
 - [ ] search
 - [ ] search_n
 

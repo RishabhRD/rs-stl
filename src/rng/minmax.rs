@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, ForwardRange};
+use crate::ForwardRange;
 
 /// Returns position of mimimum element in range by comparator.
 ///
@@ -42,7 +42,22 @@ where
     Range: ForwardRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::min_element_by(rng, rng.start(), rng.end(), is_less)
+    let mut start = rng.start();
+    if rng.is_end(&start) {
+        return start;
+    }
+
+    let mut smallest = start.clone();
+    start = rng.after(start);
+
+    while !rng.is_end(&start) {
+        if is_less(rng.at(&start), rng.at(&smallest)) {
+            smallest = start.clone();
+        }
+        start = rng.after(start);
+    }
+
+    smallest
 }
 
 /// Returns position of mimimum element in range.
@@ -78,7 +93,7 @@ where
     Range: ForwardRange + ?Sized,
     Range::Element: Ord,
 {
-    algo::min_element(rng, rng.start(), rng.end())
+    min_element_by(rng, |x, y| x < y)
 }
 
 /// Returns position of maximum element in the range by comparator.
@@ -120,7 +135,22 @@ where
     Range: ForwardRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::max_element_by(rng, rng.start(), rng.end(), is_less)
+    let mut start = rng.start();
+    if rng.is_end(&start) {
+        return start;
+    }
+
+    let mut max = start.clone();
+    start = rng.after(start);
+
+    while !rng.is_end(&start) {
+        if !is_less(rng.at(&start), rng.at(&max)) {
+            max = start.clone();
+        }
+        start = rng.after(start);
+    }
+
+    max
 }
 
 /// Returns position of maximum element in the range.
@@ -157,7 +187,7 @@ where
     Range: ForwardRange + ?Sized,
     Range::Element: Ord,
 {
-    algo::max_element(rng, rng.start(), rng.end())
+    max_element_by(rng, |x, y| x < y)
 }
 
 /// Returns position of minimum element and maximum element in range by comparator.
@@ -203,7 +233,58 @@ where
     Range: ForwardRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::minmax_element_by(rng, rng.start(), rng.end(), is_less)
+    let mut start = rng.start();
+
+    let mut min = start.clone();
+    let mut max = start.clone();
+
+    if rng.is_end(&start) {
+        return (min, max);
+    }
+
+    start = rng.after(start);
+
+    if rng.is_end(&start) {
+        return (min, max);
+    }
+
+    if is_less(rng.at(&start), rng.at(&min)) {
+        min = start.clone();
+    } else {
+        max = start.clone();
+    }
+
+    start = rng.after(start);
+
+    while !rng.is_end(&start) {
+        let i = start.clone();
+        start = rng.after(start);
+        if rng.is_end(&start) {
+            if is_less(rng.at(&i), rng.at(&min)) {
+                min = i;
+            } else if !is_less(rng.at(&i), rng.at(&max)) {
+                max = i;
+            }
+            break;
+        } else if is_less(rng.at(&start), rng.at(&i)) {
+            if is_less(rng.at(&start), rng.at(&min)) {
+                min = start.clone();
+            }
+            if !is_less(rng.at(&i), rng.at(&max)) {
+                max = i;
+            }
+        } else {
+            if is_less(rng.at(&i), rng.at(&min)) {
+                min = i;
+            }
+            if !is_less(rng.at(&start), rng.at(&max)) {
+                max = start.clone();
+            }
+        }
+        start = rng.after(start);
+    }
+
+    (min, max)
 }
 
 /// Returns position of minimum element and maximum element in range.
@@ -244,7 +325,7 @@ where
     Range: ForwardRange + ?Sized,
     Range::Element: Ord,
 {
-    algo::minmax_element(rng, rng.start(), rng.end())
+    minmax_element_by(rng, |x, y| x < y)
 }
 
 pub mod infix {

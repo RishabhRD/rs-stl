@@ -3,7 +3,9 @@
 
 use std::{cmp::min, mem::MaybeUninit, slice};
 
-use crate::{BidirectionalRange, InputRange, OutputRange, SemiOutputRange};
+use crate::{
+    BidirectionalRange, BoundedRange, InputRange, OutputRange, SemiOutputRange,
+};
 
 use super::{copy, lower_bound_by, rotate, upper_bound_by};
 
@@ -147,7 +149,9 @@ fn merge_inplace_by_left_buffer<Range, Compare, Buffer>(
 ) where
     Range: OutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
-    Buffer: OutputRange<Element = MaybeUninit<Range::Element>> + ?Sized,
+    Buffer: OutputRange<Element = MaybeUninit<Range::Element>>
+        + BoundedRange
+        + ?Sized,
 {
     {
         let mut i = start.clone();
@@ -209,6 +213,7 @@ fn merge_inplace_by_right_buffer<Range, Compare, Buffer>(
     Range: OutputRange + BidirectionalRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
     Buffer: OutputRange<Element = MaybeUninit<Range::Element>>
+        + BoundedRange
         + BidirectionalRange
         + ?Sized,
 {

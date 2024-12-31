@@ -548,10 +548,10 @@ pub mod heap_details {
         }
     }
 
-    pub fn heap_select_copy_by<SrcRange, DestRange, Compare>(
+    pub fn heap_select_copy_by<SrcRange, DestRange, Compare, TillFn>(
         src: &SrcRange,
         mut src_start: SrcRange::Position,
-        src_end: SrcRange::Position,
+        src_till: TillFn,
         dest: &mut DestRange,
         dest_start: DestRange::Position,
         dest_end: DestRange::Position,
@@ -562,16 +562,17 @@ pub mod heap_details {
         SrcRange::Element: Clone,
         DestRange: RandomAccessRange + OutputRange + ?Sized,
         Compare: Fn(&SrcRange::Element, &SrcRange::Element) -> bool + Clone,
+        TillFn: Fn(&SrcRange::Position) -> bool,
     {
         let mut write = dest_start.clone();
-        while src_start != src_end && write != dest_end {
+        while !src_till(&src_start) && write != dest_end {
             *dest.at_mut(&write) = src.at(&src_start).clone();
             src_start = src.after(src_start);
             write = dest.after(write);
         }
 
         make_heap_by(dest, dest_start.clone(), write.clone(), is_less.clone());
-        while src_start != src_end {
+        while !src_till(&src_start) {
             if is_less(src.at(&src_start), dest.at(&dest_start)) {
                 *dest.at_mut(&dest_start) = src.at(&src_start).clone();
                 heapify(

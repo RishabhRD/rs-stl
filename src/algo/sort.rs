@@ -588,7 +588,7 @@ where
     let i = heap_select_copy_by(
         src,
         src_start,
-        src_end,
+        |i| *i == src_end,
         dest,
         dest_start.clone(),
         dest_end,

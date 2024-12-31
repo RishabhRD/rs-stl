@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, RandomAccessRange, SemiOutputRange};
+use crate::{algo, BoundedRange, RandomAccessRange, SemiOutputRange};
 
 /// Finds largest range that from start represents a heap wrt comparator.
 ///
@@ -34,7 +34,7 @@ pub fn is_heap_until_by<Range, Compare>(
     is_less: Compare,
 ) -> Range::Position
 where
-    Range: RandomAccessRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
     algo::is_heap_until_by(rng, rng.start(), rng.end(), is_less)
@@ -68,7 +68,7 @@ where
 /// ```
 pub fn is_heap_until<Range>(rng: &Range) -> Range::Position
 where
-    Range: RandomAccessRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
     algo::is_heap_until(rng, rng.start(), rng.end())
@@ -99,7 +99,7 @@ where
 /// ```
 pub fn is_heap_by<Range, Compare>(rng: &Range, is_less: Compare) -> bool
 where
-    Range: RandomAccessRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
     algo::is_heap_by(rng, rng.start(), rng.end(), is_less)
@@ -130,7 +130,7 @@ where
 /// ```
 pub fn is_heap<Range>(rng: &Range) -> bool
 where
-    Range: RandomAccessRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + ?Sized,
     Range::Element: Ord,
 {
     algo::is_heap(rng, rng.start(), rng.end())
@@ -172,7 +172,7 @@ where
 /// ```
 pub fn push_heap_by<Range, Compare>(rng: &mut Range, is_less: Compare)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
     let start = rng.start();
@@ -215,7 +215,7 @@ where
 /// ```
 pub fn push_heap<Range>(rng: &mut Range)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + SemiOutputRange + ?Sized,
     Range::Element: Ord,
 {
     push_heap_by(rng, |x, y| x < y)
@@ -255,7 +255,7 @@ where
 /// ```
 pub fn pop_heap_by<Range, Compare>(rng: &mut Range, is_less: Compare)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool,
 {
     let start = rng.start();
@@ -296,7 +296,7 @@ where
 /// ```
 pub fn pop_heap<Range>(rng: &mut Range)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + SemiOutputRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
@@ -333,7 +333,7 @@ where
 /// ```
 pub fn sort_heap_by<Range, Compare>(rng: &mut Range, is_less: Compare)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -370,7 +370,7 @@ where
 /// ```
 pub fn sort_heap<Range>(rng: &mut Range)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + SemiOutputRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
@@ -407,7 +407,7 @@ where
 /// ```
 pub fn make_heap_by<Range, Compare>(rng: &mut Range, is_less: Compare)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let start = rng.start();
@@ -443,7 +443,7 @@ where
 /// ```
 pub fn make_heap<Range>(rng: &mut Range)
 where
-    Range: RandomAccessRange + SemiOutputRange + ?Sized,
+    Range: RandomAccessRange + BoundedRange + SemiOutputRange + ?Sized,
     Range::Element: Ord,
 {
     let start = rng.start();
@@ -452,31 +452,10 @@ where
 }
 
 pub mod infix {
-    use crate::{rng, RandomAccessRange, SemiOutputRange};
+    use crate::{rng, BoundedRange, RandomAccessRange, SemiOutputRange};
 
     /// `is_heap_until`, `is_heap_until_by`.
-    pub trait STLHeapExt: RandomAccessRange {
-        fn is_heap_until_by<Compare>(&self, is_less: Compare) -> Self::Position
-        where
-            Compare: Fn(&Self::Element, &Self::Element) -> bool;
-
-        fn is_heap_until(&self) -> Self::Position
-        where
-            Self::Element: Ord;
-
-        fn is_heap_by<Compare>(&self, is_less: Compare) -> bool
-        where
-            Compare: Fn(&Self::Element, &Self::Element) -> bool;
-
-        fn is_heap(&self) -> bool
-        where
-            Self::Element: Ord;
-    }
-
-    impl<R> STLHeapExt for R
-    where
-        R: RandomAccessRange + ?Sized,
-    {
+    pub trait STLHeapExt: RandomAccessRange + BoundedRange {
         fn is_heap_until_by<Compare>(&self, is_less: Compare) -> Self::Position
         where
             Compare: Fn(&Self::Element, &Self::Element) -> bool,
@@ -506,44 +485,11 @@ pub mod infix {
         }
     }
 
+    impl<R> STLHeapExt for R where R: RandomAccessRange + BoundedRange + ?Sized {}
+
     /// `push_heap`, `push_heap_by`, `pop_heap`, `pop_heap_by`, `make_heap`, `make_heap_by`, `sort_heap`, `sort_heap_by`.
-    pub trait STLOutputHeapExt: RandomAccessRange + SemiOutputRange {
-        fn push_heap_by<Compare>(&mut self, is_less: Compare)
-        where
-            Compare: Fn(&Self::Element, &Self::Element) -> bool;
-
-        fn push_heap(&mut self)
-        where
-            Self::Element: Ord;
-
-        fn pop_heap_by<Compare>(&mut self, is_less: Compare)
-        where
-            Compare: Fn(&Self::Element, &Self::Element) -> bool;
-
-        fn pop_heap(&mut self)
-        where
-            Self::Element: Ord;
-
-        fn sort_heap_by<Compare>(&mut self, is_less: Compare)
-        where
-            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone;
-
-        fn sort_heap(&mut self)
-        where
-            Self::Element: Ord;
-
-        fn make_heap_by<Compare>(&mut self, is_less: Compare)
-        where
-            Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone;
-
-        fn make_heap(&mut self)
-        where
-            Self::Element: Ord;
-    }
-
-    impl<R> STLOutputHeapExt for R
-    where
-        R: RandomAccessRange + SemiOutputRange + ?Sized,
+    pub trait STLOutputHeapExt:
+        RandomAccessRange + BoundedRange + SemiOutputRange
     {
         fn push_heap_by<Compare>(&mut self, is_less: Compare)
         where
@@ -598,5 +544,10 @@ pub mod infix {
         {
             rng::make_heap(self);
         }
+    }
+
+    impl<R> STLOutputHeapExt for R where
+        R: RandomAccessRange + BoundedRange + SemiOutputRange + ?Sized
+    {
     }
 }

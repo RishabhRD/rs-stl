@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{
-    algo, InputRange, OutputRange, Regular, SemiOutputRange, SemiRegular,
-};
+use crate::{InputRange, OutputRange, Regular, SemiOutputRange, SemiRegular};
 
 /// Moves all except first of adjacent equivalent elements by given equivalence relationship to end
 /// of range.
@@ -49,7 +47,22 @@ where
     Range: SemiOutputRange + ?Sized,
     BinaryPred: Fn(&Range::Element, &Range::Element) -> bool,
 {
-    algo::unique_by(rng, rng.start(), rng.end(), bi_pred)
+    let mut start = rng.start();
+    if rng.is_end(&start) {
+        return start;
+    }
+    let mut result = start.clone();
+    start = rng.after(start);
+    while !rng.is_end(&start) {
+        if !bi_pred(rng.at(&result), rng.at(&start)) {
+            result = rng.after(result);
+            if result != start {
+                rng.swap_at(&result, &start);
+            }
+        }
+        start = rng.after(start);
+    }
+    rng.after(result)
 }
 
 /// Moves all except first of adjacent equal elements to end of range.
@@ -90,7 +103,7 @@ where
     Range: SemiOutputRange + ?Sized,
     Range::Element: SemiRegular,
 {
-    algo::unique(rng, rng.start(), rng.end())
+    unique_by(rng, |x, y| x == y)
 }
 
 pub mod infix {
@@ -168,14 +181,21 @@ where
     SrcRange::Element: Clone,
     BinaryPred: Fn(&SrcRange::Element, &SrcRange::Element) -> bool,
 {
-    algo::unique_copy_by(
-        src,
-        src.start(),
-        src.end(),
-        dest,
-        dest.start(),
-        bi_pred,
-    )
+    let mut start = src.start();
+    let mut out = dest.start();
+    if src.is_end(&start) {
+        return out;
+    }
+    *dest.at_mut(&out) = src.at(&start).clone();
+    start = src.after(start);
+    while !src.is_end(&start) {
+        if !bi_pred(dest.at(&out), src.at(&start)) {
+            out = dest.after(out);
+            *dest.at_mut(&out) = src.at(&start).clone();
+        }
+        start = src.after(start);
+    }
+    dest.after(out)
 }
 
 /// Copies all elements from src to dest with copying only first of adjacent equal elements.
@@ -213,5 +233,5 @@ where
     DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
     SrcRange::Element: Regular,
 {
-    algo::unique_copy(src, src.start(), src.end(), dest, dest.start())
+    unique_copy_by(src, dest, |x, y| x == y)
 }
