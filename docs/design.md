@@ -14,7 +14,7 @@ rs-stl contains 2 kind of entities:
 And supports following operations:
 
 1. Algorithms over ranges
-2. Composition of views
+2. Lazy composition of views
 
 ## Entities
 
@@ -181,4 +181,60 @@ version import `rng::infix::*`.
 
 See `stl::algo` and `stl::rng` module for knowing about all algorithms rs-stl supports.
 
-### View Composition
+### Lazy composition of views
+
+This operation is similar to what Rust Iterator provides, but way more
+powerful than that.
+
+It would be easy to understand with an example:
+
+```rust
+use stl::*;
+use rng::infix::*;
+
+let arr = [1, 2, 3];
+
+let v = arr.view().map(|x| *x + 1);
+assert!(v.equals(&[2, 3, 4]));
+assert!(arr.equals(&[2, 3, 4])); // arr is not changed
+```
+
+In the above example, `v` is a view over `arr` with mapping elements to `ele + 1`.
+However, that doesn't change arr at all.
+
+The given function is not even applied on line:
+`let v = arr.view().map(|x| *x + 1);`.
+Rather, it would be applied when actually element is accessed using position,
+that `equals` algorithm does. So, composition of views are lazy in nature whereas,
+the algorithms provided by `algo::` or `rng::` module are eager in nature.
+
+This allows to chain view adaptors to create a higher order view without
+worrying about intermediate allocations as views are non-owning ranges. This can
+be seen like functional programming approach.
+
+Another advantage of non-ownership is, views can be used to represent infinite
+ranges:
+
+```rust
+let v = view::ints(0); // 0, 1, 2, 3, ...
+```
+
+One can have immutable/mutable view to ranges.
+This allows views to be used with all eager generic algorithms. And as result,
+inplace mutation of data can be achieved using views.
+
+For example, this is possible with views, but not with rust iterators:
+
+```rust
+use stl::*;
+use rng::infix::*;
+
+let mut arr = [(1, 2), (2, 1))];
+arr.view_mut().map(|x| x.1).sort_range();
+assert_eq!(arr, [(2, 1), (1, 2)]);
+```
+
+View adaptors like `map` operates over views and consumes the given view.
+
+See `stl::view` module for more information about views and all supported
+view adaptors.
