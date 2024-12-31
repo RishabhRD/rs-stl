@@ -12,7 +12,7 @@ composable algorithms over C++ iterators.
 rs-stl ports C++ STL algorithms to rust by using concepts of Positions instead
 of Iterators to support rust borrow rules.
 
-## Documentation
+## API Documentation
 
 View detailed documentation at: [rs-stl docs](https://rishabhrd.github.io/rs-stl/).
 
@@ -57,7 +57,7 @@ let cnt = arr.count_if(|x| x % 2 == 1);
 assert_eq!(cnt, 2);
 ```
 
-See documentation for support for all styles.
+See API documentation for support for all styles.
 
 ### Views
 
