@@ -21,7 +21,8 @@
 
 use crate::{InputRange, SemiOutputRange};
 
-pub mod view_details {
+#[doc(hidden)]
+pub mod __view_details {
     use crate::{
         BidirectionalRange, BoundedRange, ForwardRange, InputRange,
         OutputRange, RandomAccessRange, SemiOutputRange, View,
@@ -211,8 +212,8 @@ pub trait STLViewExt: InputRange {
     /// arr.view().for_each(|x| sum += x);
     /// assert_eq!(sum, 6);
     /// ```
-    fn view(&self) -> view_details::RangeView<Self> {
-        view_details::RangeView { range: self }
+    fn view(&self) -> __view_details::RangeView<Self> {
+        __view_details::RangeView { range: self }
     }
 }
 impl<R> STLViewExt for R where R: InputRange + ?Sized {}
@@ -232,8 +233,8 @@ pub trait STLMutableViewExt: SemiOutputRange {
     /// arr.view_mut().sort_range();
     /// assert_eq!(arr, [1, 2, 3]);
     /// ```
-    fn view_mut(&mut self) -> view_details::RangeMutView<Self> {
-        view_details::RangeMutView { range: self }
+    fn view_mut(&mut self) -> __view_details::RangeMutView<Self> {
+        __view_details::RangeMutView { range: self }
     }
 }
 
