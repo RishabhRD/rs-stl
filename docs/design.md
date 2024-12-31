@@ -177,7 +177,9 @@ assert_eq!(n, 1);
 ```
 
 For using `algo::` and `rng::` version just import `stl::*`. For using infix
-version import `rng::infix::*`.
+version import `rng::infix::*`. `algo::` version seems unnecessary, however it
+is supported as it serves well while compsing eager algorithms to form new
+algorithms.
 
 See `stl::algo` and `stl::rng` module for knowing about all algorithms rs-stl supports.
 
