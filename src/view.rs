@@ -196,7 +196,7 @@ pub mod view_details {
 }
 
 /// Provides `view` method for ranges.
-pub trait ViewExt: InputRange {
+pub trait STLViewExt: InputRange {
     /// Returns view that immutably borrows from self.
     ///
     /// `Position` for the view would be same as `Position` type of self.
@@ -215,10 +215,10 @@ pub trait ViewExt: InputRange {
         view_details::RangeView { range: self }
     }
 }
-impl<R> ViewExt for R where R: InputRange + ?Sized {}
+impl<R> STLViewExt for R where R: InputRange + ?Sized {}
 
 /// Provides `view_mut` method for ranges.
-pub trait MutableViewExt: SemiOutputRange {
+pub trait STLMutableViewExt: SemiOutputRange {
     /// Returns view that mutably borrows from self.
     ///
     /// `Position` for the view would be same as `Position` type of self.
@@ -237,4 +237,4 @@ pub trait MutableViewExt: SemiOutputRange {
     }
 }
 
-impl<R> MutableViewExt for R where R: SemiOutputRange + ?Sized {}
+impl<R> STLMutableViewExt for R where R: SemiOutputRange + ?Sized {}
