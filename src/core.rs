@@ -198,3 +198,12 @@ pub trait OutputRange: SemiOutputRange {
     /// O(1)
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
 }
+
+/// Marker trait for a view.
+///
+/// A view is also a range. However, unlike `Vec<T>`, view is intended for used
+/// as non-owning range i.e., it can be one of following:
+/// 1. refers to another range.
+/// 2. owns another view.
+/// 3. doesn't actually contains any element.
+pub trait View: InputRange {}
