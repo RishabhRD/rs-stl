@@ -57,9 +57,10 @@ start   end/is_end(pos)
 ```
 
 Every range has a `start` position, that is position of first element in range,
-and an `end` position, that is position just after last element in range. Many
-times end position is not known upfront, instead end is identified by `rng.is_end(i)`
-expression.
+and an `end` position, that is position just after last element in range.
+Usually end position is not known upfront and thus a range is identified with
+`[start, is_end(i))`. If end position is known upfront, range can be identified
+with `[start, end)`.
 
 By default, rs-stl assumes that end position is not known upfront. If end position
 is known upfront, that is an enhanced capability of `BoundedRange`.
