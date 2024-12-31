@@ -181,7 +181,7 @@ version import `rng::infix::*`. `algo::` version seems unnecessary, however it
 is supported as it serves well while compsing eager algorithms to form new
 algorithms.
 
-See `stl::algo` and `stl::rng` module for knowing about all algorithms rs-stl supports.
+See API Documentation `stl::algo` and `stl::rng` module for knowing about all algorithms rs-stl supports.
 
 ### Lazy composition of views
 
@@ -238,5 +238,5 @@ assert_eq!(arr, [(2, 1), (1, 2)]);
 
 View adaptors like `map` operates over views and consumes the given view.
 
-See `stl::view` module for more information about views and all supported
+See API Documentation `stl::view` module for more information about views and all supported
 view adaptors.
