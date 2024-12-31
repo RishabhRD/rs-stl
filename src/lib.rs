@@ -130,6 +130,9 @@ pub mod core;
 pub mod rng;
 pub mod slice;
 pub mod vec;
+pub mod view;
 
 #[doc(inline)]
 pub use core::*;
+#[doc(inline)]
+pub use view::*;
