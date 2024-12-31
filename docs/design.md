@@ -98,6 +98,66 @@ If `rng` is a range, then:
 - `rng.swap_at(&i, &j)` to swap elements at position i and j **if range is SemiOutputRange**.
 - `rng.at_mut(&i)` to access element at position i mutably **if range is OutputRange**.
 
+#### Range Internals
+
+It is really important 2 understand 2 traits first before understanding range
+internals:
+
+```rust
+pub trait SemiRegular: Eq {}
+pub trait Regular: SemiRegular + Clone {}
+```
+
+The range definitions rely on these traits for their working. These traits are
+ideas from Alex Stepanov. rs-stl provides default implementation of these traits
+as well:
+
+```rust
+impl<T> SemiRegular for T where T: Eq {}
+impl<T> Regular for T where T: SemiRegular + Clone {}
+```
+
+Internals about `InputRange` will help to learn about ranges in general, as it
+is the most primitive range:
+
+```rust
+pub trait InputRange {
+    type Element;
+    type Position: SemiRegular;
+
+    fn start(&self) -> Self::Position;
+    fn is_end(&self, i: &Self::Position) -> bool;
+    fn after(&self, i: Self::Position) -> Self::Position;
+    fn after_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
+        while n > 0 {
+            i = self.after(i);
+            n -= 1;
+        }
+        i
+    }
+    fn at(&self, i: &Self::Position) -> &Self::Element;
+}
+```
+
+Every range has 2 typedefs:
+
+- `Element` defining the type of element range contains.
+- `Position` defining the type of position in range.
+
+For supporting single-pass nature of `InputRange`, `Position` is `SemiRegular`
+so that, position can't be copied for independent traversal.
+
+InputRange also defines O(n) implementation for `after_n` method. If any struct
+implementing `InputRange` have better implementation, it can override the
+same for more efficient implementation. Usually, structs like `Vec` provide
+O(1) implementation for the same.
+
+This overriding of default methods become important when workin with
+`RandomAccessRange` as it requires these methods to work in O(1).
+
+`ForwardRange` relaxes the `Position` to be `Regular` and thus positions can
+be cloned and used for multi-pass traversal.
+
 ### Views
 
 `Views` are intended to be used as non-owning range. That means view itself is
