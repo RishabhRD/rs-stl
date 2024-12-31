@@ -31,7 +31,7 @@ pub mod view_details {
         pub range: &'a Range,
     }
 
-    pub struct RangeMutView<'a, Range: InputRange + ?Sized> {
+    pub struct RangeMutView<'a, Range: SemiOutputRange + ?Sized> {
         pub range: &'a mut Range,
     }
 
@@ -45,7 +45,7 @@ pub mod view_details {
     }
 
     impl<R> View for RangeView<'_, R> where R: InputRange + ?Sized {}
-    impl<R> View for RangeMutView<'_, R> where R: InputRange + ?Sized {}
+    impl<R> View for RangeMutView<'_, R> where R: SemiOutputRange + ?Sized {}
 
     impl<R> InputRange for RangeView<'_, R>
     where
@@ -78,7 +78,7 @@ pub mod view_details {
 
     impl<R> InputRange for RangeMutView<'_, R>
     where
-        R: InputRange + ?Sized,
+        R: SemiOutputRange + ?Sized,
     {
         type Element = R::Element;
 
@@ -116,7 +116,7 @@ pub mod view_details {
 
     impl<R> BoundedRange for RangeMutView<'_, R>
     where
-        R: BoundedRange + ?Sized,
+        R: BoundedRange + SemiOutputRange + ?Sized,
     {
         fn end(&self) -> Self::Position {
             self.range.end()
@@ -134,7 +134,7 @@ pub mod view_details {
 
     impl<R> ForwardRange for RangeMutView<'_, R>
     where
-        R: ForwardRange + ?Sized,
+        R: SemiOutputRange + ?Sized,
     {
         fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
             self.range.distance(from, to)
@@ -156,7 +156,7 @@ pub mod view_details {
 
     impl<R> BidirectionalRange for RangeMutView<'_, R>
     where
-        R: BidirectionalRange + ?Sized,
+        R: BidirectionalRange + SemiOutputRange + ?Sized,
     {
         fn before(&self, i: Self::Position) -> Self::Position {
             self.range.before(i)
@@ -172,7 +172,7 @@ pub mod view_details {
     {
     }
     impl<R> RandomAccessRange for RangeMutView<'_, R> where
-        R: RandomAccessRange + ?Sized
+        R: RandomAccessRange + SemiOutputRange + ?Sized
     {
     }
 
@@ -198,6 +198,19 @@ pub mod view_details {
 /// Provides `view` method for ranges.
 pub trait ViewExt: InputRange {
     /// Returns view that immutably borrows from self.
+    ///
+    /// `Position` for the view would be same as `Position` type of self.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    /// use rng::infix::*;
+    ///
+    /// let mut sum = 0;
+    /// let arr = [1, 2, 3];
+    /// arr.view().for_each(|x| sum += x);
+    /// assert_eq!(sum, 6);
+    /// ```
     fn view(&self) -> view_details::RangeView<Self> {
         view_details::RangeView { range: self }
     }
@@ -207,6 +220,18 @@ impl<R> ViewExt for R where R: InputRange + ?Sized {}
 /// Provides `view_mut` method for ranges.
 pub trait MutableViewExt: SemiOutputRange {
     /// Returns view that mutably borrows from self.
+    ///
+    /// `Position` for the view would be same as `Position` type of self.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    /// use rng::infix::*;
+    ///
+    /// let mut arr = [2, 1, 3];
+    /// arr.view_mut().sort_range();
+    /// assert_eq!(arr, [1, 2, 3]);
+    /// ```
     fn view_mut(&mut self) -> view_details::RangeMutView<Self> {
         view_details::RangeMutView { range: self }
     }
