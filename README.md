@@ -18,88 +18,13 @@ View detailed documentation at: [rs-stl docs](https://rishabhrd.github.io/rs-stl
 
 ## Design
 
-rs-stl is port of C++ STL to rust. C++ STL works over abstraction of iterators.
-Iterators in C++ are generalization of pointers. However, pointers have
-reference semantics so does iterators. Most STL algorithms need 2 iterators
-to work upon. However, this model can't be adopted to rust. As an example,
-in reverse example algorithm needs 2 mutable iterators to data structure.
-However, then there would 2 mutable borrows from same data structure at
-same time. That is not possible in rust.
+View design at: [rs-stl design](./docs/design.md)
 
-Thus rs-stl works with idea of `Positions`. Positions are generalization of
-indexes as iterators were generalization of pointers.
+## Sample Usage
 
-Considering example of array. In C++ there are 2 ways to traverse array `arr`:
+### Algorithms
 
-1. Pointer -> \*arr, ++arr
-2. Indexes -> arr[i], ++i;
-
-As iterators are all about abstraction to traverse linear range, a similar
-alternative is required. The above array example suggests, indexes are the
-one. Which is generalized and is called `Position` in rs-stl. Position
-type doesn't need to be integers and can be any type that follows below
-trait requirements.
-
-As from above example, its clear that Position doesn't have reference semantics.
-Position doesn't borrow from data structure. Thus multiple positions can
-be passed to algorithms. Also data structures are required to access
-element at any position. Thus, this solution would not have problem of
-dangling iterator.
-
-rs-stl works with **ranges**. Range models linear sequence of elements.
-
-```
-  _ _ _ _ _
-
-  ^          ^
-  |          |
-start   end/is_end(pos)
-```
-
-Every range has a `start` position, that is position of first element in range,
-and an `end` position, that is position just after last element in range.
-Usually end position is not known upfront and thus a range is identified with
-`[start, is_end(i))`. If end position is known upfront, range can be identified
-with `[start, end)`.
-
-By default, rs-stl assumes that end position is not known upfront. If end position
-is known upfront, that is an enhanced capability of `BoundedRange`.
-end position for non-bounded range can be known by advancing start position
-until it stops satisfying is_end.
-
-To get start position in range `rng`, `rng.start()` can be used. For checking
-if current position is end position use `rng.is_end(pos)`. If range is bounded
-use `rng.end()` to get the end position.
-
-To access any element at position `i` in `rng` do:
-
-- `rng.at(&i)` -> for immutable access
-- `rng.at_mut(&i)` -> for mutable access
-
-NOTE: end position can not be accessed for element with above methods.
-
-To get to next position from current position `i` in range `rng`,
-`rng.after(i)` can be used.
-
-See the trait docs for more information.
-
-## How to use
-
-rs-stl supports following operation with ranges:
-
-1. Algorithms (algo and rng module)
-
-Please look at module docs for more information for the same.
-
-#### Algorithms
-
-Let's take an example of `std::count_if` in rs-stl, how to use this algorithm.
-
-1. algo module
-2. rng module
-
-algo module contains algorithms which require position start and end to
-be passed explicitly. Using that:
+Using `algo` module:
 
 ```rust
 use stl::*;
@@ -109,8 +34,7 @@ let cnt = algo::count_if(&arr, arr.start(), arr.end(), |x| x % 2 == 1);
 assert_eq!(cnt, 2);
 ```
 
-rng module contains algo module algorithms overload, which doesn't need
-start and end positions to be passed explicitly.
+Using `rng` module:
 
 ```rust
 use stl::*;
@@ -120,8 +44,7 @@ let cnt = rng::count_if(&arr, |x| x % 2 == 1);
 assert_eq!(cnt, 2);
 ```
 
-For many algorithms rng module also provides infix overload inside rng::infix
-module.
+Using infix style of `rng` module:
 
 ```rust
 use stl::*;
@@ -132,6 +55,40 @@ let cnt = arr.count_if(|x| x % 2 == 1);
 assert_eq!(cnt, 2);
 ```
 
+See documentation for support for all styles.
+
+### Views
+
+Views can be lazily composed to form new view. One can form
+
+immutable view to range:
+
+```rust
+use stl::*;
+use rng::infix::*;
+
+let arr = [1, 2, 3];
+let cnt = arr
+           .view()
+           .map(|x| *x + 1)
+           .count_if(|x| x % 2 == 1);
+assert_eq!(cnt, 1);
+```
+
+mutable view to range:
+
+```rust
+use stl::*;
+use rng::infix::*;
+
+let mut arr = [(1, 2), (2, 1)];
+arr
+  .view()
+  .map(|x| x.1)
+  .sort_range();
+assert_eq!(arr, [(2, 1), (1, 2)]);
+```
+
 ## Support for standard library
 
 Currently range concepts have been implemented for:
@@ -140,13 +97,6 @@ Currently range concepts have been implemented for:
 - \[T\]
 - Vec<T>
   In future, we plan to support more data structures from standard library.
-
-TODO: Not sure, how to deal with
-
-- str
-- String
-
-correctly?
 
 ## Algorithms Implemented / Planned to Implement
 
