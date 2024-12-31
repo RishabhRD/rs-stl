@@ -12,6 +12,21 @@ composable algorithms over C++ iterators.
 rs-stl ports C++ STL algorithms to rust by using concepts of Positions instead
 of Iterators to support rust borrow rules.
 
+## Basic Idea
+
+- STL provides generic algorithms with use of iterators. Iterators can be seen
+  as generalization of pointers.
+- With pointers one can traverse an array with accessing elements, that iterators
+  generalized for any linear sequence of elements.
+- However, using indexes in array one can achieve the same.
+- Porting iterators to rust is not possible, as iterators borrows from range.
+  And most algorithms requires 2 iterators. If mutation is required,
+  rust borrow checker would not allow it.
+- So, rs-stl generalizes indexes with Positions. And as index doesn't borrow
+  from array, thus Position doesn't need to borrow from range.
+- Then, STL algorithms accepting 2 iterators can be replaced with rs-stl algorithms
+  accepting a range and 2 positions.
+
 ## API Documentation
 
 View detailed documentation at: [rs-stl docs](https://rishabhrd.github.io/rs-stl/).
