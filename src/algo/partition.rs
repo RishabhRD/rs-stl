@@ -343,7 +343,7 @@ pub mod partition_details {
         while buf_cur != buf_write {
             unsafe {
                 std::mem::swap(
-                    rng.at_mut(&rng_write),
+                    (&mut rng.at_mut(&rng_write)) as &mut Range::Element,
                     buf.at_mut(&buf_cur).assume_init_mut(),
                 );
             }

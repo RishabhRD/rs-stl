@@ -42,7 +42,10 @@ where
     let mut start2 = rng2.start();
 
     while !rng1.is_end(&start1) && !rng2.is_end(&start2) {
-        std::mem::swap(rng1.at_mut(&start1), rng2.at_mut(&start2));
+        std::mem::swap(
+            (&mut rng1.at_mut(&start1)) as &mut R1::Element,
+            (&mut rng2.at_mut(&start2)) as &mut R2::Element,
+        );
         start1 = rng1.after(start1);
         start2 = rng2.after(start2);
     }
