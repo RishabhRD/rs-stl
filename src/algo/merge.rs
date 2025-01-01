@@ -192,7 +192,7 @@ fn merge_inplace_by_left_buffer<Range, Compare, Buffer>(
     while left_pos != left_end {
         unsafe {
             std::mem::swap(
-                rng.at_mut(&merge),
+                &mut rng.at_mut(&merge) as &mut Range::Element,
                 buf.at_mut(&left_pos).assume_init_mut(),
             );
         }
@@ -262,7 +262,7 @@ fn merge_inplace_by_right_buffer<Range, Compare, Buffer>(
         merge = rng.before(merge);
         unsafe {
             std::mem::swap(
-                rng.at_mut(&merge),
+                &mut rng.at_mut(&merge) as &mut Range::Element,
                 buf.at_mut(&right_pos).assume_init_mut(),
             );
         }
