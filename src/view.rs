@@ -54,6 +54,12 @@ pub mod __view_details {
     {
         type Element = R::Element;
 
+        type ElementRef<'a>
+            = R::ElementRef<'a>
+        where
+            R: 'a,
+            Self: 'a;
+
         type Position = R::Position;
 
         fn start(&self) -> Self::Position {
@@ -68,7 +74,7 @@ pub mod __view_details {
             self.range.after(i)
         }
 
-        fn at(&self, i: &Self::Position) -> &Self::Element {
+        fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a> {
             self.range.at(i)
         }
 
@@ -83,6 +89,12 @@ pub mod __view_details {
     {
         type Element = R::Element;
 
+        type ElementRef<'a>
+            = R::ElementRef<'a>
+        where
+            R: 'a,
+            Self: 'a;
+
         type Position = R::Position;
 
         fn start(&self) -> Self::Position {
@@ -97,7 +109,7 @@ pub mod __view_details {
             self.range.after(i)
         }
 
-        fn at(&self, i: &Self::Position) -> &Self::Element {
+        fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a> {
             self.range.at(i)
         }
 
@@ -190,7 +202,16 @@ pub mod __view_details {
     where
         R: OutputRange + ?Sized,
     {
-        fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
+        type ElementMutRef<'a>
+            = R::ElementMutRef<'a>
+        where
+            R: 'a,
+            Self: 'a;
+
+        fn at_mut<'a>(
+            &'a mut self,
+            i: &Self::Position,
+        ) -> Self::ElementMutRef<'a> {
             self.range.at_mut(i)
         }
     }
