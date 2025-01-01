@@ -257,8 +257,9 @@ fn merge_inplace_by_right_buffer<Range, Compare, Buffer>(
             let l = {
                 let left_elem =
                     &rng.at(&rng.before(left_pos.clone())) as &Range::Element;
-                let right_elem_raw =
-                    (&mut (buf.at_mut(&right_pos))) as &mut Buffer::Element;
+                let right_elem_raw = (&mut (buf
+                    .at_mut(&buf.before(right_pos.clone()))))
+                    as &mut Buffer::Element;
                 let right_elem = right_elem_raw.assume_init_mut();
 
                 !is_less(right_elem, left_elem)
@@ -267,8 +268,9 @@ fn merge_inplace_by_right_buffer<Range, Compare, Buffer>(
             if l {
                 merge = rng.before(merge);
                 {
-                    let right_elem_raw =
-                        (&mut (buf.at_mut(&right_pos))) as &mut Buffer::Element;
+                    let right_elem_raw = (&mut (buf
+                        .at_mut(&buf.before(right_pos.clone()))))
+                        as &mut Buffer::Element;
                     let right_elem = right_elem_raw.assume_init_mut();
                     std::mem::swap(
                         &mut rng.at_mut(&merge) as &mut Range::Element,
