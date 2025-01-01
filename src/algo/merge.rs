@@ -224,7 +224,9 @@ fn merge_inplace_by_right_buffer<Range, Compare, Buffer>(
         let mut j = buf.start();
         while i != end {
             unsafe {
-                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(rng.at(&i)));
+                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(
+                    (&rng.at(&i)) as &Range::Element,
+                ));
             }
             i = rng.after(i);
             j = buf.after(j);
