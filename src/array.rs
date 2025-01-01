@@ -11,6 +11,11 @@ use crate::{
 impl<T, const N: usize> InputRange for [T; N] {
     type Element = T;
 
+    type ElementRef<'a>
+        = &'a T
+    where
+        Self: 'a;
+
     type Position = usize;
 
     fn start(&self) -> Self::Position {
@@ -25,7 +30,7 @@ impl<T, const N: usize> InputRange for [T; N] {
         i + n
     }
 
-    fn at(&self, i: &Self::Position) -> &Self::Element {
+    fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a> {
         &self[*i]
     }
 

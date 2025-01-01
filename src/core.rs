@@ -40,6 +40,14 @@ pub trait InputRange {
     /// Type of the positions in self
     type Position: SemiRegular;
 
+    /// Type of reference to element.
+    ///
+    /// Very useful in scenarios when range actually doesn't contain the elements
+    /// and proxy reference is necessary
+    type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
+    where
+        Self: 'a;
+
     /// Returns the position of first element in self,
     /// or if self is empty then start() == end()
     fn start(&self) -> Self::Position;
@@ -75,7 +83,7 @@ pub trait InputRange {
     ///
     /// # Complexity Requirement
     /// O(1)
-    fn at(&self, i: &Self::Position) -> &Self::Element;
+    fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a>;
 }
 
 /// Models a bounded range, i.e., the range whose end position is known.
