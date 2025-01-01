@@ -43,7 +43,7 @@ pub trait InputRange {
     /// Type of reference to element.
     ///
     /// Very useful in scenarios when range actually doesn't contain the elements
-    /// and proxy reference is necessary
+    /// and proxy reference is necessary.
     type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
     where
         Self: 'a;
@@ -197,6 +197,14 @@ pub trait SemiOutputRange: ForwardRange {
 ///    For the same, `at_mut` function is required that returns mutable
 ///    reference to element at any position.
 pub trait OutputRange: SemiOutputRange {
+    /// Type of mutable reference to element.
+    ///
+    /// Very useful in scenarios when range actually doesn't contain the elements
+    /// and proxy mutable reference is necessary.
+    type ElementMutRef<'a>: std::ops::DerefMut<Target = Self::Element>
+    where
+        Self: 'a;
+
     /// Access element at position i
     ///
     /// # Precondition
@@ -204,7 +212,7 @@ pub trait OutputRange: SemiOutputRange {
     ///
     /// # Complexity Requirement
     /// O(1)
-    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
+    fn at_mut<'a>(&'a mut self, i: &Self::Position) -> Self::ElementMutRef<'a>;
 }
 
 /// Marker trait for a view.

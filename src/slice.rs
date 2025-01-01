@@ -70,7 +70,12 @@ impl<T> SemiOutputRange for [T] {
 }
 
 impl<T> OutputRange for [T] {
-    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
+    type ElementMutRef<'a>
+        = &'a mut T
+    where
+        Self: 'a;
+
+    fn at_mut<'a>(&'a mut self, i: &Self::Position) -> Self::ElementMutRef<'a> {
         &mut self[*i]
     }
 }
