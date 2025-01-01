@@ -39,7 +39,7 @@ where
     BinaryOp: Fn(Result, &Range::Element) -> Result,
 {
     while start != end {
-        init = op(init, rng.at(&start));
+        init = op(init, &rng.at(&start));
         start = rng.after(start);
     }
     init
@@ -82,7 +82,7 @@ where
 {
     while start != end {
         end = rng.before(end);
-        init = op(rng.at(&end), init);
+        init = op(&rng.at(&end), init);
     }
     init
 }

@@ -33,7 +33,7 @@ where
 {
     let mut start = rng.start();
     while !rng.is_end(&start) {
-        if !pred(rng.at(&start)) {
+        if !pred(&rng.at(&start)) {
             return false;
         }
         start = rng.after(start);
@@ -71,7 +71,7 @@ where
 {
     let mut start = rng.start();
     while !rng.is_end(&start) {
-        if pred(rng.at(&start)) {
+        if pred(&rng.at(&start)) {
             return true;
         }
         start = rng.after(start);
@@ -109,7 +109,7 @@ where
 {
     let mut start = rng.start();
     while !rng.is_end(&start) {
-        if pred(rng.at(&start)) {
+        if pred(&rng.at(&start)) {
             return false;
         }
         start = rng.after(start);

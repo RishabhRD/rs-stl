@@ -37,7 +37,7 @@ where
 {
     let mut start = rng.start();
     while !rng.is_end(&start) {
-        if pred(rng.at(&start)) {
+        if pred(&rng.at(&start)) {
             break;
         }
         start = rng.after(start)

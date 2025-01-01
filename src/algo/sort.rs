@@ -348,7 +348,7 @@ where
     let mut prev = start.clone();
     start = rng.after(start);
     while start != end {
-        if is_less(rng.at(&start), rng.at(&prev)) {
+        if is_less(&rng.at(&start), &rng.at(&prev)) {
             return start;
         }
         prev = start.clone();
@@ -711,7 +711,7 @@ pub fn nth_element_by<Range, Compare>(
         rng.swap_at(&pivot, &last_ele_pos);
         pivot =
             partition_pos(rng, start.clone(), last_ele_pos.clone(), |r, i| {
-                is_less(r.at(i), r.at(&last_ele_pos))
+                is_less(&r.at(i), &r.at(&last_ele_pos))
             });
         rng.swap_at(&pivot, &last_ele_pos);
 
@@ -794,7 +794,7 @@ pub mod sort_details {
         while i != end {
             let mut j = i.clone();
             while j != start
-                && is_less(rng.at(&j), rng.at(&rng.before(j.clone())))
+                && is_less(&rng.at(&j), &rng.at(&rng.before(j.clone())))
             {
                 let prev = rng.before(j.clone());
                 rng.swap_at(&prev, &j);
@@ -827,7 +827,7 @@ pub mod sort_details {
         let partition_start = rng.after(pivot.clone());
         let partition_point =
             partition_pos(rng, partition_start, end.clone(), |r, i| {
-                is_less(r.at(i), r.at(&pivot))
+                is_less(&r.at(i), &r.at(&pivot))
             });
         let left_end = rng.before(partition_point.clone());
         rng.swap_at(&pivot, &left_end);
@@ -908,7 +908,7 @@ pub mod sort_details {
             rng,
             partition_start.clone(),
             end.clone(),
-            |r, i| is_less(r.at(i), r.at(&pivot)),
+            |r, i| is_less(&r.at(i), &r.at(&pivot)),
         );
         let left_end = rng.before(partition_point.clone());
         rotate(rng, pivot, partition_start, partition_point.clone());
@@ -976,7 +976,7 @@ pub mod sort_details {
             rng,
             partition_start.clone(),
             end.clone(),
-            |r, i| is_less(r.at(i), r.at(&pivot)),
+            |r, i| is_less(&r.at(i), &r.at(&pivot)),
         );
 
         let left_end = rng.before(partition_point.clone());

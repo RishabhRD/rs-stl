@@ -33,7 +33,7 @@ pub fn for_each<Range, UnaryOp>(
     UnaryOp: FnMut(&Range::Element),
 {
     while start != end {
-        op(rng.at(&start));
+        op(&rng.at(&start));
         start = rng.after(start);
     }
 }
@@ -69,7 +69,7 @@ pub fn for_each_mut<Range, UnaryOp>(
     UnaryOp: FnMut(&mut Range::Element),
 {
     while start != end {
-        op(rng.at_mut(&start));
+        op(&mut rng.at_mut(&start));
         start = rng.after(start);
     }
 }

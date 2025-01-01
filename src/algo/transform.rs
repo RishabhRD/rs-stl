@@ -42,7 +42,7 @@ where
     UnaryOp: Fn(&SrcRange::Element) -> DestRange::Element,
 {
     while start != end {
-        *dest.at_mut(&out) = unary_op(src.at(&start));
+        *dest.at_mut(&out) = unary_op(&src.at(&start));
         start = src.after(start);
         out = dest.after(out);
     }
@@ -93,7 +93,7 @@ where
     BinaryOp: Fn(&R1::Element, &R2::Element) -> DestRange::Element,
 {
     while start1 != end1 {
-        *dest.at_mut(&out) = binary_op(rng1.at(&start1), rng2.at(&start2));
+        *dest.at_mut(&out) = binary_op(&rng1.at(&start1), &rng2.at(&start2));
         start1 = rng1.after(start1);
         start2 = rng2.after(start2);
         out = dest.after(out);

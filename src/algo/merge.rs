@@ -68,7 +68,7 @@ where
         if start2 == end2 {
             return copy(rng1, start1, end1, dest, out);
         }
-        if is_less(rng2.at(&start2), rng1.at(&start1)) {
+        if is_less(&rng2.at(&start2), &rng1.at(&start1)) {
             *dest.at_mut(&out) = rng2.at(&start2).clone();
             start2 = rng2.after(start2);
         } else {
@@ -158,7 +158,9 @@ fn merge_inplace_by_left_buffer<Range, Compare, Buffer>(
         let mut j = buf.start();
         while i != mid {
             unsafe {
-                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(rng.at(&i)));
+                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(
+                    &rng.at(&i) as &Range::Element
+                ));
             }
             i = rng.after(i);
             j = buf.after(j);
@@ -432,7 +434,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
             rng,
             mid.clone(),
             end.clone(),
-            rng.at(&left_half),
+            &rng.at(&left_half),
             is_less.clone(),
         );
         let mut right_start =
@@ -447,7 +449,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
             rng,
             start.clone(),
             mid.clone(),
-            rng.at(&right_half),
+            &rng.at(&right_half),
             is_less.clone(),
         );
         let left_end = rng.after_n(left_half.clone(), half);

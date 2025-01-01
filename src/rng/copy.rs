@@ -50,7 +50,7 @@ where
     let mut start = src.start();
     let mut write = dest.start();
     while !src.is_end(&start) && !dest.is_end(&write) {
-        if pred(src.at(&start)) {
+        if pred(&src.at(&start)) {
             *dest.at_mut(&write) = src.at(&start).clone();
             write = dest.after(write);
         }

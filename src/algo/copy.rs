@@ -44,7 +44,7 @@ where
     Pred: Fn(&SrcRange::Element) -> bool,
 {
     while start != end {
-        if pred(src.at(&start)) {
+        if pred(&src.at(&start)) {
             *dest.at_mut(&out) = src.at(&start).clone();
             out = dest.after(out);
         }

@@ -31,7 +31,7 @@ where
     BinaryPred: Fn(&R1::Element, &R2::Element) -> bool,
 {
     while start1 != end1 {
-        if !bi_pred(rng1.at(&start1), rng2.at(&start2)) {
+        if !bi_pred(&rng1.at(&start1), &rng2.at(&start2)) {
             return (start1, start2);
         }
         start1 = rng1.after(start1);
@@ -111,7 +111,7 @@ where
     BinaryPred: Fn(&R1::Element, &R2::Element) -> bool,
 {
     while start1 != end1 && start2 != end2 {
-        if !bi_pred(rng1.at(&start1), rng2.at(&start2)) {
+        if !bi_pred(&rng1.at(&start1), &rng2.at(&start2)) {
             return (start1, start2);
         }
         start1 = rng1.after(start1);

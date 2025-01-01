@@ -42,7 +42,7 @@ where
     let mut start2 = rng2.start();
 
     while !rng1.is_end(&start1) && !rng2.is_end(&start2) {
-        if !bi_pred(rng1.at(&start1), rng2.at(&start2)) {
+        if !bi_pred(&rng1.at(&start1), &rng2.at(&start2)) {
             return false;
         }
         start1 = rng1.after(start1);
@@ -126,7 +126,7 @@ where
     let mut start1 = rng1.start();
     let mut start2 = rng2.start();
     while !rng1.is_end(&start1) && !rng2.is_end(&start2) {
-        if !bi_pred(rng1.at(&start1), rng2.at(&start2)) {
+        if !bi_pred(&rng1.at(&start1), &rng2.at(&start2)) {
             return false;
         }
         start1 = rng1.after(start1);

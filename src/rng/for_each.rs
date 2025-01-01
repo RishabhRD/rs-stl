@@ -35,7 +35,7 @@ where
 {
     let mut start = rng.start();
     while !rng.is_end(&start) {
-        op(rng.at(&start));
+        op(&rng.at(&start));
         start = rng.after(start);
     }
 }
@@ -70,7 +70,7 @@ where
 {
     let mut start = rng.start();
     while !rng.is_end(&start) {
-        op(rng.at_mut(&start));
+        op(&mut rng.at_mut(&start));
         start = rng.after(start);
     }
 }

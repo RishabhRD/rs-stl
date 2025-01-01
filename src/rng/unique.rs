@@ -54,7 +54,7 @@ where
     let mut result = start.clone();
     start = rng.after(start);
     while !rng.is_end(&start) {
-        if !bi_pred(rng.at(&result), rng.at(&start)) {
+        if !bi_pred(&rng.at(&result), &rng.at(&start)) {
             result = rng.after(result);
             if result != start {
                 rng.swap_at(&result, &start);
@@ -189,7 +189,7 @@ where
     *dest.at_mut(&out) = src.at(&start).clone();
     start = src.after(start);
     while !src.is_end(&start) {
-        if !bi_pred(dest.at(&out), src.at(&start)) {
+        if !bi_pred(&dest.at(&out), &src.at(&start)) {
             out = dest.after(out);
             *dest.at_mut(&out) = src.at(&start).clone();
         }

@@ -40,7 +40,7 @@ pub fn replace_if<Range, Pred>(
 {
     let mut start = rng.start();
     while !rng.is_end(&start) {
-        if pred(rng.at(&start)) {
+        if pred(&rng.at(&start)) {
             *rng.at_mut(&start) = new_e.clone();
         }
         start = rng.after(start);
@@ -125,7 +125,7 @@ where
     let mut start = src.start();
     let mut out = dest.start();
     while !src.is_end(&start) {
-        if pred(src.at(&start)) {
+        if pred(&src.at(&start)) {
             *dest.at_mut(&out) = new_e.clone();
         } else {
             *dest.at_mut(&out) = src.at(&start).clone();
