@@ -325,7 +325,7 @@ where
     let mut prev = start.clone();
     start = rng.after(start);
     while !rng.is_end(&start) {
-        if is_less(rng.at(&start), rng.at(&prev)) {
+        if is_less(&rng.at(&start), &rng.at(&prev)) {
             return start;
         }
         prev = start.clone();

@@ -42,7 +42,7 @@ where
 {
     let mut start = rng.start();
     while !rng.is_end(&start) {
-        if pred(rng.at(&start)) {
+        if pred(&rng.at(&start)) {
             break;
         }
         start = rng.after(start);
@@ -50,7 +50,7 @@ where
     if !rng.is_end(&start) {
         let mut i = rng.after(start.clone());
         while !rng.is_end(&i) {
-            if !pred(rng.at(&i)) {
+            if !pred(&rng.at(&i)) {
                 rng.swap_at(&i, &start);
                 start = rng.after(start);
             }
@@ -143,7 +143,7 @@ where
     let mut start = src.start();
     let mut out = dest.start();
     while !src.is_end(&start) {
-        if !pred(src.at(&start)) {
+        if !pred(&src.at(&start)) {
             *dest.at_mut(&out) = src.at(&start).clone();
             out = dest.after(out);
         }

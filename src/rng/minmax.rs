@@ -51,7 +51,7 @@ where
     start = rng.after(start);
 
     while !rng.is_end(&start) {
-        if is_less(rng.at(&start), rng.at(&smallest)) {
+        if is_less(&rng.at(&start), &rng.at(&smallest)) {
             smallest = start.clone();
         }
         start = rng.after(start);
@@ -144,7 +144,7 @@ where
     start = rng.after(start);
 
     while !rng.is_end(&start) {
-        if !is_less(rng.at(&start), rng.at(&max)) {
+        if !is_less(&rng.at(&start), &rng.at(&max)) {
             max = start.clone();
         }
         start = rng.after(start);
@@ -248,7 +248,7 @@ where
         return (min, max);
     }
 
-    if is_less(rng.at(&start), rng.at(&min)) {
+    if is_less(&rng.at(&start), &rng.at(&min)) {
         min = start.clone();
     } else {
         max = start.clone();
@@ -260,24 +260,24 @@ where
         let i = start.clone();
         start = rng.after(start);
         if rng.is_end(&start) {
-            if is_less(rng.at(&i), rng.at(&min)) {
+            if is_less(&rng.at(&i), &rng.at(&min)) {
                 min = i;
-            } else if !is_less(rng.at(&i), rng.at(&max)) {
+            } else if !is_less(&rng.at(&i), &rng.at(&max)) {
                 max = i;
             }
             break;
-        } else if is_less(rng.at(&start), rng.at(&i)) {
-            if is_less(rng.at(&start), rng.at(&min)) {
+        } else if is_less(&rng.at(&start), &rng.at(&i)) {
+            if is_less(&rng.at(&start), &rng.at(&min)) {
                 min = start.clone();
             }
-            if !is_less(rng.at(&i), rng.at(&max)) {
+            if !is_less(&rng.at(&i), &rng.at(&max)) {
                 max = i;
             }
         } else {
-            if is_less(rng.at(&i), rng.at(&min)) {
+            if is_less(&rng.at(&i), &rng.at(&min)) {
                 min = i;
             }
-            if !is_less(rng.at(&start), rng.at(&max)) {
+            if !is_less(&rng.at(&start), &rng.at(&max)) {
                 max = start.clone();
             }
         }

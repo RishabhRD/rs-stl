@@ -55,7 +55,7 @@ where
         if rng2.is_end(&start2) {
             return copy_till(rng1, start1, |i| rng1.is_end(i), dest, out);
         }
-        if is_less(rng2.at(&start2), rng1.at(&start1)) {
+        if is_less(&rng2.at(&start2), &rng1.at(&start1)) {
             *dest.at_mut(&out) = rng2.at(&start2).clone();
             start2 = rng2.after(start2);
         } else {

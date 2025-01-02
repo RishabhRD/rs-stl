@@ -68,7 +68,7 @@ where
         if start2 == end2 {
             return copy(rng1, start1, end1, dest, out);
         }
-        if is_less(rng2.at(&start2), rng1.at(&start1)) {
+        if is_less(&rng2.at(&start2), &rng1.at(&start1)) {
             *dest.at_mut(&out) = rng2.at(&start2).clone();
             start2 = rng2.after(start2);
         } else {
@@ -158,7 +158,9 @@ fn merge_inplace_by_left_buffer<Range, Compare, Buffer>(
         let mut j = buf.start();
         while i != mid {
             unsafe {
-                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(rng.at(&i)));
+                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(
+                    &rng.at(&i) as &Range::Element
+                ));
             }
             i = rng.after(i);
             j = buf.after(j);
@@ -173,14 +175,27 @@ fn merge_inplace_by_left_buffer<Range, Compare, Buffer>(
 
     while left_pos != left_end && right_pos != right_end {
         unsafe {
-            let left_elem = buf.at_mut(&left_pos).assume_init_mut();
-            let right_elem = rng.at(&right_pos);
+            let l = {
+                let left_raw_elem =
+                    (&mut (buf.at_mut(&left_pos))) as &mut Buffer::Element;
+                let left_elem = left_raw_elem.assume_init_mut();
+                let right_elem = &rng.at(&right_pos) as &Range::Element;
+                is_less(right_elem, left_elem)
+            };
 
-            if is_less(right_elem, left_elem) {
+            if l {
                 rng.swap_at(&merge, &right_pos);
                 right_pos = rng.after(right_pos);
             } else {
-                std::mem::swap(rng.at_mut(&merge), left_elem);
+                {
+                    let left_raw_elem =
+                        (&mut (buf.at_mut(&left_pos))) as &mut Buffer::Element;
+                    let left_elem = left_raw_elem.assume_init_mut();
+                    std::mem::swap(
+                        &mut rng.at_mut(&merge) as &mut Range::Element,
+                        left_elem,
+                    );
+                };
                 left_pos = buf.after(left_pos);
             }
         }
@@ -190,7 +205,7 @@ fn merge_inplace_by_left_buffer<Range, Compare, Buffer>(
     while left_pos != left_end {
         unsafe {
             std::mem::swap(
-                rng.at_mut(&merge),
+                &mut rng.at_mut(&merge) as &mut Range::Element,
                 buf.at_mut(&left_pos).assume_init_mut(),
             );
         }
@@ -222,7 +237,9 @@ fn merge_inplace_by_right_buffer<Range, Compare, Buffer>(
         let mut j = buf.start();
         while i != end {
             unsafe {
-                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(rng.at(&i)));
+                *buf.at_mut(&j) = MaybeUninit::new(std::ptr::read(
+                    (&rng.at(&i)) as &Range::Element,
+                ));
             }
             i = rng.after(i);
             j = buf.after(j);
@@ -237,13 +254,29 @@ fn merge_inplace_by_right_buffer<Range, Compare, Buffer>(
 
     while left_pos != left_start && right_pos != right_start {
         unsafe {
-            let left_elem = rng.at(&rng.before(left_pos.clone()));
-            let right_elem =
-                buf.at_mut(&buf.before(right_pos.clone())).assume_init_mut();
+            let l = {
+                let left_elem =
+                    &rng.at(&rng.before(left_pos.clone())) as &Range::Element;
+                let right_elem_raw = (&mut (buf
+                    .at_mut(&buf.before(right_pos.clone()))))
+                    as &mut Buffer::Element;
+                let right_elem = right_elem_raw.assume_init_mut();
 
-            if !is_less(right_elem, left_elem) {
+                !is_less(right_elem, left_elem)
+            };
+
+            if l {
                 merge = rng.before(merge);
-                std::mem::swap(rng.at_mut(&merge), right_elem);
+                {
+                    let right_elem_raw = (&mut (buf
+                        .at_mut(&buf.before(right_pos.clone()))))
+                        as &mut Buffer::Element;
+                    let right_elem = right_elem_raw.assume_init_mut();
+                    std::mem::swap(
+                        &mut rng.at_mut(&merge) as &mut Range::Element,
+                        right_elem,
+                    );
+                };
                 right_pos = buf.before(right_pos);
             } else {
                 merge = rng.before(merge);
@@ -258,7 +291,7 @@ fn merge_inplace_by_right_buffer<Range, Compare, Buffer>(
         merge = rng.before(merge);
         unsafe {
             std::mem::swap(
-                rng.at_mut(&merge),
+                &mut rng.at_mut(&merge) as &mut Range::Element,
                 buf.at_mut(&right_pos).assume_init_mut(),
             );
         }
@@ -432,7 +465,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
             rng,
             mid.clone(),
             end.clone(),
-            rng.at(&left_half),
+            &rng.at(&left_half),
             is_less.clone(),
         );
         let mut right_start =
@@ -447,7 +480,7 @@ pub fn merge_inplace_by_no_alloc<Range, Compare>(
             rng,
             start.clone(),
             mid.clone(),
-            rng.at(&right_half),
+            &rng.at(&right_half),
             is_less.clone(),
         );
         let left_end = rng.after_n(left_half.clone(), half);

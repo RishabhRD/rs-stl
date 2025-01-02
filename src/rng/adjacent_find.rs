@@ -45,7 +45,7 @@ where
     let mut prev = start.clone();
     start = rng.after(start);
     while !rng.is_end(&start) {
-        if bi_pred(rng.at(&prev), rng.at(&start)) {
+        if bi_pred(&rng.at(&prev), &rng.at(&start)) {
             return prev;
         }
         prev = start.clone();

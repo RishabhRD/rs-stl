@@ -48,7 +48,7 @@ where
 {
     let mut start = rng.start();
     while !rng.is_end(&start) {
-        init = op(init, rng.at(&start));
+        init = op(init, &rng.at(&start));
         start = rng.after(start);
     }
     init

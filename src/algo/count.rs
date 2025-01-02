@@ -33,7 +33,7 @@ where
 {
     let mut cnt: u32 = 0;
     while start != end {
-        if pred(rng.at(&start)) {
+        if pred(&rng.at(&start)) {
             cnt += 1;
         }
         start = rng.after(start);

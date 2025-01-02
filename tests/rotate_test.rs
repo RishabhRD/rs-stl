@@ -10,6 +10,11 @@ struct ForwardArray<const N: usize> {
 impl<const N: usize> InputRange for ForwardArray<N> {
     type Element = i32;
 
+    type ElementRef<'a>
+        = &'a i32
+    where
+        Self: 'a;
+
     type Position = usize;
 
     fn start(&self) -> Self::Position {
@@ -20,7 +25,7 @@ impl<const N: usize> InputRange for ForwardArray<N> {
         i + 1
     }
 
-    fn at(&self, i: &Self::Position) -> &Self::Element {
+    fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a> {
         &self.arr[*i]
     }
 

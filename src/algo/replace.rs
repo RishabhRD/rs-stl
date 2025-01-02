@@ -38,7 +38,7 @@ pub fn replace_if<Range, Pred>(
     Pred: Fn(&Range::Element) -> bool,
 {
     while start != end {
-        if pred(rng.at(&start)) {
+        if pred(&rng.at(&start)) {
             *rng.at_mut(&start) = new_e.clone();
         }
         start = rng.after(start);
@@ -122,7 +122,7 @@ where
     Pred: Fn(&SrcRange::Element) -> bool,
 {
     while start != end {
-        if pred(src.at(&start)) {
+        if pred(&src.at(&start)) {
             *dest.at_mut(&out) = new_e.clone();
         } else {
             *dest.at_mut(&out) = src.at(&start).clone();

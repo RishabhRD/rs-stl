@@ -36,14 +36,14 @@ where
     Predicate: Fn(&Range::Element) -> bool,
 {
     while start != end {
-        if !pred(rng.at(&start)) {
+        if !pred(&rng.at(&start)) {
             break;
         }
         start = rng.after(start);
     }
 
     while start != end {
-        if pred(rng.at(&start)) {
+        if pred(&rng.at(&start)) {
             return false;
         }
         start = rng.after(start);
@@ -89,7 +89,7 @@ where
     Range: SemiOutputRange + ?Sized,
     Predicate: Fn(&Range::Element) -> bool,
 {
-    partition_details::partition_pos(rng, start, end, |r, i| pred(r.at(i)))
+    partition_details::partition_pos(rng, start, end, |r, i| pred(&r.at(i)))
 }
 
 /// Partitions range based on given predicate with preserving relative order of elements.
@@ -138,7 +138,7 @@ where
     Predicate: Fn(&Range::Element) -> bool + Clone,
 {
     partition_details::stable_partition_pos(rng, start, end, |r, i| {
-        pred(r.at(i))
+        pred(&r.at(i))
     })
 }
 
@@ -185,7 +185,7 @@ where
     Predicate: Fn(&Range::Element) -> bool + Clone,
 {
     partition_details::stable_partition_no_alloc_pos(rng, start, end, |r, i| {
-        pred(r.at(i))
+        pred(&r.at(i))
     })
 }
 
@@ -227,7 +227,7 @@ where
     while n > 0 {
         let half = n / 2;
         let mid = rng.after_n(start.clone(), half);
-        if pred(rng.at(&mid)) {
+        if pred(&rng.at(&mid)) {
             start = rng.after(mid);
             n -= half + 1;
         } else {
@@ -328,8 +328,9 @@ pub mod partition_details {
                 }
             } else {
                 unsafe {
-                    *buf.at_mut(&buf_write) =
-                        MaybeUninit::new(std::ptr::read(rng.at(&start)));
+                    *buf.at_mut(&buf_write) = MaybeUninit::new(std::ptr::read(
+                        &rng.at(&start) as &Range::Element,
+                    ));
                 }
                 buf_write = buf.after(buf_write);
             }
@@ -342,7 +343,7 @@ pub mod partition_details {
         while buf_cur != buf_write {
             unsafe {
                 std::mem::swap(
-                    rng.at_mut(&rng_write),
+                    (&mut rng.at_mut(&rng_write)) as &mut Range::Element,
                     buf.at_mut(&buf_cur).assume_init_mut(),
                 );
             }

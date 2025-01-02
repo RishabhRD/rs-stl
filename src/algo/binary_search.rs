@@ -271,7 +271,7 @@ where
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
     let i = lower_bound_by(rng, start, end.clone(), ele, is_less.clone());
-    i != end && !is_less(ele, rng.at(&i))
+    i != end && !is_less(ele, &rng.at(&i))
 }
 
 /// Checks if element equal to `ele` wrt comparator appears within range.

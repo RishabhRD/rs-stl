@@ -48,7 +48,10 @@ where
     R2: OutputRange<Element = R1::Element> + ?Sized,
 {
     while start1 != end1 && start2 != end2 {
-        std::mem::swap(rng1.at_mut(&start1), rng2.at_mut(&start2));
+        std::mem::swap(
+            (&mut rng1.at_mut(&start1)) as &mut R1::Element,
+            (&mut rng2.at_mut(&start2)) as &mut R2::Element,
+        );
         start1 = rng1.after(start1);
         start2 = rng2.after(start2);
     }

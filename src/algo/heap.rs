@@ -37,7 +37,7 @@ where
     for son in 1..n {
         let son_pos = rng.after_n(start.clone(), son);
         let dad_pos = rng.after_n(start.clone(), dad);
-        if is_less(rng.at(&dad_pos), rng.at(&son_pos)) {
+        if is_less(&rng.at(&dad_pos), &rng.at(&son_pos)) {
             return son_pos;
         } else if son % 2 == 0 {
             dad += 1;
@@ -184,7 +184,7 @@ pub fn push_heap_by<Range, Compare>(
         let parent = (cur - 1) >> 1;
         let parent_pos = rng.after_n(start.clone(), parent);
         let cur_pos = rng.after_n(start.clone(), cur);
-        if is_less(rng.at(&parent_pos), rng.at(&cur_pos)) {
+        if is_less(&rng.at(&parent_pos), &rng.at(&cur_pos)) {
             rng.swap_at(&parent_pos, &cur_pos);
             cur = parent;
         } else {
@@ -506,14 +506,14 @@ pub mod heap_details {
 
             if left_child < n {
                 let left_pos = rng.after_n(start.clone(), left_child);
-                if is_less(rng.at(&largest), rng.at(&left_pos)) {
+                if is_less(&rng.at(&largest), &rng.at(&left_pos)) {
                     largest = left_pos;
                 }
             }
 
             if right_child < n {
                 let right_pos = rng.after_n(start.clone(), right_child);
-                if is_less(rng.at(&largest), rng.at(&right_pos)) {
+                if is_less(&rng.at(&largest), &rng.at(&right_pos)) {
                     largest = right_pos;
                 }
             }
@@ -540,7 +540,7 @@ pub mod heap_details {
         make_heap_by(rng, start.clone(), mid.clone(), is_less.clone());
         let mut cur = mid.clone();
         while cur != end {
-            if is_less(rng.at(&cur), rng.at(&start)) {
+            if is_less(&rng.at(&cur), &rng.at(&start)) {
                 rng.swap_at(&cur, &start);
                 heapify(rng, start.clone(), mid.clone(), is_less.clone());
             }
@@ -573,7 +573,7 @@ pub mod heap_details {
 
         make_heap_by(dest, dest_start.clone(), write.clone(), is_less.clone());
         while !src_till(&src_start) {
-            if is_less(src.at(&src_start), dest.at(&dest_start)) {
+            if is_less(&src.at(&src_start), &dest.at(&dest_start)) {
                 *dest.at_mut(&dest_start) = src.at(&src_start).clone();
                 heapify(
                     dest,

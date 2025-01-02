@@ -33,7 +33,7 @@ where
     Pred: Fn(&Range::Element) -> bool,
 {
     while start != end {
-        if pred(rng.at(&start)) {
+        if pred(&rng.at(&start)) {
             break;
         }
         start = rng.after(start)
