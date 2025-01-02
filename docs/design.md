@@ -43,11 +43,11 @@ start   -->   end
 - End Position is position immediately after last element in the range.
 
 Thus, rs-stl consistently treats range as semi-open range with positions
-`[start, end)`. semi-open range representation is chosen because they enables
+`[start, end)`. semi-open range representation is chosen because they enable
 us to represent empty ranges.
 
-However, it is not necessary that end position is known upfront, when one
-starts using the range, but that doesn't mean the range is empty.
+However, it is not necessary that end position for a range would always be known
+upfront.
 
 For example:
 
@@ -66,7 +66,7 @@ takes this model of representing positions as default model as it is the more
 general one.
 
 If any range has end position known upfront, that range would be treated as
-more specialized range with enhanced capabilities.
+more specialized range with enhanced capabilities and is called `BoundedRange`.
 
 rs-stl defines traits, that one struct has to implement to adopt the range
 behavior. rs-stl defines following traits based on capabilities of the range:
@@ -100,7 +100,7 @@ If `rng` is a range, then:
 
 #### Range Internals
 
-It is really important 2 understand 2 traits first before understanding range
+It is really important to understand these traits first before understanding range
 internals:
 
 ```rust
@@ -152,7 +152,7 @@ implementing `InputRange` have better implementation, it can override the
 same for more efficient implementation. Usually, structs like `Vec` provide
 O(1) implementation for the same.
 
-This overriding of default methods become important when workin with
+This overriding of default methods become important when working with
 `RandomAccessRange` as it requires these methods to work in O(1).
 
 `ForwardRange` relaxes the `Position` to be `Regular` and thus positions can
