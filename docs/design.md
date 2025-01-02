@@ -122,8 +122,12 @@ is the most primitive range:
 
 ```rust
 pub trait InputRange {
-    type Element;
     type Position: SemiRegular;
+
+    type Element;
+    type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
+    where
+        Self: 'a;
 
     fn start(&self) -> Self::Position;
     fn is_end(&self, i: &Self::Position) -> bool;
@@ -135,14 +139,16 @@ pub trait InputRange {
         }
         i
     }
-    fn at(&self, i: &Self::Position) -> &Self::Element;
+    fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a>;
 }
 ```
 
-Every range has 2 typedefs:
+Every range has atlease 3 typedefs:
 
-- `Element` defining the type of element range contains.
 - `Position` defining the type of position in range.
+- `Element` defining the type of element range contains.
+- `ElementRef<'a>` defining the reference type of ElementRef. (`ElementRef` is
+  discussed in detail in later section).
 
 For supporting single-pass nature of `InputRange`, `Position` is `SemiRegular`
 so that, position can't be copied for independent traversal.
@@ -157,6 +163,20 @@ This overriding of default methods become important when working with
 
 `ForwardRange` relaxes the `Position` to be `Regular` and thus positions can
 be cloned and used for multi-pass traversal.
+
+`OutputRange` also defines an extra typedef `ElementMutRef`:
+
+```rust
+pub trait OutputRange: SemiOutputRange {
+    type ElementMutRef<'a>: std::ops::DerefMut<Target = Self::Element>
+    where
+        Self: 'a;
+
+    fn at_mut<'a>(&'a mut self, i: &Self::Position) -> Self::ElementMutRef<'a>;
+}
+```
+
+`ElementMutRef` is discussed in details in later section.
 
 ### Views
 
@@ -200,6 +220,48 @@ let arr = [1, 2, 3];
 let v = arr.view();
 v.sort_range();
 ```
+
+### ElementRef and ElementMutRef
+
+As seen earlier, `InputRange` defines a typedef `ElementRef`:
+
+```rust
+type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
+where
+    Self: 'a;
+```
+
+and `at(i)` method returns `ElementRef` value.
+
+On the first sight it looks like `ElementRef` should always be `&Self::Element`.
+This is true for most of data structures.
+
+However, with introduction of views, this is not always true. For example,
+consider `view::ints(0)`. This range doesn't contain any real element at all.
+Thus, it is not possible to return `&Self::Element` from `at` method because
+there is no such element itself.
+
+For coping with the same, the concept of `ElementRef` is introduced.
+`ElementRef` for these kind of cases can be used as **proxy references**.
+
+The definition of `ElementRef` suggests:
+
+1. `ElementRef` is bounded to `std::ops::Deref<Target = Self::Element>`, i.e.,
+   dereferencing object of `ElementRef` would result in `Self::Element`.
+2. Lifetime of `ElementRef` is bounded to lifetime of `Self`. Thus, `ElementRef`
+   should be valid till `Self` is valid.
+
+```rust
+fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a>;
+```
+
+The defintion of `at` method suggests:
+
+1. `at` method returns `Self::ElementRef` value whose lifetime is bounded to
+   `self` lifetime.
+
+The same story is there for `OutputRange` with `ElementMutRef` typedef and `at_mut`
+method.
 
 ## Operations with entities
 
