@@ -2,7 +2,7 @@
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    algo::{self, heap_details::heap_select_copy_by, sort_heap_by},
+    algo::{self, heap::heap_details::heap_select_copy_by, sort_heap_by},
     BoundedRange, ForwardRange, InputRange, OutputRange, RandomAccessRange,
     SemiOutputRange,
 };

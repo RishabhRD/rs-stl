@@ -6,8 +6,8 @@ use crate::{
 };
 
 use super::{
-    heap_details::{self, heap_select_copy_by},
-    partition_details::partition_pos,
+    heap::heap_details::{heap_select_by, heap_select_copy_by},
+    partition::partition_details::partition_pos,
     sort_heap_by,
 };
 
@@ -489,13 +489,7 @@ pub fn partial_sort_by<Range, Compare>(
     Range: RandomAccessRange + SemiOutputRange + ?Sized,
     Compare: Fn(&Range::Element, &Range::Element) -> bool + Clone,
 {
-    heap_details::heap_select_by(
-        rng,
-        start.clone(),
-        mid.clone(),
-        end,
-        is_less.clone(),
-    );
+    heap_select_by(rng, start.clone(), mid.clone(), end, is_less.clone());
     sort_heap_by(rng, start, mid, is_less);
 }
 
@@ -770,7 +764,6 @@ pub fn nth_element<Range>(
     nth_element_by(rng, start, nth, end, |x, y| x < y);
 }
 
-// TODO: details can only be accessed from current file or from tests.
 #[doc(hidden)]
 pub mod sort_details {
     use crate::{

@@ -90,7 +90,7 @@ pub mod __details_view_ints {
 /// use stl::*;
 /// use rng::infix::*;
 ///
-/// let nums = view::ints(0);
+/// let nums = view::ints(0); // 0, 1, 2, 3, ...
 /// let i = nums.find_if(|x| *x == 10);
 /// assert_eq!(i, 10);
 /// ```

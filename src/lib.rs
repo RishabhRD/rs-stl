@@ -17,9 +17,10 @@ pub mod core;
 pub mod rng;
 pub mod slice;
 pub mod vec;
-pub mod view;
 
 #[doc(inline)]
 pub use core::*;
-#[doc(inline)]
-pub use view::*;
+
+pub mod view;
+pub use view::STLMutableViewExt;
+pub use view::STLViewExt;

@@ -238,7 +238,6 @@ where
     start
 }
 
-// TODO: Only rs-stl modules or tests should be able to access it.
 #[doc(hidden)]
 pub mod partition_details {
     use std::io::Write;

@@ -89,17 +89,29 @@ pub use minmax::*;
 #[doc(hidden)]
 pub mod partition;
 #[doc(inline)]
-pub use partition::*;
+pub use partition::{
+    is_partitioned, partition, partition_point, stable_partition,
+    stable_partition_no_alloc,
+};
 
 #[doc(hidden)]
 pub mod sort;
 #[doc(inline)]
-pub use sort::*;
+pub use sort::{
+    is_sorted, is_sorted_by, is_sorted_until, is_sorted_until_by, nth_element,
+    nth_element_by, partial_sort, partial_sort_by, partial_sort_copy,
+    partial_sort_copy_by, sort_range, sort_range_by, stable_sort,
+    stable_sort_by, stable_sort_by_no_alloc, stable_sort_no_alloc,
+};
 
 #[doc(hidden)]
 pub mod heap;
 #[doc(inline)]
-pub use heap::*;
+pub use heap::{
+    is_heap, is_heap_by, is_heap_until, is_heap_until_by, make_heap,
+    make_heap_by, pop_heap, pop_heap_by, push_heap, push_heap_by, sort_heap,
+    sort_heap_by,
+};
 
 #[doc(hidden)]
 pub mod merge;
