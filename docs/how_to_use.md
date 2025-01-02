@@ -61,10 +61,10 @@ assert_eq!(cnt, 2)
 ```
 
 The above algorithms work on `[i, j)` positions of `arr` rather than working
-on full arr.
+on full array `arr`.
 
-This version is quite useful while writing a new generic algorithms with help
-of other already existing algorithms.
+This version algorithm is highly composable, and thus really useful while writing
+new generic algorithms. For normal cases, one may use `rng` and `infix` versions.
 
 #### rng
 
@@ -126,7 +126,7 @@ View factories are functions that returns a view without taking a range/view
 as argument.
 
 ```rust
-let ints = view::seq(0, |x| *x + 1); // 0, 1, 2, 3, ...
+let ints = view::ints(0); // 0, 1, 2, 3, ...
 ```
 
 #### Using view adaptors
@@ -135,7 +135,7 @@ View adaptors are functions that accept view as an argument by value and
 returns a new view by consuming given view. For example:
 
 ```rust
-let int_3 = view::seq(0, |x| *x + 1)
+let ints_3 = view::ints(0)
                 .take(3); // 0, 1, 2
 ```
 
