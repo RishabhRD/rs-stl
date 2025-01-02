@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Rearranges the elements in range st:"><title>nth_element_by in stl::rng - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-46f98efaafac5295.ttf.woff2,FiraSans-Regular-018c141bf0843ffd.woff2,FiraSans-Medium-8f9a781e4970d388.woff2,SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2,SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-b0742ba02757f159.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="stl" data-themes="" data-resource-suffix="" data-rustdoc-version="1.83.0 (90b35a623 2024-11-26)" data-channel="1.83.0" data-search-js="search-f0d225181b97f9a4.js" data-settings-js="settings-805db61a62df4bd2.js" ><script src="../../static.files/storage-1d39b6787ed640ff.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-f070b9041d14864c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-0111fcff984fae8f.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../stl/index.html">stl</a><span class="version">0.0.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">nth_<wbr>element_<wbr>by</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#precondition" title="Precondition">Precondition</a></li><li><a href="#postcondition" title="Postcondition">Postcondition</a><ul><li><a href="#infix-supported" title="Infix Supported">Infix Supported</a></li></ul></li><li><a href="#example" title="Example">Example</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In stl::<wbr>rng</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><span class="rustdoc-breadcrumbs"><a href="../index.html">stl</a>::<wbr><a href="index.html">rng</a></span><h1>Function <span class="fn">nth_element_by</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/stl/rng/sort.rs.html#666-677">source</a> </span></div><pre class="rust item-decl"><code>pub fn nth_element_by&lt;Range, Compare&gt;(
+    rng: <a class="primitive" href="https://doc.rust-lang.org/1.83.0/std/primitive.reference.html">&amp;mut Range</a>,
+    nth: Range::<a class="associatedtype" href="../trait.InputRange.html#associatedtype.Position" title="type stl::InputRange::Position">Position</a>,
+    is_less: Compare,
+)<div class="where">where
+    Range: <a class="trait" href="../trait.RandomAccessRange.html" title="trait stl::RandomAccessRange">RandomAccessRange</a> + <a class="trait" href="../trait.SemiOutputRange.html" title="trait stl::SemiOutputRange">SemiOutputRange</a> + <a class="trait" href="../trait.BoundedRange.html" title="trait stl::BoundedRange">BoundedRange</a> + ?<a class="trait" href="https://doc.rust-lang.org/1.83.0/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,
+    Compare: <a class="trait" href="https://doc.rust-lang.org/1.83.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;Range::<a class="associatedtype" href="../trait.InputRange.html#associatedtype.Element" title="type stl::InputRange::Element">Element</a>, &amp;Range::<a class="associatedtype" href="../trait.InputRange.html#associatedtype.Element" title="type stl::InputRange::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.83.0/std/primitive.bool.html">bool</a>,</div></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Rearranges the elements in range st:</p>
+<ul>
+<li>element at nth position is changed to whatever element if range is sorted wrt comparator.</li>
+<li>resulting range would be patitioned on nth element wrt comparator.</li>
+</ul>
+<h2 id="precondition"><a class="doc-anchor" href="#precondition">§</a>Precondition</h2>
+<ul>
+<li>nth is a valid position in rng.</li>
+<li>is_less follows strict-weak-ordering relationship.</li>
+</ul>
+<h2 id="postcondition"><a class="doc-anchor" href="#postcondition">§</a>Postcondition</h2>
+<ul>
+<li>element in rng is ordered as such, element at nth position would change
+to whatever element if rng was sorted wrt is_less.</li>
+<li>Resulting range rng at would be partitioned by element
+at nth_position, i.e., for any position j &gt; nth,
+<code>is_less(rng.at(&amp;j), rng.at(&amp;nth)) == false</code>.</li>
+<li>if nth == end, do nothing.</li>
+<li>Stability of equivalent is not guaranteed.</li>
+<li>Comlexity: O(n) comparisions on <strong>average</strong>.</li>
+</ul>
+<p>Where n == <code>rng.distance(rng.start(), rng.end())</code></p>
+<h5 id="infix-supported"><a class="doc-anchor" href="#infix-supported">§</a>Infix Supported</h5>
+<p>YES</p>
+<h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+<span class="kw">use </span>rng::infix::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">1</span>, <span class="number">2</span>];
+<span class="kw">let </span>nth = arr.after_n(arr.start(), <span class="number">2</span>);
+rng::nth_element_by(<span class="kw-2">&amp;mut </span>arr, nth,|x, y| x &lt; y);
+<span class="macro">assert_eq!</span>(arr.at(<span class="kw-2">&amp;</span>nth), <span class="kw-2">&amp;</span><span class="number">2</span>);
+<span class="macro">assert!</span>(<span class="kw-2">&amp;</span>arr[<span class="number">0</span>..nth].is_partitioned(|x| <span class="kw-2">*</span>x &lt; <span class="number">2</span>));
+<span class="macro">assert!</span>(<span class="kw-2">&amp;</span>arr[nth..].is_partitioned(|x| <span class="kw-2">*</span>x &gt;= <span class="number">2</span>));
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">4</span>, <span class="number">1</span>, <span class="number">5</span>, <span class="number">1</span>, <span class="number">2</span>];
+<span class="kw">let </span>nth = arr.after_n(arr.start(), <span class="number">2</span>);
+arr.nth_element_by(nth,|x, y| x &lt; y);
+<span class="macro">assert_eq!</span>(arr.at(<span class="kw-2">&amp;</span>nth), <span class="kw-2">&amp;</span><span class="number">2</span>);
+<span class="macro">assert!</span>(<span class="kw-2">&amp;</span>arr[<span class="number">0</span>..nth].is_partitioned(|x| <span class="kw-2">*</span>x &lt; <span class="number">2</span>));
+<span class="macro">assert!</span>(<span class="kw-2">&amp;</span>arr[nth..].is_partitioned(|x| <span class="kw-2">*</span>x &gt;= <span class="number">2</span>));</code></pre></div>
+</div></details></section></div></main></body></html>
