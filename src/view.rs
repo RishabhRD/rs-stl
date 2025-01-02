@@ -260,3 +260,8 @@ pub trait STLMutableViewExt: SemiOutputRange {
 }
 
 impl<R> STLMutableViewExt for R where R: SemiOutputRange + ?Sized {}
+
+#[doc(hidden)]
+pub mod ints;
+#[doc(inline)]
+pub use ints::*;
