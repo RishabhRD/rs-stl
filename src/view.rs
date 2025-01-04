@@ -265,3 +265,8 @@ impl<R> STLMutableViewExt for R where R: SemiOutputRange + ?Sized {}
 pub mod ints;
 #[doc(inline)]
 pub use ints::ints;
+
+#[doc(hidden)]
+pub mod subrange;
+#[doc(inline)]
+pub use subrange::{subrange, STLSubRangeExt};
