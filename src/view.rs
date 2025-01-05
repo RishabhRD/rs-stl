@@ -270,3 +270,8 @@ pub use ints::ints;
 pub mod subrange;
 #[doc(inline)]
 pub use subrange::*;
+
+#[doc(hidden)]
+pub mod prefix;
+#[doc(inline)]
+pub use prefix::*;
