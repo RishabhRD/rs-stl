@@ -291,7 +291,14 @@ pub mod suffix;
 #[doc(inline)]
 pub use suffix::*;
 
+#[doc(hidden)]
+pub mod map;
+#[doc(inline)]
+pub use map::*;
+
 pub mod infix {
+    #[doc(inline)]
+    pub use super::map::infix::*;
     #[doc(inline)]
     pub use super::prefix::infix::*;
     #[doc(inline)]
