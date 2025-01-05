@@ -81,9 +81,15 @@ pub mod __details_view_ints {
 ///
 /// # Postcondition
 ///   - InputRange -> YES
+///   - BoundedRange -> NO
 ///   - ForwardRange -> YES
 ///   - BidirectionalRange -> YES
 ///   - RandomAccessRange -> YES
+///   - SemiOutputRange -> NO
+///   - OutputRange -> NO
+///
+/// # Infix Supported
+/// N/A
 ///
 /// # Example
 /// ```rust
