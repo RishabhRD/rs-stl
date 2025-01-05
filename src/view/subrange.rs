@@ -137,7 +137,7 @@ mod __details {
 /// # Example
 /// ```rust
 /// use stl::*;
-/// use stl::view::*;
+/// use view::infix::*;
 /// use rng::infix::*;
 ///
 /// let mut arr = [(3, 1), (1, 2), (4, 4), (1, 1), (5, 5)];
@@ -163,15 +163,21 @@ where
     }
 }
 
-/// Provides `.subrange(...)` method.
-pub trait STLSubRangeExt: ForwardRange + View + Sized {
-    fn subrange(
-        self,
-        start: Self::Position,
-        end: Self::Position,
-    ) -> __details::SubRangeView<Self> {
-        subrange(self, start, end)
-    }
-}
+pub mod infix {
+    use crate::{ForwardRange, View};
 
-impl<R> STLSubRangeExt for R where R: ForwardRange + View {}
+    use super::__details;
+
+    /// Provides `.subrange(...)` method.
+    pub trait STLSubRangeExt: ForwardRange + View + Sized {
+        fn subrange(
+            self,
+            start: Self::Position,
+            end: Self::Position,
+        ) -> __details::SubRangeView<Self> {
+            super::subrange(self, start, end)
+        }
+    }
+
+    impl<R> STLSubRangeExt for R where R: ForwardRange + View {}
+}

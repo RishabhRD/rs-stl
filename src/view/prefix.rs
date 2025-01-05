@@ -139,7 +139,7 @@ mod __details {
 /// # Example
 /// ```rust
 /// use stl::*;
-/// use view::*;
+/// use view::infix::*;
 /// use rng::infix::*;
 ///
 /// let mut arr = [(3, 1), (1, 2), (4, 4), (1, 1), (5, 5)];
@@ -160,11 +160,15 @@ where
     __details::PrefixView { range: view, end }
 }
 
-/// Provides `.prefix(...)` method.
-pub trait STLPrefixExt: ForwardRange + View + Sized {
-    fn prefix(self, end: Self::Position) -> __details::PrefixView<Self> {
-        prefix(self, end)
-    }
-}
+pub mod infix {
+    use super::__details;
+    use crate::{ForwardRange, View};
 
-impl<R> STLPrefixExt for R where R: ForwardRange + View {}
+    /// Provides `.prefix(...)` method.
+    pub trait STLPrefixExt: ForwardRange + View + Sized {
+        fn prefix(self, end: Self::Position) -> __details::PrefixView<Self> {
+            super::prefix(self, end)
+        }
+    }
+    impl<R> STLPrefixExt for R where R: ForwardRange + View {}
+}

@@ -18,6 +18,14 @@
 //! let mut arr = [1, 2, 3];
 //! let mut v = arr.view_mut(); // A mutable view of arr.
 //! ```
+//!
+//! For all views it is mentioned in doc if infix version is supported or not.
+//! Or open infix module to see all supported infix views.
+//!
+//! For using infix version of supported views use:
+//! ```rust
+//! use stl::view::infix::*;
+//! ```
 
 use crate::{InputRange, SemiOutputRange};
 
@@ -275,3 +283,10 @@ pub use subrange::*;
 pub mod prefix;
 #[doc(inline)]
 pub use prefix::*;
+
+pub mod infix {
+    #[doc(inline)]
+    pub use super::prefix::infix::*;
+    #[doc(inline)]
+    pub use super::subrange::infix::*;
+}

@@ -5,7 +5,7 @@
 pub mod tests {
     use rng::infix::*;
     use stl::*;
-    use view::*;
+    use view::infix::*;
 
     #[test]
     pub fn prefix_test() {
