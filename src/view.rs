@@ -284,9 +284,16 @@ pub mod prefix;
 #[doc(inline)]
 pub use prefix::*;
 
+#[doc(hidden)]
+pub mod suffix;
+#[doc(inline)]
+pub use suffix::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::prefix::infix::*;
     #[doc(inline)]
     pub use super::subrange::infix::*;
+    #[doc(inline)]
+    pub use super::suffix::infix::*;
 }

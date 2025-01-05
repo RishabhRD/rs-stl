@@ -9,13 +9,15 @@ mod __details {
         OutputRange, RandomAccessRange, SemiOutputRange, View,
     };
 
-    pub struct SubRangeView<Range: ForwardRange + View> {
+    pub struct SuffixView<Range>
+    where
+        Range: ForwardRange + View,
+    {
         pub range: Range,
         pub start: Range::Position,
-        pub end: Range::Position,
     }
 
-    impl<R> InputRange for SubRangeView<R>
+    impl<R> InputRange for SuffixView<R>
     where
         R: ForwardRange + View,
     {
@@ -33,7 +35,7 @@ mod __details {
         }
 
         fn is_end(&self, i: &Self::Position) -> bool {
-            *i == self.end
+            self.range.is_end(i)
         }
 
         fn after(&self, i: Self::Position) -> Self::Position {
@@ -49,18 +51,18 @@ mod __details {
         }
     }
 
-    impl<R> View for SubRangeView<R> where R: ForwardRange + View {}
+    impl<R> View for SuffixView<R> where R: ForwardRange + View {}
 
-    impl<R> BoundedRange for SubRangeView<R>
+    impl<R> BoundedRange for SuffixView<R>
     where
-        R: ForwardRange + View,
+        R: ForwardRange + BoundedRange + View,
     {
         fn end(&self) -> Self::Position {
-            self.end.clone()
+            self.range.end()
         }
     }
 
-    impl<R> ForwardRange for SubRangeView<R>
+    impl<R> ForwardRange for SuffixView<R>
     where
         R: ForwardRange + View,
     {
@@ -69,7 +71,7 @@ mod __details {
         }
     }
 
-    impl<R> BidirectionalRange for SubRangeView<R>
+    impl<R> BidirectionalRange for SuffixView<R>
     where
         R: BidirectionalRange + View,
     {
@@ -82,18 +84,18 @@ mod __details {
         }
     }
 
-    impl<R> RandomAccessRange for SubRangeView<R> where R: RandomAccessRange + View {}
+    impl<R> RandomAccessRange for SuffixView<R> where R: RandomAccessRange + View {}
 
-    impl<R> SemiOutputRange for SubRangeView<R>
+    impl<R> SemiOutputRange for SuffixView<R>
     where
         R: SemiOutputRange + View,
     {
         fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
-            self.range.swap_at(i, j)
+            self.range.swap_at(i, j);
         }
     }
 
-    impl<R> OutputRange for SubRangeView<R>
+    impl<R> OutputRange for SuffixView<R>
     where
         R: OutputRange + View,
     {
@@ -111,13 +113,13 @@ mod __details {
     }
 }
 
-/// Returns a subrange of given view from `[start, end)`.
+/// Returns suffix of given view, i.e., `[view.start(), end)`.
 ///
 /// # Precondition
-///   - `[start, end)` represents valid position in view.
+///   - end is a valid position in view.
 ///
 /// # Postcondition
-///   - Returns a view that is subrange `[start, end)` of given view.
+///   - Returns a view that is suffix `[view.start(), end)` of given view.
 ///   - Returned view is:
 ///     - InputRange: YES
 ///     - ForwardRange: YES
@@ -141,43 +143,32 @@ mod __details {
 /// use rng::infix::*;
 ///
 /// let mut arr = [(3, 1), (1, 2), (4, 4), (1, 1), (5, 5)];
-/// view::subrange(arr.view_mut(), 1, 4).stable_sort_by(|x, y| x.0 < y.0);
+/// view::suffix(arr.view_mut(), 1).stable_sort_by(|x, y| x.0 < y.0);
 /// assert_eq!(arr, [(3, 1), (1, 2), (1, 1), (4, 4), (5, 5)]);
 ///
 /// let mut arr = [(3, 1), (1, 2), (4, 4), (1, 1), (5, 5)];
-/// arr.view_mut().subrange(1, 4).stable_sort_by(|x, y| x.0 < y.0);
+/// arr.view_mut().suffix(1).stable_sort_by(|x, y| x.0 < y.0);
 /// assert_eq!(arr, [(3, 1), (1, 2), (1, 1), (4, 4), (5, 5)]);
 /// ```
-pub fn subrange<RangeView>(
+pub fn suffix<RangeView>(
     view: RangeView,
     start: RangeView::Position,
-    end: RangeView::Position,
-) -> __details::SubRangeView<RangeView>
+) -> __details::SuffixView<RangeView>
 where
     RangeView: ForwardRange + View,
 {
-    __details::SubRangeView {
-        range: view,
-        start,
-        end,
-    }
+    __details::SuffixView { range: view, start }
 }
 
 pub mod infix {
+    use super::__details;
     use crate::{ForwardRange, View};
 
-    use super::__details;
-
-    /// `subrange`.
-    pub trait STLSubRangeExt: ForwardRange + View + Sized {
-        fn subrange(
-            self,
-            start: Self::Position,
-            end: Self::Position,
-        ) -> __details::SubRangeView<Self> {
-            super::subrange(self, start, end)
+    /// `suffix`.
+    pub trait STLSuffixExt: ForwardRange + View + Sized {
+        fn suffix(self, start: Self::Position) -> __details::SuffixView<Self> {
+            super::suffix(self, start)
         }
     }
-
-    impl<R> STLSubRangeExt for R where R: ForwardRange + View {}
+    impl<R> STLSuffixExt for R where R: ForwardRange + View {}
 }

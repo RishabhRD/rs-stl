@@ -164,7 +164,7 @@ pub mod infix {
     use super::__details;
     use crate::{ForwardRange, View};
 
-    /// Provides `.prefix(...)` method.
+    /// `prefix`.
     pub trait STLPrefixExt: ForwardRange + View + Sized {
         fn prefix(self, end: Self::Position) -> __details::PrefixView<Self> {
             super::prefix(self, end)
