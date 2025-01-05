@@ -226,6 +226,7 @@ pub mod __view_details {
 }
 
 /// Provides `view` method for ranges.
+#[doc(hidden)]
 pub trait STLViewExt: InputRange {
     /// Returns view that immutably borrows from self.
     ///
@@ -248,6 +249,7 @@ pub trait STLViewExt: InputRange {
 impl<R> STLViewExt for R where R: InputRange + ?Sized {}
 
 /// Provides `view_mut` method for ranges.
+#[doc(hidden)]
 pub trait STLMutableViewExt: SemiOutputRange {
     /// Returns view that mutably borrows from self.
     ///
