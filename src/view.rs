@@ -269,4 +269,4 @@ pub use ints::ints;
 #[doc(hidden)]
 pub mod subrange;
 #[doc(inline)]
-pub use subrange::{subrange, STLSubRangeExt};
+pub use subrange::*;
