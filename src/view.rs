@@ -296,7 +296,14 @@ pub mod map;
 #[doc(inline)]
 pub use map::*;
 
+#[doc(hidden)]
+pub mod filter;
+#[doc(inline)]
+pub use filter::*;
+
 pub mod infix {
+    #[doc(inline)]
+    pub use super::filter::infix::*;
     #[doc(inline)]
     pub use super::map::infix::*;
     #[doc(inline)]
