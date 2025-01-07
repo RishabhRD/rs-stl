@@ -301,6 +301,11 @@ pub mod filter;
 #[doc(inline)]
 pub use filter::*;
 
+#[doc(hidden)]
+pub mod take;
+#[doc(inline)]
+pub use take::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::filter::infix::*;
@@ -312,4 +317,6 @@ pub mod infix {
     pub use super::subrange::infix::*;
     #[doc(inline)]
     pub use super::suffix::infix::*;
+    #[doc(inline)]
+    pub use super::take::infix::*;
 }
