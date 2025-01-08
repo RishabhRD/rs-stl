@@ -306,6 +306,11 @@ pub mod take;
 #[doc(inline)]
 pub use take::*;
 
+#[doc(hidden)]
+pub mod take_while;
+#[doc(inline)]
+pub use take_while::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::filter::infix::*;
@@ -319,4 +324,6 @@ pub mod infix {
     pub use super::suffix::infix::*;
     #[doc(inline)]
     pub use super::take::infix::*;
+    #[doc(inline)]
+    pub use super::take_while::infix::*;
 }
