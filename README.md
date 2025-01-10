@@ -115,13 +115,6 @@ Currently range concepts have been implemented for:
 - Vec<T>
   In future, we plan to support more data structures from standard library.
 
-## Algorithms Implemented / Planned to Implement
-
-The names mentioned here are C++ standard library names. If any algorithm is
-implemented with other name as other name would be more suitable
-then, that name would be mentioned explicitly in front of C++ name as well as
-required description would be provided.
-
 ## Contribution
 
 The scope of project is quite large and surely need contributions from other
@@ -141,6 +134,13 @@ The idea of generalization of indexes are not new and motivated from:
 
 - [Hylo Programming Language](https://github.com/hylo-lang/hylo)
 - [Flux](https://github.com/tcbrindle/flux)
+
+## Algorithms Implemented / Planned to Implement
+
+The names mentioned here are C++ standard library names. If any algorithm is
+implemented with other name as other name would be more suitable
+then, that name would be mentioned explicitly in front of C++ name as well as
+required description would be provided.
 
 ### Search Operations
 
@@ -274,3 +274,38 @@ for any of these algorithms.
 - [ ] next_permutation
 - [ ] prev_permutation
 - [ ] is_permutation
+
+## Views to implement
+
+NOTE: This is not an exhaustive list. If any view is not listed here, consider
+raising a feature request for the same, or contribute the same :)
+
+### View Factories
+
+- [x] ints
+- [ ] generate
+- [ ] repeat
+- [ ] single
+
+### View adaptors
+
+- [x] take
+- [x] take_while
+- [x] drop
+- [x] drop_while
+- [x] filter
+- [x] map
+- [x] subrange
+- [x] prefix
+- [x] suffix
+- [x] as_reversed
+- [ ] cycle
+- [ ] zip
+- [ ] zip_map
+- [ ] slide
+- [ ] group_by
+- [ ] split
+- [ ] join
+- [ ] cartesian_product
+- [ ] scan
+- [ ] scan_first
