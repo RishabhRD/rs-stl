@@ -164,6 +164,7 @@ pub mod infix {
     use super::__details;
     use crate::{InputRange, View};
 
+    /// `take_while`.
     pub trait STLTakeWhileViewExt: InputRange + View + Sized {
         fn take_while<Pred>(
             self,

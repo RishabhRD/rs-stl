@@ -164,6 +164,7 @@ pub mod infix {
     use super::__details;
     use crate::{InputRange, View};
 
+    /// `take`.
     pub trait STLTakeViewExt: InputRange + View + Sized {
         fn take(self, n: usize) -> __details::TakeView<Self> {
             super::take(self, n)
