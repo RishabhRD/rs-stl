@@ -320,11 +320,18 @@ pub mod drop;
 #[doc(inline)]
 pub use drop::*;
 
+#[doc(hidden)]
+pub mod drop_while;
+#[doc(inline)]
+pub use drop_while::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;
     #[doc(inline)]
     pub use super::drop::infix::*;
+    #[doc(inline)]
+    pub use super::drop_while::infix::*;
     #[doc(inline)]
     pub use super::filter::infix::*;
     #[doc(inline)]
