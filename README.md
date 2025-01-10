@@ -122,6 +122,26 @@ implemented with other name as other name would be more suitable
 then, that name would be mentioned explicitly in front of C++ name as well as
 required description would be provided.
 
+## Contribution
+
+The scope of project is quite large and surely need contributions from other
+experienced programmers. Feel free to contribute in terms of:
+
+- Bugs
+- Design
+- Documents
+- Feature Request
+
+[Goals](./docs/goals.md) lists future goals for project. The list might not
+cover all use-case, feel free to raise feature request with supporting use-case.
+
+## Motivations
+
+The idea of generalization of indexes are not new and motivated from:
+
+- [Hylo Programming Language](https://github.com/hylo-lang/hylo)
+- [Flux](https://github.com/tcbrindle/flux)
+
 ### Search Operations
 
 - [x] find_if
@@ -254,23 +274,3 @@ for any of these algorithms.
 - [ ] next_permutation
 - [ ] prev_permutation
 - [ ] is_permutation
-
-## Contribution
-
-The scope of project is quite large and surely need contributions from other
-experienced programmers. Feel free to contribute in terms of:
-
-- Bugs
-- Design
-- Documents
-- Feature Request
-
-[Goals](./docs/goals.md) lists future goals for project. The list might not
-cover all use-case, feel free to raise feature request with supporting use-case.
-
-## Motivations
-
-The idea of generalization of indexes are not new and motivated from:
-
-- [Hylo Programming Language](https://github.com/hylo-lang/hylo)
-- [Flux](https://github.com/tcbrindle/flux)
