@@ -14,7 +14,7 @@ rs-stl contains 2 kind of entities:
 And supports following operations:
 
 1. Algorithms over ranges
-2. Lazy composition of views
+2. Lazy composition of view adaptors
 
 ## Entities
 
@@ -221,6 +221,39 @@ let v = arr.view();
 v.sort_range();
 ```
 
+There are 2 sub-entities for view:
+
+1. View Factory
+2. View Adaptor
+
+#### View Factory
+
+View factory are functions that doesn't accept any view and returns a view.
+
+Example:
+
+```rust
+let nums = view::ints(0); // 0, 1, 2, 3, ...
+```
+
+In above example, nums is a view of numbers starting from 0.
+
+#### View adaptors
+
+View adaptors are functions that accepts another view by value and consumes it
+and returns a new view.
+
+Example:
+
+```rust
+let nums = view::ints(0).take(3); // 0, 1, 2
+// Or use:
+let nums = view::take(view::ints(0), 3); // 0, 1, 2
+```
+
+In above example nums is a view consisting 3 numbers 0, 1, 2. Here take is the
+view adaptor.
+
 ### ElementRef and ElementMutRef
 
 As seen earlier, `InputRange` defines a typedef `ElementRef`:
@@ -305,7 +338,7 @@ algorithms.
 
 See API Documentation `stl::algo` and `stl::rng` module for knowing about all algorithms rs-stl supports.
 
-### Lazy composition of views
+### Lazy composition of view adaptors
 
 This operation is similar to what Rust Iterator provides, but way more
 powerful than that.
