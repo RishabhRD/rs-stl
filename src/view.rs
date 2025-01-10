@@ -315,9 +315,16 @@ pub mod as_reversed;
 #[doc(inline)]
 pub use as_reversed::*;
 
+#[doc(hidden)]
+pub mod drop;
+#[doc(inline)]
+pub use drop::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;
+    #[doc(inline)]
+    pub use super::drop::infix::*;
     #[doc(inline)]
     pub use super::filter::infix::*;
     #[doc(inline)]
