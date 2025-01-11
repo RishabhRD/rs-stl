@@ -287,6 +287,7 @@ raising a feature request for the same, or contribute the same :)
 - [ ] repeat
 - [ ] single
 - [ ] maybe
+- [ ] empty
 
 ### View adaptors
 
