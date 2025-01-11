@@ -340,6 +340,11 @@ pub mod single;
 #[doc(inline)]
 pub use single::*;
 
+#[doc(hidden)]
+pub mod empty;
+#[doc(inline)]
+pub use empty::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;
