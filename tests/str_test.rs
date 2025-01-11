@@ -25,5 +25,9 @@ pub mod tests {
         let str = String::from("你好");
         let n = str.distance(str.start(), str.end());
         assert_eq!(n, 2);
+
+        let str = String::from("h你e好o");
+        let n = str.distance(str.start(), str.end());
+        assert_eq!(n, 5);
     }
 }
