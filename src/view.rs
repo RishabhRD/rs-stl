@@ -325,6 +325,11 @@ pub mod drop_while;
 #[doc(inline)]
 pub use drop_while::*;
 
+#[doc(hidden)]
+pub mod generate;
+#[doc(inline)]
+pub use generate::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;

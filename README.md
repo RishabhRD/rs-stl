@@ -283,7 +283,7 @@ raising a feature request for the same, or contribute the same :)
 ### View Factories
 
 - [x] ints
-- [ ] generate
+- [x] generate
 - [ ] repeat
 - [ ] single
 - [ ] maybe
