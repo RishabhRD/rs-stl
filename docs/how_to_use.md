@@ -161,3 +161,19 @@ In above example, `.view().map(...)` gives a view that is passed to sort_range
 algorithm. As this view mutably borrows arr, arr is sorted.
 
 This enables inplace mutation of ranges with functional style programming.
+
+### As Iterators
+
+For working with for loops iterators are just great and they have their own
+usecases. rs-stl provides, `iter` method to traverse `InputRange` as `Iterator`.
+
+```rust
+use stl::*;
+use rng::infix::*;
+
+let mut sum = 0;
+for e in view::single(2).iter() {
+    sum += e;
+}
+assert_eq!(sum, 2);
+```

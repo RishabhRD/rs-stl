@@ -106,6 +106,22 @@ arr
 assert_eq!(arr, [(2, 1), (1, 2)]);
 ```
 
+### As Iterators
+
+InputRanges can also be used as Iterators. This is useful, for traversing any
+InputRange.
+
+```rust
+use stl::*;
+use rng::infix::*;
+
+let mut sum = 0;
+for e in view::single(2).iter() {
+    sum += e;
+}
+assert_eq!(sum, 2);
+```
+
 ## Support for standard library
 
 Currently range concepts have been implemented for:

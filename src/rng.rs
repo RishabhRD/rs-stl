@@ -144,6 +144,9 @@ pub mod for_each;
 #[doc(inline)]
 pub use for_each::*;
 
+#[doc(hidden)]
+pub mod iter;
+
 pub mod infix {
     //! Defines extension traits to support infix version of range algorithms.
     //!
@@ -168,6 +171,8 @@ pub mod infix {
     pub use super::for_each::infix::*;
     #[doc(inline)]
     pub use super::heap::infix::*;
+    #[doc(inline)]
+    pub use super::iter::infix::*;
     #[doc(inline)]
     pub use super::minmax::infix::*;
     #[doc(inline)]
