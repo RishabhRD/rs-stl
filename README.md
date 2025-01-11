@@ -256,7 +256,7 @@ Most of numeric algorithms can be implemented using views and copy operations.
 Hence, it is not on priority list currently. Contributions are most welcome
 for any of these algorithms.
 
-- [ ] iota
+- [ ] ~~iota~~ -> use view::ints
 - [x] accumulate/reduce -> fold_left, fold_right
 - [ ] inner_product
 - [ ] adjacent_difference
