@@ -8,6 +8,7 @@ pub mod __details_view_ints {
         RandomAccessRange, View,
     };
 
+    #[derive(Clone)]
     pub struct IntView {
         pub init: i32,
     }

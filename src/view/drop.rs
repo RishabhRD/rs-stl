@@ -9,6 +9,7 @@ mod __details {
         OutputRange, RandomAccessRange, SemiOutputRange, View,
     };
 
+    #[derive(Clone)]
     pub struct DropView<Range>
     where
         Range: InputRange + View,

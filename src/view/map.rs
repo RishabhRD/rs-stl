@@ -9,6 +9,7 @@ mod __details {
         InputRange, RandomAccessRange, SemiOutputRange, View,
     };
 
+    #[derive(Clone)]
     pub struct MapView<Range, F, OutputElement>
     where
         Range: InputRange + View,

@@ -9,6 +9,7 @@ mod __details {
         SemiOutputRange, View,
     };
 
+    #[derive(Clone)]
     pub struct TakeWhileView<Range, Pred>
     where
         Range: InputRange + View,

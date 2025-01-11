@@ -9,6 +9,7 @@ mod __details {
         OutputRange, RandomAccessRange, SemiOutputRange, View,
     };
 
+    #[derive(Clone)]
     pub struct ReverseView<Range>
     where
         Range: BidirectionalRange + BoundedRange + View,

@@ -8,6 +8,7 @@ mod __details {
         BidirectionalRange, BoundedRange, ForwardRange, InputRange, View,
     };
 
+    #[derive(Clone)]
     pub struct FilterView<Range, Pred>
     where
         Range: InputRange + View,

@@ -9,6 +9,7 @@ mod __details {
         OutputRange, RandomAccessRange, SemiOutputRange, View,
     };
 
+    #[derive(Clone)]
     pub struct SubRangeView<Range: ForwardRange + View> {
         pub range: Range,
         pub start: Range::Position,
