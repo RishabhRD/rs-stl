@@ -4,30 +4,19 @@
 #[doc(hidden)]
 pub mod __details_view_ints {
     use crate::{
-        BidirectionalRange, ForwardRange, InputRange, RandomAccessRange, View,
+        util::ValueRef, BidirectionalRange, ForwardRange, InputRange,
+        RandomAccessRange, View,
     };
 
     pub struct IntView {
         pub init: i32,
     }
 
-    pub struct IntViewRef {
-        pub val: i32,
-    }
-
-    impl std::ops::Deref for IntViewRef {
-        type Target = i32;
-
-        fn deref(&self) -> &Self::Target {
-            &self.val
-        }
-    }
-
     impl InputRange for IntView {
         type Element = i32;
 
         type ElementRef<'a>
-            = IntViewRef
+            = ValueRef<i32>
         where
             Self: 'a;
 
@@ -46,7 +35,7 @@ pub mod __details_view_ints {
         }
 
         fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a> {
-            IntViewRef { val: *i }
+            ValueRef { val: *i }
         }
 
         fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
