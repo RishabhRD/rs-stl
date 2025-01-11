@@ -12,7 +12,12 @@ pub mod tests {
         for e in view::single(2).iter() {
             sum += e;
         }
-
         assert_eq!(sum, 2);
+
+        let mut sum = 0;
+        for e in view::empty::<i32>().iter() {
+            sum += e;
+        }
+        assert_eq!(sum, 0);
     }
 }
