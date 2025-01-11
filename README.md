@@ -109,7 +109,7 @@ assert_eq!(arr, [(2, 1), (1, 2)]);
 ### As Iterators
 
 InputRanges can also be used as Iterators. This is useful, for traversing any
-InputRange.
+InputRange using for loop.
 
 ```rust
 use stl::*;
@@ -121,6 +121,8 @@ for e in view::single(2).iter() {
 }
 assert_eq!(sum, 2);
 ```
+
+If Iterators are not an option, use `for_each` algorithm for general traversal.
 
 ## Support for standard library
 
