@@ -9,6 +9,8 @@
 //! - `[T;n]` (array)
 //! - `[T]` (slice)
 //! - `Vec<T>` (Vec)
+//! - `str`
+//! - `String`
 
 pub mod algo;
 pub mod array;
@@ -16,6 +18,7 @@ pub mod array;
 pub mod core;
 pub mod rng;
 pub mod slice;
+pub mod str;
 #[doc(hidden)]
 pub mod util;
 pub mod vec;

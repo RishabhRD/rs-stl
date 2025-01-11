@@ -9,7 +9,7 @@
 
 ### Support for standard library
 
-- [ ] Support for `str`.
+- [x] Support for `str`.
 - [ ] Support for `Map` or provide new `Map`.
 - [ ] Support for `HashMap` or provide new `HashMap`.
 

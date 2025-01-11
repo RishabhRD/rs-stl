@@ -131,7 +131,10 @@ Currently range concepts have been implemented for:
 - \[T, N\]
 - \[T\]
 - Vec<T>
-  In future, we plan to support more data structures from standard library.
+- str
+- String
+
+In future, we plan to support more data structures from standard library.
 
 ## Contribution
 
