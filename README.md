@@ -285,7 +285,7 @@ raising a feature request for the same, or contribute the same :)
 - [x] ints
 - [x] generate
 - [x] repeat
-- [ ] single
+- [x] single
 - [ ] empty
 - [ ] maybe
 

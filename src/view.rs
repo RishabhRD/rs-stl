@@ -335,6 +335,11 @@ pub mod repeat;
 #[doc(inline)]
 pub use repeat::*;
 
+#[doc(hidden)]
+pub mod single;
+#[doc(inline)]
+pub use single::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;
