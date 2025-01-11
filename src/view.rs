@@ -345,6 +345,11 @@ pub mod empty;
 #[doc(inline)]
 pub use empty::*;
 
+#[doc(hidden)]
+pub mod maybe;
+#[doc(inline)]
+pub use maybe::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;
