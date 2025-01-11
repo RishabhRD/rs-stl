@@ -286,6 +286,7 @@ raising a feature request for the same, or contribute the same :)
 - [ ] generate
 - [ ] repeat
 - [ ] single
+- [ ] maybe
 
 ### View adaptors
 
