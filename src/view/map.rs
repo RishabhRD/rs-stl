@@ -5,8 +5,8 @@ use crate::{InputRange, View};
 
 mod __details {
     use crate::{
-        BidirectionalRange, BoundedRange, ForwardRange, InputRange,
-        RandomAccessRange, SemiOutputRange, View,
+        util::ValueRef, BidirectionalRange, BoundedRange, ForwardRange,
+        InputRange, RandomAccessRange, SemiOutputRange, View,
     };
 
     pub struct MapView<Range, F, OutputElement>
@@ -16,18 +16,6 @@ mod __details {
     {
         pub range: Range,
         pub op: F,
-    }
-
-    pub struct MapViewRef<OutputElement> {
-        pub val: OutputElement,
-    }
-
-    impl<OutputElement> std::ops::Deref for MapViewRef<OutputElement> {
-        type Target = OutputElement;
-
-        fn deref(&self) -> &Self::Target {
-            &self.val
-        }
     }
 
     impl<R, F, O> InputRange for MapView<R, F, O>
@@ -40,7 +28,7 @@ mod __details {
         type Position = R::Position;
 
         type ElementRef<'a>
-            = MapViewRef<O>
+            = ValueRef<O>
         where
             Self: 'a;
 
@@ -57,7 +45,7 @@ mod __details {
         }
 
         fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a> {
-            MapViewRef {
+            ValueRef {
                 val: (self.op)(&self.range.at(i)),
             }
         }
