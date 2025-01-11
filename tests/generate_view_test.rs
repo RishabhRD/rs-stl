@@ -3,14 +3,12 @@
 
 #[cfg(test)]
 pub mod tests {
+    use rng::infix::*;
     use stl::*;
     use view::infix::*;
 
     #[test]
     fn generate() {
-        use rng::infix::*;
-        use stl::*;
-
         let mut counter = 0;
         let generator = || {
             if counter <= 3 {

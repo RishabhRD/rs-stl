@@ -284,10 +284,10 @@ raising a feature request for the same, or contribute the same :)
 
 - [x] ints
 - [x] generate
-- [ ] repeat
+- [x] repeat
 - [ ] single
-- [ ] maybe
 - [ ] empty
+- [ ] maybe
 
 ### View adaptors
 

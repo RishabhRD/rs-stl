@@ -330,6 +330,11 @@ pub mod generate;
 #[doc(inline)]
 pub use generate::*;
 
+#[doc(hidden)]
+pub mod repeat;
+#[doc(inline)]
+pub use repeat::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;
