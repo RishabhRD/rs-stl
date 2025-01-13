@@ -322,7 +322,7 @@ raising a feature request for the same, or contribute the same :)
 - [x] prefix
 - [x] suffix
 - [x] as_reversed
-- [ ] cycle
+- [x] cycle
 - [ ] zip
 - [ ] zip_map
 - [ ] slide

@@ -350,9 +350,16 @@ pub mod maybe;
 #[doc(inline)]
 pub use maybe::*;
 
+#[doc(hidden)]
+pub mod cycle;
+#[doc(inline)]
+pub use cycle::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;
+    #[doc(inline)]
+    pub use super::cycle::infix::*;
     #[doc(inline)]
     pub use super::drop::infix::*;
     #[doc(inline)]
