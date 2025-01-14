@@ -27,6 +27,13 @@ of Iterators to support rust borrow rules.
 - Then, STL algorithms accepting 2 iterators can be replaced with rs-stl algorithms
   accepting a range and 2 positions.
 
+## End Goal
+
+- rs-stl is not there to replace rust iterators. It is there to complement the same.
+- rs-stl aims to be a go to library for algorithmic intensive programming problems.
+- rs-stl focuses on inplace mutations with good ergonomics to achieve good performance easily with reasonable code.
+- rs-stl aims to be inter-operable with rust iterators, so that one can go from one world to other easily.
+
 ## API Documentation
 
 View detailed documentation at: [rs-stl docs](https://rishabhrd.github.io/rs-stl/).
