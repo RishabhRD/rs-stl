@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"trait":["STLAsReversedExt","STLCycleExt","STLDropExt","STLDropWhileViewExt","STLFilterExt","STLMapExt","STLPrefixExt","STLSubRangeExt","STLSuffixExt","STLTakeViewExt","STLTakeWhileViewExt"]};
