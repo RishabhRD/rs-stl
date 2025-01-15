@@ -24,8 +24,8 @@ of Iterators to support rust borrow rules.
   rust borrow checker would not allow it.
 - So, rs-stl generalizes indexes with Positions. And as index doesn't borrow
   from array, thus Position doesn't need to borrow from range.
-- Then, STL algorithms accepting 2 iterators can be replaced with rs-stl algorithms
-  accepting a range and 2 positions.
+- Then, STL algorithms accepting 2 iterators can be replaced with rs-stl
+  algorithms accepting a range and 2 positions.
 
 ## End Goal
 
