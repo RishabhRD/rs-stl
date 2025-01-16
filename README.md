@@ -286,7 +286,7 @@ required description would be provided.
 - [ ] adjacent_difference
 - [ ] ~~partial_sum~~ -> use inclusive_scan instead
 - [ ] exclusive_scan
-- [x] inclusive_scan -> inclusive_scan_inplace
+- [x] inclusive_scan -> inclusive_scan, inclusive_scan_inplace
 - [ ] transform_reduce
 - [ ] transform_exclusive_scan
 - [ ] transform_inclusive_scan

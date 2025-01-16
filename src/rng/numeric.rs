@@ -109,6 +109,8 @@ where
 ///     by op of rng elements.
 ///   - Complexity: O(n) applications of op.
 ///
+/// Where n is number of elements in rng.
+///
 /// # Infix Supported
 /// YES
 ///
@@ -142,6 +144,63 @@ where
         prev = start.clone();
         start = rng.after(start);
     }
+}
+
+/// Puts prefix sum by given operation of src range to dest range.
+///
+/// # Precondition
+///   - out is valid position in dest.
+///   - dest can accomodate n elements.
+///
+/// # Postcondition
+///   - Puts prefix sum by op of src to dest.
+///   - Returns the position in out after last element inserted.
+///   - Complexity: O(n) applications of op.
+///
+/// Where n is number of elements in src.
+///
+/// # Infix Supported
+/// NO
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let src = [1, 2, 3];
+/// let mut dest = [0, 0, 0];
+/// let i  = rng::inclusive_scan(&src, &mut dest, |x, y| x + y);
+/// assert_eq!(i, 3);
+/// assert!(dest.equals(&[1, 3, 6]));
+/// ```
+pub fn inclusive_scan<SrcRange, DestRange, BinaryOp>(
+    src: &SrcRange,
+    dest: &mut DestRange,
+    op: BinaryOp,
+) -> DestRange::Position
+where
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    BinaryOp: Fn(&DestRange::Element, &SrcRange::Element) -> DestRange::Element,
+{
+    let mut start = src.start();
+    let mut out = dest.start();
+    if src.is_end(&start) {
+        return out;
+    }
+    *dest.at_mut(&out) = src.at(&start).clone();
+    let mut prev = out.clone();
+    out = dest.after(out);
+    start = src.after(start);
+    while !src.is_end(&start) {
+        let res = op(&dest.at(&prev), &src.at(&start));
+        *dest.at_mut(&out) = res;
+        start = src.after(start);
+        prev = out.clone();
+        out = dest.after(out);
+    }
+    out
 }
 
 pub mod infix {

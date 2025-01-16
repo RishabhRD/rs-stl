@@ -114,4 +114,47 @@ pub mod tests {
         arr.inclusive_scan_inplace(|x, y| x + y);
         assert!(arr.equals(&[]));
     }
+
+    #[test]
+    fn inclusive_scan() {
+        let src = [1, 2, 3];
+        let mut dest = [0, 0, 0];
+        let out = dest.start();
+        let i = algo::inclusive_scan(
+            &src,
+            src.start(),
+            src.end(),
+            &mut dest,
+            out,
+            |x, y| x + y,
+        );
+        assert_eq!(i, 3);
+        assert!(dest.equals(&[1, 3, 6]));
+
+        let src = [1, 2, 3];
+        let mut dest = [0, 0, 0];
+        let i = rng::inclusive_scan(&src, &mut dest, |x, y| x + y);
+        assert_eq!(i, 3);
+        assert!(dest.equals(&[1, 3, 6]));
+
+        let src: [i32; 0] = [];
+        let mut dest = [];
+        let out = dest.start();
+        let i = algo::inclusive_scan(
+            &src,
+            src.start(),
+            src.end(),
+            &mut dest,
+            out,
+            |x, y| x + y,
+        );
+        assert_eq!(i, 0);
+        assert!(dest.equals(&[]));
+
+        let src: [i32; 0] = [];
+        let mut dest = [];
+        let i = rng::inclusive_scan(&src, &mut dest, |x, y| x + y);
+        assert_eq!(i, 0);
+        assert!(dest.equals(&[]));
+    }
 }

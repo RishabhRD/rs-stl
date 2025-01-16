@@ -97,6 +97,8 @@ where
 ///     the prefix sum by op of rng `[start, end)` elements.
 ///   - Complexity: O(n) applications of op.
 ///
+/// Where n is number of elements in `[start, end)`.
+///
 /// # Example
 /// ```rust
 /// use stl::*;
@@ -128,4 +130,62 @@ pub fn inclusive_scan_inplace<Range, BinaryOp>(
         prev = start.clone();
         start = rng.after(start);
     }
+}
+
+/// Puts prefix sum by given operation of src range to dest range.
+///
+/// # Precondition
+///   - `[start, end)` represents valid positions in src.
+///   - out is valid position in dest.
+///   - dest can accomodate n elements.
+///
+/// # Postcondition
+///   - Puts prefix sum by op of src `[start, end)` to dest starting from out.
+///   - Returns the position in out after last element inserted.
+///   - Complexity: O(n) applications of op.
+///
+/// Where n is number of elements in src.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let src = [1, 2, 3];
+/// let mut dest = [0, 0, 0];
+/// let out = dest.start();
+/// let i  =
+///   algo::inclusive_scan(&src, src.start(), src.end(), &mut dest, out, |x, y| x + y);
+/// assert_eq!(i, 3);
+/// assert!(dest.equals(&[1, 3, 6]));
+/// ```
+pub fn inclusive_scan<SrcRange, DestRange, BinaryOp>(
+    src: &SrcRange,
+    mut start: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+    op: BinaryOp,
+) -> DestRange::Position
+where
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    BinaryOp: Fn(&DestRange::Element, &SrcRange::Element) -> DestRange::Element,
+{
+    if start == end {
+        return out;
+    }
+    *dest.at_mut(&out) = src.at(&start).clone();
+    let mut prev = out.clone();
+    out = dest.after(out);
+    start = src.after(start);
+    while start != end {
+        let res = op(&dest.at(&prev), &src.at(&start));
+        *dest.at_mut(&out) = res;
+        start = src.after(start);
+        prev = out.clone();
+        out = dest.after(out);
+    }
+    out
 }
