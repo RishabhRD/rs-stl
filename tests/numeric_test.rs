@@ -99,5 +99,19 @@ pub mod tests {
         let mut arr = [1];
         arr.inclusive_scan_inplace(|x, y| x + y);
         assert!(arr.equals(&[1]));
+
+        let mut arr: [i32; 0] = [];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inclusive_scan_inplace(&mut arr, start, end, |x, y| x + y);
+        assert!(arr.equals(&[]));
+
+        let mut arr: [i32; 0] = [];
+        rng::inclusive_scan_inplace(&mut arr, |x, y| x + y);
+        assert!(arr.equals(&[]));
+
+        let mut arr: [i32; 0] = [];
+        arr.inclusive_scan_inplace(|x, y| x + y);
+        assert!(arr.equals(&[]));
     }
 }

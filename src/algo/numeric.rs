@@ -91,7 +91,6 @@ where
 ///
 /// # Precondition
 ///   - `[start, end)` represents valid positions in rng.
-///   - start != end
 ///
 /// # Postcondition
 ///   - Modifies rng at `[start, end)` such that the resulting elements denote
@@ -118,6 +117,9 @@ pub fn inclusive_scan_inplace<Range, BinaryOp>(
     Range: OutputRange + ?Sized,
     BinaryOp: Fn(&Range::Element, &Range::Element) -> Range::Element,
 {
+    if start == end {
+        return;
+    }
     let mut prev = start.clone();
     start = rng.after(start);
     while start != end {

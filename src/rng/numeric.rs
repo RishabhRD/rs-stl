@@ -103,7 +103,6 @@ where
 /// Modifies the given range such that it becomes the prefix sum by given operation of itself.
 ///
 /// # Precondition
-///   - rng contains atleast one element.
 ///
 /// # Postcondition
 ///   - Modifies rng such that the resulting elements denote the prefix sum
@@ -131,8 +130,12 @@ where
     Range: OutputRange + ?Sized,
     BinaryOp: Fn(&Range::Element, &Range::Element) -> Range::Element,
 {
-    let mut prev = rng.start();
-    let mut start = rng.after(rng.start());
+    let mut start = rng.start();
+    if rng.is_end(&start) {
+        return;
+    }
+    let mut prev = start.clone();
+    start = rng.after(start);
     while !rng.is_end(&start) {
         let res = op(&rng.at(&prev), &rng.at(&start));
         *rng.at_mut(&start) = res;
