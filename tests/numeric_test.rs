@@ -69,4 +69,19 @@ pub mod tests {
         let res = arr.fold_right(String::from(" "), concat_str_1);
         assert_eq!(res, " ");
     }
+
+    #[test]
+    fn inclusive_scan_inplace() {
+        let mut arr = [1, 2, 3];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inclusive_scan_inplace(&mut arr, start, end, |x, y| x + y);
+        assert!(arr.equals(&[1, 3, 6]));
+
+        let mut arr = [1];
+        let start = arr.start();
+        let end = arr.end();
+        algo::inclusive_scan_inplace(&mut arr, start, end, |x, y| x + y);
+        assert!(arr.equals(&[1]));
+    }
 }

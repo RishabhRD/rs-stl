@@ -280,17 +280,13 @@ required description would be provided.
 
 ### Numeric Operations
 
-Most of numeric algorithms can be implemented using views and copy operations.
-Hence, it is not on priority list currently. Contributions are most welcome
-for any of these algorithms.
-
 - [ ] ~~iota~~ -> use view::ints
 - [x] accumulate/reduce -> fold_left, fold_right
 - [ ] inner_product
 - [ ] adjacent_difference
-- [ ] partial_sum
+- [ ] ~~partial_sum~~ -> use inclusive_scan instead
 - [ ] exclusive_scan
-- [ ] inclusive_scan
+- [x] inclusive_scan -> inclusive_scan_inplace
 - [ ] transform_reduce
 - [ ] transform_exclusive_scan
 - [ ] transform_inclusive_scan

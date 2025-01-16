@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalRange, InputRange};
+use crate::{BidirectionalRange, InputRange, OutputRange};
 
 /// Returns generalized sum with given binary operation of init and all elements in given range in
 /// left to right order.
@@ -85,4 +85,45 @@ where
         init = op(&rng.at(&end), init);
     }
     init
+}
+
+/// Modifies the given range such that it becomes the prefix sum by given operation of itself.
+///
+/// # Precondition
+///   - `[start, end)` represents valid positions in rng.
+///   - start != end
+///
+/// # Postcondition
+///   - Modifies rng at `[start, end)` such that the resulting elements denote
+///     the prefix sum by op of rng `[start, end)` elements.
+///   - Complexity: O(n) applications of op.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [1, 2, 3];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::inclusive_scan_inplace(&mut arr, start, end, |x, y| x + y);
+/// assert!(arr.equals(&[1, 3, 6]));
+/// ```
+pub fn inclusive_scan_inplace<Range, BinaryOp>(
+    rng: &mut Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    op: BinaryOp,
+) where
+    Range: OutputRange + ?Sized,
+    BinaryOp: Fn(&Range::Element, &Range::Element) -> Range::Element,
+{
+    let mut prev = start.clone();
+    start = rng.after(start);
+    while start != end {
+        let res = op(&rng.at(&prev), &rng.at(&start));
+        *rng.at_mut(&start) = res;
+        prev = start.clone();
+        start = rng.after(start);
+    }
 }
