@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{algo, BidirectionalRange, BoundedRange, InputRange};
+use crate::{algo, BidirectionalRange, BoundedRange, InputRange, OutputRange};
 
 /// Returns generalized sum with given binary operation of init and all elements in given range in
 /// left to right order.
@@ -100,8 +100,51 @@ where
     algo::fold_right(rng, rng.start(), rng.end(), init, op)
 }
 
+/// Modifies the given range such that it becomes the prefix sum by given operation of itself.
+///
+/// # Precondition
+///   - rng contains atleast one element.
+///
+/// # Postcondition
+///   - Modifies rng such that the resulting elements denote the prefix sum
+///     by op of rng elements.
+///   - Complexity: O(n) applications of op.
+///
+/// # Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [1, 2, 3];
+/// rng::inclusive_scan_inplace(&mut arr, |x, y| x + y);
+/// assert!(arr.equals(&[1, 3, 6]));
+///
+/// let mut arr = [1, 2, 3];
+/// arr.inclusive_scan_inplace(|x, y| x + y);
+/// assert!(arr.equals(&[1, 3, 6]));
+/// ```
+pub fn inclusive_scan_inplace<Range, BinaryOp>(rng: &mut Range, op: BinaryOp)
+where
+    Range: OutputRange + ?Sized,
+    BinaryOp: Fn(&Range::Element, &Range::Element) -> Range::Element,
+{
+    let mut prev = rng.start();
+    let mut start = rng.after(rng.start());
+    while !rng.is_end(&start) {
+        let res = op(&rng.at(&prev), &rng.at(&start));
+        *rng.at_mut(&start) = res;
+        prev = start.clone();
+        start = rng.after(start);
+    }
+}
+
 pub mod infix {
-    use crate::{rng, BidirectionalRange, BoundedRange, InputRange};
+    use crate::{
+        rng, BidirectionalRange, BoundedRange, InputRange, OutputRange,
+    };
 
     /// `fold_left`.
     pub trait STLNumericInputExt: InputRange {
@@ -137,4 +180,16 @@ pub mod infix {
         R: BidirectionalRange + BoundedRange + ?Sized
     {
     }
+
+    /// `inclusive_scan_inplace`.
+    pub trait STLNumericOutputExt: OutputRange {
+        fn inclusive_scan_inplace<BinaryOp>(&mut self, op: BinaryOp)
+        where
+            BinaryOp: Fn(&Self::Element, &Self::Element) -> Self::Element,
+        {
+            super::inclusive_scan_inplace(self, op);
+        }
+    }
+
+    impl<R> STLNumericOutputExt for R where R: OutputRange + ?Sized {}
 }

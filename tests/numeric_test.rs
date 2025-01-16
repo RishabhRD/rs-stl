@@ -83,5 +83,21 @@ pub mod tests {
         let end = arr.end();
         algo::inclusive_scan_inplace(&mut arr, start, end, |x, y| x + y);
         assert!(arr.equals(&[1]));
+
+        let mut arr = [1, 2, 3];
+        rng::inclusive_scan_inplace(&mut arr, |x, y| x + y);
+        assert!(arr.equals(&[1, 3, 6]));
+
+        let mut arr = [1];
+        rng::inclusive_scan_inplace(&mut arr, |x, y| x + y);
+        assert!(arr.equals(&[1]));
+
+        let mut arr = [1, 2, 3];
+        arr.inclusive_scan_inplace(|x, y| x + y);
+        assert!(arr.equals(&[1, 3, 6]));
+
+        let mut arr = [1];
+        arr.inclusive_scan_inplace(|x, y| x + y);
+        assert!(arr.equals(&[1]));
     }
 }
