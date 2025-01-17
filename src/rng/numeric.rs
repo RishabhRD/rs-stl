@@ -203,6 +203,58 @@ where
     out
 }
 
+/// Mutates range such that it becomes exclusive prefix sum by given operation of itself.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Mutates rng such that first element becomes init, followed by generalized
+///     prefix sum by op. Last element is not considered in prefix sum.
+///   - Complexity: O(n) applications of op.
+///
+/// Where n is number of elements in rng.
+///
+/// # Infix Supported
+/// YES
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [2, 3, 7];
+/// rng::exclusive_scan_inplace(&mut arr, 0, |x, y| x + y);
+/// assert!(arr.equals(&[0, 2, 5]));
+///
+/// let mut arr = [2, 3, 7];
+/// arr.exclusive_scan_inplace(0, |x, y| x + y);
+/// assert!(arr.equals(&[0, 2, 5]));
+/// ```
+pub fn exclusive_scan_inplace<Range, BinaryOp>(
+    rng: &mut Range,
+    mut init: Range::Element,
+    op: BinaryOp,
+) where
+    Range: OutputRange + ?Sized,
+    BinaryOp: Fn(&Range::Element, &Range::Element) -> Range::Element,
+{
+    let mut start = rng.start();
+    if rng.is_end(&start) {
+        return;
+    }
+
+    std::mem::swap(&mut init, &mut rng.at_mut(&start));
+    let mut prev = start.clone();
+    start = rng.after(start);
+
+    while !rng.is_end(&start) {
+        init = op(&rng.at(&prev), &init);
+        std::mem::swap(&mut init, &mut rng.at_mut(&start));
+        prev = start.clone();
+        start = rng.after(start);
+    }
+}
+
 pub mod infix {
     use crate::{
         rng, BidirectionalRange, BoundedRange, InputRange, OutputRange,
@@ -243,13 +295,23 @@ pub mod infix {
     {
     }
 
-    /// `inclusive_scan_inplace`.
+    /// `inclusive_scan_inplace`, `exclusive_scan_inplace`.
     pub trait STLNumericOutputExt: OutputRange {
         fn inclusive_scan_inplace<BinaryOp>(&mut self, op: BinaryOp)
         where
             BinaryOp: Fn(&Self::Element, &Self::Element) -> Self::Element,
         {
             super::inclusive_scan_inplace(self, op);
+        }
+
+        fn exclusive_scan_inplace<BinaryOp>(
+            &mut self,
+            init: Self::Element,
+            op: BinaryOp,
+        ) where
+            BinaryOp: Fn(&Self::Element, &Self::Element) -> Self::Element,
+        {
+            super::exclusive_scan_inplace(self, init, op);
         }
     }
 

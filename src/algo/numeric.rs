@@ -189,3 +189,52 @@ where
     }
     out
 }
+
+/// Mutates range such that it becomes exclusive prefix sum by given operation of itself.
+///
+/// # Precondition
+///   - `[start, end)` represents valid positions in rng.
+///
+/// # Postcondition
+///   - Mutates rng such that first element becomes init, followed by generalized
+///     prefix sum by op. Last element is not considered in prefix sum.
+///   - Complexity: O(n) applications of op.
+///
+/// Where n is number of elements in `[start, end)`.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let mut arr = [2, 3, 7];
+/// let start = arr.start();
+/// let end = arr.end();
+/// algo::exclusive_scan_inplace(&mut arr, start, end, 0, |x, y| x + y);
+/// assert!(arr.equals(&[0, 2, 5]));
+/// ```
+pub fn exclusive_scan_inplace<Range, BinaryOp>(
+    rng: &mut Range,
+    mut start: Range::Position,
+    end: Range::Position,
+    mut init: Range::Element,
+    op: BinaryOp,
+) where
+    Range: OutputRange + ?Sized,
+    BinaryOp: Fn(&Range::Element, &Range::Element) -> Range::Element,
+{
+    if start == end {
+        return;
+    }
+
+    std::mem::swap(&mut init, &mut rng.at_mut(&start));
+    let mut prev = start.clone();
+    start = rng.after(start);
+
+    while start != end {
+        init = op(&rng.at(&prev), &init);
+        std::mem::swap(&mut init, &mut rng.at_mut(&start));
+        prev = start.clone();
+        start = rng.after(start);
+    }
+}

@@ -157,4 +157,49 @@ pub mod tests {
         assert_eq!(i, 0);
         assert!(dest.equals(&[]));
     }
+
+    #[test]
+    fn exclusive_scan_inplace() {
+        let mut arr = [2, 3, 7];
+        let start = arr.start();
+        let end = arr.end();
+        algo::exclusive_scan_inplace(&mut arr, start, end, 0, |x, y| x + y);
+        assert!(arr.equals(&[0, 2, 5]));
+
+        let mut arr = [2, 3, 7];
+        rng::exclusive_scan_inplace(&mut arr, 0, |x, y| x + y);
+        assert!(arr.equals(&[0, 2, 5]));
+
+        let mut arr = [2, 3, 7];
+        arr.exclusive_scan_inplace(0, |x, y| x + y);
+        assert!(arr.equals(&[0, 2, 5]));
+
+        let mut arr = [2];
+        let start = arr.start();
+        let end = arr.end();
+        algo::exclusive_scan_inplace(&mut arr, start, end, 0, |x, y| x + y);
+        assert!(arr.equals(&[0]));
+
+        let mut arr = [2];
+        rng::exclusive_scan_inplace(&mut arr, 0, |x, y| x + y);
+        assert!(arr.equals(&[0]));
+
+        let mut arr = [2];
+        arr.exclusive_scan_inplace(0, |x, y| x + y);
+        assert!(arr.equals(&[0]));
+
+        let mut arr: [i32; 0] = [];
+        let start = arr.start();
+        let end = arr.end();
+        algo::exclusive_scan_inplace(&mut arr, start, end, 0, |x, y| x + y);
+        assert!(arr.equals(&[]));
+
+        let mut arr: [i32; 0] = [];
+        rng::exclusive_scan_inplace(&mut arr, 0, |x, y| x + y);
+        assert!(arr.equals(&[]));
+
+        let mut arr: [i32; 0] = [];
+        arr.exclusive_scan_inplace(0, |x, y| x + y);
+        assert!(arr.equals(&[]));
+    }
 }
