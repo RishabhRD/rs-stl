@@ -301,7 +301,7 @@ required description would be provided.
 
 ## Views to implement
 
-NOTE: This is not an exhaustive list. If any view is not listed here, consider
+This is not an exhaustive list. If any view is not listed here, consider
 raising a feature request for the same, or contribute the same :)
 
 ### View Factories
