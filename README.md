@@ -331,7 +331,7 @@ raising a feature request for the same, or contribute the same :)
 - [ ] slide
 - [ ] group_by
 - [ ] split
-- [ ] join
+- [x] join -> borrow checker bug makes it unusable
 - [ ] cartesian_product
 - [ ] scan
 - [ ] scan_first
