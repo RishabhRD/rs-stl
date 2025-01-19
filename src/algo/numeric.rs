@@ -223,18 +223,10 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
     Range: OutputRange + ?Sized,
     BinaryOp: Fn(&Range::Element, &Range::Element) -> Range::Element,
 {
-    if start == end {
-        return;
-    }
-
-    std::mem::swap(&mut init, &mut rng.at_mut(&start));
-    let mut prev = start.clone();
-    start = rng.after(start);
-
     while start != end {
-        init = op(&rng.at(&prev), &init);
-        std::mem::swap(&mut init, &mut rng.at_mut(&start));
-        prev = start.clone();
+        let val = init;
+        init = op(&val, &rng.at(&start));
+        *rng.at_mut(&start) = val;
         start = rng.after(start);
     }
 }
