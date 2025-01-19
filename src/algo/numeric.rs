@@ -238,3 +238,56 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
         start = rng.after(start);
     }
 }
+
+/// Puts exclusive prefix sum by given operation of src range to dest range, i.e., ith element is
+/// not considered in ith prefix sum.
+///
+/// # Precondition
+///   - `[start, end)` represents valid positions in src.
+///   - out is valid position in dest.
+///   - dest can accomodate n elements.
+///
+/// # Postcondition
+///   - Puts exclusive prefix sum by op of src `[start, end)` to dest starting from out.
+///   - Returns the position in out after last element inserted.
+///   - Complexity: O(n) applications of op.
+///
+/// Where n is number of elements in src.
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let src = [1, 2, 3];
+/// let mut dest = [0, 0, 0];
+/// let out = dest.start();
+/// let i  =
+///   algo::exclusive_scan(&src, src.start(), src.end(), &mut dest, out, 0, |x, y| x + y);
+/// assert_eq!(i, 3);
+/// assert!(dest.equals(&[0, 1, 3]));
+/// ```
+pub fn exclusive_scan<SrcRange, DestRange, BinaryOp>(
+    src: &SrcRange,
+    mut start: SrcRange::Position,
+    end: SrcRange::Position,
+    dest: &mut DestRange,
+    mut out: DestRange::Position,
+    mut init: DestRange::Element,
+    op: BinaryOp,
+) -> DestRange::Position
+where
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    BinaryOp: Fn(&DestRange::Element, &SrcRange::Element) -> DestRange::Element,
+{
+    while start != end {
+        let val = init;
+        init = op(&val, &src.at(&start));
+        start = src.after(start);
+        *dest.at_mut(&out) = val;
+        out = dest.after(out);
+    }
+    out
+}

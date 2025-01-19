@@ -202,4 +202,49 @@ pub mod tests {
         arr.exclusive_scan_inplace(0, |x, y| x + y);
         assert!(arr.equals(&[]));
     }
+
+    #[test]
+    fn exclusive_scan() {
+        let src = [1, 2, 3];
+        let mut dest = [0, 0, 0];
+        let out = dest.start();
+        let i = algo::exclusive_scan(
+            &src,
+            src.start(),
+            src.end(),
+            &mut dest,
+            out,
+            1,
+            |x, y| x + y,
+        );
+        assert_eq!(i, 3);
+        assert!(dest.equals(&[1, 2, 4]));
+
+        let src = [1, 2, 3];
+        let mut dest = [0, 0, 0];
+        let i = rng::exclusive_scan(&src, &mut dest, 1, |x, y| x + y);
+        assert_eq!(i, 3);
+        assert!(dest.equals(&[1, 2, 4]));
+
+        let src: [i32; 0] = [];
+        let mut dest = [];
+        let out = dest.start();
+        let i = algo::exclusive_scan(
+            &src,
+            src.start(),
+            src.end(),
+            &mut dest,
+            out,
+            1,
+            |x, y| x + y,
+        );
+        assert_eq!(i, 0);
+        assert!(dest.equals(&[]));
+
+        let src: [i32; 0] = [];
+        let mut dest = [];
+        let i = rng::exclusive_scan(&src, &mut dest, 1, |x, y| x + y);
+        assert_eq!(i, 0);
+        assert!(dest.equals(&[]));
+    }
 }

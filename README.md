@@ -285,7 +285,7 @@ required description would be provided.
 - [ ] inner_product
 - [ ] adjacent_difference
 - [ ] ~~partial_sum~~ -> use inclusive_scan instead
-- [x] exclusive_scan -> exclusive_scan_inplace
+- [x] exclusive_scan -> exclusive_scan, exclusive_scan_inplace
 - [x] inclusive_scan -> inclusive_scan, inclusive_scan_inplace
 - [ ] transform_reduce
 - [ ] transform_exclusive_scan
