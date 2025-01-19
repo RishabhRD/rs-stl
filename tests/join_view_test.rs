@@ -22,5 +22,8 @@ pub mod tests {
 
         let v = ARR.view().join().as_reversed();
         assert_eq!(v.count(&2), 4);
+
+        // TODO: add tests for the case, where a row is empty. currently not
+        // possible because of static requirement.
     }
 }
