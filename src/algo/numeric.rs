@@ -235,8 +235,7 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
 ///
 /// # Precondition
 ///   - `[start1, end1)` represents valid positions in rng1.
-///   - `[start2, ...]` represents valid positions in rng2.
-///   - rng1 and rng2 have the same size for the specified range.
+///   - `[start2, n)` represents valid positions in rng2.
 ///
 /// # Postcondition
 ///   - Returns the generalized inner product of rng1 and rng2 using `combine_op` and `acc_op`.
@@ -255,7 +254,7 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
 /// let end1 = rng1.end();
 /// let start2 = rng2.start();
 /// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a + b);
-/// assert_eq!(result, 32); // (1*4) + (2*5) + (3*6) = 4 + 10 + 18 = 32
+/// assert_eq!(result, 32); // 0 + (1*4) + (2*5) + (3*6) = 4 + 10 + 18 = 32
 /// ```
 ///```rust
 /// use stl::*;
@@ -266,8 +265,8 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
 /// let start1 = rng1.start();
 /// let end1 = rng1.end();
 /// let start2 = rng2.start();
-/// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a -b);
-/// assert_eq!(result, -32); // (1*4) - (2*5) -(3*6) = 0-4 - 10 - 18 = -32
+/// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a - b);
+/// assert_eq!(result, -32); // 0 - (1*4) - (2*5) -(3*6) = 0 - 4 - 10 - 18 = -32
 ///```
 pub fn inner_product<Rng1, Rng2, T, CombineOp, AccOp>(
     rng1: &Rng1,
@@ -281,8 +280,7 @@ pub fn inner_product<Rng1, Rng2, T, CombineOp, AccOp>(
 ) -> T
 where
     Rng1: InputRange + ?Sized,
-    Rng2: InputRange<Element = Rng1::Element> + ?Sized,
-    T: Clone,
+    Rng2: InputRange + ?Sized,
     CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> T,
     AccOp: Fn(T, T) -> T,
 {
@@ -298,7 +296,6 @@ where
     }
     init
 }
-
 
 /// Puts exclusive prefix sum by given operation of src range to dest range, i.e., ith element is
 /// not considered in ith prefix sum.
