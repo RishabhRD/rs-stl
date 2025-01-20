@@ -3,17 +3,18 @@
 Porting STL to rust, i.e., generic programming for rust.
 
 Rust has good set of generic algorithms based on `rust iterators`. However,
-still its hard to write a generic `std::rotate` kind of algorithm with rust
-iterators. Also, inplace mutations are hard to achieve with `rust iterators`.
-But `C++ iterators` are great for the same.
+still its hard to write a generic `std::rotate` algorithm using the same.
+In general, inplace mutations are hard to achieve with `rust iterators`.
 
-C++ STL is a brilliant piece of work by Alex Stepanov and provides highly
-composable algorithms over C++ iterators.
+But `C++ iterators` are great for the same and actually good for modelling
+different capabilities a range might have.
+C++ STL is a brilliant piece of work by **Alex Stepanov** and provides highly
+composable generic algorithms using iterators.
 
-rs-stl ports C++ STL algorithms to rust by using concepts of Positions instead
-of Iterators to support rust borrow rules.
+rs-stl ports C++ STL algorithms to rust by using concepts of `Positions` instead
+of `Iterators` to support rust borrow rules.
 
-NOTE: Currently rs-stl is in experiment phase and might change any time.
+**NOTE**: rs-stl is currently in experiment phase and abstractions might change in future.
 
 ## Basic Idea
 
