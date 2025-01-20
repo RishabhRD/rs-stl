@@ -355,6 +355,11 @@ pub mod cycle;
 #[doc(inline)]
 pub use cycle::*;
 
+#[doc(hidden)]
+pub mod join;
+#[doc(inline)]
+pub use join::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;
@@ -366,6 +371,8 @@ pub mod infix {
     pub use super::drop_while::infix::*;
     #[doc(inline)]
     pub use super::filter::infix::*;
+    #[doc(inline)]
+    pub use super::join::infix::*;
     #[doc(inline)]
     pub use super::map::infix::*;
     #[doc(inline)]

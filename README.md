@@ -1,16 +1,20 @@
-# rs-stl
+# rs-stl [WIP]
 
-Porting STL to rust.
+Porting STL to rust, i.e., generic programming for rust.
 
-Rust has great set of algorithms based on `rust iterators`. However, many
-algorithms like `std::rotate` is still missing. This is because we don't have
-concept of `C++-like iterators`.
+Rust has good set of generic algorithms based on `rust iterators`. However,
+still its hard to write a generic `std::rotate` algorithm using the same.
+In general, inplace mutations are hard to achieve with `rust iterators`.
 
-C++ STL is a brilliant piece of work by Alex Stepanov and provides highly
-composable algorithms over C++ iterators.
+But `C++ iterators` are great for the same and actually good for modelling
+different capabilities a range might have.
+C++ STL is a brilliant piece of work by **Alex Stepanov** and provides highly
+composable generic algorithms using iterators.
 
-rs-stl ports C++ STL algorithms to rust by using concepts of Positions instead
-of Iterators to support rust borrow rules.
+rs-stl ports C++ STL algorithms to rust by using concepts of `Positions` instead
+of `Iterators` to support rust borrow rules.
+
+**NOTE**: rs-stl is currently in experiment phase and abstractions might change in future.
 
 ## Basic Idea
 
@@ -285,7 +289,7 @@ required description would be provided.
 - [ ] inner_product
 - [ ] adjacent_difference
 - [ ] ~~partial_sum~~ -> use inclusive_scan instead
-- [x] exclusive_scan -> exclusive_scan_inplace
+- [x] exclusive_scan -> exclusive_scan, exclusive_scan_inplace
 - [x] inclusive_scan -> inclusive_scan, inclusive_scan_inplace
 - [ ] transform_reduce
 - [ ] transform_exclusive_scan
@@ -301,7 +305,7 @@ required description would be provided.
 
 ## Views to implement
 
-NOTE: This is not an exhaustive list. If any view is not listed here, consider
+This is not an exhaustive list. If any view is not listed here, consider
 raising a feature request for the same, or contribute the same :)
 
 ### View Factories
@@ -331,7 +335,7 @@ raising a feature request for the same, or contribute the same :)
 - [ ] slide
 - [ ] group_by
 - [ ] split
-- [ ] join
+- [x] join -> borrow checker bug makes it unusable
 - [ ] cartesian_product
 - [ ] scan
 - [ ] scan_first

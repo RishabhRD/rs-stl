@@ -239,20 +239,65 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
     BinaryOp: Fn(&Range::Element, &Range::Element) -> Range::Element,
 {
     let mut start = rng.start();
-    if rng.is_end(&start) {
-        return;
-    }
-
-    std::mem::swap(&mut init, &mut rng.at_mut(&start));
-    let mut prev = start.clone();
-    start = rng.after(start);
-
     while !rng.is_end(&start) {
-        init = op(&rng.at(&prev), &init);
-        std::mem::swap(&mut init, &mut rng.at_mut(&start));
-        prev = start.clone();
+        let val = init;
+        init = op(&val, &rng.at(&start));
+        *rng.at_mut(&start) = val;
         start = rng.after(start);
     }
+}
+
+/// Puts exclusive prefix sum by given operation of src range to dest range, i.e., ith element is
+/// not considered in ith prefix sum.
+///
+/// # Precondition
+///   - out is valid position in dest.
+///   - dest can accomodate n elements.
+///
+/// # Postcondition
+///   - Puts exclusive prefix sum by op of src to dest.
+///   - Returns the position in out after last element inserted.
+///   - Complexity: O(n) applications of op.
+///
+/// Where n is number of elements in src.
+///
+/// # Infix Supported
+/// NO
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::infix::*;
+///
+/// let src = [1, 2, 3];
+/// let mut dest = [0, 0, 0];
+/// let i  =
+///   rng::exclusive_scan(&src, &mut dest, 0, |x, y| x + y);
+/// assert_eq!(i, 3);
+/// assert!(dest.equals(&[0, 1, 3]));
+/// ```
+pub fn exclusive_scan<SrcRange, DestRange, BinaryOp>(
+    src: &SrcRange,
+    dest: &mut DestRange,
+    mut init: DestRange::Element,
+    op: BinaryOp,
+) -> DestRange::Position
+where
+    SrcRange: InputRange + ?Sized,
+    DestRange: OutputRange<Element = SrcRange::Element> + ?Sized,
+    SrcRange::Element: Clone,
+    BinaryOp: Fn(&DestRange::Element, &SrcRange::Element) -> DestRange::Element,
+{
+    let mut start = src.start();
+    let mut out = dest.start();
+    while !src.is_end(&start) {
+        let val = init;
+        init = op(&val, &src.at(&start));
+        start = src.after(start);
+        *dest.at_mut(&out) = val;
+        out = dest.after(out);
+    }
+    out
 }
 
 pub mod infix {
