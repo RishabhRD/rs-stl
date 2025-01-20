@@ -265,18 +265,18 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
 /// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a + b);
 /// assert_eq!(result, 32); // (1*4) + (2*5) + (3*6) = 4 + 10 + 18 = 32
 /// ```
- /// ```rust
- /// use stl::*;
- /// use rng::infix::*;
- ///
- /// let rng1 = [1, 2, 3];
- /// let rng2 = [4, 5, 6];
- /// let start1 = rng1.start();
- /// let end1 = rng1.end();
- /// let start2 = rng2.start();
- /// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a -b);
- /// assert_eq!(result, 32); // (1*4) + (2*5) + (3*6) = 4 - 10 - 18 = -24
+///```rust
+/// use stl::*;
+/// use rng::infix::*;
 ///
+/// let rng1 = [1, 2, 3];
+/// let rng2 = [4, 5, 6];
+/// let start1 = rng1.start();
+/// let end1 = rng1.end();
+/// let start2 = rng2.start();
+/// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a -b);
+/// assert_eq!(result, -32); // (1*4) - (2*5) -(3*6) = 0-4 - 10 - 18 = -32
+///```
 pub fn inner_product<Rng1, Rng2, T, CombineOp, AccOp>(
     rng1: &Rng1,
     mut start1: Rng1::Position,
