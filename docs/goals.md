@@ -18,5 +18,5 @@
 - Should `actions` be supported? See `range-v3` actions to know more about it.
 
 ## Desirable
-- 100% test coverage? I don't like to chase test converage, but with algorithmic
-  library its achievable.
+- 100% test coverage?
+- Github action for coverage on PR?
