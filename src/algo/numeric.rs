@@ -284,7 +284,7 @@ where
     CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> U,
     ReduceOp: Fn(T, U) -> T,
 {
-    while start1 != end1 {
+    while start1 != end1 && !rng2.is_end(&start2) {
         let elem1 = rng1.at(&start1);
         let elem2 = rng2.at(&start2);
 
