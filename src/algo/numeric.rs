@@ -238,8 +238,8 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
 ///   - `[start2, n)` represents valid positions in rng2.
 ///
 /// # Postcondition
-///   - Returns the generalized inner product of rng1 and rng2 using `combine_op` and `acc_op`.
-///   - Complexity: O(n) applications of `combine_op` and `acc_op`.
+///   - Returns the generalized inner product of rng1 and rng2 using `combine_op` and `reduce_op`.
+///   - Complexity: O(n) applications of `combine_op` and `reduce_op`.
 ///
 /// Where n == `rng1.distance(start1, end1)`.
 ///
@@ -268,7 +268,7 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
 /// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a - b);
 /// assert_eq!(result, -32); // 0 - (1*4) - (2*5) -(3*6) = 0 - 4 - 10 - 18 = -32
 ///```
-pub fn inner_product<Rng1, Rng2, T, CombineOp, AccOp>(
+pub fn inner_product<Rng1, Rng2, T, U, CombineOp, ReduceOp>(
     rng1: &Rng1,
     mut start1: Rng1::Position,
     end1: Rng1::Position,
@@ -276,21 +276,21 @@ pub fn inner_product<Rng1, Rng2, T, CombineOp, AccOp>(
     mut start2: Rng2::Position,
     mut init: T,
     combine_op: CombineOp,
-    acc_op: AccOp,
+    reduce_op: ReduceOp,
 ) -> T
 where
     Rng1: InputRange + ?Sized,
-    Rng2: InputRange + ?Sized,
-    CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> T,
-    AccOp: Fn(T, T) -> T,
+    Rng2: InputRange<Element = Rng1::Element> + ?Sized,
+    CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> U,
+    ReduceOp: Fn(T, U) -> T,
 {
     while start1 != end1 {
         let elem1 = rng1.at(&start1);
         let elem2 = rng2.at(&start2);
-
+        
         let combined = combine_op(&elem1, &elem2);
-        init = acc_op(init, combined);
-
+        init = reduce_op(init, combined);
+        
         start1 = rng1.after(start1);
         start2 = rng2.after(start2);
     }
