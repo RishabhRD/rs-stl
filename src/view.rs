@@ -360,6 +360,11 @@ pub mod join;
 #[doc(inline)]
 pub use join::*;
 
+#[doc(hidden)]
+pub mod zip_map;
+#[doc(inline)]
+pub use zip_map::*;
+
 pub mod infix {
     #[doc(inline)]
     pub use super::as_reversed::infix::*;

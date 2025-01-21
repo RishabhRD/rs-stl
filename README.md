@@ -331,7 +331,7 @@ raising a feature request for the same, or contribute the same :)
 - [x] as_reversed
 - [x] cycle
 - [ ] zip
-- [ ] zip_map
+- [x] zip_map
 - [ ] slide
 - [ ] group_by
 - [ ] split
