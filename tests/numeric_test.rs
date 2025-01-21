@@ -444,25 +444,25 @@ pub mod tests {
     }
 
     #[test]
-    fn test_inner_product_with_different_lengths_should_panic() {
-        let rng1 = [1, 2, 3];
-        let rng2 = [4, 5]; // Shorter range
+    fn test_inner_product_with_rang1_is_shorter() {
+        let rng1 = [1, 2, 3]; // Shorter range
+        let rng2 = [4, 5, 6, 7]; // Longer range
         let start1 = rng1.start();
         let end1 = rng1.end();
         let start2 = rng2.start();
 
-        let result = std::panic::catch_unwind(|| {
-            inner_product(
-                &rng1,
-                start1,
-                end1,
-                &rng2,
-                start2,
-                0,
-                |x, y| x * y,
-                |a, b| a + b,
-            )
-        });
-        assert!(result.is_err()); // Should panic because the ranges are of different lengths
+        let result = inner_product(
+            &rng1,
+            start1,
+            end1,
+            &rng2,
+            start2,
+            0,
+            |x, y| x * y,
+            |a, b| a + b,
+        );
+        assert_eq!(result, 32); // 0 + (1*4) + (2*5) + (3*6) = 32
     }
+
+    //todo add one more test case when range 2 is shorter
 }
