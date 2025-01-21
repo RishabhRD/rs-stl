@@ -280,17 +280,17 @@ pub fn inner_product<Rng1, Rng2, T, U, CombineOp, ReduceOp>(
 ) -> T
 where
     Rng1: InputRange + ?Sized,
-    Rng2: InputRange<Element = Rng1::Element> + ?Sized,
+    Rng2: InputRange + ?Sized,
     CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> U,
     ReduceOp: Fn(T, U) -> T,
 {
     while start1 != end1 {
         let elem1 = rng1.at(&start1);
         let elem2 = rng2.at(&start2);
-        
+
         let combined = combine_op(&elem1, &elem2);
         init = reduce_op(init, combined);
-        
+
         start1 = rng1.after(start1);
         start2 = rng2.after(start2);
     }
