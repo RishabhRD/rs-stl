@@ -464,8 +464,6 @@ pub mod tests {
         assert_eq!(result, 32); // 0 + (1*4) + (2*5) + (3*6) = 32
     }
 
-    //todo add one more test case when range 2 is shorter
-
     #[test]
     fn test_inner_product_with_rang2_is_shorter() {
         let rng1 = [1, 2, 3, 4]; // Longer range
