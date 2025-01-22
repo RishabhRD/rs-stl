@@ -300,6 +300,49 @@ where
     out
 }
 
+/// Computes the inner product of two ranges.
+/// # Example
+/// ```rust
+/// use stl::*;
+/// use rng::numeric::*;
+///
+/// let range1 = [1, 2, 3];
+/// let range2 = [4, 5, 6];
+/// let result = rng::inner_product(&range1, &range2, 0, |x, y| x * y, |acc, val| acc + val);
+/// assert_eq!(result, 32); // (1*4 + 2*5 + 3*6 = 32)
+/// ```
+pub fn inner_product<Rng1, Rng2, T, CombineOp, ReduceOp>(
+    rng1: &Rng1,
+    rng2: &Rng2,
+    mut init: T,
+    combine_op: CombineOp,
+    reduce_op: ReduceOp,
+) -> T
+where
+    Rng1: InputRange + ?Sized,
+    Rng2: InputRange + ?Sized,
+    Rng1::Element: Clone,
+    Rng2::Element: Clone,
+    CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> T,
+    ReduceOp: Fn(T, T) -> T,
+{
+    let mut start1 = rng1.start();
+    let mut start2 = rng2.start();
+
+    while !rng1.is_end(&start1) && !rng2.is_end(&start2) {
+        let elem1 = rng1.at(&start1);
+        let elem2 = rng2.at(&start2);
+
+        let combined = combine_op(&elem1, &elem2);
+        init = reduce_op(init, combined);
+
+        start1 = rng1.after(start1);
+        start2 = rng2.after(start2);
+    }
+
+    init
+}
+
 pub mod infix {
     use crate::{
         rng, BidirectionalRange, BoundedRange, InputRange, OutputRange,
