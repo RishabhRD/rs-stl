@@ -267,7 +267,7 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
 /// let start2 = rng2.start();
 /// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a - b);
 /// assert_eq!(result, -32); // 0 - (1*4) - (2*5) -(3*6) = 0 - 4 - 10 - 18 = -32
-///```
+#[allow(clippy::too_many_arguments)]
 pub fn inner_product<Rng1, Rng2, T, U, CombineOp, ReduceOp>(
     rng1: &Rng1,
     mut start1: Rng1::Position,
