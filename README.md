@@ -164,6 +164,7 @@ cover all use-case, feel free to raise feature request with supporting use-case.
 
 The idea of generalization of indexes are not new and motivated from:
 
+- [Swift Standrard Libaray](https://developer.apple.com/documentation/swift/)
 - [Hylo Programming Language](https://github.com/hylo-lang/hylo)
 - [Flux](https://github.com/tcbrindle/flux)
 
