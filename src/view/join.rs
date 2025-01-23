@@ -1,20 +1,19 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{InputRange, View};
+use crate::{Collection, InputRange, View};
 
 mod __details {
     use crate::{
-        BidirectionalRange, BoundedRange, ForwardRange, InputRange, View,
+        BidirectionalRange, BoundedRange, Collection, ForwardRange, InputRange,
+        View,
     };
 
     #[derive(Clone)]
     pub struct JoinView<Element, InRange, OutRange>
     where
         InRange: InputRange<Element = Element>,
-        for<'a> OutRange: 'a
-            + InputRange<Element = InRange, ElementRef<'a> = &'a InRange>
-            + View,
+        for<'a> OutRange: Collection<'a, Element = InRange> + View,
     {
         pub range: OutRange,
     }
@@ -31,9 +30,8 @@ mod __details {
     ) -> JoinPosition<OutRange::Position, InRange::Position>
     where
         InRange: BidirectionalRange<Element = Element> + BoundedRange,
-        for<'a> OutRange: 'a
-            + BidirectionalRange<Element = InRange, ElementRef<'a> = &'a InRange>
-            + View,
+        for<'a> OutRange:
+            Collection<'a, Element = InRange> + BidirectionalRange + View,
     {
         while out_pos != rng.range.start() {
             out_pos = rng.range.before(out_pos);
@@ -51,9 +49,7 @@ mod __details {
         for JoinView<Element, InRange, OutRange>
     where
         InRange: InputRange<Element = Element>,
-        for<'a> OutRange: 'a
-            + InputRange<Element = InRange, ElementRef<'a> = &'a InRange>
-            + View,
+        for<'a> OutRange: Collection<'a, Element = InRange> + View,
     {
         type Element = Element;
 
@@ -122,9 +118,7 @@ mod __details {
     impl<Element, InRange, OutRange> View for JoinView<Element, InRange, OutRange>
     where
         InRange: InputRange<Element = Element>,
-        for<'a> OutRange: 'a
-            + InputRange<Element = InRange, ElementRef<'a> = &'a InRange>
-            + View,
+        for<'a> OutRange: Collection<'a, Element = InRange> + View,
     {
     }
 
@@ -132,9 +126,8 @@ mod __details {
         for JoinView<Element, InRange, OutRange>
     where
         InRange: InputRange<Element = Element>,
-        for<'a> OutRange: 'a
-            + BoundedRange<Element = InRange, ElementRef<'a> = &'a InRange>
-            + View,
+        for<'a> OutRange:
+            Collection<'a, Element = InRange> + BoundedRange + View,
     {
         fn end(&self) -> Self::Position {
             JoinPosition::End(self.range.end())
@@ -145,9 +138,8 @@ mod __details {
         for JoinView<Element, InRange, OutRange>
     where
         InRange: ForwardRange<Element = Element>,
-        for<'a> OutRange: 'a
-            + ForwardRange<Element = InRange, ElementRef<'a> = &'a InRange>
-            + View,
+        for<'a> OutRange:
+            Collection<'a, Element = InRange> + ForwardRange + View,
     {
     }
 
@@ -155,9 +147,8 @@ mod __details {
         for JoinView<Element, InRange, OutRange>
     where
         InRange: BidirectionalRange<Element = Element> + BoundedRange,
-        for<'a> OutRange: 'a
-            + BidirectionalRange<Element = InRange, ElementRef<'a> = &'a InRange>
-            + View,
+        for<'a> OutRange:
+            Collection<'a, Element = InRange> + BidirectionalRange + View,
     {
         fn before(&self, i: Self::Position) -> Self::Position {
             match i {
@@ -220,26 +211,22 @@ pub fn join<Element, InRange, OutRange>(
 ) -> __details::JoinView<Element, InRange, OutRange>
 where
     InRange: InputRange<Element = Element>,
-    for<'a> OutRange:
-        'a + InputRange<Element = InRange, ElementRef<'a> = &'a InRange> + View,
+    for<'a> OutRange: Collection<'a, Element = InRange> + View,
 {
     __details::JoinView { range: view }
 }
 
 pub mod infix {
     use super::__details;
-    use crate::{InputRange, View};
+    use crate::{Collection, InputRange, View};
 
-    pub trait STLJoinExt<Element, InRange>:
-        InputRange<Element = InRange> + View + Sized
+    pub trait STLJoinExt<Element, InRange>: View + Sized
     where
         InRange: InputRange<Element = Element>,
     {
         fn join(self) -> __details::JoinView<Element, InRange, Self>
         where
-            for<'a> Self: 'a
-                + InputRange<Element = InRange, ElementRef<'a> = &'a InRange>
-                + View,
+            for<'b> Self: Collection<'b, Element = InRange> + View,
         {
             super::join(self)
         }
@@ -249,9 +236,7 @@ pub mod infix {
     where
         T: InputRange<Element = InRange> + View,
         InRange: InputRange<Element = Element>,
-        for<'a> T: 'a
-            + InputRange<Element = InRange, ElementRef<'a> = &'a InRange>
-            + View,
+        for<'a> T: Collection<'a, Element = InRange> + View,
     {
     }
 }
