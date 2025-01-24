@@ -311,7 +311,7 @@ where
 /// let result = rng::inner_product(&range1, &range2, 0, |x, y| x * y, |acc, val| acc + val);
 /// assert_eq!(result, 32); // (1*4 + 2*5 + 3*6 = 32)
 /// ```
-pub fn inner_product<Rng1, Rng2, T, CombineOp, ReduceOp>(
+pub fn inner_product<Rng1, Rng2, T, U, CombineOp, ReduceOp>(
     rng1: &Rng1,
     rng2: &Rng2,
     mut init: T,
@@ -321,10 +321,8 @@ pub fn inner_product<Rng1, Rng2, T, CombineOp, ReduceOp>(
 where
     Rng1: InputRange + ?Sized,
     Rng2: InputRange + ?Sized,
-    Rng1::Element: Clone,
-    Rng2::Element: Clone,
-    CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> T,
-    ReduceOp: Fn(T, T) -> T,
+    CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> U,
+    ReduceOp: Fn(T, U) -> T,
 {
     let mut start1 = rng1.start();
     let mut start2 = rng2.start();
