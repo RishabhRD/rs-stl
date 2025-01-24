@@ -4,7 +4,6 @@
 #[cfg(test)]
 pub mod tests {
     use rng::infix::*;
-    use stl::algo::inner_product;
     use stl::*;
 
     fn concat_str(mut x: String, y: &&str) -> String {
@@ -326,7 +325,7 @@ pub mod tests {
         let end1 = rng1.end();
         let start2 = rng2.start();
 
-        let result = inner_product(
+        let result = algo::inner_product(
             &rng1,
             start1,
             end1,
@@ -347,7 +346,7 @@ pub mod tests {
         let end1 = rng1.end();
         let start2 = rng2.start();
 
-        let result = inner_product(
+        let result = algo::inner_product(
             &rng1,
             start1,
             end1,
@@ -368,7 +367,7 @@ pub mod tests {
         let end1 = rng1.end();
         let start2 = rng2.start();
 
-        let result = inner_product(
+        let result = algo::inner_product(
             &rng1,
             start1,
             end1,
@@ -389,7 +388,7 @@ pub mod tests {
         let end1 = rng1.end();
         let start2 = rng2.start();
 
-        let result = inner_product(
+        let result = algo::inner_product(
             &rng1,
             start1,
             end1,
@@ -410,7 +409,7 @@ pub mod tests {
         let end1 = rng1.end();
         let start2 = rng2.start();
 
-        let result = inner_product(
+        let result = algo::inner_product(
             &rng1,
             start1,
             end1,
@@ -430,7 +429,7 @@ pub mod tests {
         let end1 = rng1.end();
         let start2 = rng2.start();
 
-        let result = inner_product(
+        let result = algo::inner_product(
             &rng1,
             start1,
             end1,
@@ -451,7 +450,7 @@ pub mod tests {
         let end1 = rng1.end();
         let start2 = rng2.start();
 
-        let result = inner_product(
+        let result = algo::inner_product(
             &rng1,
             start1,
             end1,
@@ -472,7 +471,7 @@ pub mod tests {
         let end1 = rng1.end();
         let start2 = rng2.start();
 
-        let result = inner_product(
+        let result = algo::inner_product(
             &rng1,
             start1,
             end1,
@@ -482,6 +481,87 @@ pub mod tests {
             |x, y| x * y,
             |a, b| a + b,
         );
+        assert_eq!(result, 38); // 0 + (1*5) + (2*6) + (3*7) = 38
+    }
+
+    #[test]
+    fn test_inner_product_with_sum_and_multiplication_for_rng() {
+        let rng1 = [1, 2, 3];
+        let rng2 = [4, 5, 6];
+
+        let result =
+            rng::inner_product(&rng1, &rng2, 0, |x, y| x * y, |a, b| a + b);
+        assert_eq!(result, 32); // 0 + (1*4) + (2*5) + (3*6) = 4 + 10 + 18 = 32
+    }
+
+    #[test]
+    fn test_inner_product_with_subtraction_and_multiplication_with_subtraction()
+    {
+        let rng1 = [1, 2, 3];
+        let rng2 = [4, 5, 6];
+
+        let result =
+            rng::inner_product(&rng1, &rng2, 0, |x, y| x * y, |a, b| a - b);
+        assert_eq!(result, -32); // 0 - (1*4) - (2*5) - (3*6) = -4 - 10 - 18 = -32
+    }
+
+    #[test]
+    fn test_inner_product_with_different_initial_value_and_multiplication() {
+        let rng1 = [1, 2, 3];
+        let rng2 = [4, 5, 6];
+
+        let result =
+            rng::inner_product(&rng1, &rng2, 10, |x, y| x * y, |a, b| a + b);
+        assert_eq!(result, 42); // 10 + (1*4) + (2*5) + (3*6) = 10 + 4 + 10 + 18 = 42
+    }
+
+    #[test]
+    fn test_inner_product_with_empty_ranges_and_mixed_operations() {
+        let rng1: [i32; 0] = [];
+        let rng2: [i32; 0] = [];
+
+        let result =
+            rng::inner_product(&rng1, &rng2, 0, |x, y| x * y, |a, b| a + b);
+        assert_eq!(result, 0); // No elements, so result is the initial value
+    }
+
+    #[test]
+    fn test_inner_product_with_single_element_ranges_and_multiplication() {
+        let rng1 = [3];
+        let rng2 = [7];
+
+        let result =
+            rng::inner_product(&rng1, &rng2, 1, |x, y| x * y, |a, b| a + b);
+        assert_eq!(result, 22); // 1 + (3*7) = 1 + 21 = 22
+    }
+    #[test]
+    fn test_inner_product_with_mixed_operations_rng() {
+        let rng1 = [1, 2, 3];
+        let rng2 = [4, 5, 6];
+
+        let result =
+            rng::inner_product(&rng1, &rng2, 10, |x, y| x * y, |a, b| a - b);
+        assert_eq!(result, -22); // 10 - (1*4) - (2*5) - (3*6) = 10 - 4 - 10 - 18 = -22
+    }
+
+    #[test]
+    fn test_inner_product_with_rang1_is_shorter_for_rng() {
+        let rng1 = [1, 2, 3]; // Shorter range
+        let rng2 = [4, 5, 6, 7]; // Longer range
+
+        let result =
+            rng::inner_product(&rng1, &rng2, 0, |x, y| x * y, |a, b| a + b);
+        assert_eq!(result, 32); // 0 + (1*4) + (2*5) + (3*6) = 32
+    }
+
+    #[test]
+    fn test_inner_product_with_rng2_is_shorter() {
+        let rng1 = &[1, 2, 3, 4];
+        let rng2 = &[5, 6, 7];
+
+        let result =
+            rng::inner_product(rng1, rng2, 0, |x, y| x * y, |a, b| a + b);
+
         assert_eq!(result, 38); // 0 + (1*5) + (2*6) + (3*7) = 38
     }
 }
