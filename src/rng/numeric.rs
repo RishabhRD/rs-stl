@@ -310,10 +310,12 @@ where
 ///
 /// Where n is minimum number of elements in rng1 and rng2
 ///
+/// # Infix Supported
+/// NO
+///
 /// # Example
 /// ```rust
 /// use stl::*;
-/// use rng::numeric::*;
 ///
 /// let range1 = [1, 2, 3];
 /// let range2 = [4, 5, 6];
