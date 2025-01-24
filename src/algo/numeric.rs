@@ -240,7 +240,7 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
 ///   - Returns the generalized inner product of rng1 and rng2 using `combine_op` and `reduce_op`.
 ///   - Complexity: O(n) applications of `combine_op` and `reduce_op`.
 ///
-///  n is minimum number of elements in [start1..end1) and [start2..)
+/// Where n is minimum number of elements in [start1..end1) and [start2..)
 ///
 /// # Example
 /// ```rust

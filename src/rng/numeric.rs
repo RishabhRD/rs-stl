@@ -307,7 +307,9 @@ where
 /// # Postcondition
 ///   - Returns the generalized inner product of rng1 and rng2 using `combine_op` and `reduce_op`.
 ///   - Complexity: O(n) applications of `combine_op` and `reduce_op`.
-
+///
+/// Where n is minimum number of elements in rng1 and rng2
+///
 /// # Example
 /// ```rust
 /// use stl::*;
