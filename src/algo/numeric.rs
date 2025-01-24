@@ -235,13 +235,12 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
 ///
 /// # Precondition
 ///   - `[start1, end1)` represents valid positions in rng1.
-///   - `[start2, n)` represents valid positions in rng2.
 ///
 /// # Postcondition
 ///   - Returns the generalized inner product of rng1 and rng2 using `combine_op` and `reduce_op`.
 ///   - Complexity: O(n) applications of `combine_op` and `reduce_op`.
 ///
-/// Where n == `rng1.distance(start1, end1)`.
+///  n is minimum number of elements in [start1..end1) and [start2..)
 ///
 /// # Example
 /// ```rust

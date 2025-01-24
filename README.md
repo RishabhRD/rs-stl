@@ -58,7 +58,7 @@ Using `algo` module:
 use stl::*;
 
 let arr = [1, 2, 3];
-let cnt = algo::count_if(&arr, arr.start(), arr.end(), |x| x % 2 == 1);
+let cnt = algo::count_if( & arr, arr.start(), arr.end(), | x| x % 2 == 1);
 assert_eq!(cnt, 2);
 ```
 
@@ -68,7 +68,7 @@ Using `rng` module:
 use stl::*;
 
 let arr = [1, 2, 3];
-let cnt = rng::count_if(&arr, |x| x % 2 == 1);
+let cnt = rng::count_if( & arr, | x| x % 2 == 1);
 assert_eq!(cnt, 2);
 ```
 
@@ -79,7 +79,7 @@ use stl::*;
 use rng::infix::*;
 
 let arr = [1, 2, 3];
-let cnt = arr.count_if(|x| x % 2 == 1);
+let cnt = arr.count_if( | x| x % 2 == 1);
 assert_eq!(cnt, 2);
 ```
 
@@ -97,9 +97,9 @@ use rng::infix::*;
 
 let arr = [1, 2, 3];
 let cnt = arr
-           .view()
-           .map(|x| *x + 1)
-           .count_if(|x| x % 2 == 1);
+.view()
+.map( | x| * x + 1)
+.count_if( | x| x % 2 == 1);
 assert_eq!(cnt, 1);
 ```
 
@@ -111,9 +111,9 @@ use rng::infix::*;
 
 let mut arr = [(1, 2), (2, 1)];
 arr
-  .view()
-  .map(|x| x.1)
-  .sort_range();
+.view()
+.map( | x| x.1)
+.sort_range();
 assert_eq!(arr, [(2, 1), (1, 2)]);
 ```
 
@@ -128,7 +128,7 @@ use rng::infix::*;
 
 let mut sum = 0;
 for e in view::single(2).iter() {
-    sum += e;
+sum += e;
 }
 assert_eq!(sum, 2);
 ```
@@ -286,7 +286,7 @@ required description would be provided.
 
 - [ ] ~~iota~~ -> use view::ints
 - [x] accumulate/reduce -> fold_left, fold_right
-- [ ] inner_product
+- [x] inner_product
 - [ ] adjacent_difference
 - [ ] ~~partial_sum~~ -> use inclusive_scan instead
 - [x] exclusive_scan -> exclusive_scan, exclusive_scan_inplace

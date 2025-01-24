@@ -300,7 +300,14 @@ where
     out
 }
 
-/// Computes the inner product of two ranges.
+/// Computes the generalized inner product of two ranges using a combination and accumulation operation.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns the generalized inner product of rng1 and rng2 using `combine_op` and `reduce_op`.
+///   - Complexity: O(n) applications of `combine_op` and `reduce_op`.
+
 /// # Example
 /// ```rust
 /// use stl::*;
