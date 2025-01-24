@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Zips the given views using given operation."><title>zip_map in stl::view - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../../static.files/rustdoc-42caa33d.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="stl" data-themes="" data-resource-suffix="" data-rustdoc-version="1.84.0 (9fc6b4312 2025-01-07)" data-channel="1.84.0" data-search-js="search-92e6798f.js" data-settings-js="settings-0f613d39.js" ><script src="../../static.files/storage-59e33391.js"></script><script defer src="sidebar-items.js"></script><script defer src="../../static.files/main-5f194d8c.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-893ab5e7.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-6580c154.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-044be391.svg"></head><body class="rustdoc fn"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle" title="show sidebar"></button></nav><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../../stl/index.html">stl</a><span class="version">0.0.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">zip_map</a></h2><h3><a href="#">Sections</a></h3><ul class="block top-toc"><li><a href="#precondition" title="Precondition">Precondition</a></li><li><a href="#postcondition" title="Postcondition">Postcondition</a></li><li><a href="#infix-supported" title="Infix Supported">Infix Supported</a></li><li><a href="#example" title="Example">Example</a></li></ul></section><div id="rustdoc-modnav"><h2><a href="index.html">In stl::<wbr>view</a></h2></div></div></nav><div class="sidebar-resizer"></div><main><div class="width-limiter"><rustdoc-search></rustdoc-search><section id="main-content" class="content"><div class="main-heading"><span class="rustdoc-breadcrumbs"><a href="../index.html">stl</a>::<wbr><a href="index.html">view</a></span><h1>Function <span class="fn">zip_map</span><button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../../src/stl/view/zip_map.rs.html#164-179">Source</a> </span></div><pre class="rust item-decl"><code>pub fn zip_map&lt;RangeView1, RangeView2, CombineOp, OutputElement&gt;(
+    view1: RangeView1,
+    view2: RangeView2,
+    op: CombineOp,
+) -&gt; ZipMapView&lt;RangeView1, RangeView2, CombineOp, OutputElement&gt;<div class="where">where
+    RangeView1: <a class="trait" href="../trait.InputRange.html" title="trait stl::InputRange">InputRange</a> + <a class="trait" href="../trait.View.html" title="trait stl::View">View</a>,
+    RangeView2: <a class="trait" href="../trait.InputRange.html" title="trait stl::InputRange">InputRange</a> + <a class="trait" href="../trait.View.html" title="trait stl::View">View</a>,
+    CombineOp: <a class="trait" href="https://doc.rust-lang.org/1.84.0/core/ops/function/trait.Fn.html" title="trait core::ops::function::Fn">Fn</a>(&amp;RangeView1::<a class="associatedtype" href="../trait.InputRange.html#associatedtype.Element" title="type stl::InputRange::Element">Element</a>, &amp;RangeView2::<a class="associatedtype" href="../trait.InputRange.html#associatedtype.Element" title="type stl::InputRange::Element">Element</a>) -&gt; OutputElement,</div></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Zips the given views using given operation.</p>
+<h2 id="precondition"><a class="doc-anchor" href="#precondition">§</a>Precondition</h2><h2 id="postcondition"><a class="doc-anchor" href="#postcondition">§</a>Postcondition</h2>
+<ul>
+<li>Returns a view that is zip of <code>view1</code> and <code>view2</code> using operation op.</li>
+<li>Range Traits satisfied:
+<ul>
+<li>InputRange: YES</li>
+<li>BoundedRange: If view1 and view2 are BoundedRange</li>
+<li>ForwardRange: If view1 and view2 are ForwardRange</li>
+<li>BidirectionalRange: If view1 and view2 are BidirectionalRange</li>
+<li>RandomAccessRange: If view1 and view2 are RandomAccessRange</li>
+<li>SemiOutputRange: If view1 and view2 are SemiOutputRange</li>
+<li>OutputRange: NO</li>
+</ul>
+</li>
+</ul>
+<h2 id="infix-supported"><a class="doc-anchor" href="#infix-supported">§</a>Infix Supported</h2>
+<p>NO</p>
+<h2 id="example"><a class="doc-anchor" href="#example">§</a>Example</h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+<span class="kw">use </span>rng::infix::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>elements = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];
+<span class="kw">let </span><span class="kw-2">mut </span>weights = [<span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>];
+
+view::zip_map(elements.view_mut(), weights.view_mut(), |<span class="kw">_</span>, y| <span class="kw-2">*</span>y)
+    .sort_range();
+<span class="macro">assert_eq!</span>(elements, [<span class="number">2</span>, <span class="number">1</span>, <span class="number">3</span>]);
+<span class="macro">assert_eq!</span>(weights, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</code></pre></div>
+</div></details></section></div></main></body></html>
