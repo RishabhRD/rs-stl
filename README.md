@@ -287,7 +287,7 @@ required description would be provided.
 
 - [ ] ~~iota~~ -> use view::ints
 - [x] accumulate/reduce -> fold_left, fold_right
-- [ ] inner_product
+- [x] inner_product
 - [ ] adjacent_difference
 - [ ] ~~partial_sum~~ -> use inclusive_scan instead
 - [x] exclusive_scan -> exclusive_scan, exclusive_scan_inplace

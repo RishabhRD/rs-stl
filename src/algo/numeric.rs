@@ -231,6 +231,72 @@ pub fn exclusive_scan_inplace<Range, BinaryOp>(
     }
 }
 
+/// Computes the generalized inner product of two ranges using a combination and accumulation operation.
+///
+/// # Precondition
+///   - `[start1, end1)` represents valid positions in rng1.
+///   - start2 is a valid position in rng2.
+///
+/// # Postcondition
+///   - Returns the generalized inner product of rng1 and rng2 using `combine_op` and `reduce_op`.
+///   - Complexity: O(n) applications of `combine_op` and `reduce_op`.
+///
+/// Where n is minimum number of elements in [start1..end1) and [start2..)
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let rng1 = [1, 2, 3];
+/// let rng2 = [4, 5, 6];
+/// let start1 = rng1.start();
+/// let end1 = rng1.end();
+/// let start2 = rng2.start();
+/// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a + b);
+/// assert_eq!(result, 32); // 0 + (1*4) + (2*5) + (3*6) = 4 + 10 + 18 = 32
+/// ```
+///
+/// ```rust
+/// use stl::*;
+///
+/// let rng1 = [1, 2, 3];
+/// let rng2 = [4, 5, 6];
+/// let start1 = rng1.start();
+/// let end1 = rng1.end();
+/// let start2 = rng2.start();
+/// let result = algo::inner_product(&rng1, start1, end1, &rng2, start2, 0, |x, y| x * y, |a, b| a - b);
+/// assert_eq!(result, -32); // 0 - (1*4) - (2*5) -(3*6) = 0 - 4 - 10 - 18 = -32
+/// ```
+#[allow(clippy::too_many_arguments)]
+pub fn inner_product<Rng1, Rng2, T, U, CombineOp, ReduceOp>(
+    rng1: &Rng1,
+    mut start1: Rng1::Position,
+    end1: Rng1::Position,
+    rng2: &Rng2,
+    mut start2: Rng2::Position,
+    mut init: T,
+    combine_op: CombineOp,
+    reduce_op: ReduceOp,
+) -> T
+where
+    Rng1: InputRange + ?Sized,
+    Rng2: InputRange + ?Sized,
+    CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> U,
+    ReduceOp: Fn(T, U) -> T,
+{
+    while start1 != end1 && !rng2.is_end(&start2) {
+        let elem1 = rng1.at(&start1);
+        let elem2 = rng2.at(&start2);
+
+        let combined = combine_op(&elem1, &elem2);
+        init = reduce_op(init, combined);
+
+        start1 = rng1.after(start1);
+        start2 = rng2.after(start2);
+    }
+    init
+}
+
 /// Puts exclusive prefix sum by given operation of src range to dest range, i.e., ith element is
 /// not considered in ith prefix sum.
 ///

@@ -300,6 +300,58 @@ where
     out
 }
 
+/// Computes the generalized inner product of two ranges using a combination and accumulation operation.
+///
+/// # Precondition
+///
+/// # Postcondition
+///   - Returns the generalized inner product of rng1 and rng2 using `combine_op` and `reduce_op`.
+///   - Complexity: O(n) applications of `combine_op` and `reduce_op`.
+///
+/// Where n is minimum number of elements in rng1 and rng2
+///
+/// # Infix Supported
+/// NO
+///
+/// # Example
+/// ```rust
+/// use stl::*;
+///
+/// let range1 = [1, 2, 3];
+/// let range2 = [4, 5, 6];
+/// let result = rng::inner_product(&range1, &range2, 0, |x, y| x * y, |acc, val| acc + val);
+/// assert_eq!(result, 32); // (1*4 + 2*5 + 3*6 = 32)
+/// ```
+pub fn inner_product<Rng1, Rng2, T, U, CombineOp, ReduceOp>(
+    rng1: &Rng1,
+    rng2: &Rng2,
+    mut init: T,
+    combine_op: CombineOp,
+    reduce_op: ReduceOp,
+) -> T
+where
+    Rng1: InputRange + ?Sized,
+    Rng2: InputRange + ?Sized,
+    CombineOp: Fn(&Rng1::Element, &Rng2::Element) -> U,
+    ReduceOp: Fn(T, U) -> T,
+{
+    let mut start1 = rng1.start();
+    let mut start2 = rng2.start();
+
+    while !rng1.is_end(&start1) && !rng2.is_end(&start2) {
+        let elem1 = rng1.at(&start1);
+        let elem2 = rng2.at(&start2);
+
+        let combined = combine_op(&elem1, &elem2);
+        init = reduce_op(init, combined);
+
+        start1 = rng1.after(start1);
+        start2 = rng2.after(start2);
+    }
+
+    init
+}
+
 pub mod infix {
     use crate::{
         rng, BidirectionalRange, BoundedRange, InputRange, OutputRange,
