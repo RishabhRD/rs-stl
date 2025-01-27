@@ -1,74 +1,102 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
+// Copyright (c) 2024-2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-/// Equality Comparable + Movable + Destructable.
+/// Any type that is movable, destructable and equality comparable.
 ///
-/// As per Stepanov (not exact), Types can be:
-///   - compared for equality
-///   - moved
-///   - destructed
+/// As per Stepanov (not exact), Type is
+///   - Movable
+///   - Destructable
+///   - Equality comparable
 pub trait SemiRegular: Eq {}
 impl<T> SemiRegular for T where T: Eq {}
 
-/// SemiRegular + Clonable
+/// Any SemiRegular type that is cloneable.
 ///
-/// As per Stepanov (not exact), Types can be:
+/// As per Stepanov (not exact), Type is
 ///   - SemiRegular
-///   - cloned
+///   - Cloneable
 pub trait Regular: SemiRegular + Clone {}
 impl<T> Regular for T where T: SemiRegular + Clone {}
 
-/// Models a single-pass range.
+mod sealed {
+    pub trait Sealed: Sized {}
+    pub struct Bounds<T>(T);
+    impl<T> Sealed for Bounds<T> {}
+}
+use sealed::{Bounds, Sealed};
+
+use crate::{CollectionIterator, LazyCollectionIterator};
+
+/// Defines Position and Element type of Range
 ///
-/// This is most primitive range trait. It specfies requirement for supporting
-/// single pass iteration.
-///
-/// - type Element: for defining the type of element in range.
-/// - type Position: for defining the type of position/index in range.
-/// - start() would return the first position
-/// - end() would return the last position.
-/// - For traversing forward after(i) would return next position after i.
-/// - Accessing any element immutably can be done using at(i)
-/// - after_n is additional convinient method supported to get to nth position after current
-///   position.
-/// - Position type is bounded to SemiRegular so that algorithms working on
-///   InputRange doesn't accidently copy any position.
-pub trait InputRange {
-    /// Type of the element contained in self
+/// # TODO
+///   - This should be part of Range itself, however, that would require to use
+///     GAT with HRTB. However, borrow checker current limitation results in
+///     deducing the resultant lifetime of subrange to 'static.
+///   - See [https://github.com/rust-lang/rust/issues/87479](https://github.com/rust-lang/rust/issues/87479)
+///   - This implementation is a workaround for the same.
+///     See [the better alternative to lifetime](https://sabrinajewson.org/blog/the-better-alternative-to-lifetime-gats#hrtb-supertrait)
+pub trait RangeBase {
+    /// Type of positions in range.
+    type Position: Regular;
+
+    /// Type of element of range.
     type Element;
+}
 
-    /// Type of the positions in self
-    type Position: SemiRegular;
+/// Defines subrange type of range
+///
+/// # TODO
+///   - This should be part of Range itself, however, that would require to use
+///     GAT with HRTB. However, borrow checker current limitation results in
+///     deducing the resultant lifetime of subrange to 'static.
+///   - See [https://github.com/rust-lang/rust/issues/87479](https://github.com/rust-lang/rust/issues/87479)
+///   - This implementation is a workaround for the same.
+///     See [the better alternative to lifetime](https://sabrinajewson.org/blog/the-better-alternative-to-lifetime-gats#hrtb-supertrait)
+pub trait SubRangeable<'this, ImplicitBounds: Sealed = Bounds<&'this Self>>:
+    RangeBase
+{
+    /// Type of subrange of the range.
+    type SubRange: Range<
+        Element = Self::Element,
+        Position = Self::Position,
+        SubRange = Self::SubRange,
+    >;
+}
 
-    /// Type of reference to element.
+/// Models a multi-pass linear sequence of elements.
+///
+/// Representation:
+/// ```text
+///   _ _ _ _ _ _
+///
+///   ^            ^
+///   |            |
+/// start   -->   end
+pub trait Range: for<'this> SubRangeable<'this> {
+    /// Returns the position of first element in the range.
     ///
-    /// Very useful in scenarios when range actually doesn't contain the elements
-    /// and proxy reference is necessary.
-    type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
-    where
-        Self: 'a;
-
-    /// Returns the position of first element in self,
-    /// or if self is empty then start() == end()
+    /// If range is empty, returns end position of the range.
     fn start(&self) -> Self::Position;
 
-    /// Returns true if i is the end position of range.
-    fn is_end(&self, i: &Self::Position) -> bool;
+    /// Returns position past the last element of the range.
+    fn end(&self) -> Self::Position;
 
-    /// Returns position immediately after i
+    /// Returns the position immediately after i.
     ///
     /// # Precondition
-    ///   - i != end()
+    ///   - `i != self.end()`.
     fn after(&self, i: Self::Position) -> Self::Position;
 
     /// Returns nth position after i.
     ///
     /// # Precondition
-    ///   - There are n valid positions in self after i.
-    ///
-    /// # Complexity
-    /// n applications of after().
-    fn after_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
+    ///   - There should be atleast n valid positions after i.
+    ///   - Complexity: O(n) by default. Types can provide efficient
+    ///     implementations if possible.
+    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
+        let mut i = i;
+        let mut n = n;
         while n > 0 {
             i = self.after(i);
             n -= 1;
@@ -76,150 +104,154 @@ pub trait InputRange {
         i
     }
 
-    /// Access element at position i.
+    /// Returns subrange `[from, to)` of given range.
+    fn slice(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> <Self as SubRangeable<'_>>::SubRange;
+
+    /// Returns distance between `from` and `to`.
     ///
     /// # Precondition
-    ///   - i is a valid position in self and i != end()
+    ///   - to should be reachable from from.
     ///
-    /// # Complexity Requirement
-    /// O(1)
-    fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a>;
-}
-
-/// Models a bounded range, i.e., the range whose end position is known.
-pub trait BoundedRange: InputRange {
-    /// Returns position immediately after position of last element.
-    fn end(&self) -> Self::Position;
-}
-
-/// Models a multi-pass range.
-///
-/// - ForwardRange is an extension of InputRange.
-/// - ForwardRange models multi-pass range by allowing Position to be Regular.
-///   This allows cloning position object, so that clone can be used for
-///   another iteration at any point.
-/// - Usually any algorithm, that needs to store iterator usually have minimum
-///   ForwardRange requirement.
-/// - Supports a convenient distance function, to get distance between 2 positions.
-pub trait ForwardRange: InputRange<Position: Regular> {
-    /// Returns distance between position `[from, to)`.
-    ///
-    /// # Precondition
-    ///   - `[from, to)` represents valid position in range.
-    ///
-    /// # Complexity
-    /// O(n)
-    fn distance(&self, mut from: Self::Position, to: Self::Position) -> usize {
-        let mut res = 0;
+    /// # Postcondition
+    ///   - Returns distance between `from` and `to`.
+    ///   - Complexity: O(n) by default. Types can provide efficient implementation if possible.
+    fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
+        let mut from = from;
+        let mut dist = 0;
         while from != to {
+            dist += 1;
             from = self.after(from);
-            res += 1;
         }
-        res
+        dist
     }
 }
 
-/// Models a bidirectional range, which can be traversed forward as well as backward.
+/// Models a range whose `Element`s are present in memory.
 ///
-/// - BidirectionalRange is an extension of ForwardRange.
-/// - For supporting backward iteration, before(i) function is supported. before(i)
-///   function returns the position just before current position.
-/// - A before_n convenient function is there to get nth position before current position.
-pub trait BidirectionalRange: ForwardRange {
-    /// Returns position immediately before i
+/// If elements are present in memory, then it should be possible to obtain
+/// reference to elements.
+pub trait Collection: Range
+where
+    for<'a> <Self as SubRangeable<'a>>::SubRange: Collection,
+{
+    /// Returns reference to element at position i.
+    fn at(&self, i: &Self::Position) -> &Self::Element;
+
+    /// Returns iterator that iterates over references to elements in collection.
+    fn iter(&self) -> CollectionIterator<Self> {
+        CollectionIterator::new(self)
+    }
+}
+
+/// Models a range whose elements are lazily computed on element access.
+///
+/// Thus, accessing element at any position would return value.
+pub trait LazyCollection: Range
+where
+    for<'a> <Self as SubRangeable<'a>>::SubRange: LazyCollection,
+{
+    /// Returns the element at ith position.
     ///
     /// # Precondition
-    ///   - i != start()
+    ///   - i != self.end()
+    fn at(&self, i: &Self::Position) -> Self::Element;
+
+    /// Returns iterator that iterates over element values in lazy collection.
+    fn iter(&self) -> LazyCollectionIterator<Self> {
+        LazyCollectionIterator::new(self)
+    }
+}
+
+/// AnyCollection weakens the element access with returning `reference like type` to Element.
+///
+/// This allows unified implementation of algorithms for Collection and LazyCollection.
+pub trait AnyCollection: Range {
+    fn at_ref(
+        &self,
+        i: &Self::Position,
+    ) -> impl std::ops::Deref<Target = Self::Element>;
+}
+
+impl<R> AnyCollection for R
+where
+    R: Collection,
+    for<'a> <Self as SubRangeable<'a>>::SubRange: Collection,
+{
+    fn at_ref(
+        &self,
+        i: &Self::Position,
+    ) -> impl std::ops::Deref<Target = Self::Element> {
+        self.at(i)
+    }
+}
+
+// TODO: This is AnyCollection implementation for a LazyCollection. However,
+// this leads to conflicting implementation because of Collection's implementation
+// for AnyCollection. Currently, every lazy collection would need to implement
+// it manually.
+//
+// impl<R> AnyCollection for R
+// where
+//     R: LazyCollection,
+//     for<'a> <Self as SubRangeable<'a>>::SubRange: LazyCollection,
+// {
+//     fn at_ref(
+//         &self,
+//         i: &Self::Position,
+//     ) -> impl std::ops::Deref<Target = Self::Element> {
+//         crate::util::ValueRef { val: self.at(i) }
+//     }
+// }
+
+/// Models a range that supports forward as well as backward traversal.
+pub trait BidirectionalRange: Range
+where
+    for<'a> <Self as SubRangeable<'a>>::SubRange: BidirectionalRange,
+{
+    /// Returns position immediately before i.
+    ///
+    /// # Precondition
+    ///   - `i != self.start()`
     fn before(&self, i: Self::Position) -> Self::Position;
 
-    /// Returns nth position before i
+    /// Returns nth position before i.
     ///
     /// # Precondition
-    ///   - self has n valid positions before i.
+    ///   - There are n valid positions in range before i.
     ///
-    /// # Complexity
-    /// n applications of before.
-    fn before_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
+    /// # Postcondition
+    ///   - Returns nth position before i.
+    ///   - Complexity: O(n) by default. Types can provide efficient implementation if possible.
+    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
+        let mut i = i;
+        let mut n = n;
         while n > 0 {
             i = self.before(i);
-            n -= 1;
+            n -= 1
         }
         i
     }
 }
 
-/// Models a random access range (similar to array) where jumping to any position from any
-/// other position is O(1) operation.
+/// Models a random access range where jumping from one position to another is O(1) operation.
 ///
-/// - RandomAccessRange is extension of BidirectionalRange.
-/// - RandomAccessRange enforces the Position of range should be ordered.
-/// - RandomAccessRange doesn't add any new method but introduces complexity
-///   requirements mentioned below. The complexity requirements ensure that
-///   any position jump is O(1).
+/// # Precondition
+///   - self.after should work in O(1)
+///   - self.after_n should work in O(1)
+///   - self.before should work in O(1)
+///   - self.before_n should work in O(1)
+///   - self.distance should work in O(1)
 ///
-/// # Complexity Requirements
-///   - `rng.distance(from, to)` -> O(1).
-///   - `rng.after_n(i)` -> O(1).
-///   - `rng.before_n(i)` -> O(1).
-///
-///   NOTE: If complexity requirements are not formed any algorithm on RandomAccessRange
-///   have undefined behavior.
-pub trait RandomAccessRange:
-    BidirectionalRange<Position: Regular + Ord>
+/// # Postcondition
+///   - RandomAccessRange doesn't provide any additional method but with given
+///     precondition it ensures that jumping from one position to other can be
+///     done in O(1).
+pub trait RandomAccessRange: BidirectionalRange<Position: Ord>
+where
+    for<'a> <Self as SubRangeable<'a>>::SubRange: RandomAccessRange,
 {
 }
-
-/// Models mutable range that can only be reordered.
-///
-/// - SemiOutputRange is extension of ForwardRange.
-/// - SemiOutputRange models primitive mutable range that just supports reordering
-///   of its elements.
-/// - For supporting reordering of elements, `swap_at` function is required.
-///   It allows to swap 2 elements at given positions.
-pub trait SemiOutputRange: ForwardRange {
-    /// Swap elements at position i and j
-    ///
-    /// # Precondition
-    ///   - i and j is a valid position in self.
-    ///
-    /// # Complexity Requirement
-    /// O(1)
-    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
-}
-
-/// Models a fully mutable range.
-///
-/// OutputRange is extension of SemiOutputRange.
-///
-/// There are 2 types of safe mutation possible for ranges:
-/// 1. Reordering of elements that is provided by SemiOutputRange.
-/// 2. Element Assignment: Assign different value to element at any position.
-///    For the same, `at_mut` function is required that returns mutable
-///    reference to element at any position.
-pub trait OutputRange: SemiOutputRange {
-    /// Type of mutable reference to element.
-    ///
-    /// Very useful in scenarios when range actually doesn't contain the elements
-    /// and proxy mutable reference is necessary.
-    type ElementMutRef<'a>: std::ops::DerefMut<Target = Self::Element>
-    where
-        Self: 'a;
-
-    /// Access element at position i
-    ///
-    /// # Precondition
-    ///   - i is a valid position in self and i != end()
-    ///
-    /// # Complexity Requirement
-    /// O(1)
-    fn at_mut<'a>(&'a mut self, i: &Self::Position) -> Self::ElementMutRef<'a>;
-}
-
-/// Marker trait for a view.
-///
-/// A view is also a range. However, unlike `Vec<T>`, view is intended for used
-/// as non-owning range i.e., it can be one of following:
-/// 1. refers to another range.
-/// 2. owns another view.
-/// 3. doesn't actually contains any element.
-pub trait View: InputRange {}

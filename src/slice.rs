@@ -1,81 +1,125 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
-
-#![doc(hidden)]
+// Copyright (c) 2024-2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalRange, BoundedRange, ForwardRange, InputRange, OutputRange,
-    RandomAccessRange, SemiOutputRange,
+    BidirectionalRange, Collection, LazyCollection, RandomAccessRange, Range,
+    RangeBase, SubRangeable,
 };
 
-impl<T> InputRange for [T] {
-    type Element = T;
+/// Slice of given range.
+pub struct Slice<'a, R: Range> {
+    m_range: &'a R,
+    m_start: R::Position,
+    m_end: R::Position,
+}
 
-    type ElementRef<'a>
-        = &'a T
-    where
-        Self: 'a;
+impl<'a, R: Range> Slice<'a, R> {
+    pub fn new(range: &'a R, start: R::Position, end: R::Position) -> Self {
+        Self {
+            m_range: range,
+            m_start: start,
+            m_end: end,
+        }
+    }
+}
 
-    type Position = usize;
+impl<R> RangeBase for Slice<'_, R>
+where
+    R: Range,
+{
+    type Position = R::Position;
 
+    type Element = R::Element;
+}
+
+impl<R> SubRangeable<'_> for Slice<'_, R>
+where
+    R: Range,
+{
+    type SubRange = Self;
+}
+
+impl<R> Range for Slice<'_, R>
+where
+    R: Range,
+{
     fn start(&self) -> Self::Position {
-        0
+        self.m_start.clone()
+    }
+
+    fn end(&self) -> Self::Position {
+        self.m_end.clone()
     }
 
     fn after(&self, i: Self::Position) -> Self::Position {
-        i + 1
+        assert!(i != self.m_end);
+        self.m_range.after(i)
+    }
+
+    fn slice(&self, from: Self::Position, to: Self::Position) -> Self {
+        Self::new(self.m_range, from, to)
     }
 
     fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i + n
+        let mut i = i;
+        let mut n = n;
+        while n > 0 {
+            i = self.after(i);
+            n -= 1;
+        }
+        i
     }
 
-    fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a> {
-        &self[*i]
-    }
-
-    fn is_end(&self, i: &Self::Position) -> bool {
-        *i == self.len()
-    }
-}
-
-impl<T> BoundedRange for [T] {
-    fn end(&self) -> Self::Position {
-        self.len()
-    }
-}
-
-impl<T> ForwardRange for [T] {
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        to - from
+        let mut from = from;
+        let mut dist = 0;
+        while from != to {
+            dist += 1;
+            from = self.after(from);
+        }
+        dist
     }
 }
 
-impl<T> BidirectionalRange for [T] {
+impl<R> Collection for Slice<'_, R>
+where
+    R: Collection,
+    for<'a> <R as SubRangeable<'a>>::SubRange: Collection,
+{
+    fn at(&self, i: &Self::Position) -> &Self::Element {
+        assert!(*i != self.m_end);
+        self.m_range.at(i)
+    }
+}
+
+impl<R> LazyCollection for Slice<'_, R>
+where
+    R: LazyCollection,
+    for<'a> <R as SubRangeable<'a>>::SubRange: LazyCollection,
+{
+    fn at(&self, i: &Self::Position) -> Self::Element {
+        self.m_range.at(i)
+    }
+}
+
+impl<R> BidirectionalRange for Slice<'_, R>
+where
+    R: BidirectionalRange,
+    for<'a> <R as SubRangeable<'a>>::SubRange: BidirectionalRange,
+{
     fn before(&self, i: Self::Position) -> Self::Position {
-        i - 1
+        assert!(i != self.m_start);
+        self.m_range.before(i)
     }
 
     fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i - n
+        self.m_range.before_n(i, n)
     }
 }
 
-impl<T> RandomAccessRange for [T] {}
-
-impl<T> SemiOutputRange for [T] {
-    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
-        self.swap(*i, *j);
-    }
-}
-
-impl<T> OutputRange for [T] {
-    type ElementMutRef<'a>
-        = &'a mut T
-    where
-        Self: 'a;
-
-    fn at_mut<'a>(&'a mut self, i: &Self::Position) -> Self::ElementMutRef<'a> {
-        &mut self[*i]
-    }
+impl<R> RandomAccessRange for Slice<'_, R>
+where
+    R: RandomAccessRange,
+    for<'a> <R as SubRangeable<'a>>::SubRange: RandomAccessRange,
+{
 }

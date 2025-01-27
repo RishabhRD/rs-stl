@@ -9,23 +9,27 @@
 //! - `[T;n]` (array)
 //! - `[T]` (slice)
 //! - `Vec<T>` (Vec)
-//! - `str`
-//! - `String`
 
+#[doc(hidden)]
 pub mod algo;
-pub mod array;
+#[doc(hidden)]
+pub mod array_slice;
 #[doc(hidden)]
 pub mod core;
-pub mod rng;
+#[doc(hidden)]
+pub mod iter;
+#[doc(hidden)]
 pub mod slice;
-pub mod str;
+#[doc(hidden)]
+pub mod trait_impl;
 #[doc(hidden)]
 pub mod util;
-pub mod vec;
 
 #[doc(inline)]
+pub use array_slice::*;
+#[doc(inline)]
 pub use core::*;
-
-pub mod view;
-pub use view::STLMutableViewExt;
-pub use view::STLViewExt;
+#[doc(inline)]
+pub use iter::*;
+#[doc(inline)]
+pub use slice::*;

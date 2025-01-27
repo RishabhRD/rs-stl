@@ -7,64 +7,55 @@ pub mod tests {
 
     #[test]
     fn start() {
-        let array = [10, 20, 30];
-        let arr = Slice::new(&array, array.start(), array.end());
+        let arr: Vec<i32> = vec![10, 20, 30];
         assert_eq!(arr.start(), 0);
     }
 
     #[test]
     fn end() {
-        let array = [10, 20, 30];
-        let arr = Slice::new(&array, array.start(), array.end());
+        let arr: Vec<i32> = vec![10, 20, 30];
         assert_eq!(arr.end(), 3);
     }
 
     #[test]
     fn after() {
-        let array = [10, 20, 30];
-        let arr = Slice::new(&array, array.start(), array.end());
+        let arr: Vec<i32> = vec![10, 20, 30];
         assert_eq!(arr.after(0), 1);
     }
 
     #[test]
     fn after_n() {
-        let array = [10, 20, 30];
-        let arr = Slice::new(&array, array.start(), array.end());
+        let arr: Vec<i32> = vec![10, 20, 30];
         assert_eq!(arr.after_n(0, 2), 2);
     }
 
     #[test]
     fn before() {
-        let array = [10, 20, 30];
-        let arr = Slice::new(&array, array.start(), array.end());
+        let arr: Vec<i32> = vec![10, 20, 30];
         assert_eq!(arr.before(1), 0);
     }
 
     #[test]
     fn before_n() {
-        let array = [10, 20, 30];
-        let arr = Slice::new(&array, array.start(), array.end());
+        let arr: Vec<i32> = vec![10, 20, 30];
         assert_eq!(arr.before_n(2, 2), 0);
     }
 
     #[test]
     fn distance() {
-        let array = [10, 20, 30];
-        let arr = Slice::new(&array, array.start(), array.end());
+        let arr: Vec<i32> = vec![10, 20, 30];
         assert_eq!(arr.distance(0, 2), 2);
     }
 
     #[test]
     fn at() {
-        let array = [10, 20, 30];
-        let arr = Slice::new(&array, array.start(), array.end());
+        let arr: Vec<i32> = vec![10, 20, 30];
         assert_eq!(*arr.at(&0), 10);
     }
 
     #[test]
     fn slice() {
-        let array = [10, 20, 30, 40, 50];
-        let arr = Slice::new(&array, array.start(), array.end());
+        let arr: Vec<i32> = vec![10, 20, 30, 40, 50];
         let v = arr.slice(1, 4);
         let start = v.start();
         let end = v.end();
@@ -76,5 +67,9 @@ pub mod tests {
         assert_eq!(*v.at(&start), 20);
     }
 
-    // TODO: add test: at for lazy collection.
+    #[test]
+    fn lifetime() {
+        let start = vec![1, 2, 3].start(); // Positions can outlive ranges.
+        assert_eq!(start, 0);
+    }
 }
