@@ -86,6 +86,13 @@ pub trait InputRange {
     fn at<'a>(&'a self, i: &Self::Position) -> Self::ElementRef<'a>;
 }
 
+pub trait Collection<'a>:
+    InputRange<ElementRef<'a> = &'a <Self as InputRange>::Element>
+where
+    Self: 'a,
+{
+}
+
 /// Models a bounded range, i.e., the range whose end position is known.
 pub trait BoundedRange: InputRange {
     /// Returns position immediately after position of last element.

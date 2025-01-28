@@ -31,7 +31,7 @@ use crate::{InputRange, SemiOutputRange};
 
 mod __details {
     use crate::{
-        BidirectionalRange, BoundedRange, ForwardRange, InputRange,
+        BidirectionalRange, BoundedRange, Collection, ForwardRange, InputRange,
         OutputRange, RandomAccessRange, SemiOutputRange, View,
     };
 
@@ -123,6 +123,20 @@ mod __details {
         fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
             self.range.after_n(i, n)
         }
+    }
+
+    impl<'a, R> Collection<'a> for RangeView<'_, R>
+    where
+        R: Collection<'a> + ?Sized,
+        Self: 'a,
+    {
+    }
+
+    impl<'a, R> Collection<'a> for RangeMutView<'_, R>
+    where
+        R: Collection<'a> + SemiOutputRange + ?Sized,
+        Self: 'a,
+    {
     }
 
     impl<R> BoundedRange for RangeView<'_, R>

@@ -4,8 +4,8 @@
 #![doc(hidden)]
 
 use crate::{
-    BidirectionalRange, BoundedRange, ForwardRange, InputRange, OutputRange,
-    RandomAccessRange, SemiOutputRange,
+    BidirectionalRange, BoundedRange, Collection, ForwardRange, InputRange,
+    OutputRange, RandomAccessRange, SemiOutputRange,
 };
 
 impl<T> InputRange for Vec<T> {
@@ -38,6 +38,8 @@ impl<T> InputRange for Vec<T> {
         *i == self.len()
     }
 }
+
+impl<'a, T> Collection<'a> for Vec<T> where Self: 'a {}
 
 impl<T> BoundedRange for Vec<T> {
     fn end(&self) -> Self::Position {

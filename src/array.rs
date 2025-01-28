@@ -4,8 +4,8 @@
 #![doc(hidden)]
 
 use crate::{
-    BidirectionalRange, BoundedRange, ForwardRange, InputRange, OutputRange,
-    RandomAccessRange, SemiOutputRange,
+    BidirectionalRange, BoundedRange, Collection, ForwardRange, InputRange,
+    OutputRange, RandomAccessRange, SemiOutputRange,
 };
 
 impl<T, const N: usize> InputRange for [T; N] {
@@ -38,6 +38,8 @@ impl<T, const N: usize> InputRange for [T; N] {
         *i == N
     }
 }
+
+impl<'a, T, const N: usize> Collection<'a> for [T; N] where Self: 'a {}
 
 impl<T, const N: usize> BoundedRange for [T; N] {
     fn end(&self) -> Self::Position {
