@@ -128,6 +128,15 @@ pub trait Range: for<'this> SubRangeable<'this> {
         }
         dist
     }
+
+    /// Returns reference like view of element at position i.
+    ///
+    /// # Precondition
+    ///   - `i != self.end()`
+    fn at_as_deref(
+        &self,
+        i: &Self::Position,
+    ) -> impl std::ops::Deref<Target = Self::Element>;
 }
 
 /// Models a range whose `Element`s are present in memory.
@@ -165,47 +174,6 @@ where
         LazyCollectionIterator::new(self)
     }
 }
-
-/// AnyCollection weakens the element access with returning `reference like type` to Element.
-///
-/// This allows unified implementation of algorithms for Collection and LazyCollection.
-pub trait AnyCollection: Range {
-    fn at_ref(
-        &self,
-        i: &Self::Position,
-    ) -> impl std::ops::Deref<Target = Self::Element>;
-}
-
-impl<R> AnyCollection for R
-where
-    R: Collection,
-    for<'a> <Self as SubRangeable<'a>>::SubRange: Collection,
-{
-    fn at_ref(
-        &self,
-        i: &Self::Position,
-    ) -> impl std::ops::Deref<Target = Self::Element> {
-        self.at(i)
-    }
-}
-
-// TODO: This is AnyCollection implementation for a LazyCollection. However,
-// this leads to conflicting implementation because of Collection's implementation
-// for AnyCollection. Currently, every lazy collection would need to implement
-// it manually.
-//
-// impl<R> AnyCollection for R
-// where
-//     R: LazyCollection,
-//     for<'a> <Self as SubRangeable<'a>>::SubRange: LazyCollection,
-// {
-//     fn at_ref(
-//         &self,
-//         i: &Self::Position,
-//     ) -> impl std::ops::Deref<Target = Self::Element> {
-//         crate::util::ValueRef { val: self.at(i) }
-//     }
-// }
 
 /// Models a range that supports forward as well as backward traversal.
 pub trait BidirectionalRange: Range

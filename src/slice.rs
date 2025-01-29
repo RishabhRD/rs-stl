@@ -61,23 +61,18 @@ where
     }
 
     fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        let mut i = i;
-        let mut n = n;
-        while n > 0 {
-            i = self.after(i);
-            n -= 1;
-        }
-        i
+        self.m_range.after_n(i, n)
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        let mut from = from;
-        let mut dist = 0;
-        while from != to {
-            dist += 1;
-            from = self.after(from);
-        }
-        dist
+        self.m_range.distance(from, to)
+    }
+
+    fn at_as_deref(
+        &self,
+        i: &Self::Position,
+    ) -> impl std::ops::Deref<Target = Self::Element> {
+        (self.m_range).at_as_deref(i)
     }
 }
 

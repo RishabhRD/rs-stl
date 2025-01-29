@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024-2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::AnyCollection;
+use crate::Range;
 
 /// Finds position of first element satisfying predicate.
 ///
@@ -30,15 +30,15 @@ use crate::AnyCollection;
 /// let i = arr.find_if(|x| *x == 3);
 /// assert_eq!(i, 2);
 /// ```
-pub fn find_if<Range, Pred>(rng: &Range, pred: Pred) -> Range::Position
+pub fn find_if<R, Pred>(rng: &R, pred: Pred) -> R::Position
 where
-    Range: AnyCollection + ?Sized,
-    Pred: Fn(&Range::Element) -> bool,
+    R: Range + ?Sized,
+    Pred: Fn(&R::Element) -> bool,
 {
     let mut start = rng.start();
     let end = rng.end();
     while start != end {
-        if pred(&rng.at_ref(&start)) {
+        if pred(&rng.at_as_deref(&start)) {
             return start;
         }
         start = rng.after(start)
@@ -73,10 +73,10 @@ where
 /// let i = arr.find_if_not(|x| *x == 3);
 /// assert_eq!(i, 0);
 /// ```
-pub fn find_if_not<Range, Pred>(rng: &Range, pred: Pred) -> Range::Position
+pub fn find_if_not<R, Pred>(rng: &R, pred: Pred) -> R::Position
 where
-    Range: AnyCollection + ?Sized,
-    Pred: Fn(&Range::Element) -> bool,
+    R: Range + ?Sized,
+    Pred: Fn(&R::Element) -> bool,
 {
     find_if(rng, |x| !pred(x))
 }
@@ -108,19 +108,19 @@ where
 /// let i = arr.find(&3);
 /// assert_eq!(i, 2);
 /// ```
-pub fn find<Range>(rng: &Range, e: &Range::Element) -> Range::Position
+pub fn find<R>(rng: &R, e: &R::Element) -> R::Position
 where
-    Range: AnyCollection + ?Sized,
-    Range::Element: Eq,
+    R: Range + ?Sized,
+    R::Element: Eq,
 {
     find_if(rng, |x| x == e)
 }
 
 pub mod infix {
-    use crate::AnyCollection;
+    use crate::Range;
 
     /// `find_if`, `find_if_not`, `find`.
-    pub trait STLFindExt: AnyCollection {
+    pub trait STLFindExt: Range {
         fn find_if<F>(&self, pred: F) -> Self::Position
         where
             F: Fn(&Self::Element) -> bool,
@@ -143,5 +143,5 @@ pub mod infix {
         }
     }
 
-    impl<T> STLFindExt for T where T: AnyCollection + ?Sized {}
+    impl<T> STLFindExt for T where T: Range + ?Sized {}
 }

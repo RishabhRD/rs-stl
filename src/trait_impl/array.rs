@@ -46,6 +46,13 @@ impl<T, const N: usize> Range for [T; N] {
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
         to - from
     }
+
+    fn at_as_deref(
+        &self,
+        i: &Self::Position,
+    ) -> impl std::ops::Deref<Target = Self::Element> {
+        self.at(i)
+    }
 }
 
 impl<T, const N: usize> Collection for [T; N] {
