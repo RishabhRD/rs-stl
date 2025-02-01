@@ -54,20 +54,6 @@ pub mod tests {
     }
 
     #[test]
-    fn slice() {
-        let arr: Vec<i32> = vec![10, 20, 30, 40, 50];
-        let v = arr.slice(1, 4);
-        let start = v.start();
-        let end = v.end();
-        let nth = v.after_n(start, 2);
-        assert_eq!(start, 1);
-        assert_eq!(end, 4);
-        assert_eq!(nth, 3);
-        assert_eq!(*arr.at(&start), 20);
-        assert_eq!(*v.at(&start), 20);
-    }
-
-    #[test]
     fn lifetime() {
         let start = vec![1, 2, 3].start(); // Positions can outlive ranges.
         assert_eq!(start, 0);

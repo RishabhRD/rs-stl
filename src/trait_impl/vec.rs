@@ -1,22 +1,13 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{
-    ArraySlice, BidirectionalRange, Collection, RandomAccessRange, Range,
-    RangeBase, SubRangeable,
-};
+use crate::{BidirectionalRange, Collection, RandomAccessRange, Range};
 
-impl<T> RangeBase for Vec<T> {
+impl<T> Range for Vec<T> {
     type Position = usize;
 
     type Element = T;
-}
 
-impl<'this, T> SubRangeable<'this> for Vec<T> {
-    type SubRange = ArraySlice<'this, T>;
-}
-
-impl<T> Range for Vec<T> {
     fn start(&self) -> Self::Position {
         0
     }
@@ -28,14 +19,6 @@ impl<T> Range for Vec<T> {
     fn after(&self, i: Self::Position) -> Self::Position {
         assert!(i != self.len());
         i + 1
-    }
-
-    fn slice(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> <Self as SubRangeable<'_>>::SubRange {
-        ArraySlice::new(self, from, to)
     }
 
     fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {

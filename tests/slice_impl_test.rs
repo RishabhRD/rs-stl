@@ -52,19 +52,4 @@ pub mod tests {
         let arr = [10, 20, 30];
         assert_eq!(*arr[..].at(&0), 10);
     }
-
-    #[test]
-    fn slice() {
-        let array = [10, 20, 30, 40, 50];
-        let arr = &array[..];
-        let v = arr.slice(1, 4);
-        let start = v.start();
-        let end = v.end();
-        let nth = v.after_n(start, 2);
-        assert_eq!(start, 1);
-        assert_eq!(end, 4);
-        assert_eq!(nth, 3);
-        assert_eq!(*arr.at(&start), 20);
-        assert_eq!(*v.at(&start), 20);
-    }
 }

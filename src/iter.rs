@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024-2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{Collection, LazyCollection, SubRangeable};
+use crate::{Collection, LazyCollection};
 
 /// Iterator to iterate over reference of elements of collection.
 pub struct CollectionIterator<'a, R>
 where
     R: Collection + ?Sized,
-    for<'this> <R as SubRangeable<'this>>::SubRange: Collection,
 {
     range: &'a R,
     pos: R::Position,
@@ -16,7 +15,6 @@ where
 impl<'a, Range> CollectionIterator<'a, Range>
 where
     Range: Collection + ?Sized,
-    for<'this> <Range as SubRangeable<'this>>::SubRange: Collection,
 {
     pub fn new(range: &'a Range) -> Self {
         Self {
@@ -29,7 +27,6 @@ where
 impl<'a, R> Iterator for CollectionIterator<'a, R>
 where
     R: Collection + ?Sized,
-    for<'this> <R as SubRangeable<'this>>::SubRange: Collection,
 {
     type Item = &'a R::Element;
 
@@ -48,7 +45,6 @@ where
 pub struct LazyCollectionIterator<'a, R>
 where
     R: LazyCollection + ?Sized,
-    for<'this> <R as SubRangeable<'this>>::SubRange: LazyCollection,
 {
     range: &'a R,
     pos: R::Position,
@@ -57,7 +53,6 @@ where
 impl<'a, Range> LazyCollectionIterator<'a, Range>
 where
     Range: LazyCollection + ?Sized,
-    for<'this> <Range as SubRangeable<'this>>::SubRange: LazyCollection,
 {
     pub fn new(range: &'a Range) -> Self {
         Self {
@@ -70,7 +65,6 @@ where
 impl<R> Iterator for LazyCollectionIterator<'_, R>
 where
     R: LazyCollection + ?Sized,
-    for<'this> <R as SubRangeable<'this>>::SubRange: LazyCollection,
 {
     type Item = R::Element;
 

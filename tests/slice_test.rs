@@ -55,6 +55,13 @@ pub mod tests {
     }
 
     #[test]
+    fn at_as_deref() {
+        let array = [10, 20, 30];
+        let arr = array.slice();
+        assert_eq!(*arr.at_as_deref(&0), 10);
+    }
+
+    #[test]
     fn at() {
         let array = [10, 20, 30];
         let arr = Slice::new(&array, array.start(), array.end());
@@ -63,17 +70,42 @@ pub mod tests {
 
     #[test]
     fn slice() {
-        let array = [10, 20, 30, 40, 50];
-        let arr = Slice::new(&array, array.start(), array.end());
-        let v = arr.slice(1, 4);
-        let start = v.start();
-        let end = v.end();
-        let nth = v.after_n(start, 2);
-        assert_eq!(start, 1);
-        assert_eq!(end, 4);
-        assert_eq!(nth, 3);
-        assert_eq!(*arr.at(&start), 20);
-        assert_eq!(*v.at(&start), 20);
+        let array = [10, 20, 30];
+        let arr = array.slice().slice();
+        assert_eq!(arr.start(), 0);
+        assert_eq!(arr.end(), 3);
+        assert_eq!(*arr.at(&0), 10);
+        assert_eq!(*arr.at(&1), 20);
+        assert_eq!(*arr.at(&2), 30);
+    }
+
+    #[test]
+    fn prefix() {
+        let array = [10, 20, 30];
+        let arr = array.slice().prefix(2);
+        assert_eq!(arr.start(), 0);
+        assert_eq!(arr.end(), 2);
+        assert_eq!(*arr.at(&0), 10);
+        assert_eq!(*arr.at(&1), 20);
+    }
+
+    #[test]
+    fn suffix() {
+        let array = [10, 20, 30];
+        let arr = array.slice().suffix(1);
+        assert_eq!(arr.start(), 1);
+        assert_eq!(arr.end(), 3);
+        assert_eq!(*arr.at(&1), 20);
+        assert_eq!(*arr.at(&2), 30);
+    }
+
+    #[test]
+    fn subrange() {
+        let array = [10, 20, 30];
+        let arr = array.slice().subrange(1, 2);
+        assert_eq!(arr.start(), 1);
+        assert_eq!(arr.end(), 2);
+        assert_eq!(*arr.at(&1), 20);
     }
 
     // TODO: add test: at for lazy collection.

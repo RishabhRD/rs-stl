@@ -18,51 +18,7 @@ impl<T> SemiRegular for T where T: Eq {}
 pub trait Regular: SemiRegular + Clone {}
 impl<T> Regular for T where T: SemiRegular + Clone {}
 
-mod sealed {
-    pub trait Sealed: Sized {}
-    pub struct Bounds<T>(T);
-    impl<T> Sealed for Bounds<T> {}
-}
-use sealed::{Bounds, Sealed};
-
-use crate::{CollectionIterator, LazyCollectionIterator};
-
-/// Defines Position and Element type of Range
-///
-/// # TODO
-///   - This should be part of Range itself, however, that would require to use
-///     GAT with HRTB. However, borrow checker current limitation results in
-///     deducing the resultant lifetime of subrange to 'static.
-///   - See [https://github.com/rust-lang/rust/issues/87479](https://github.com/rust-lang/rust/issues/87479)
-///   - This implementation is a workaround for the same.
-///     See [the better alternative to lifetime](https://sabrinajewson.org/blog/the-better-alternative-to-lifetime-gats#hrtb-supertrait)
-pub trait RangeBase {
-    /// Type of positions in range.
-    type Position: Regular;
-
-    /// Type of element of range.
-    type Element;
-}
-
-/// Defines subrange type of range
-///
-/// # TODO
-///   - This should be part of Range itself, however, that would require to use
-///     GAT with HRTB. However, borrow checker current limitation results in
-///     deducing the resultant lifetime of subrange to 'static.
-///   - See [https://github.com/rust-lang/rust/issues/87479](https://github.com/rust-lang/rust/issues/87479)
-///   - This implementation is a workaround for the same.
-///     See [the better alternative to lifetime](https://sabrinajewson.org/blog/the-better-alternative-to-lifetime-gats#hrtb-supertrait)
-pub trait SubRangeable<'this, ImplicitBounds: Sealed = Bounds<&'this Self>>:
-    RangeBase
-{
-    /// Type of subrange of the range.
-    type SubRange: Range<
-        Element = Self::Element,
-        Position = Self::Position,
-        SubRange = Self::SubRange,
-    >;
-}
+use crate::{CollectionIterator, LazyCollectionIterator, Slice};
 
 /// Models a multi-pass linear sequence of elements.
 ///
@@ -73,7 +29,13 @@ pub trait SubRangeable<'this, ImplicitBounds: Sealed = Bounds<&'this Self>>:
 ///   ^            ^
 ///   |            |
 /// start   -->   end
-pub trait Range: for<'this> SubRangeable<'this> {
+pub trait Range {
+    /// Type of positions in range.
+    type Position: Regular;
+
+    /// Type of element of range.
+    type Element;
+
     /// Returns the position of first element in the range.
     ///
     /// If range is empty, returns end position of the range.
@@ -103,13 +65,6 @@ pub trait Range: for<'this> SubRangeable<'this> {
         }
         i
     }
-
-    /// Returns subrange `[from, to)` of given range.
-    fn slice(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> <Self as SubRangeable<'_>>::SubRange;
 
     /// Returns distance between `from` and `to`.
     ///
@@ -143,10 +98,7 @@ pub trait Range: for<'this> SubRangeable<'this> {
 ///
 /// If elements are present in memory, then it should be possible to obtain
 /// reference to elements.
-pub trait Collection: Range
-where
-    for<'a> <Self as SubRangeable<'a>>::SubRange: Collection,
-{
+pub trait Collection: Range {
     /// Returns reference to element at position i.
     fn at(&self, i: &Self::Position) -> &Self::Element;
 
@@ -159,10 +111,7 @@ where
 /// Models a range whose elements are lazily computed on element access.
 ///
 /// Thus, accessing element at any position would return value.
-pub trait LazyCollection: Range
-where
-    for<'a> <Self as SubRangeable<'a>>::SubRange: LazyCollection,
-{
+pub trait LazyCollection: Range {
     /// Returns the element at ith position.
     ///
     /// # Precondition
@@ -176,10 +125,7 @@ where
 }
 
 /// Models a range that supports forward as well as backward traversal.
-pub trait BidirectionalRange: Range
-where
-    for<'a> <Self as SubRangeable<'a>>::SubRange: BidirectionalRange,
-{
+pub trait BidirectionalRange: Range {
     /// Returns position immediately before i.
     ///
     /// # Precondition
@@ -218,8 +164,15 @@ where
 ///   - RandomAccessRange doesn't provide any additional method but with given
 ///     precondition it ensures that jumping from one position to other can be
 ///     done in O(1).
-pub trait RandomAccessRange: BidirectionalRange<Position: Ord>
-where
-    for<'a> <Self as SubRangeable<'a>>::SubRange: RandomAccessRange,
-{
+pub trait RandomAccessRange: BidirectionalRange<Position: Ord> {}
+
+#[doc(hidden)]
+// TODO: make it unusable for outside use. One can use .slice() method but not
+// the name __SliceExtension__.
+pub trait __SliceExtension__: Range + Sized {
+    fn slice(&self) -> Slice<'_, Self> {
+        Slice::new(self, self.start(), self.end())
+    }
 }
+
+impl<R> __SliceExtension__ for R where R: Range {}

@@ -7,17 +7,11 @@ pub mod tests {
 
     struct Array<T, const N: usize>([T; N]);
 
-    impl<T, const N: usize> RangeBase for Array<T, N> {
+    impl<T, const N: usize> Range for Array<T, N> {
         type Position = usize;
 
         type Element = T;
-    }
 
-    impl<'this, T, const N: usize> SubRangeable<'this> for Array<T, N> {
-        type SubRange = ArraySlice<'this, T>;
-    }
-
-    impl<T, const N: usize> Range for Array<T, N> {
         fn start(&self) -> Self::Position {
             0
         }
@@ -29,14 +23,6 @@ pub mod tests {
         fn after(&self, i: Self::Position) -> Self::Position {
             assert!(i != N);
             i + 1
-        }
-
-        fn slice(
-            &self,
-            from: Self::Position,
-            to: Self::Position,
-        ) -> <Self as SubRangeable<'_>>::SubRange {
-            ArraySlice::new(&self.0, from, to)
         }
 
         fn at_as_deref(
@@ -107,20 +93,6 @@ pub mod tests {
     fn at() {
         let arr = Array([10, 20, 30]);
         assert_eq!(*arr.at(&0), 10);
-    }
-
-    #[test]
-    fn slice() {
-        let arr = Array([10, 20, 30, 40, 50]);
-        let v = arr.slice(1, 4);
-        let start = v.start();
-        let end = v.end();
-        let nth = v.after_n(start, 2);
-        assert_eq!(start, 1);
-        assert_eq!(end, 4);
-        assert_eq!(nth, 3);
-        assert_eq!(*arr.at(&start), 20);
-        assert_eq!(*v.at(&start), 20);
     }
 
     #[test]

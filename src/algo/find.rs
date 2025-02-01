@@ -121,16 +121,16 @@ pub mod infix {
 
     /// `find_if`, `find_if_not`, `find`.
     pub trait STLFindExt: Range {
-        fn find_if<F>(&self, pred: F) -> Self::Position
+        fn find_if<Pred>(&self, pred: Pred) -> Self::Position
         where
-            F: Fn(&Self::Element) -> bool,
+            Pred: Fn(&Self::Element) -> bool,
         {
             super::find_if(self, pred)
         }
 
-        fn find_if_not<F>(&self, pred: F) -> Self::Position
+        fn find_if_not<Pred>(&self, pred: Pred) -> Self::Position
         where
-            F: Fn(&Self::Element) -> bool,
+            Pred: Fn(&Self::Element) -> bool,
         {
             super::find_if_not(self, pred)
         }
@@ -143,5 +143,5 @@ pub mod infix {
         }
     }
 
-    impl<T> STLFindExt for T where T: Range + ?Sized {}
+    impl<R> STLFindExt for R where R: Range + ?Sized {}
 }

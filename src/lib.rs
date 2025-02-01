@@ -13,8 +13,6 @@
 #[doc(hidden)]
 pub mod algo;
 #[doc(hidden)]
-pub mod array_slice;
-#[doc(hidden)]
 pub mod core;
 #[doc(hidden)]
 pub mod iter;
@@ -26,10 +24,8 @@ pub mod trait_impl;
 pub mod util;
 
 #[doc(inline)]
-pub use array_slice::*;
-#[doc(inline)]
 pub use core::*;
 #[doc(inline)]
 pub use iter::*;
 #[doc(inline)]
-pub use slice::*;
+pub use slice::Slice;

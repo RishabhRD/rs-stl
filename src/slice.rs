@@ -3,10 +3,9 @@
 
 use crate::{
     BidirectionalRange, Collection, LazyCollection, RandomAccessRange, Range,
-    RangeBase, SubRangeable,
 };
 
-/// Slice of given range.
+/// Immutable slice of given range.
 pub struct Slice<'a, R: Range> {
     m_range: &'a R,
     m_start: R::Position,
@@ -21,28 +20,32 @@ impl<'a, R: Range> Slice<'a, R> {
             m_end: end,
         }
     }
-}
 
-impl<R> RangeBase for Slice<'_, R>
-where
-    R: Range,
-{
-    type Position = R::Position;
+    pub fn slice(&self) -> Self {
+        Self::new(self.m_range, self.m_start.clone(), self.m_end.clone())
+    }
 
-    type Element = R::Element;
-}
+    pub fn subrange(&self, start: R::Position, end: R::Position) -> Self {
+        Self::new(self.m_range, start, end)
+    }
 
-impl<R> SubRangeable<'_> for Slice<'_, R>
-where
-    R: Range,
-{
-    type SubRange = Self;
+    pub fn prefix(&self, end: R::Position) -> Self {
+        Self::new(self.m_range, self.m_start.clone(), end)
+    }
+
+    pub fn suffix(&self, start: R::Position) -> Self {
+        Self::new(self.m_range, start, self.m_end.clone())
+    }
 }
 
 impl<R> Range for Slice<'_, R>
 where
     R: Range,
 {
+    type Position = R::Position;
+
+    type Element = R::Element;
+
     fn start(&self) -> Self::Position {
         self.m_start.clone()
     }
@@ -54,10 +57,6 @@ where
     fn after(&self, i: Self::Position) -> Self::Position {
         assert!(i != self.m_end);
         self.m_range.after(i)
-    }
-
-    fn slice(&self, from: Self::Position, to: Self::Position) -> Self {
-        Self::new(self.m_range, from, to)
     }
 
     fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
@@ -79,7 +78,6 @@ where
 impl<R> Collection for Slice<'_, R>
 where
     R: Collection,
-    for<'a> <R as SubRangeable<'a>>::SubRange: Collection,
 {
     fn at(&self, i: &Self::Position) -> &Self::Element {
         assert!(*i != self.m_end);
@@ -90,7 +88,6 @@ where
 impl<R> LazyCollection for Slice<'_, R>
 where
     R: LazyCollection,
-    for<'a> <R as SubRangeable<'a>>::SubRange: LazyCollection,
 {
     fn at(&self, i: &Self::Position) -> Self::Element {
         self.m_range.at(i)
@@ -100,7 +97,6 @@ where
 impl<R> BidirectionalRange for Slice<'_, R>
 where
     R: BidirectionalRange,
-    for<'a> <R as SubRangeable<'a>>::SubRange: BidirectionalRange,
 {
     fn before(&self, i: Self::Position) -> Self::Position {
         assert!(i != self.m_start);
@@ -112,9 +108,4 @@ where
     }
 }
 
-impl<R> RandomAccessRange for Slice<'_, R>
-where
-    R: RandomAccessRange,
-    for<'a> <R as SubRangeable<'a>>::SubRange: RandomAccessRange,
-{
-}
+impl<R> RandomAccessRange for Slice<'_, R> where R: RandomAccessRange {}
