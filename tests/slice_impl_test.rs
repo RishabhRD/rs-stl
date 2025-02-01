@@ -52,4 +52,18 @@ pub mod tests {
         let arr = [10, 20, 30];
         assert_eq!(*arr[..].at(&0), 10);
     }
+
+    #[test]
+    fn swap_at() {
+        let mut arr = [1, 2, 3];
+        arr[..].swap_at(&0, &1);
+        assert_eq!(arr, [2, 1, 3])
+    }
+
+    #[test]
+    fn at_mut() {
+        let mut arr = [1, 2, 3];
+        *arr[..].at_mut(&0) = 2;
+        assert_eq!(arr, [2, 2, 3])
+    }
 }

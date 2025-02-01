@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalRange, Collection, RandomAccessRange, Range};
+use crate::{
+    BidirectionalRange, Collection, MutableCollection, MutableRange,
+    RandomAccessRange, Range, ReorderableRange,
+};
 
 impl<T> Range for [T] {
     type Position = usize;
@@ -58,3 +61,17 @@ impl<T> BidirectionalRange for [T] {
 }
 
 impl<T> RandomAccessRange for [T] {}
+
+impl<T> MutableRange for [T] {}
+
+impl<T> ReorderableRange for [T] {
+    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
+        self.swap(*i, *j)
+    }
+}
+
+impl<T> MutableCollection for [T] {
+    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
+        &mut self[*i]
+    }
+}

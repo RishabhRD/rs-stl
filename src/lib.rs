@@ -28,4 +28,4 @@ pub use core::*;
 #[doc(inline)]
 pub use iter::*;
 #[doc(inline)]
-pub use slice::Slice;
+pub use slice::*;

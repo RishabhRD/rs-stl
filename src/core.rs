@@ -18,7 +18,9 @@ impl<T> SemiRegular for T where T: Eq {}
 pub trait Regular: SemiRegular + Clone {}
 impl<T> Regular for T where T: SemiRegular + Clone {}
 
-use crate::{CollectionIterator, LazyCollectionIterator, Slice};
+use crate::{
+    slice::MutableSlice, CollectionIterator, LazyCollectionIterator, Slice,
+};
 
 /// Models a multi-pass linear sequence of elements.
 ///
@@ -176,3 +178,37 @@ pub trait __SliceExtension__: Range + Sized {
 }
 
 impl<R> __SliceExtension__ for R where R: Range {}
+
+/// Marker trait for marking range is mutable.
+pub trait MutableRange: Range {}
+
+/// Models a range whose elements can be reordered inside range.
+pub trait ReorderableRange: MutableRange {
+    /// Swaps element at ith position with element at jth position.
+    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
+}
+
+/// Models a mutable collection that provides ability to mutate individual elements.
+pub trait MutableCollection: MutableRange + Collection {
+    /// Returns mutable reference to element at position i.
+    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
+}
+
+/// Models a lazy collection which provides access to mutable view of element at any position.
+pub trait MutableLazyCollection: MutableRange + LazyCollection {
+    type ElementMut;
+
+    /// Returns value of mutable view of element at position i.
+    fn at_mut(&mut self, i: &Self::Position) -> Self::ElementMut;
+}
+
+#[doc(hidden)]
+// TODO: make it unusable for outside use. One can use .slice() method but not
+// the name __MutableSliceExtension__.
+pub trait __MutableSliceExtension__: MutableRange + Sized {
+    fn slice_mut(&mut self) -> MutableSlice<'_, Self> {
+        MutableSlice::new(self, self.start(), self.end())
+    }
+}
+
+impl<R> __MutableSliceExtension__ for R where R: MutableRange {}
