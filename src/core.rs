@@ -196,6 +196,7 @@ pub trait MutableCollection: MutableRange + Collection {
 
 /// Models a lazy collection which provides access to mutable view of element at any position.
 pub trait MutableLazyCollection: MutableRange + LazyCollection {
+    /// Mutable view of element.
     type ElementMut;
 
     /// Returns value of mutable view of element at position i.
