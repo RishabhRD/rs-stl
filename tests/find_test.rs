@@ -3,12 +3,11 @@
 
 #[cfg(test)]
 pub mod tests {
-    use algo::infix::*;
+    use algo::*;
     use stl::*;
     #[test]
     fn find_if_when_element_is_present() {
         let arr = [1, 2, 3];
-        assert_eq!(algo::find_if(&arr, |x| x % 2 == 0), 1);
         assert_eq!(arr.find_if(|x| x % 2 == 0), 1);
     }
 
