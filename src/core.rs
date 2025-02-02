@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2024-2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
+use crate::{
+    slice::MutableSlice, CollectionIterator, LazyCollectionIterator, Slice,
+};
+
 /// Any type that is movable, destructable and equality comparable.
 ///
 /// As per Stepanov (not exact), Type is
@@ -17,10 +21,6 @@ impl<T> SemiRegular for T where T: Eq {}
 ///   - Cloneable
 pub trait Regular: SemiRegular + Clone {}
 impl<T> Regular for T where T: SemiRegular + Clone {}
-
-use crate::{
-    slice::MutableSlice, CollectionIterator, LazyCollectionIterator, Slice,
-};
 
 /// Models a multi-pass linear sequence of elements.
 ///
