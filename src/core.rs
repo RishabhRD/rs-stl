@@ -180,10 +180,7 @@ pub trait __SliceExtension__: Range + Sized {
 impl<R> __SliceExtension__ for R where R: Range {}
 
 /// Marker trait for marking range is mutable.
-pub trait MutableRange: Range {}
-
-/// Models a range whose elements can be reordered inside range.
-pub trait ReorderableRange: MutableRange {
+pub trait MutableRange: Range {
     /// Swaps element at ith position with element at jth position.
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
 }
