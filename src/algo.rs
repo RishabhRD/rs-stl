@@ -5,7 +5,10 @@
 //!
 //! The `algo` module provides STL algorithms.
 
-use crate::Range;
+use crate::{
+    view::{LazyMapView, MapView},
+    Collection, LazyCollection, Range,
+};
 
 mod find;
 
@@ -93,4 +96,58 @@ pub trait RangeExtension: Range {
     }
 }
 
+pub trait CollectionExtension: Collection {
+    /// Returns a lazy collection over given collection where ith element is f(ith_element).
+    ///
+    /// # Precondition
+    ///
+    /// # Postcondition
+    ///   - Position of mapped view would be same as positions of underlying range.
+    ///   - Traits satisfied:
+    ///     - Range: YES
+    ///     - Collection: NO
+    ///     - LazyCollection: YES
+    ///     - BidirectionalRange: If self is BidirectionalRange
+    ///     - RandomAccessRange: If self is RandomAccessRange
+    ///     - MutableRange: If self is MutableRange
+    ///     - ReorderableRange: If self is ReorderableRange
+    ///     - MutableCollection: NO
+    ///     - MutabeLazyCollection: NO
+    fn map<F, OutputElement>(self, f: F) -> MapView<Self, F, OutputElement>
+    where
+        F: Fn(&Self::Element) -> OutputElement,
+        Self: Sized,
+    {
+        MapView::new(self, f)
+    }
+}
+
+pub trait LazyCollectionExtension: LazyCollection {
+    /// Returns a lazy collection over given collection where ith element is f(ith_element).
+    ///
+    /// # Precondition
+    ///
+    /// # Postcondition
+    ///   - Position of mapped view would be same as positions of underlying range.
+    ///   - Traits satisfied:
+    ///     - Range: YES
+    ///     - Collection: NO
+    ///     - LazyCollection: YES
+    ///     - BidirectionalRange: If self is BidirectionalRange
+    ///     - RandomAccessRange: If self is RandomAccessRange
+    ///     - MutableRange: If self is MutableRange
+    ///     - ReorderableRange: If self is ReorderableRange
+    ///     - MutableCollection: NO
+    ///     - MutabeLazyCollection: NO
+    fn map<F, OutputElement>(self, f: F) -> LazyMapView<Self, F, OutputElement>
+    where
+        F: Fn(Self::Element) -> OutputElement,
+        Self: Sized,
+    {
+        LazyMapView::new(self, f)
+    }
+}
+
 impl<R> RangeExtension for R where R: Range {}
+impl<R> CollectionExtension for R where R: Collection {}
+impl<R> LazyCollectionExtension for R where R: LazyCollection {}

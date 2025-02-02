@@ -13,6 +13,8 @@
 #[doc(hidden)]
 pub mod algo;
 #[doc(hidden)]
+pub mod array;
+#[doc(hidden)]
 pub mod core;
 #[doc(hidden)]
 pub mod iter;
@@ -22,6 +24,8 @@ pub mod slice;
 pub mod trait_impl;
 #[doc(hidden)]
 pub mod util;
+#[doc(hidden)]
+pub mod view;
 
 #[doc(inline)]
 pub use core::*;
