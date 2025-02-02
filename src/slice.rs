@@ -7,8 +7,6 @@ use crate::{
     ReorderableRange,
 };
 
-/// Immutable slice of given range.
-#[derive(Clone)]
 pub struct Slice<'a, R: Range> {
     m_range: &'a R,
     m_start: R::Position,
@@ -26,6 +24,10 @@ impl<'a, R: Range> Slice<'a, R> {
 
     pub fn slice(&self) -> Self {
         Self::new(self.m_range, self.m_start.clone(), self.m_end.clone())
+    }
+
+    pub fn clone(&self) -> Self {
+        self.slice()
     }
 
     pub fn subrange(&self, start: R::Position, end: R::Position) -> Self {
