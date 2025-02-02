@@ -70,11 +70,11 @@ where
         self.m_range.distance(from, to)
     }
 
-    fn at_as_deref(
+    fn at_ref(
         &self,
         i: &Self::Position,
     ) -> impl std::ops::Deref<Target = Self::Element> {
-        (self.m_range).at_as_deref(i)
+        (self.m_range).at_ref(i)
     }
 }
 
@@ -207,11 +207,11 @@ where
         self.m_range.distance(from, to)
     }
 
-    fn at_as_deref(
+    fn at_ref(
         &self,
         i: &Self::Position,
     ) -> impl std::ops::Deref<Target = Self::Element> {
-        (self.m_range).at_as_deref(i)
+        (self.m_range).at_ref(i)
     }
 }
 

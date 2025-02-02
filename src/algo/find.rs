@@ -38,7 +38,7 @@ where
     let mut start = rng.start();
     let end = rng.end();
     while start != end {
-        if pred(&rng.at_as_deref(&start)) {
+        if pred(&rng.at_ref(&start)) {
             return start;
         }
         start = rng.after(start)

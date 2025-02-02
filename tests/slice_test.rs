@@ -58,7 +58,7 @@ pub mod tests {
     fn at_as_deref() {
         let array = [10, 20, 30];
         let arr = array.slice();
-        assert_eq!(*arr.at_as_deref(&0), 10);
+        assert_eq!(*arr.at_ref(&0), 10);
     }
 
     #[test]

@@ -33,7 +33,7 @@ impl<T> Range for [T] {
         to - from
     }
 
-    fn at_as_deref(
+    fn at_ref(
         &self,
         i: &Self::Position,
     ) -> impl std::ops::Deref<Target = Self::Element> {
