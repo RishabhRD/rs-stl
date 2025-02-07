@@ -3,7 +3,7 @@
 
 use crate::{
     BidirectionalRange, Collection, MutableCollection, MutableRange,
-    RandomAccessRange, Range, ReorderableRange,
+    RandomAccessRange, Range
 };
 
 impl<T> Range for Vec<T> {
@@ -62,9 +62,7 @@ impl<T> BidirectionalRange for Vec<T> {
 
 impl<T> RandomAccessRange for Vec<T> {}
 
-impl<T> MutableRange for Vec<T> {}
-
-impl<T> ReorderableRange for Vec<T> {
+impl<T> MutableRange for Vec<T> {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         self.swap(*i, *j)
     }

@@ -3,7 +3,7 @@
 
 use crate::{
     util::ValueRef, BidirectionalRange, LazyCollection, MutableRange,
-    RandomAccessRange, Range, ReorderableRange,
+    RandomAccessRange, Range
 };
 
 pub struct LazyMapView<R, Operation, OutputElement>
@@ -103,14 +103,6 @@ impl<R, Operation, OutputElement> MutableRange
     for LazyMapView<R, Operation, OutputElement>
 where
     R: LazyCollection + MutableRange,
-    Operation: Fn(R::Element) -> OutputElement,
-{
-}
-
-impl<R, Operation, OutputElement> ReorderableRange
-    for LazyMapView<R, Operation, OutputElement>
-where
-    R: LazyCollection + ReorderableRange,
     Operation: Fn(R::Element) -> OutputElement,
 {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {

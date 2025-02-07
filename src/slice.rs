@@ -3,8 +3,7 @@
 
 use crate::{
     BidirectionalRange, Collection, LazyCollection, MutableCollection,
-    MutableLazyCollection, MutableRange, RandomAccessRange, Range,
-    ReorderableRange,
+    MutableLazyCollection, MutableRange, RandomAccessRange, Range
 };
 
 pub struct Slice<'a, R: Range> {
@@ -252,11 +251,10 @@ where
 
 impl<R> RandomAccessRange for MutableSlice<'_, R> where R: RandomAccessRange {}
 
-impl<R> MutableRange for MutableSlice<'_, R> where R: MutableRange {}
 
-impl<R> ReorderableRange for MutableSlice<'_, R>
+impl<R> MutableRange for MutableSlice<'_, R>
 where
-    R: ReorderableRange,
+    R: MutableRange,
 {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         self.m_range.swap_at(i, j);

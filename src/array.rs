@@ -3,7 +3,7 @@
 
 use crate::{
     BidirectionalRange, Collection, MutableCollection, MutableRange,
-    RandomAccessRange, Range, ReorderableRange,
+    RandomAccessRange, Range
 };
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -63,9 +63,8 @@ impl<T, const N: usize> BidirectionalRange for Array<T, N> {
 
 impl<T, const N: usize> RandomAccessRange for Array<T, N> {}
 
-impl<T, const N: usize> MutableRange for Array<T, N> {}
 
-impl<T, const N: usize> ReorderableRange for Array<T, N> {
+impl<T, const N: usize> MutableRange for Array<T, N> {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         self.0.swap(*i, *j);
     }
