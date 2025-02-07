@@ -7,10 +7,16 @@ pub mod tests {
 
     struct Array<T, const N: usize>([T; N]);
 
-    impl<T, const N: usize> Range for Array<T, N> {
+    impl<'this, T: 'this, const N: usize> Collection<'this> for Array<T, N> {
         type Position = usize;
 
-        type Element = T;
+        type Element = &'this T;
+
+        type MutableElement = &'this mut T;
+
+        type Slice = ArraySlice<'this, T>;
+
+        type MutableSlice = MutableArraySlice<'this, T>;
 
         fn start(&self) -> Self::Position {
             0
@@ -21,29 +27,49 @@ pub mod tests {
         }
 
         fn after(&self, i: Self::Position) -> Self::Position {
-            assert!(i != N);
             i + 1
         }
 
-        fn at_ref(
-            &self,
+        fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
+            to - from
+        }
+
+        fn slice<'a, Callback, ReturnType>(
+            &'a self,
+            from: Self::Position,
+            to: Self::Position,
+            mut callback: Callback,
+        ) -> ReturnType
+        where
+            Callback: FnMut(&Self::Slice) -> ReturnType,
+            'a: 'this,
+        {
+            let slice = ArraySlice::new(&self.0, from, to);
+            callback(&slice)
+        }
+
+        fn at<'a, Callback, ReturnType>(
+            &'a self,
             i: &Self::Position,
-        ) -> impl std::ops::Deref<Target = Self::Element> {
-            self.at(i)
+            mut callback: Callback,
+        ) -> ReturnType
+        where
+            Callback: FnMut(Self::Element) -> ReturnType,
+            'a: 'this,
+        {
+            callback(&self.0[*i])
         }
     }
 
-    impl<T, const N: usize> Collection for Array<T, N> {
-        fn at(&self, i: &Self::Position) -> &T {
-            assert!(*i != N);
-            &self.0[*i]
-        }
-    }
-
-    impl<T, const N: usize> BidirectionalRange for Array<T, N> {
+    impl<'this, T: 'this, const N: usize> BidirectionalCollection<'this>
+        for Array<T, N>
+    {
         fn before(&self, i: Self::Position) -> Self::Position {
-            assert!(i > 0);
             i - 1
+        }
+
+        fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
+            i - n
         }
     }
 
@@ -92,7 +118,7 @@ pub mod tests {
     #[test]
     fn at() {
         let arr = Array([10, 20, 30]);
-        assert_eq!(*arr.at(&0), 10);
+        arr.at(&0, |e| assert_eq!(*e, 10));
     }
 
     #[test]

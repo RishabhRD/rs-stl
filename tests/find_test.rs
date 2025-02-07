@@ -5,6 +5,7 @@
 pub mod tests {
     use algo::*;
     use stl::*;
+
     #[test]
     fn find_if_when_element_is_present() {
         let arr = [1, 2, 3];

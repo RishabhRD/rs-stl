@@ -50,7 +50,7 @@ pub mod tests {
     #[test]
     fn at() {
         let arr = [10, 20, 30];
-        assert_eq!(*arr.at(&0), 10);
+        arr.at(&0, |e| assert_eq!(*e, 10));
     }
 
     #[test]
@@ -69,7 +69,16 @@ pub mod tests {
     #[test]
     fn at_mut() {
         let mut arr = [1, 2, 3];
-        *arr.at_mut(&0) = 2;
+        arr.at_mut(&0, |e| *e = 2);
         assert_eq!(arr, [2, 2, 3])
+    }
+
+    #[test]
+    fn slice() {
+        let arr = [1, 2, 3, 4];
+        arr.slice(1, 3, |slice| {
+            assert_eq!(slice.start(), 1);
+            assert_eq!(slice.end(), 3);
+        });
     }
 }
