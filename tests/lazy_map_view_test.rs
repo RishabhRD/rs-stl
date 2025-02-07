@@ -10,17 +10,19 @@ pub mod tests {
     #[test]
     fn single_pass() {
         let arr = Array([1, 2, 3]);
+        let v = arr.map(|x| x + 1).map(|x| x - 1);
         let mut sum = 0;
-        for e in arr.map(|x| x + 1).iter() {
+        for e in v.iter() {
             sum += e;
         }
-        assert_eq!(sum, 9);
+        assert_eq!(sum, 6);
     }
 
     #[test]
     fn reordering() {
         let mut arr = Array([1, 2, 3]);
-        arr.slice_mut().map(|x| x + 1).swap_at(&0, &2);
+        let mut v = arr.slice_mut().map(|x| x + 1).map(|x| x - 1);
+        v.swap_at(&0, &2);
         assert_eq!(arr, Array([3, 2, 1]));
     }
 

@@ -1,139 +1,153 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
+// Copyright (c) 2024-2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 //! # Algorithms module
 //!
-//! The `algo` module provides a collection of STL algorithms. These algorithms
-//! explicitly accepts Positions. For more compact algorithm overloads that
-//! just accepts ranges, or infix notation (by .) use `rng` module.
-//!
-//! NOTE: In documentation of any function that accepts position with notation
-//! like [start, end), if doc talks in term of full range, it should be considered
-//! as rng elements from [start, end) position only.
+//! The `algo` module provides STL algorithms.
 
-#[doc(hidden)]
-pub mod find;
-#[doc(inline)]
-pub use find::*;
-
-#[doc(hidden)]
-pub mod count;
-#[doc(inline)]
-pub use count::*;
-
-#[doc(hidden)]
-pub mod of;
-#[doc(inline)]
-pub use of::*;
-
-#[doc(hidden)]
-pub mod mismatch;
-#[doc(inline)]
-pub use mismatch::*;
-
-#[doc(hidden)]
-pub mod adjacent_find;
-#[doc(inline)]
-pub use adjacent_find::*;
-
-#[doc(hidden)]
-pub mod equals;
-#[doc(inline)]
-pub use equals::*;
-
-#[doc(hidden)]
-pub mod copy;
-#[doc(inline)]
-pub use copy::*;
-
-#[doc(hidden)]
-pub mod transform;
-#[doc(inline)]
-pub use transform::*;
-
-#[doc(hidden)]
-pub mod replace;
-#[doc(inline)]
-pub use replace::*;
-
-#[doc(hidden)]
-pub mod fill;
-#[doc(inline)]
-pub use fill::*;
-
-#[doc(hidden)]
-pub mod remove;
-#[doc(inline)]
-pub use remove::*;
-
-#[doc(hidden)]
-pub mod unique;
-#[doc(inline)]
-pub use unique::*;
-
-#[doc(hidden)]
-pub mod reverse;
-#[doc(inline)]
-pub use reverse::*;
-
-#[doc(hidden)]
-pub mod rotate;
-#[doc(inline)]
-pub use rotate::*;
-
-#[doc(hidden)]
-pub mod minmax;
-#[doc(inline)]
-pub use minmax::*;
-
-#[doc(hidden)]
-pub mod partition;
-#[doc(inline)]
-pub use partition::{
-    is_partitioned, partition, partition_point, stable_partition,
-    stable_partition_no_alloc,
+use crate::{
+    view::{LazyMapView, MapView},
+    Collection, LazyCollection, Range,
 };
 
-#[doc(hidden)]
-pub mod sort;
-#[doc(inline)]
-pub use sort::{
-    is_sorted, is_sorted_by, is_sorted_until, is_sorted_until_by, nth_element,
-    nth_element_by, partial_sort, partial_sort_by, partial_sort_copy,
-    partial_sort_copy_by, sort_range, sort_range_by, stable_sort,
-    stable_sort_by, stable_sort_by_no_alloc, stable_sort_no_alloc,
-};
+mod find;
 
-#[doc(hidden)]
-pub mod heap;
-#[doc(inline)]
-pub use heap::{
-    is_heap, is_heap_by, is_heap_until, is_heap_until_by, make_heap,
-    make_heap_by, pop_heap, pop_heap_by, push_heap, push_heap_by, sort_heap,
-    sort_heap_by,
-};
+pub trait RangeExtension: Range {
+    /// Finds position of first element satisfying predicate.
+    ///
+    /// # Precondition
+    ///
+    /// # Postcondition
+    ///   - Returns position of first element in self satisfying pred.
+    ///   - Returns end position if no such element exists.
+    ///   - Complexity: O(n). Maximum `n` applications of `pred`.
+    ///
+    ///     where n is number of elements in self.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    /// use algo::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let i = arr.find_if(|x| *x == 3);
+    /// assert_eq!(i, 2);
+    /// ```
+    fn find_if<Pred>(&self, pred: Pred) -> Self::Position
+    where
+        Pred: Fn(&Self::Element) -> bool,
+    {
+        find::find_if(self, pred)
+    }
 
-#[doc(hidden)]
-pub mod merge;
-#[doc(inline)]
-pub use merge::*;
+    /// Finds position of first element not satisfying predicate.
+    ///
+    /// # Precondition
+    ///
+    /// # Postcondition
+    ///   - Returns position of first element in self not satisfying pred.
+    ///   - Returns end position if no such element exists.
+    ///   - Complexity: O(n). Maximum `n` applications of `pred`.
+    ///
+    ///     where n is number of elements in self.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    /// use algo::*;
+    ///
+    /// let arr = [1, 2, 3];
+    ///
+    /// let i = arr.find_if_not(|x| *x == 3);
+    /// assert_eq!(i, 0);
+    /// ```
+    fn find_if_not<Pred>(&self, pred: Pred) -> Self::Position
+    where
+        Pred: Fn(&Self::Element) -> bool,
+    {
+        find::find_if_not(self, pred)
+    }
 
-#[doc(hidden)]
-pub mod swap_ranges;
-#[doc(inline)]
-pub use swap_ranges::*;
+    /// Finds position of first element equals given element.
+    ///
+    /// # Precondition
+    ///
+    /// # Postcondition
+    ///   - Returns position of first element in self equals e.
+    ///   - Returns end if no such element exists.
+    ///   - Complexity: O(n). Maximum `n` equality comparisions,
+    ///
+    ///     where n is number of elements in self.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    /// use algo::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let i = arr.find(&3);
+    /// assert_eq!(i, 2);
+    /// ```
+    fn find(&self, e: &Self::Element) -> Self::Position
+    where
+        Self::Element: Eq,
+    {
+        find::find(self, e)
+    }
+}
 
-#[doc(hidden)]
-pub mod binary_search;
-#[doc(inline)]
-pub use binary_search::*;
+pub trait CollectionExtension: Collection {
+    /// Returns a lazy collection over given collection where ith element is f(ith_element).
+    ///
+    /// # Precondition
+    ///
+    /// # Postcondition
+    ///   - Position of mapped view would be same as positions of underlying range.
+    ///   - Traits satisfied:
+    ///     - Range: YES
+    ///     - Collection: NO
+    ///     - LazyCollection: YES
+    ///     - BidirectionalRange: If self is BidirectionalRange
+    ///     - RandomAccessRange: If self is RandomAccessRange
+    ///     - MutableRange: If self is MutableRange
+    ///     - ReorderableRange: If self is ReorderableRange
+    ///     - MutableCollection: NO
+    ///     - MutabeLazyCollection: NO
+    fn map<F, OutputElement>(self, f: F) -> MapView<Self, F, OutputElement>
+    where
+        F: Fn(&Self::Element) -> OutputElement,
+        Self: Sized,
+    {
+        MapView::new(self, f)
+    }
+}
 
-#[doc(hidden)]
-pub mod numeric;
-#[doc(inline)]
-pub use numeric::*;
+pub trait LazyCollectionExtension: LazyCollection {
+    /// Returns a lazy collection over given collection where ith element is f(ith_element).
+    ///
+    /// # Precondition
+    ///
+    /// # Postcondition
+    ///   - Position of mapped view would be same as positions of underlying range.
+    ///   - Traits satisfied:
+    ///     - Range: YES
+    ///     - Collection: NO
+    ///     - LazyCollection: YES
+    ///     - BidirectionalRange: If self is BidirectionalRange
+    ///     - RandomAccessRange: If self is RandomAccessRange
+    ///     - MutableRange: If self is MutableRange
+    ///     - ReorderableRange: If self is ReorderableRange
+    ///     - MutableCollection: NO
+    ///     - MutabeLazyCollection: NO
+    fn map<F, OutputElement>(self, f: F) -> LazyMapView<Self, F, OutputElement>
+    where
+        F: Fn(Self::Element) -> OutputElement,
+        Self: Sized,
+    {
+        LazyMapView::new(self, f)
+    }
+}
 
-#[doc(hidden)]
-pub mod for_each;
-#[doc(inline)]
-pub use for_each::*;
+impl<R> RangeExtension for R where R: Range {}
+impl<R> CollectionExtension for R where R: Collection {}
+impl<R> LazyCollectionExtension for R where R: LazyCollection {}

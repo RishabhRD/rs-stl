@@ -1,106 +1,36 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
+// Copyright (c) 2024-2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::InputRange;
+use crate::Range;
 
-/// Finds position of first element satisfying predicate.
-///
-/// # Precondition
-///   - `[start, end)` represent valid positions in rng.
-///
-/// # Postcondition
-///   - Returns position of first element in `[start, end)` of rng satisfying pred.
-///   - Returns end if no such element exists.
-///   - Complexity: O(n). Maximum `n` applications of `pred`,
-///     where n is number of elements in `[start, end)`.
-///
-/// # Example
-/// ```rust
-/// use stl::*;
-///
-/// let arr = [1, 2, 3];
-/// let i = algo::find_if(&arr, arr.start(), arr.end(), |x| *x == 3);
-/// assert_eq!(i, 2);
-/// ```
-pub fn find_if<Range, Pred>(
-    rng: &Range,
-    mut start: Range::Position,
-    end: Range::Position,
-    pred: Pred,
-) -> Range::Position
+pub fn find_if<R, Pred>(rng: &R, pred: Pred) -> R::Position
 where
-    Range: InputRange + ?Sized,
-    Pred: Fn(&Range::Element) -> bool,
+    R: Range + ?Sized,
+    Pred: Fn(&R::Element) -> bool,
 {
+    let mut start = rng.start();
+    let end = rng.end();
     while start != end {
-        if pred(&rng.at(&start)) {
-            break;
+        if pred(&rng.at_ref(&start)) {
+            return start;
         }
         start = rng.after(start)
     }
     start
 }
 
-/// Finds position of first element not satisfying predicate.
-///
-/// # Precondition
-///   - `[start, end)` represent valid positions in rng.
-///
-/// # Postcondition
-///   - Returns position of first element in `[start, end)` of rng NOT satisfying pred.
-///   - Returns end if no such element exists.
-///   - Complexity: O(n). Maximum `n` applications of `pred`,
-///     where n is number of elements in `[start, end)`.
-///
-/// # Example
-/// ```rust
-/// use stl::*;
-///
-/// let arr = [1, 2, 3];
-/// let i = algo::find_if_not(&arr, arr.start(), arr.end(), |x| *x == 3);
-/// assert_eq!(i, 0);
-/// ```
-pub fn find_if_not<Range, Pred>(
-    rng: &Range,
-    start: Range::Position,
-    end: Range::Position,
-    pred: Pred,
-) -> Range::Position
+pub fn find_if_not<R, Pred>(rng: &R, pred: Pred) -> R::Position
 where
-    Range: InputRange + ?Sized,
-    Pred: Fn(&Range::Element) -> bool,
+    R: Range + ?Sized,
+    Pred: Fn(&R::Element) -> bool,
 {
-    find_if(rng, start, end, |x| !pred(x))
+    find_if(rng, |x| !pred(x))
 }
 
-/// Finds position of first element equals given element.
-///
-/// # Precondition
-///   - `[start, end)` represent valid positions in rng.
-///
-/// # Postcondition
-///   - Returns position of first element in `[start, end)` of rng equals e.
-///   - Returns end if no such element exists.
-///   - Complexity: O(n). Maximum `n` equality comparisions,
-///     where n is number of elements in `[start, end)`.
-///
-/// # Example
-/// ```rust
-/// use stl::*;
-///
-/// let arr = [1, 2, 3];
-/// let i = algo::find(&arr, arr.start(), arr.end(), &3);
-/// assert_eq!(i, 2);
-/// ```
-pub fn find<Range>(
-    rng: &Range,
-    start: Range::Position,
-    end: Range::Position,
-    e: &Range::Element,
-) -> Range::Position
+pub fn find<R>(rng: &R, e: &R::Element) -> R::Position
 where
-    Range: InputRange + ?Sized,
-    Range::Element: Eq,
+    R: Range + ?Sized,
+    R::Element: Eq,
 {
-    find_if(rng, start, end, |x| x == e)
+    find_if(rng, |x| x == e)
 }

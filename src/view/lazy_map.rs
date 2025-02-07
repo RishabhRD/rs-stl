@@ -2,33 +2,34 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    util::ValueRef, BidirectionalRange, Collection, LazyCollection,
-    MutableRange, RandomAccessRange, Range
+    util::ValueRef, BidirectionalRange, LazyCollection, MutableRange,
+    RandomAccessRange, Range
 };
 
-pub struct MapView<R, Operation, OutputElement>
+pub struct LazyMapView<R, Operation, OutputElement>
 where
-    R: Collection,
-    Operation: Fn(&R::Element) -> OutputElement,
+    R: LazyCollection,
+    Operation: Fn(R::Element) -> OutputElement,
 {
     range: R,
     f: Operation,
 }
 
-impl<R, Operation, OutputElement> MapView<R, Operation, OutputElement>
+impl<R, Operation, OutputElement> LazyMapView<R, Operation, OutputElement>
 where
-    R: Collection,
-    Operation: Fn(&R::Element) -> OutputElement,
+    R: LazyCollection,
+    Operation: Fn(R::Element) -> OutputElement,
 {
     pub fn new(range: R, f: Operation) -> Self {
-        MapView { range, f }
+        LazyMapView { range, f }
     }
 }
 
-impl<R, Operation, OutputElement> Range for MapView<R, Operation, OutputElement>
+impl<R, Operation, OutputElement> Range
+    for LazyMapView<R, Operation, OutputElement>
 where
-    R: Collection,
-    Operation: Fn(&R::Element) -> OutputElement,
+    R: LazyCollection,
+    Operation: Fn(R::Element) -> OutputElement,
 {
     type Position = R::Position;
 
@@ -65,10 +66,10 @@ where
 }
 
 impl<R, Operation, OutputElement> LazyCollection
-    for MapView<R, Operation, OutputElement>
+    for LazyMapView<R, Operation, OutputElement>
 where
-    R: Collection,
-    Operation: Fn(&R::Element) -> OutputElement,
+    R: LazyCollection,
+    Operation: Fn(R::Element) -> OutputElement,
 {
     fn at(&self, i: &Self::Position) -> Self::Element {
         (self.f)(self.range.at(i))
@@ -76,10 +77,10 @@ where
 }
 
 impl<R, Operation, OutputElement> BidirectionalRange
-    for MapView<R, Operation, OutputElement>
+    for LazyMapView<R, Operation, OutputElement>
 where
-    R: Collection + BidirectionalRange,
-    Operation: Fn(&R::Element) -> OutputElement,
+    R: LazyCollection + BidirectionalRange,
+    Operation: Fn(R::Element) -> OutputElement,
 {
     fn before(&self, i: Self::Position) -> Self::Position {
         self.range.before(i)
@@ -91,18 +92,18 @@ where
 }
 
 impl<R, Operation, OutputElement> RandomAccessRange
-    for MapView<R, Operation, OutputElement>
+    for LazyMapView<R, Operation, OutputElement>
 where
-    R: Collection + RandomAccessRange,
-    Operation: Fn(&R::Element) -> OutputElement,
+    R: LazyCollection + RandomAccessRange,
+    Operation: Fn(R::Element) -> OutputElement,
 {
 }
 
 impl<R, Operation, OutputElement> MutableRange
-    for MapView<R, Operation, OutputElement>
+    for LazyMapView<R, Operation, OutputElement>
 where
-    R: Collection + MutableRange,
-    Operation: Fn(&R::Element) -> OutputElement,
+    R: LazyCollection + MutableRange,
+    Operation: Fn(R::Element) -> OutputElement,
 {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         self.range.swap_at(i, j);
