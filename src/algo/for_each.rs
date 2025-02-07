@@ -5,7 +5,7 @@ use crate::{Collection, CollectionLifetime, MutableCollection};
 
 pub fn for_each<R, Op>(rng: &R, mut op: Op)
 where
-    R: Collection,
+    R: Collection + ?Sized,
     Op: FnMut(<R as CollectionLifetime<'_>>::Element),
 {
     let mut start = rng.start();
@@ -18,7 +18,7 @@ where
 
 pub fn for_each_mut<R, Op>(rng: &mut R, mut op: Op)
 where
-    R: MutableCollection,
+    R: MutableCollection + ?Sized,
     for<'a> <R as CollectionLifetime<'a>>::MutableSlice: MutableCollection,
     Op: FnMut(<R as CollectionLifetime<'_>>::MutableElement),
 {
