@@ -122,27 +122,29 @@ pub trait Collection: for<'this> CollectionLifetime<'this> {
     ///
     /// # Precondition
     ///   - `[from, to)` represents valid positions in collection.
-    fn slice<Callback, ReturnType>(
-        &self,
+    fn slice<'a, Callback, ReturnType>(
+        &'a self,
         from: Self::Position,
         to: Self::Position,
         callback: Callback,
     ) -> ReturnType
     where
-        Callback: FnMut(&<Self as CollectionLifetime<'_>>::Slice) -> ReturnType;
+        Callback: FnMut(&<Self as CollectionLifetime<'a>>::Slice) -> ReturnType,
+        Self: 'a;
 
     /// calls `callback` with ith element of collection in range.
     ///
     /// # Precondition
     ///   - `i != end()`
-    fn at<Callback, ReturnType>(
-        &self,
+    fn at<'a, Callback, ReturnType>(
+        &'a self,
         i: &Self::Position,
         callback: Callback,
     ) -> ReturnType
     where
         Callback:
-            FnMut(<Self as CollectionLifetime<'_>>::Element) -> ReturnType;
+            FnMut(<Self as CollectionLifetime<'a>>::Element) -> ReturnType,
+        Self: 'a;
 }
 
 /// Models a collection that supports backward traversal.

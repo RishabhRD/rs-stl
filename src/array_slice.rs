@@ -70,27 +70,28 @@ impl<T> Collection for ArraySlice<'_, T> {
         to - from
     }
 
-    fn slice<Callback, ReturnType>(
-        &self,
+    fn slice<'a, Callback, ReturnType>(
+        &'a self,
         from: Self::Position,
         to: Self::Position,
         mut callback: Callback,
     ) -> ReturnType
     where
-        Callback: FnMut(&<Self as CollectionLifetime<'_>>::Slice) -> ReturnType,
+        Callback: FnMut(&<Self as CollectionLifetime<'a>>::Slice) -> ReturnType,
+        Self: 'a,
     {
         let slice = ArraySlice::new(self.m_slice, from, to);
         callback(&slice)
     }
 
-    fn at<Callback, ReturnType>(
-        &self,
+    fn at<'a, Callback, ReturnType>(
+        &'a self,
         i: &Self::Position,
         mut callback: Callback,
     ) -> ReturnType
     where
         Callback:
-            FnMut(<Self as CollectionLifetime<'_>>::Element) -> ReturnType,
+            FnMut(<Self as CollectionLifetime<'a>>::Element) -> ReturnType,
     {
         callback(&self.m_slice[*i])
     }
@@ -131,28 +132,30 @@ impl<T> Collection for MutableArraySlice<'_, T> {
         to - from
     }
 
-    fn slice<Callback, ReturnType>(
-        &self,
+    fn slice<'a, Callback, ReturnType>(
+        &'a self,
         from: Self::Position,
         to: Self::Position,
         mut callback: Callback,
     ) -> ReturnType
     where
-        Callback: FnMut(&<Self as CollectionLifetime<'_>>::Slice) -> ReturnType,
+        Callback: FnMut(&<Self as CollectionLifetime<'a>>::Slice) -> ReturnType,
+        Self: 'a,
     {
         let slice = ArraySlice::new(self.m_slice, from, to);
         callback(&slice)
     }
 
-    fn at<Callback, ReturnType>(
-        &self,
+    fn at<'a, Callback, ReturnType>(
+        &'a self,
         i: &Self::Position,
         mut callback: Callback,
     ) -> ReturnType
     where
         Callback:
-            FnMut(<Self as CollectionLifetime<'_>>::Element) -> ReturnType,
+            FnMut(<Self as CollectionLifetime<'a>>::Element) -> ReturnType,
+        Self: 'a,
     {
-        todo!()
+        callback(&self.m_slice[*i])
     }
 }
