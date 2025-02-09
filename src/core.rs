@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2024-2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
+// Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 /// Any type that is movable, destructable and equality comparable.
 ///
@@ -27,39 +27,48 @@ impl<T> Regular for T where T: SemiRegular + Clone {}
 ///   ^            ^
 ///   |            |
 /// start   -->   end
-pub trait Range {
-    /// Type of positions in range.
+pub trait Collection {
+    /// Type of position in the collection.
     type Position: Regular;
 
-    /// Type of element of range.
-    type Element;
+    /// Type of element access in the collection.
+    type Element<'this>
+    where
+        Self: 'this;
 
-    /// Type of subrange of range
-    type SubRange<'a>: Range<
+    /// Type of element mutable access in the collection.
+    type MutableElement<'this>
+    where
+        Self: 'this;
+
+    /// Type of subrange of the collection.
+    type Slice<'this>: Collection<
         Position = Self::Position,
-        Element = Self::Element,
-        SubRange<'a> = Self::SubRange<'a>,
-        MutableSubRange<'a> = Self::MutableSubRange<'a>,
+        Element<'this> = Self::Element<'this>,
+        MutableElement<'this> = Self::Element<'this>,
+        Slice<'this> = Self::Slice<'this>,
+        MutableSlice<'this> = Self::Slice<'this>,
     >
     where
-        Self: 'a;
+        Self: 'this;
 
-    /// Type of mutable subrange of range
-    type MutableSubRange<'a>: Range<
+    /// Type of mutable subrange of the collection.
+    type MutableSlice<'this>: Collection<
         Position = Self::Position,
-        Element = Self::Element,
-        SubRange<'a> = Self::SubRange<'a>,
-        MutableSubRange<'a> = Self::MutableSubRange<'a>,
+        Element<'this> = Self::Element<'this>,
+        MutableElement<'this> = Self::MutableElement<'this>,
+        Slice<'this> = Self::Slice<'this>,
+        MutableSlice<'this> = Self::MutableSlice<'this>,
     >
     where
-        Self: 'a;
+        Self: 'this;
 
-    /// Returns the position of first element in the range.
+    /// Returns the position of first element in the collection.
     ///
-    /// If range is empty, returns end position of the range.
+    /// If collection is empty, returns end position of the collection.
     fn start(&self) -> Self::Position;
 
-    /// Returns position past the last element of the range.
+    /// Returns position past the last element of the collection.
     fn end(&self) -> Self::Position;
 
     /// Returns the position immediately after i.
@@ -102,63 +111,39 @@ pub trait Range {
         dist
     }
 
-    /// Returns reference like view of element at position i.
+    /// calls `callback` with slice of collection in range `[from, to)`.
     ///
     /// # Precondition
-    ///   - `i != self.end()`
-    fn at_ref(
-        &self,
-        i: &Self::Position,
-    ) -> impl std::ops::Deref<Target = Self::Element>;
-
-    /// Returns subrange `[from, to) of self.
-    fn slice(
-        &self,
+    ///   - `[from, to)` represents valid positions in collection.
+    fn slice<'a, Callback, ReturnType>(
+        &'a self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Self::SubRange<'_>;
-}
+        callback: Callback,
+    ) -> ReturnType
+    where
+        Callback: FnMut(&Self::Slice<'a>) -> ReturnType,
+        Self: 'a;
 
-/// Models a range whose `Element`s are present in memory.
-///
-/// If elements are present in memory, then it should be possible to obtain
-/// reference to elements.
-///
-///  Thoughts: I would have loved if rust allowed this:
-///  ```rust
-///  pub trait Collection: for<'a> Range<SubRange<'a>: Collection,
-///                                      MutableSubRange<'a>: Collection>
-///  ```
-///  This would have allowed me to avoid repeating this where clause about SubRange and MutableSubRange.
-pub trait Collection: Range
-where
-    for<'a> Self::SubRange<'a>: Collection,
-    for<'a> Self::MutableSubRange<'a>: Collection,
-{
-    /// Returns reference to element at position i.
-    fn at(&self, i: &Self::Position) -> &Self::Element;
-}
-
-/// Models a range whose elements are lazily computed on element access.
-///
-/// Thus, accessing element at any position would return value.
-pub trait LazyCollection: Range
-where
-    for<'a> Self::SubRange<'a>: LazyCollection,
-    for<'a> Self::MutableSubRange<'a>: LazyCollection,
-{
-    /// Returns the element at ith position.
+    /// calls `callback` with ith element of collection in range.
     ///
     /// # Precondition
-    ///   - i != self.end()
-    fn at(&self, i: &Self::Position) -> Self::Element;
+    ///   - `i != end()`
+    fn at<'a, Callback, ReturnType>(
+        &'a self,
+        i: &Self::Position,
+        callback: Callback,
+    ) -> ReturnType
+    where
+        Callback: FnMut(Self::Element<'a>) -> ReturnType,
+        Self: 'a;
 }
 
-/// Models a range that supports forward as well as backward traversal.
-pub trait BidirectionalRange: Range
+/// Models a collection that supports backward traversal.
+pub trait BidirectionalCollection: Collection
 where
-    for<'a> Self::SubRange<'a>: BidirectionalRange,
-    for<'a> Self::MutableSubRange<'a>: BidirectionalRange,
+    for<'a> Self::Slice<'a>: BidirectionalCollection,
+    for<'a> Self::MutableSlice<'a>: BidirectionalCollection,
 {
     /// Returns position immediately before i.
     ///
@@ -185,7 +170,7 @@ where
     }
 }
 
-/// Models a random access range where jumping from one position to another is O(1) operation.
+/// Models a collection where jumping from one position to another is O(1) operation.
 ///
 /// # Precondition
 ///   - self.after should work in O(1)
@@ -198,54 +183,55 @@ where
 ///   - RandomAccessRange doesn't provide any additional method but with given
 ///     precondition it ensures that jumping from one position to other can be
 ///     done in O(1).
-pub trait RandomAccessRange: BidirectionalRange<Position: Ord>
+pub trait RandomAccessCollection:
+    BidirectionalCollection<Position: Ord>
 where
-    for<'a> Self::SubRange<'a>: RandomAccessRange,
-    for<'a> Self::MutableSubRange<'a>: RandomAccessRange,
+    for<'a> Self::Slice<'a>: RandomAccessCollection,
+    for<'a> Self::MutableSlice<'a>: RandomAccessCollection,
 {
 }
 
-/// Marker trait for marking range is mutable.
-pub trait MutableRange: Range
+/// Models a collection which supports reordering of its elements.
+pub trait ReorderableCollection: Collection
 where
-    for<'a> Self::MutableSubRange<'a>: MutableRange,
+    for<'a> Self::MutableSlice<'a>: ReorderableCollection,
 {
-    /// Returns subrange `[from, to) of self.
-    fn slice_mut(
+    /// calls `callback` with mutable slice of collection in range `[from, to)`.
+    ///
+    /// # Precondition
+    ///   - `[from, to)` represents valid positions in collection.
+    fn slice_mut<'a, Callback, ReturnType>(
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Self::MutableSubRange<'_>;
-}
+        callback: Callback,
+    ) -> ReturnType
+    where
+        Callback: FnMut(&mut Self::MutableSlice<'a>) -> ReturnType,
+        Self: 'a;
 
-/// Models a range whose elements can be reordered inside range.
-pub trait ReorderableRange: MutableRange
-where
-    for<'a> Self::MutableSubRange<'a>: ReorderableRange,
-{
-    /// Swaps element at ith position with element at jth position.
+    /// Swaps element at position `i` with element at position `j`.
+    ///
+    /// # Precondition
+    ///   - `i != end() && j != end()`
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
 }
 
-/// Models a mutable collection that provides ability to mutate individual elements.
-pub trait MutableCollection: MutableRange + Collection
+/// Models a collection which supports mutating its elements.
+pub trait MutableCollection: ReorderableCollection
 where
-    for<'a> Self::SubRange<'a>: Collection,
-    for<'a> Self::MutableSubRange<'a>: MutableCollection,
+    for<'a> Self::MutableSlice<'a>: MutableCollection,
 {
-    /// Returns mutable reference to element at position i.
-    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
-}
-
-/// Models a lazy collection which provides access to mutable view of element at any position.
-pub trait MutableLazyCollection: MutableRange + LazyCollection
-where
-    for<'a> Self::SubRange<'a>: LazyCollection,
-    for<'a> Self::MutableSubRange<'a>: MutableLazyCollection,
-{
-    /// Mutable view of element.
-    type ElementMut;
-
-    /// Returns value of mutable view of element at position i.
-    fn at_mut(&mut self, i: &Self::Position) -> Self::ElementMut;
+    /// calls `callback` with ith element with mutable access of collection in range.
+    ///
+    /// # Precondition
+    ///   - `i != end()`
+    fn at_mut<'a, Callback, ReturnType>(
+        &mut self,
+        i: &Self::Position,
+        callback: Callback,
+    ) -> ReturnType
+    where
+        Callback: FnMut(Self::MutableElement<'a>) -> ReturnType,
+        Self: 'a;
 }
