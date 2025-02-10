@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::Collection;
+use crate::{BidirectionalCollection, Collection, RandomAccessCollection};
 
 /// Slice of an `array-like` type.
 pub struct ArraySlice<'this, T> {
@@ -176,3 +176,27 @@ impl<T> Collection for MutableArraySlice<'_, T> {
         callback(&self.m_slice[*i])
     }
 }
+
+impl<T> BidirectionalCollection for ArraySlice<'_, T> {
+    fn before(&self, i: Self::Position) -> Self::Position {
+        i - 1
+    }
+
+    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
+        i - n
+    }
+}
+
+impl<T> BidirectionalCollection for MutableArraySlice<'_, T> {
+    fn before(&self, i: Self::Position) -> Self::Position {
+        i - 1
+    }
+
+    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
+        i - n
+    }
+}
+
+impl<T> RandomAccessCollection for ArraySlice<'_, T> {}
+
+impl<T> RandomAccessCollection for MutableArraySlice<'_, T> {}
