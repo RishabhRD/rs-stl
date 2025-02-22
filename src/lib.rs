@@ -11,13 +11,19 @@
 //! - `Vec<T>` (Vec)
 
 #[doc(hidden)]
+pub mod algo;
+#[doc(hidden)]
 pub mod array_slice;
 #[doc(hidden)]
 pub mod core;
-// #[doc(hidden)]
-// pub mod trait_impl;
+#[doc(hidden)]
+pub mod mutable_array_slice;
+#[doc(hidden)]
+pub mod trait_impl;
 
 #[doc(inline)]
 pub use array_slice::*;
 #[doc(inline)]
 pub use core::*;
+#[doc(inline)]
+pub use mutable_array_slice::*;
