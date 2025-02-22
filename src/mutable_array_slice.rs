@@ -2,8 +2,8 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    ArraySlice, BidirectionalRange, Collection, HasSlice, MutableCollection,
-    MutableRange, RandomAccessRange, Range, RangeBase,
+    ArraySlice, BidirectionalRange, Collection, MutableCollection,
+    MutableRange, RandomAccessRange, Range, RangeBase, RangeLifetime,
 };
 
 pub struct MutableArraySlice<'a, T> {
@@ -28,7 +28,7 @@ impl<T> RangeBase for MutableArraySlice<'_, T> {
     type Element = T;
 }
 
-impl<'a, T> HasSlice<'a> for MutableArraySlice<'_, T> {
+impl<'a, T> RangeLifetime<'a> for MutableArraySlice<'_, T> {
     type Slice = ArraySlice<'a, T>;
 
     type MutableSlice = MutableArraySlice<'a, T>;
@@ -66,7 +66,7 @@ impl<T> Range for MutableArraySlice<'_, T> {
         &'a self,
         from: Self::Position,
         to: Self::Position,
-    ) -> <Self as HasSlice<'a>>::Slice
+    ) -> <Self as RangeLifetime<'a>>::Slice
     where
         Self: 'a,
     {
@@ -91,7 +91,7 @@ impl<T> MutableRange for MutableArraySlice<'_, T> {
         &'a mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> <Self as HasSlice<'a>>::MutableSlice
+    ) -> <Self as RangeLifetime<'a>>::MutableSlice
     where
         Self: 'a,
     {

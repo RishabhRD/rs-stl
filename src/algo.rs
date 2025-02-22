@@ -2,14 +2,14 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    Collection, HasSlice, MutableCollection, MutableRange, RandomAccessRange,
-    Range,
+    Collection, MutableCollection, MutableRange, RandomAccessRange, Range,
+    RangeLifetime,
 };
 
 pub trait MutableRangeExtension: MutableRange
 where
-    for<'a> <Self as HasSlice<'a>>::Slice: Range,
-    for<'a> <Self as HasSlice<'a>>::MutableSlice: MutableRange,
+    for<'a> <Self as RangeLifetime<'a>>::Slice: Range,
+    for<'a> <Self as RangeLifetime<'a>>::MutableSlice: MutableRange,
 {
     /// Partitions range with partition_fn which accepts second argument as reference to element at i.
     fn partition_on<F>(
@@ -26,13 +26,13 @@ where
 
 pub trait RandomAccessRangeExtension: RandomAccessRange
 where
-    for<'a> <Self as HasSlice<'a>>::Slice: RandomAccessRange,
-    for<'a> <Self as HasSlice<'a>>::MutableSlice: RandomAccessRange,
+    for<'a> <Self as RangeLifetime<'a>>::Slice: RandomAccessRange,
+    for<'a> <Self as RangeLifetime<'a>>::MutableSlice: RandomAccessRange,
 {
     fn quick_sort<Comparator>(&mut self, is_less: Comparator)
     where
         Self: MutableRange,
-        for<'a> <Self as HasSlice<'a>>::MutableSlice: MutableRange,
+        for<'a> <Self as RangeLifetime<'a>>::MutableSlice: MutableRange,
         Comparator: Fn(&Self::Element, &Self::Element) -> bool,
     {
         let start = self.start();
@@ -49,8 +49,8 @@ where
 
 pub trait MutableCollectionExtension: MutableCollection
 where
-    for<'a> <Self as HasSlice<'a>>::Slice: Collection,
-    for<'a> <Self as HasSlice<'a>>::MutableSlice: MutableCollection,
+    for<'a> <Self as RangeLifetime<'a>>::Slice: Collection,
+    for<'a> <Self as RangeLifetime<'a>>::MutableSlice: MutableCollection,
 {
     fn for_each_mut<F>(&mut self, mut f: F)
     where
@@ -68,23 +68,23 @@ where
 impl<R> MutableCollectionExtension for R
 where
     R: MutableCollection + ?Sized,
-    for<'a> <R as HasSlice<'a>>::Slice: Collection,
-    for<'a> <R as HasSlice<'a>>::MutableSlice: MutableCollection,
+    for<'a> <R as RangeLifetime<'a>>::Slice: Collection,
+    for<'a> <R as RangeLifetime<'a>>::MutableSlice: MutableCollection,
 {
 }
 
 impl<R> MutableRangeExtension for R
 where
     R: MutableRange + ?Sized,
-    for<'a> <R as HasSlice<'a>>::Slice: Range,
-    for<'a> <R as HasSlice<'a>>::MutableSlice: MutableRange,
+    for<'a> <R as RangeLifetime<'a>>::Slice: Range,
+    for<'a> <R as RangeLifetime<'a>>::MutableSlice: MutableRange,
 {
 }
 
 impl<R> RandomAccessRangeExtension for R
 where
     R: RandomAccessRange + ?Sized,
-    for<'a> <R as HasSlice<'a>>::Slice: RandomAccessRange,
-    for<'a> <R as HasSlice<'a>>::MutableSlice: RandomAccessRange,
+    for<'a> <R as RangeLifetime<'a>>::Slice: RandomAccessRange,
+    for<'a> <R as RangeLifetime<'a>>::MutableSlice: RandomAccessRange,
 {
 }

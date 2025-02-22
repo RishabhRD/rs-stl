@@ -33,7 +33,7 @@ pub trait RangeBase {
     type Element;
 }
 
-pub trait HasSlice<'this, ImplicitBounds: Sealed = Bounds<&'this Self>>:
+pub trait RangeLifetime<'this, ImplicitBounds: Sealed = Bounds<&'this Self>>:
     RangeBase
 {
     /// Type of slice of range.
@@ -55,7 +55,7 @@ pub trait HasSlice<'this, ImplicitBounds: Sealed = Bounds<&'this Self>>:
 ///   |            |
 /// start   -->   end
 /// ```
-pub trait Range: for<'this> HasSlice<'this> {
+pub trait Range: for<'this> RangeLifetime<'this> {
     /// Returns the position of first element in the range.
     ///
     /// If range is empty, returns end position of the range.
@@ -121,7 +121,7 @@ pub trait Range: for<'this> HasSlice<'this> {
         &'a self,
         from: Self::Position,
         to: Self::Position,
-    ) -> <Self as HasSlice<'a>>::Slice
+    ) -> <Self as RangeLifetime<'a>>::Slice
     where
         Self: 'a;
 }
@@ -129,8 +129,8 @@ pub trait Range: for<'this> HasSlice<'this> {
 /// Models a range which supports backward traversal.
 pub trait BidirectionalRange: Range
 where
-    for<'a> <Self as HasSlice<'a>>::Slice: BidirectionalRange,
-    for<'a> <Self as HasSlice<'a>>::MutableSlice: BidirectionalRange,
+    for<'a> <Self as RangeLifetime<'a>>::Slice: BidirectionalRange,
+    for<'a> <Self as RangeLifetime<'a>>::MutableSlice: BidirectionalRange,
 {
     /// Returns position immediately before i.
     ///
@@ -172,15 +172,15 @@ where
 ///     done in O(1).
 pub trait RandomAccessRange: BidirectionalRange
 where
-    for<'a> <Self as HasSlice<'a>>::Slice: RandomAccessRange,
-    for<'a> <Self as HasSlice<'a>>::MutableSlice: RandomAccessRange,
+    for<'a> <Self as RangeLifetime<'a>>::Slice: RandomAccessRange,
+    for<'a> <Self as RangeLifetime<'a>>::MutableSlice: RandomAccessRange,
 {
 }
 
 /// Models range that supports internal mutation.
 pub trait MutableRange: Range
 where
-    for<'a> <Self as HasSlice<'a>>::MutableSlice: MutableRange,
+    for<'a> <Self as RangeLifetime<'a>>::MutableSlice: MutableRange,
 {
     /// Returns slice `[from, to)` of range.
     ///
@@ -190,7 +190,7 @@ where
         &'a mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> <Self as HasSlice<'a>>::MutableSlice
+    ) -> <Self as RangeLifetime<'a>>::MutableSlice
     where
         Self: 'a;
 
@@ -202,8 +202,8 @@ where
 /// elements.
 pub trait Collection: Range
 where
-    for<'a> <Self as HasSlice<'a>>::Slice: Collection,
-    for<'a> <Self as HasSlice<'a>>::MutableSlice: Collection,
+    for<'a> <Self as RangeLifetime<'a>>::Slice: Collection,
+    for<'a> <Self as RangeLifetime<'a>>::MutableSlice: Collection,
 {
     /// Returns reference to ith element of range.
     ///
@@ -215,8 +215,8 @@ where
 /// Models a collection that supports mutating its elements.
 pub trait MutableCollection: Collection + MutableRange
 where
-    for<'a> <Self as HasSlice<'a>>::Slice: Collection,
-    for<'a> <Self as HasSlice<'a>>::MutableSlice: MutableCollection,
+    for<'a> <Self as RangeLifetime<'a>>::Slice: Collection,
+    for<'a> <Self as RangeLifetime<'a>>::MutableSlice: MutableCollection,
 {
     /// Returns mutable reference to ith element of range.
     ///
@@ -228,8 +228,8 @@ where
 /// Models a range whose elements are computed on element access.
 pub trait LazyCollection: Range
 where
-    for<'a> <Self as HasSlice<'a>>::Slice: LazyCollection,
-    for<'a> <Self as HasSlice<'a>>::MutableSlice: LazyCollection,
+    for<'a> <Self as RangeLifetime<'a>>::Slice: LazyCollection,
+    for<'a> <Self as RangeLifetime<'a>>::MutableSlice: LazyCollection,
 {
     /// Returns reference to ith element of range.
     ///
