@@ -35,127 +35,34 @@ impl<'a, T> MutableArraySlice<'a, T> {
     }
 }
 
-impl<T> CollectionBase for ArraySlice<'_, T> {
-    type Position = usize;
-}
-
-impl<'this, T> CollectionLifetime<'_> for ArraySlice<'this, T> {
-    type Element = &'this T;
-
-    type MutableElement = &'this T;
-
-    type Slice = ArraySlice<'this, T>;
-
-    type MutableSlice = ArraySlice<'this, T>;
-}
-
-impl<T> Collection for ArraySlice<'_, T> {
-    fn start(&self) -> Self::Position {
-        self.m_start
-    }
-
-    fn end(&self) -> Self::Position {
-        self.m_end
-    }
-
-    fn after(&self, i: Self::Position) -> Self::Position {
-        i + 1
-    }
-
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i + n
-    }
-
-    fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        to - from
-    }
-
-    fn slice<'a, Callback, ReturnType>(
-        &'a self,
-        from: Self::Position,
-        to: Self::Position,
-        mut callback: Callback,
-    ) -> ReturnType
-    where
-        Callback: FnMut(&<Self as CollectionLifetime<'a>>::Slice) -> ReturnType,
-        Self: 'a,
-    {
-        let slice = ArraySlice::new(self.m_slice, from, to);
-        callback(&slice)
-    }
-
-    fn at<'a, Callback, ReturnType>(
-        &'a self,
-        i: &Self::Position,
-        mut callback: Callback,
-    ) -> ReturnType
-    where
-        Callback:
-            FnMut(<Self as CollectionLifetime<'a>>::Element) -> ReturnType,
-    {
-        callback(&self.m_slice[*i])
-    }
-}
-
 impl<T> CollectionBase for MutableArraySlice<'_, T> {
     type Position = usize;
 }
 
-impl<'this, T> CollectionLifetime<'_> for MutableArraySlice<'this, T> {
-    type Element = &'this T;
-
-    type MutableElement = &'this mut T;
-
-    type Slice = ArraySlice<'this, T>;
-
-    type MutableSlice = MutableArraySlice<'this, T>;
+impl<'a, T> CollectionLifetime<'a> for MutableArraySlice<'_, T> {
+    type Element = &'a T;
+    type Slice = MutableArraySlice<'a, T>;
 }
 
 impl<T> Collection for MutableArraySlice<'_, T> {
-    fn start(&self) -> Self::Position {
-        self.m_start
-    }
-
-    fn end(&self) -> Self::Position {
-        self.m_end
-    }
-
-    fn after(&self, i: Self::Position) -> Self::Position {
-        i + 1
-    }
-
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i + n
-    }
-
-    fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        to - from
-    }
-
-    fn slice<'a, Callback, ReturnType>(
-        &'a self,
-        from: Self::Position,
-        to: Self::Position,
-        mut callback: Callback,
-    ) -> ReturnType
-    where
-        Callback: FnMut(&<Self as CollectionLifetime<'a>>::Slice) -> ReturnType,
-        Self: 'a,
-    {
-        let slice = ArraySlice::new(self.m_slice, from, to);
-        callback(&slice)
-    }
-
-    fn at<'a, Callback, ReturnType>(
+    fn at<'a>(
         &'a self,
         i: &Self::Position,
-        mut callback: Callback,
-    ) -> ReturnType
+    ) -> <Self as CollectionLifetime<'a>>::Element
     where
-        Callback:
-            FnMut(<Self as CollectionLifetime<'a>>::Element) -> ReturnType,
         Self: 'a,
     {
-        callback(&self.m_slice[*i])
+        &self.m_slice[*i]
+    }
+
+    fn slice<'a>(
+        &'a mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> <Self as CollectionLifetime<'a>>::Slice
+    where
+        Self: 'a,
+    {
+        MutableArraySlice::new(self.m_slice, from, to)
     }
 }

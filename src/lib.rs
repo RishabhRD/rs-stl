@@ -11,8 +11,6 @@
 //! - `Vec<T>` (Vec)
 
 #[doc(hidden)]
-pub mod algo;
-#[doc(hidden)]
 pub mod array_slice;
 #[doc(hidden)]
 pub mod core;
