@@ -5,7 +5,7 @@ use crate::MutableCollection;
 
 pub trait MutableCollectionExt: MutableCollection
 where
-    Self::SliceCore: MutableCollection,
+    Self::Whole: MutableCollection,
 {
     /// Applies f to each element of collection.
     ///
@@ -39,6 +39,6 @@ where
 impl<R> MutableCollectionExt for R
 where
     R: MutableCollection + ?Sized,
-    R::SliceCore: MutableCollection,
+    R::Whole: MutableCollection,
 {
 }

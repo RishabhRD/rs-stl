@@ -5,7 +5,7 @@ use crate::RandomAccessCollection;
 
 pub trait RandomAccessCollectionExt: RandomAccessCollection
 where
-    Self::SliceCore: RandomAccessCollection,
+    Self::Whole: RandomAccessCollection,
 {
     /// Returns number of elements in the collection.
     ///
@@ -30,6 +30,6 @@ where
 impl<R> RandomAccessCollectionExt for R
 where
     R: RandomAccessCollection + ?Sized,
-    R::SliceCore: RandomAccessCollection,
+    R::Whole: RandomAccessCollection,
 {
 }

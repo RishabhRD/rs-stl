@@ -4,41 +4,41 @@
 use crate::{BidirectionalCollection, Collection, RandomAccessCollection};
 
 #[derive(Clone, PartialEq, Eq)]
-pub struct Slice<'a, Core>
+pub struct Slice<'a, Whole>
 where
-    Core: Collection<SliceCore = Core>,
+    Whole: Collection<Whole = Whole>,
 {
-    core: &'a Core,
-    from: Core::Position,
-    to: Core::Position,
+    whole: &'a Whole,
+    from: Whole::Position,
+    to: Whole::Position,
 }
 
-impl<'a, Core> Slice<'a, Core>
+impl<'a, Whole> Slice<'a, Whole>
 where
-    Core: Collection<SliceCore = Core>,
+    Whole: Collection<Whole = Whole>,
 {
     pub fn new(
-        collection: &'a Core,
-        from: Core::Position,
-        to: Core::Position,
+        collection: &'a Whole,
+        from: Whole::Position,
+        to: Whole::Position,
     ) -> Self {
         Self {
-            core: collection,
+            whole: collection,
             from,
             to,
         }
     }
 }
 
-impl<Core> Collection for Slice<'_, Core>
+impl<Whole> Collection for Slice<'_, Whole>
 where
-    Core: Collection<SliceCore = Core>,
+    Whole: Collection<Whole = Whole>,
 {
-    type Position = Core::Position;
+    type Position = Whole::Position;
 
-    type Element = Core::Element;
+    type Element = Whole::Element;
 
-    type SliceCore = Core;
+    type Whole = Whole;
 
     fn start(&self) -> Self::Position {
         self.from.clone()
@@ -49,44 +49,44 @@ where
     }
 
     fn after(&self, i: Self::Position) -> Self::Position {
-        self.core.after(i)
+        self.whole.after(i)
     }
 
     fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.core.after_n(i, n)
+        self.whole.after_n(i, n)
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        self.core.distance(from, to)
+        self.whole.distance(from, to)
     }
 
     fn at(&self, i: &Self::Position) -> &Self::Element {
-        self.core.at(i)
+        self.whole.at(i)
     }
 
     fn slice(
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::SliceCore> {
-        Slice::new(self.core, from, to)
+    ) -> Slice<Self::Whole> {
+        Slice::new(self.whole, from, to)
     }
 }
 
-impl<Core> BidirectionalCollection for Slice<'_, Core>
+impl<Whole> BidirectionalCollection for Slice<'_, Whole>
 where
-    Core: BidirectionalCollection<SliceCore = Core>,
+    Whole: BidirectionalCollection<Whole = Whole>,
 {
     fn before(&self, i: Self::Position) -> Self::Position {
-        self.core.before(i)
+        self.whole.before(i)
     }
 
     fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.core.before_n(i, n)
+        self.whole.before_n(i, n)
     }
 }
 
-impl<Core> RandomAccessCollection for Slice<'_, Core> where
-    Core: RandomAccessCollection<SliceCore = Core>
+impl<Whole> RandomAccessCollection for Slice<'_, Whole> where
+    Whole: RandomAccessCollection<Whole = Whole>
 {
 }

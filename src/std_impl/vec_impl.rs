@@ -11,7 +11,7 @@ impl<T> Collection for Vec<T> {
 
     type Element = T;
 
-    type SliceCore = Self;
+    type Whole = Self;
 
     fn start(&self) -> Self::Position {
         0
@@ -41,7 +41,7 @@ impl<T> Collection for Vec<T> {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::SliceCore> {
+    ) -> Slice<Self::Whole> {
         Slice::new(self, from, to)
     }
 }
@@ -67,7 +67,7 @@ impl<T> ReorderableCollection for Vec<T> {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<Self::SliceCore> {
+    ) -> crate::SliceMut<Self::Whole> {
         SliceMut::new(self, from, to)
     }
 }

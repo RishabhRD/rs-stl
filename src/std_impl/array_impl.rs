@@ -11,7 +11,7 @@ impl<T, const N: usize> Collection for [T; N] {
 
     type Element = T;
 
-    type SliceCore = Self;
+    type Whole = Self;
 
     fn start(&self) -> Self::Position {
         0
@@ -41,7 +41,7 @@ impl<T, const N: usize> Collection for [T; N] {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::SliceCore> {
+    ) -> Slice<Self::Whole> {
         Slice::new(self, from, to)
     }
 }
@@ -67,7 +67,7 @@ impl<T, const N: usize> ReorderableCollection for [T; N] {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<Self::SliceCore> {
+    ) -> crate::SliceMut<Self::Whole> {
         SliceMut::new(self, from, to)
     }
 }

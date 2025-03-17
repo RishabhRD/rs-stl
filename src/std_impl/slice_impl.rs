@@ -11,7 +11,7 @@ impl<T> Collection for &[T] {
 
     type Element = T;
 
-    type SliceCore = Self;
+    type Whole = Self;
 
     fn start(&self) -> Self::Position {
         0
@@ -41,7 +41,7 @@ impl<T> Collection for &[T] {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::SliceCore> {
+    ) -> Slice<Self::Whole> {
         Slice::new(self, from, to)
     }
 }
@@ -63,7 +63,7 @@ impl<T> Collection for &mut [T] {
 
     type Element = T;
 
-    type SliceCore = Self;
+    type Whole = Self;
 
     fn start(&self) -> Self::Position {
         0
@@ -93,7 +93,7 @@ impl<T> Collection for &mut [T] {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::SliceCore> {
+    ) -> Slice<Self::Whole> {
         Slice::new(self, from, to)
     }
 }
@@ -119,7 +119,7 @@ impl<T> ReorderableCollection for &mut [T] {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<Self::SliceCore> {
+    ) -> crate::SliceMut<Self::Whole> {
         SliceMut::new(self, from, to)
     }
 }

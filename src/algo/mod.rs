@@ -12,3 +12,6 @@ pub use reorderable_collection_ext::*;
 
 mod mutable_collection_ext;
 pub use mutable_collection_ext::*;
+
+mod random_access_reorderable_collection_ext;
+pub use random_access_reorderable_collection_ext::*;

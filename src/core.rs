@@ -37,10 +37,10 @@ pub trait Collection {
     type Element; // TODO: Finalize what to do with LazyCollection?
 
     /// Type of core of slice.
-    type SliceCore: Collection<
+    type Whole: Collection<
         Position = Self::Position,
         Element = Self::Element,
-        SliceCore = Self::SliceCore,
+        Whole = Self::Whole,
     >;
 
     /// Returns the position of first element in self,
@@ -104,14 +104,14 @@ pub trait Collection {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::SliceCore>;
+    ) -> Slice<Self::Whole>;
 }
 
 /// Models a bidirectional collection, which can be traversed forward as well as backward.
 /// Backward iteration is supported through `before` and `before_n` methods.
 pub trait BidirectionalCollection: Collection
 where
-    Self::SliceCore: BidirectionalCollection,
+    Self::Whole: BidirectionalCollection,
 {
     /// Returns position immediately before i
     ///
@@ -155,14 +155,14 @@ where
 pub trait RandomAccessCollection:
     BidirectionalCollection<Position: Regular + Ord>
 where
-    Self::SliceCore: RandomAccessCollection,
+    Self::Whole: RandomAccessCollection,
 {
 }
 
 /// Models a collection which supports internally reordering its element.
 pub trait ReorderableCollection: Collection
 where
-    Self::SliceCore: ReorderableCollection,
+    Self::Whole: ReorderableCollection,
 {
     /// Swaps element at position i with element at position j.
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
@@ -175,13 +175,13 @@ where
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> SliceMut<Self::SliceCore>;
+    ) -> SliceMut<Self::Whole>;
 }
 
 /// Models a collection which supports mutating its element
 pub trait MutableCollection: ReorderableCollection
 where
-    Self::SliceCore: MutableCollection,
+    Self::Whole: MutableCollection,
 {
     /// Mutably Access element at position i.
     ///

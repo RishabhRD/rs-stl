@@ -20,7 +20,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.all();
     /// assert!(s.equals(&[1, 2, 3, 4, 5]));
     /// ```
-    fn all(&self) -> Slice<Self::SliceCore> {
+    fn all(&self) -> Slice<Self::Whole> {
         self.slice(self.start(), self.end())
     }
 
@@ -41,7 +41,7 @@ pub trait CollectionExt: Collection {
     /// let p = arr.prefix(3);
     /// assert!(p.equals(&[1, 2, 3]));
     /// ```
-    fn prefix(&self, to: Self::Position) -> Slice<Self::SliceCore> {
+    fn prefix(&self, to: Self::Position) -> Slice<Self::Whole> {
         self.slice(self.start(), to)
     }
 
@@ -62,7 +62,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.suffix(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn suffix(&self, from: Self::Position) -> Slice<Self::SliceCore> {
+    fn suffix(&self, from: Self::Position) -> Slice<Self::Whole> {
         self.slice(from, self.end())
     }
 

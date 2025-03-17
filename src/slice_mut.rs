@@ -7,41 +7,41 @@ use crate::{
 };
 
 #[derive(PartialEq, Eq)]
-pub struct SliceMut<'a, Core>
+pub struct SliceMut<'a, Whole>
 where
-    Core: ReorderableCollection<SliceCore = Core>,
+    Whole: ReorderableCollection<Whole = Whole>,
 {
-    core: &'a mut Core,
-    from: Core::Position,
-    to: Core::Position,
+    whole: &'a mut Whole,
+    from: Whole::Position,
+    to: Whole::Position,
 }
 
-impl<'a, Core> SliceMut<'a, Core>
+impl<'a, Whole> SliceMut<'a, Whole>
 where
-    Core: ReorderableCollection<SliceCore = Core>,
+    Whole: ReorderableCollection<Whole = Whole>,
 {
     pub fn new(
-        collection: &'a mut Core,
-        from: Core::Position,
-        to: Core::Position,
+        collection: &'a mut Whole,
+        from: Whole::Position,
+        to: Whole::Position,
     ) -> Self {
         Self {
-            core: collection,
+            whole: collection,
             from,
             to,
         }
     }
 }
 
-impl<Core> Collection for SliceMut<'_, Core>
+impl<Whole> Collection for SliceMut<'_, Whole>
 where
-    Core: ReorderableCollection<SliceCore = Core>,
+    Whole: ReorderableCollection<Whole = Whole>,
 {
-    type Position = Core::Position;
+    type Position = Whole::Position;
 
-    type Element = Core::Element;
+    type Element = Whole::Element;
 
-    type SliceCore = Core;
+    type Whole = Whole;
 
     fn start(&self) -> Self::Position {
         self.from.clone()
@@ -52,70 +52,70 @@ where
     }
 
     fn after(&self, i: Self::Position) -> Self::Position {
-        self.core.after(i)
+        self.whole.after(i)
     }
 
     fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.core.after_n(i, n)
+        self.whole.after_n(i, n)
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        self.core.distance(from, to)
+        self.whole.distance(from, to)
     }
 
     fn at(&self, i: &Self::Position) -> &Self::Element {
-        self.core.at(i)
+        self.whole.at(i)
     }
 
     fn slice(
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::SliceCore> {
-        Slice::new(self.core, from, to)
+    ) -> Slice<Self::Whole> {
+        Slice::new(self.whole, from, to)
     }
 }
 
-impl<Core> BidirectionalCollection for SliceMut<'_, Core>
+impl<Whole> BidirectionalCollection for SliceMut<'_, Whole>
 where
-    Core: BidirectionalCollection<SliceCore = Core> + ReorderableCollection,
+    Whole: BidirectionalCollection<Whole = Whole> + ReorderableCollection,
 {
     fn before(&self, i: Self::Position) -> Self::Position {
-        self.core.before(i)
+        self.whole.before(i)
     }
 
     fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.core.before_n(i, n)
+        self.whole.before_n(i, n)
     }
 }
 
-impl<Core> RandomAccessCollection for SliceMut<'_, Core> where
-    Core: RandomAccessCollection<SliceCore = Core> + ReorderableCollection
+impl<Whole> RandomAccessCollection for SliceMut<'_, Whole> where
+    Whole: RandomAccessCollection<Whole = Whole> + ReorderableCollection
 {
 }
 
-impl<Core> ReorderableCollection for SliceMut<'_, Core>
+impl<Whole> ReorderableCollection for SliceMut<'_, Whole>
 where
-    Core: ReorderableCollection<SliceCore = Core>,
+    Whole: ReorderableCollection<Whole = Whole>,
 {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
-        self.core.swap_at(i, j);
+        self.whole.swap_at(i, j);
     }
 
     fn slice_mut(
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> SliceMut<Self::SliceCore> {
-        SliceMut::new(self.core, from, to)
+    ) -> SliceMut<Self::Whole> {
+        SliceMut::new(self.whole, from, to)
     }
 }
 
-impl<Core> MutableCollection for SliceMut<'_, Core>
+impl<Whole> MutableCollection for SliceMut<'_, Whole>
 where
-    Core: MutableCollection<SliceCore = Core>,
+    Whole: MutableCollection<Whole = Whole>,
 {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
-        self.core.at_mut(i)
+        self.whole.at_mut(i)
     }
 }

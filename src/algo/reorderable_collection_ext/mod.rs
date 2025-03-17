@@ -5,7 +5,7 @@ use crate::{ReorderableCollection, SliceMut};
 
 pub trait ReorderableCollectionExt: ReorderableCollection
 where
-    Self::SliceCore: ReorderableCollection,
+    Self::Whole: ReorderableCollection,
 {
     /// Returns mutable slice of the collection covering full collection.
     ///
@@ -26,7 +26,7 @@ where
     /// assert!(s.equals(&[0, 2, 3, 4, 5]));
     /// assert!(arr.equals(&[0, 2, 3, 4, 5]));
     /// ```
-    fn all_mut(&mut self) -> SliceMut<Self::SliceCore> {
+    fn all_mut(&mut self) -> SliceMut<Self::Whole> {
         self.slice_mut(self.start(), self.end())
     }
 
@@ -50,7 +50,7 @@ where
     /// assert!(p.equals(&[0, 2, 3]));
     /// assert!(arr.equals(&[0, 2, 3, 4, 5]));
     /// ```
-    fn prefix_mut(&mut self, to: Self::Position) -> SliceMut<Self::SliceCore> {
+    fn prefix_mut(&mut self, to: Self::Position) -> SliceMut<Self::Whole> {
         self.slice_mut(self.start(), to)
     }
 
@@ -74,10 +74,7 @@ where
     /// assert!(s.equals(&[0, 5]));
     /// assert!(arr.equals(&[1, 2, 3, 0, 5]));
     /// ```
-    fn suffix_mut(
-        &mut self,
-        from: Self::Position,
-    ) -> SliceMut<Self::SliceCore> {
+    fn suffix_mut(&mut self, from: Self::Position) -> SliceMut<Self::Whole> {
         self.slice_mut(from, self.end())
     }
 }
@@ -85,6 +82,6 @@ where
 impl<R> ReorderableCollectionExt for R
 where
     R: ReorderableCollection + ?Sized,
-    R::SliceCore: ReorderableCollection,
+    R::Whole: ReorderableCollection,
 {
 }
