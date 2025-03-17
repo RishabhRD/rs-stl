@@ -4,8 +4,11 @@
 mod collection_ext;
 pub use collection_ext::*;
 
-mod mutable_collection_ext;
-pub use mutable_collection_ext::*;
-
 mod random_access_collection_ext;
 pub use random_access_collection_ext::*;
+
+mod reorderable_collection_ext;
+pub use reorderable_collection_ext::*;
+
+mod mutable_collection_ext;
+pub use mutable_collection_ext::*;
