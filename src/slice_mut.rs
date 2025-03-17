@@ -1,24 +1,27 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalCollection, Collection, RandomAccessCollection};
+use crate::{
+    BidirectionalCollection, Collection, MutableCollection,
+    RandomAccessCollection, ReorderableCollection, Slice,
+};
 
-#[derive(Clone, PartialEq, Eq)]
-pub struct Slice<'a, Core>
+#[derive(PartialEq, Eq)]
+pub struct SliceMut<'a, Core>
 where
-    Core: Collection<SliceCore = Core>,
+    Core: ReorderableCollection<SliceCore = Core>,
 {
-    core: &'a Core,
+    core: &'a mut Core,
     from: Core::Position,
     to: Core::Position,
 }
 
-impl<'a, Core> Slice<'a, Core>
+impl<'a, Core> SliceMut<'a, Core>
 where
-    Core: Collection<SliceCore = Core>,
+    Core: ReorderableCollection<SliceCore = Core>,
 {
     pub fn new(
-        collection: &'a Core,
+        collection: &'a mut Core,
         from: Core::Position,
         to: Core::Position,
     ) -> Self {
@@ -30,9 +33,9 @@ where
     }
 }
 
-impl<Core> Collection for Slice<'_, Core>
+impl<Core> Collection for SliceMut<'_, Core>
 where
-    Core: Collection<SliceCore = Core>,
+    Core: ReorderableCollection<SliceCore = Core>,
 {
     type Position = Core::Position;
 
@@ -73,9 +76,9 @@ where
     }
 }
 
-impl<Core> BidirectionalCollection for Slice<'_, Core>
+impl<Core> BidirectionalCollection for SliceMut<'_, Core>
 where
-    Core: BidirectionalCollection<SliceCore = Core>,
+    Core: BidirectionalCollection<SliceCore = Core> + ReorderableCollection,
 {
     fn before(&self, i: Self::Position) -> Self::Position {
         self.core.before(i)
@@ -86,7 +89,33 @@ where
     }
 }
 
-impl<Core> RandomAccessCollection for Slice<'_, Core> where
-    Core: RandomAccessCollection<SliceCore = Core>
+impl<Core> RandomAccessCollection for SliceMut<'_, Core> where
+    Core: RandomAccessCollection<SliceCore = Core> + ReorderableCollection
 {
+}
+
+impl<Core> ReorderableCollection for SliceMut<'_, Core>
+where
+    Core: ReorderableCollection<SliceCore = Core>,
+{
+    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
+        self.core.swap_at(i, j);
+    }
+
+    fn slice_mut(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> SliceMut<Self::SliceCore> {
+        SliceMut::new(self.core, from, to)
+    }
+}
+
+impl<Core> MutableCollection for SliceMut<'_, Core>
+where
+    Core: MutableCollection<SliceCore = Core>,
+{
+    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
+        self.core.at_mut(i)
+    }
 }

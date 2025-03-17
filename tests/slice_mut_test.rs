@@ -7,67 +7,77 @@ pub mod tests {
 
     #[test]
     fn start() {
-        let arr = vec![1, 2, 3];
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
         assert_eq!(arr.start(), 0);
     }
 
     #[test]
     fn end() {
-        let arr = vec![1, 2, 3];
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
         assert_eq!(arr.end(), 3);
     }
 
     #[test]
     fn at() {
-        let arr = vec![1, 2, 3];
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
         assert_eq!(arr.at(&0), &1);
     }
 
     #[test]
     fn at_mut() {
-        let mut arr = vec![1, 2, 3];
+        let mut array = [1, 2, 3];
+        let mut arr = array.slice_mut(array.start(), array.end());
         *arr.at_mut(&0) = 2;
         assert_eq!(arr.at(&0), &2);
     }
 
     #[test]
     fn after() {
-        let arr = vec![1, 2, 3];
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
         let i = arr.after(0);
         assert_eq!(i, 1);
     }
 
     #[test]
     fn after_n() {
-        let arr = vec![1, 2, 3];
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
         let i = arr.after_n(0, 2);
         assert_eq!(i, 2);
     }
 
     #[test]
     fn before() {
-        let arr = vec![1, 2, 3];
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
         let i = arr.before(1);
         assert_eq!(i, 0);
     }
 
     #[test]
     fn before_n() {
-        let arr = vec![1, 2, 3];
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
         let i = arr.before_n(3, 2);
         assert_eq!(i, 1);
     }
 
     #[test]
     fn distance() {
-        let arr = vec![1, 2, 3];
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
         let n = arr.distance(arr.start(), arr.end());
         assert_eq!(n, 3);
     }
 
     #[test]
     fn slice() {
-        let arr = vec![1, 2, 3, 4, 5];
+        let mut array = [1, 2, 3, 4, 5];
+        let arr = array.slice_mut(array.start(), array.end());
         let s = arr.slice(2, 4);
         assert_eq!(s.start(), 2);
         assert_eq!(s.end(), 4);
@@ -76,7 +86,8 @@ pub mod tests {
 
     #[test]
     fn slice_mut() {
-        let mut arr = vec![1, 2, 3, 4, 5];
+        let mut array = [1, 2, 3, 4, 5];
+        let mut arr = array.slice_mut(array.start(), array.end());
         let mut s = arr.slice_mut(2, 4);
         assert_eq!(s.start(), 2);
         assert_eq!(s.end(), 4);

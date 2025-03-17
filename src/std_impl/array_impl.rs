@@ -2,30 +2,30 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalRange, Collection, MutableCollection, MutableRange,
-    RandomAccessRange, Range
+    BidirectionalCollection, Collection, MutableCollection,
+    RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
 };
 
-impl<T> Range for [T] {
+impl<T, const N: usize> Collection for [T; N] {
     type Position = usize;
 
     type Element = T;
+
+    type SliceCore = Self;
 
     fn start(&self) -> Self::Position {
         0
     }
 
     fn end(&self) -> Self::Position {
-        self.len()
+        N
     }
 
     fn after(&self, i: Self::Position) -> Self::Position {
-        assert!(i != self.len());
         i + 1
     }
 
     fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        assert!(i + n <= self.len());
         i + n
     }
 
@@ -33,43 +33,46 @@ impl<T> Range for [T] {
         to - from
     }
 
-    fn at_ref(
-        &self,
-        i: &Self::Position,
-    ) -> impl std::ops::Deref<Target = Self::Element> {
-        self.at(i)
-    }
-}
-
-impl<T> Collection for [T] {
-    fn at(&self, i: &Self::Position) -> &T {
-        assert!(*i != self.len());
+    fn at(&self, i: &Self::Position) -> &Self::Element {
         &self[*i]
     }
+
+    fn slice(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Slice<Self::SliceCore> {
+        Slice::new(self, from, to)
+    }
 }
 
-impl<T> BidirectionalRange for [T] {
+impl<T, const N: usize> BidirectionalCollection for [T; N] {
     fn before(&self, i: Self::Position) -> Self::Position {
-        assert!(i > 0);
         i - 1
     }
 
     fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        assert!(i >= n);
         i - n
     }
 }
 
-impl<T> RandomAccessRange for [T] {}
+impl<T, const N: usize> RandomAccessCollection for [T; N] {}
 
-
-impl<T> MutableRange for [T] {
+impl<T, const N: usize> ReorderableCollection for [T; N] {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         self.swap(*i, *j)
     }
+
+    fn slice_mut(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> crate::SliceMut<Self::SliceCore> {
+        SliceMut::new(self, from, to)
+    }
 }
 
-impl<T> MutableCollection for [T] {
+impl<T, const N: usize> MutableCollection for [T; N] {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         &mut self[*i]
     }

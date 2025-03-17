@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2024-2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
+// Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{
-    slice::MutableSlice, CollectionIterator, LazyCollectionIterator, Slice,
-};
+use crate::{Slice, SliceMut};
 
 /// Any type that is movable, destructable and equality comparable.
 ///
@@ -31,36 +29,41 @@ impl<T> Regular for T where T: SemiRegular + Clone {}
 ///   ^            ^
 ///   |            |
 /// start   -->   end
-pub trait Range {
-    /// Type of positions in range.
+pub trait Collection {
+    /// Type of positions in the collection.
     type Position: Regular;
 
-    /// Type of element of range.
-    type Element;
+    /// Type of element in the collection.
+    type Element; // TODO: Finalize what to do with LazyCollection?
 
-    /// Returns the position of first element in the range.
-    ///
-    /// If range is empty, returns end position of the range.
+    /// Type of core of slice.
+    type SliceCore: Collection<
+        Position = Self::Position,
+        Element = Self::Element,
+        SliceCore = Self::SliceCore,
+    >;
+
+    /// Returns the position of first element in self,
+    /// or if self is empty then start() == end()
     fn start(&self) -> Self::Position;
 
-    /// Returns position past the last element of the range.
+    /// Returns the position just after last element in collection.
     fn end(&self) -> Self::Position;
 
-    /// Returns the position immediately after i.
+    /// Returns position immediately after i
     ///
     /// # Precondition
-    ///   - `i != self.end()`.
+    ///   - i != end()
     fn after(&self, i: Self::Position) -> Self::Position;
 
     /// Returns nth position after i.
     ///
     /// # Precondition
-    ///   - There should be atleast n valid positions after i.
-    ///   - Complexity: O(n) by default. Types can provide efficient
-    ///     implementations if possible.
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        let mut i = i;
-        let mut n = n;
+    ///   - There are n valid positions in self after i.
+    ///
+    /// # Complexity
+    /// n applications of after().
+    fn after_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
         while n > 0 {
             i = self.after(i);
             n -= 1;
@@ -68,16 +71,14 @@ pub trait Range {
         i
     }
 
-    /// Returns distance between `from` and `to`.
+    /// Returns number of elements in `[from, to)`.
     ///
     /// # Precondition
-    ///   - to should be reachable from from.
+    ///   - `[from, to)` represents valid positions in the collection.
     ///
-    /// # Postcondition
-    ///   - Returns distance between `from` and `to`.
-    ///   - Complexity: O(n) by default. Types can provide efficient implementation if possible.
-    fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        let mut from = from;
+    /// # Complexity
+    ///   O(n).
+    fn distance(&self, mut from: Self::Position, to: Self::Position) -> usize {
         let mut dist = 0;
         while from != to {
             dist += 1;
@@ -86,127 +87,108 @@ pub trait Range {
         dist
     }
 
-    /// Returns reference like view of element at position i.
+    /// Access element at position i.
     ///
     /// # Precondition
-    ///   - `i != self.end()`
-    fn at_ref(
-        &self,
-        i: &Self::Position,
-    ) -> impl std::ops::Deref<Target = Self::Element>;
-}
-
-/// Models a range whose `Element`s are present in memory.
-///
-/// If elements are present in memory, then it should be possible to obtain
-/// reference to elements.
-pub trait Collection: Range {
-    /// Returns reference to element at position i.
+    ///   - i is a valid position in self and i != end()
+    ///
+    /// # Complexity Requirement
+    ///   O(1)
     fn at(&self, i: &Self::Position) -> &Self::Element;
 
-    /// Returns iterator that iterates over references to elements in collection.
-    fn iter(&self) -> CollectionIterator<Self> {
-        CollectionIterator::new(self)
-    }
-}
-
-/// Models a range whose elements are lazily computed on element access.
-///
-/// Thus, accessing element at any position would return value.
-pub trait LazyCollection: Range {
-    /// Returns the element at ith position.
+    /// Returns slice of collection in positions [from, to).
     ///
     /// # Precondition
-    ///   - i != self.end()
-    fn at(&self, i: &Self::Position) -> Self::Element;
-
-    /// Returns iterator that iterates over element values in lazy collection.
-    fn iter(&self) -> LazyCollectionIterator<Self> {
-        LazyCollectionIterator::new(self)
-    }
+    ///   - [from, to) represents valid positions in collection.
+    fn slice(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Slice<Self::SliceCore>;
 }
 
-/// Models a range that supports forward as well as backward traversal.
-pub trait BidirectionalRange: Range {
-    /// Returns position immediately before i.
+/// Models a bidirectional collection, which can be traversed forward as well as backward.
+/// Backward iteration is supported through `before` and `before_n` methods.
+pub trait BidirectionalCollection: Collection
+where
+    Self::SliceCore: BidirectionalCollection,
+{
+    /// Returns position immediately before i
     ///
     /// # Precondition
-    ///   - `i != self.start()`
+    ///   - i != start()
     fn before(&self, i: Self::Position) -> Self::Position;
 
-    /// Returns nth position before i.
+    /// Returns nth position before i
     ///
     /// # Precondition
-    ///   - There are n valid positions in range before i.
+    ///   - self has n valid positions before i.
     ///
-    /// # Postcondition
-    ///   - Returns nth position before i.
-    ///   - Complexity: O(n) by default. Types can provide efficient implementation if possible.
-    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        let mut i = i;
-        let mut n = n;
+    /// # Complexity
+    /// n applications of before.
+    fn before_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
         while n > 0 {
             i = self.before(i);
-            n -= 1
+            n -= 1;
         }
         i
     }
 }
 
-/// Models a random access range where jumping from one position to another is O(1) operation.
+/// Models a random access collection (similar to array) where jumping to any position from any
+/// other position is O(1) operation.
 ///
-/// # Precondition
-///   - self.after should work in O(1)
-///   - self.after_n should work in O(1)
-///   - self.before should work in O(1)
-///   - self.before_n should work in O(1)
-///   - self.distance should work in O(1)
+/// - RandomAccessCollection is extension of BidirectionalCollection.
+/// - RandomAccessCollection enforces the Position of collection should be ordered.
+/// - RandomAccessCollection doesn't add any new method but introduces complexity
+///   requirements mentioned below. The complexity requirements ensure that
+///   any position jump is O(1).
 ///
-/// # Postcondition
-///   - RandomAccessRange doesn't provide any additional method but with given
-///     precondition it ensures that jumping from one position to other can be
-///     done in O(1).
-pub trait RandomAccessRange: BidirectionalRange<Position: Ord> {}
-
-#[doc(hidden)]
-// TODO: make it unusable for outside use. One can use .slice() method but not
-// the name __SliceExtension__.
-pub trait __SliceExtension__: Range + Sized {
-    fn slice(&self) -> Slice<'_, Self> {
-        Slice::new(self, self.start(), self.end())
-    }
+/// # Complexity Requirements
+///   - `rng.distance(from, to)` -> O(1).
+///   - `rng.after_n(i)` -> O(1).
+///   - `rng.before_n(i)` -> O(1).
+///   - `rng.distance(i, j)` -> O(1).
+///
+///   NOTE: If complexity requirements are not formed any algorithm on RandomAccessCollection
+///   have undefined behavior.
+pub trait RandomAccessCollection:
+    BidirectionalCollection<Position: Regular + Ord>
+where
+    Self::SliceCore: RandomAccessCollection,
+{
 }
 
-impl<R> __SliceExtension__ for R where R: Range {}
-
-/// Marker trait for marking range is mutable.
-pub trait MutableRange: Range {
-    /// Swaps element at ith position with element at jth position.
+/// Models a collection which supports internally reordering its element.
+pub trait ReorderableCollection: Collection
+where
+    Self::SliceCore: ReorderableCollection,
+{
+    /// Swaps element at position i with element at position j.
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
+
+    /// Returns mutable slice of collection in positions [from, to).
+    ///
+    /// # Precondition
+    ///   - [from, to) represents valid positions in collection.
+    fn slice_mut(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> SliceMut<Self::SliceCore>;
 }
 
-/// Models a mutable collection that provides ability to mutate individual elements.
-pub trait MutableCollection: MutableRange + Collection {
-    /// Returns mutable reference to element at position i.
+/// Models a collection which supports mutating its element
+pub trait MutableCollection: ReorderableCollection
+where
+    Self::SliceCore: MutableCollection,
+{
+    /// Mutably Access element at position i.
+    ///
+    /// # Precondition
+    ///   - i is a valid position in self and i != end()
+    ///
+    /// # Complexity Requirement
+    ///   O(1)
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
 }
-
-/// Models a lazy collection which provides access to mutable view of element at any position.
-pub trait MutableLazyCollection: MutableRange + LazyCollection {
-    /// Mutable view of element.
-    type ElementMut;
-
-    /// Returns value of mutable view of element at position i.
-    fn at_mut(&mut self, i: &Self::Position) -> Self::ElementMut;
-}
-
-#[doc(hidden)]
-// TODO: make it unusable for outside use. One can use .slice() method but not
-// the name __MutableSliceExtension__.
-pub trait __MutableSliceExtension__: MutableRange + Sized {
-    fn slice_mut(&mut self) -> MutableSlice<'_, Self> {
-        MutableSlice::new(self, self.start(), self.end())
-    }
-}
-
-impl<R> __MutableSliceExtension__ for R where R: MutableRange {}
