@@ -36,7 +36,8 @@ pub trait Collection {
     /// Type of element in the collection.
     type Element; // TODO: Finalize what to do with LazyCollection?
 
-    /// Type of core of slice.
+    /// Type representing whole collection.
+    /// i.e., `Self == Slice<W> ? W : Self`
     type Whole: Collection<
         Position = Self::Position,
         Element = Self::Element,
