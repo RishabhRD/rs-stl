@@ -77,6 +77,14 @@ pub mod tests {
     }
 
     #[test]
+    fn swap_at() {
+        let mut array = [1, 2, 3, 4];
+        let mut slice = array.all_mut();
+        slice.swap_at(&0, &2);
+        assert_eq!(array, [3, 2, 1, 4]);
+    }
+
+    #[test]
     fn prefix() {
         let arr = [1, 2, 3];
         assert!(arr.prefix(1).equals(&[1]));

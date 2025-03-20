@@ -83,4 +83,11 @@ pub mod tests {
         *s.at_mut(&2) = 5;
         assert_eq!(*s.at(&2), 5);
     }
+
+    #[test]
+    fn swap_at() {
+        let mut array = vec![1, 2, 3, 4];
+        array.swap_at(&0, &2);
+        assert_eq!(array, [3, 2, 1, 4]);
+    }
 }
