@@ -94,4 +94,16 @@ pub mod tests {
         *s.at_mut(&2) = 5;
         assert_eq!(*s.at(&2), 5);
     }
+
+    #[test]
+    fn prefix_mut() {
+        let mut arr = [1, 2, 3];
+        assert!(arr.prefix_mut(1).equals(&[1]));
+    }
+
+    #[test]
+    fn suffix_mut() {
+        let mut arr = [1, 2, 3];
+        assert!(arr.suffix_mut(1).equals(&[2, 3]));
+    }
 }

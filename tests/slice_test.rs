@@ -75,4 +75,16 @@ pub mod tests {
         assert_eq!(s.end(), 4);
         assert_eq!(*s.at(&2), 3);
     }
+
+    #[test]
+    fn prefix() {
+        let arr = [1, 2, 3];
+        assert!(arr.prefix(1).equals(&[1]));
+    }
+
+    #[test]
+    fn suffix() {
+        let arr = [1, 2, 3];
+        assert!(arr.suffix(1).equals(&[2, 3]));
+    }
 }
