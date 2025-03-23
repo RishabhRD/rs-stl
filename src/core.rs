@@ -149,7 +149,6 @@ where
 ///   - `rng.distance(from, to)` -> O(1).
 ///   - `rng.after_n(i)` -> O(1).
 ///   - `rng.before_n(i)` -> O(1).
-///   - `rng.distance(i, j)` -> O(1).
 ///
 ///   NOTE: If complexity requirements are not formed any algorithm on RandomAccessCollection
 ///   have undefined behavior.
