@@ -7,10 +7,10 @@ pass iteration. However, many algorithms like `rotate`, `reverse`, `sort`
 might require multiple passes, backward iteration or random access to given
 sequence.
 
-Currently Rust lacks abstractions to represent these kind of linear sequences
-and algorithms which are very common in day to day programming. As a workaround,
-rust implements algorithms like `sort` on slice type `[T]` and use implicit
-conversion for its working.
+Currently Rust lacks abstractions/traits to represent these kind of linear
+sequences and thus generic algorithms over them. As a workaround, rust
+implements algorithms like `sort` on inbuilt slice type `[T]` and use implicit
+conversion trick for maintaining ergonomics.
 
 rs-stl removes the need of these tricks and provides ways to write true generic
 algorithms by introducing `Collection` trait and its refinements to empower
