@@ -195,3 +195,45 @@ Currently
 - `Vec<T>`
 
 is supported. Will support more data structures in future.
+
+## Slice
+
+Since `[T]` requires its elements to be contiguous in memory, it can't be used
+for generic collection abstraction.
+
+rs-stl introduces 2 slice types: `Slice<T>` and `SliceMut<T>` to represent
+immutable and mutable slice to collection.
+
+Slices in rs-stl itself is a collection such that slicing itself doesn't create
+nested slice.
+
+```rust
+pub trait Collection {
+    type Position: Regular;
+    type Element;
+    type Whole: Collection<
+        Position = Self::Position,
+        Element = Self::Element,
+        Whole = Self::Whole,
+    >;
+    // other details...
+    fn slice(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Slice<Self::Whole>;
+}
+```
+
+`slice` method always returns `Slice<Self::Whole>`. `Whole` associated type
+always represents the type of "full" collection. Thus for types like
+`[T; N]`, `Whole = Self`. However, for types like `Slice<T>`, `Whole = T`.
+
+This way slices never nest. This is very important for using slices for
+recursive algorithms composition without any efficiency loss.
+
+Similar properties are held for `SliceMut` type.
+
+For convenience, `all`, `prefix`, `suffix`, `all_mut`, `prefix_mut`,
+`suffix_mut` methods are also provided as algorithms in addition to `slice` and
+`slice_mut` method for slicing.

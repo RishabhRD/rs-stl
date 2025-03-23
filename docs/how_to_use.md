@@ -106,7 +106,7 @@ to work over part of collections rather than full collections e.g, quick sort.
 For tackling the same, every collection has slicing ability with `slice` method.
 If collections supports mutation of any kind it also has `slice_mut` method.
 
-For convinence `prefix`, `suffix`, `all`, `prefix_mut`, `suffix_mut`, `all_mut`
+For convenience `prefix`, `suffix`, `all`, `prefix_mut`, `suffix_mut`, `all_mut`
 method is also exposed.
 
 ```rust
