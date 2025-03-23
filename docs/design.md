@@ -184,3 +184,14 @@ Exposing algorithms as methods instead of free functions are helpful for:
 
 Different extension traits are used for algorithms that require different
 capabilities of collections like `RandomAccessCollectionExt`.
+
+## Data Structures
+
+Implementation for these traits are provided for standard library data structures.
+Currently
+
+- `[T; N]`
+- `[T]`
+- `Vec<T>`
+
+is supported. Will support more data structures in future.
