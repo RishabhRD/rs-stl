@@ -1,10 +1,12 @@
 # How to use
 
-## Ranges
+## Traversal
 
-### Basic Traversal
+### Forward Traversal
 
-Let's first understand, how to traverse range with accessing elements:
+It requires data structure to implement `Collection` trait.
+
+Let's first understand, how to traverse collection with accessing elements:
 
 immutable:
 
@@ -13,167 +15,125 @@ use stl::*;
 
 let arr = [1, 2, 3];
 
-let start = arr.start();
-while arr.is_end(&start) {
-    println!("{}", arr.at(&start));
-}
-
-// If end position is known one can also do:
-let start = arr.start();
+let mut start = arr.start();
 let end = arr.end();
 while start != end {
     println!("{}", arr.at(&start));
+    start = arr.after(start);
 }
 ```
 
 mutable:
 
 ```rust
+use stl::*;
+
 let mut arr = [1, 2, 3];
+
+let mut start = arr.start();
+let end = arr.end();
+while start != end {
+    *arr.at_mut(&start) = 4;
+    start = arr.after(start);
+}
+```
+
+### Backward traversal
+
+It requires data structure to implement `BidirectionalCollection` trait.
+
+```rust
+use stl::*;
+
+let arr = [1, 2, 3];
 
 let start = arr.start();
-while arr.is_end(&start) {
-    arr.at_mut(&start) = 3;
+let mut end = arr.end();
+while start != end {
+    end = arr.before(end);
+    println!("{}", arr.at(&end));
 }
 ```
 
-### Algorithms
-
-rs-stl provides 3 ways to call an algorithm:
-
-1. `algo::`
-2. `rng::`
-3. infix
-
-#### algo
-
-`algo::` version accepts `start` and `end` positions explictly, to work on given
-subrange of range. For example:
+### Jumping from one position to other
 
 ```rust
 use stl::*;
 
 let arr = [1, 2, 3, 4, 5];
-let i = arr.after_n(arr.start(), 2);
-let j = arr.end();
-let cnt = algo::count_if(&arr, i, j, |x| x % 2 == 1);
-assert_eq!(cnt, 2)
+
+let mut i = arr.start(); // 0
+let j = arr.after_n(i, 2); // 2
+i = arr.before_n(j, 2); // 0
+
+let dist = arr.distance(i, j); // 2
 ```
 
-The above algorithms work on `[i, j)` positions of `arr` rather than working
-on full array `arr`.
+If collection implements `RandomAccessCollection` trait, then `after_n`,
+`before_n` and `distance` are guaranteed to be O(1), otherwise it would be O(n).
 
-This version algorithm is highly composable, and thus really useful while writing
-new generic algorithms. For normal cases, one may use `rng` and `infix` versions.
+## Algorithms
 
-#### rng
+Algorithms are exposed as methods using extension traits. Thus `use stl::*` is
+necessary to bring all extension traits to context.
 
-`rng::` version just accepts the given range for working, and work over full
-range. For example:
+Example of Non-Mutating algorithm:
 
 ```rust
 use stl::*;
-
-let arr = [1, 2, 3, 4, 5];
-let cnt = rng::count_if(&arr, |x| x % 2 == 1);
-assert_eq!(cnt, 3)
-```
-
-#### infix
-
-infix version comes under `stl::rng::infix` module, that enables algorithms
-to be used as methods. All `rng` algorithms doesn't support infix version and
-thus look into `stl::rng` module's algorithm document to know if that supports
-infix version.
-
-```rust
-use stl::*;
-use rng::infix::*;
-
-let arr = [1, 2, 3, 4, 5];
-let cnt = arr.count_if(|x| x % 2 == 1);
-assert_eq!(cnt, 3)
-```
-
-## Views
-
-### Creation
-
-#### From ranges
-
-For creating view from a given range, one can use `.view()` method or `.view_mut()`
-method.
-
-immutable view:
-
-```rust
-let arr = [1, 2, 3];
-let v = arr.view();
-```
-
-mutable view:
-
-```rust
-let mut arr = [1, 2, 3];
-let v = arr.view_mut();
-```
-
-Here v doesn't consume arr, but do immutable and mutable borrow of arr respectively.
-
-#### Using factories
-
-View factories are functions that returns a view without taking a range/view
-as argument.
-
-```rust
-let ints = view::ints(0); // 0, 1, 2, 3, ...
-```
-
-#### Using view adaptors
-
-View adaptors are functions that accept view as an argument by value and
-returns a new view by consuming given view. For example:
-
-```rust
-let ints_3 = view::ints(0)
-                .take(3); // 0, 1, 2
-```
-
-In above example, take is an adaptor.
-
-### With Algorithms
-
-As views are also ranges, they can be used with the algorithms described above:
-
-```rust
-use stl::*;
-use rng::infix::*;
-
-let mut arr = [(1, 2), (2, 1)];
-arr
-  .view()
-  .map(|x| x.1)
-  .sort_range();
-assert_eq!(arr, [(2, 1), (1, 2)]);
-```
-
-In above example, `.view().map(...)` gives a view that is passed to sort_range
-algorithm. As this view mutably borrows arr, arr is sorted.
-
-This enables inplace mutation of ranges with functional style programming.
-
-### As Iterators
-
-For working with for loops iterators are just great and they have their own
-usecases. rs-stl provides, `iter` method to traverse `InputRange` as `Iterator`.
-
-```rust
-use stl::*;
-use rng::infix::*;
 
 let mut sum = 0;
-for e in view::single(2).iter() {
-    sum += e;
+let arr = [1, 2, 3];
+arr.for_each(|e| sum += e);
+assert_eq!(sum, 6);
+```
+
+Example of Mutating algorithm:
+
+```rust
+use stl::*;
+
+let mut arr = [1, 2, 3];
+arr.for_each_mut(|e| *e += 1);
+assert_eq!(arr, [2, 3, 4]);
+```
+
+### Slicing
+
+Algorithms are there to work over collections. But many times it is important
+to work over part of collections rather than full collections e.g, quick sort.
+
+For tackling the same, every collection has slicing ability with `slice` method.
+If collections supports mutation of any kind it also has `slice_mut` method.
+
+For convinence `prefix`, `suffix`, `all`, `prefix_mut`, `suffix_mut`, `all_mut`
+method is also exposed.
+
+```rust
+use stl::*;
+
+let arr = [1, 2, 3, 4, 5];
+let slice = arr.prefix(3);
+let odd_count = slice.count_if(|x| x % 2 == 1);
+assert_eq!(odd_count, 2);
+```
+
+Slices can be used for basis of algorithm composition:
+
+```rust
+pub trait ReorderableCollectionExt: ReorderableCollection
+where
+    Self::Whole: ReorderableCollection,
+{
+    fn quick_sort(&mut self)
+    where
+        Self::Element: Ord,
+    {
+        if self.start() != self.end() {
+            let p = self.partition_on_pos(&self.start(), |x, y| x < y); // assume a partition method
+            self.prefix_mut(p.clone()).quick_sort();
+            self.suffix_mut(self.after(p)).quick_sort();
+        }
+    }
 }
-assert_eq!(sum, 2);
 ```
