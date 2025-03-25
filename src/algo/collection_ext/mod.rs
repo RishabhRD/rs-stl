@@ -4,6 +4,13 @@
 use crate::{Collection, Slice};
 
 pub trait CollectionExt: Collection {
+
+    /// Returns the first element, or nil if `self` is empty.
+    fn first(&mut self) -> Option<&<Self as Collection>::Element> {
+        if self.start() == self.end() { None }
+        else { Some(self.at(&self.start())) }
+    }
+
     /// Returns slice of the collection covering full collection.
     ///
     /// # Precondition
@@ -95,18 +102,15 @@ pub trait CollectionExt: Collection {
         OtherCollection: Collection,
         F: Fn(&Self::Element, &OtherCollection::Element) -> bool,
     {
-        let mut start1 = self.start();
-        let mut start2 = other.start();
-        let end1 = self.end();
-        let end2 = other.end();
-        while start1 != end1 && start2 != end2 {
-            if !bi_pred(self.at(&start1), other.at(&start2)) {
-                return false;
+        let mut self1 = self.all();
+        let mut other1 = other.all();
+        loop {
+            match (self1.pop_first(), other1.pop_first()) {
+                (Some(x), Some(y)) if bi_pred(x, y) => {}
+                (None, None) => { return true }
+                _ => return false
             }
-            start1 = self.after(start1);
-            start2 = other.after(start2);
         }
-        start1 == end1 && start2 == end2
     }
 
     /// Returns true if elements of self is equal to elements of other.
@@ -160,15 +164,12 @@ pub trait CollectionExt: Collection {
     where
         Pred: Fn(&Self::Element) -> bool,
     {
-        let mut start = self.start();
-        let end = self.end();
-        while start != end {
-            if pred(self.at(&start)) {
-                return start;
-            }
-            start = self.after(start);
+        let mut rest = self.all();
+        while let Some(x) = rest.first() {
+            if pred(x) { break }
+            rest.pop_first();
         }
-        start
+        rest.start()
     }
 
     /// Applies f to each element of collection.
