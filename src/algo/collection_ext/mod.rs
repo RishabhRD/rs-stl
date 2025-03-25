@@ -4,11 +4,13 @@
 use crate::{Collection, Slice};
 
 pub trait CollectionExt: Collection {
-
     /// Returns the first element, or nil if `self` is empty.
     fn first(&mut self) -> Option<&<Self as Collection>::Element> {
-        if self.start() == self.end() { None }
-        else { Some(self.at(&self.start())) }
+        if self.start() == self.end() {
+            None
+        } else {
+            Some(self.at(&self.start()))
+        }
     }
 
     /// Returns slice of the collection covering full collection.
@@ -107,8 +109,8 @@ pub trait CollectionExt: Collection {
         loop {
             match (self1.pop_first(), other1.pop_first()) {
                 (Some(x), Some(y)) if bi_pred(x, y) => {}
-                (None, None) => { return true }
-                _ => return false
+                (None, None) => return true,
+                _ => return false,
             }
         }
     }
@@ -166,7 +168,9 @@ pub trait CollectionExt: Collection {
     {
         let mut rest = self.all();
         while let Some(x) = rest.first() {
-            if pred(x) { break }
+            if pred(x) {
+                break;
+            }
             rest.pop_first();
         }
         rest.start()

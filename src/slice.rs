@@ -32,8 +32,9 @@ where
     /// Removes and returns the first element if non-empty; returns
     /// None otherwise.
     pub fn pop_first(&mut self) -> Option<&<Self as Collection>::Element> {
-        if self.from == self.to { None }
-        else {
+        if self.from == self.to {
+            None
+        } else {
             let e = Some(self.whole.at(&self.from));
             self.from = self.whole.after(self.from.clone());
             e
