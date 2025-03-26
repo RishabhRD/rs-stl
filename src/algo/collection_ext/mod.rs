@@ -5,7 +5,7 @@ use crate::{Collection, Slice};
 
 pub trait CollectionExt: Collection {
     /// Returns the first element, or nil if `self` is empty.
-    fn first(&mut self) -> Option<&<Self as Collection>::Element> {
+    fn first(&self) -> Option<&<Self as Collection>::Element> {
         if self.start() == self.end() {
             None
         } else {
