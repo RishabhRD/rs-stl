@@ -14,6 +14,14 @@ mod core;
 #[doc(inline)]
 pub use core::*;
 
+mod iterable;
+#[doc(inline)]
+pub use iterable::*;
+
+mod slice_iterator;
+#[doc(inline)]
+pub use slice_iterator::*;
+
 mod slice;
 #[doc(inline)]
 pub use slice::*;

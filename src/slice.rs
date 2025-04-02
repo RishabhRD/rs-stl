@@ -31,7 +31,7 @@ where
 
     /// Removes and returns the first element if non-empty; returns
     /// None otherwise.
-    pub fn pop_first(&mut self) -> Option<&<Self as Collection>::Element> {
+    pub fn pop_first(&mut self) -> Option<&'a <Self as Collection>::Element> {
         if self.from == self.to {
             None
         } else {
