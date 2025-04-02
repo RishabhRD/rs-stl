@@ -51,11 +51,34 @@ pub trait Collection {
     /// Returns the position just after last element in collection.
     fn end(&self) -> Self::Position;
 
+    /// Advances the given position to position just after i.
+    ///
+    /// # Precondition
+    ///   - i != end()
+    fn advance(&self, i: &mut Self::Position);
+
+    /// Advances the given position to nth position after i.
+    ///
+    /// # Precondition
+    ///   - There are n valid positions in self after i.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    fn advance_n(&self, i: &mut Self::Position, mut n: usize) {
+        while n > 0 {
+            self.advance(i);
+            n -= 1;
+        }
+    }
+
     /// Returns position immediately after i
     ///
     /// # Precondition
     ///   - i != end()
-    fn after(&self, i: Self::Position) -> Self::Position;
+    fn after(&self, mut i: Self::Position) -> Self::Position {
+        self.advance(&mut i);
+        i
+    }
 
     /// Returns nth position after i.
     ///
@@ -63,12 +86,9 @@ pub trait Collection {
     ///   - There are n valid positions in self after i.
     ///
     /// # Complexity
-    /// n applications of after().
-    fn after_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
-        while n > 0 {
-            i = self.after(i);
-            n -= 1;
-        }
+    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    fn after_n(&self, mut i: Self::Position, n: usize) -> Self::Position {
+        self.advance_n(&mut i, n);
         i
     }
 
@@ -114,11 +134,34 @@ pub trait BidirectionalCollection: Collection
 where
     Self::Whole: BidirectionalCollection,
 {
+    /// Backsteps the given position to position just before i.
+    ///
+    /// # Precondition
+    ///   - i != start()
+    fn backstep(&self, i: &mut Self::Position);
+
+    /// Backsteps the given position to nth position before i.
+    ///
+    /// # Precondition
+    ///   - There are n valid positions in self before i.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    fn backstep_n(&self, i: &mut Self::Position, mut n: usize) {
+        while n > 0 {
+            self.backstep(i);
+            n -= 1;
+        }
+    }
+
     /// Returns position immediately before i
     ///
     /// # Precondition
     ///   - i != start()
-    fn before(&self, i: Self::Position) -> Self::Position;
+    fn before(&self, mut i: Self::Position) -> Self::Position {
+        self.backstep(&mut i);
+        i
+    }
 
     /// Returns nth position before i
     ///
@@ -127,11 +170,8 @@ where
     ///
     /// # Complexity
     /// n applications of before.
-    fn before_n(&self, mut i: Self::Position, mut n: usize) -> Self::Position {
-        while n > 0 {
-            i = self.before(i);
-            n -= 1;
-        }
+    fn before_n(&self, mut i: Self::Position, n: usize) -> Self::Position {
+        self.backstep_n(&mut i, n);
         i
     }
 }
@@ -147,6 +187,8 @@ where
 ///
 /// # Complexity Requirements
 ///   - `rng.distance(from, to)` -> O(1).
+///   - `rng.advance_n(i)` -> O(1).
+///   - `rng.backstep_n(i)` -> O(1).
 ///   - `rng.after_n(i)` -> O(1).
 ///   - `rng.before_n(i)` -> O(1).
 ///

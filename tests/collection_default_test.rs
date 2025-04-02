@@ -28,10 +28,6 @@ pub mod tests {
                 5
             }
 
-            fn after(&self, i: Self::Position) -> Self::Position {
-                i + 1
-            }
-
             fn at(&self, i: &Self::Position) -> &Self::Element {
                 &self.data[*i]
             }
@@ -43,11 +39,15 @@ pub mod tests {
             ) -> stl::Slice<Self::Whole> {
                 Slice::new(self, from, to)
             }
+
+            fn advance(&self, i: &mut Self::Position) {
+                *i += 1
+            }
         }
 
         impl BidirectionalCollection for NonJumpableCollection {
-            fn before(&self, i: Self::Position) -> Self::Position {
-                i - 1
+            fn backstep(&self, i: &mut Self::Position) {
+                *i -= 1
             }
         }
     }

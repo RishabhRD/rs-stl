@@ -29,8 +29,8 @@ pub mod tests {
                 5
             }
 
-            fn after(&self, i: Self::Position) -> Self::Position {
-                i + 1
+            fn advance(&self, i: &mut Self::Position) {
+                *i += 1
             }
 
             fn at(&self, i: &Self::Position) -> &Self::Element {

@@ -36,7 +36,7 @@ where
             None
         } else {
             let e = Some(self.whole.at(&self.from));
-            self.from = self.whole.after(self.from.clone());
+            self.whole.advance(&mut self.from);
             e
         }
     }
@@ -47,7 +47,7 @@ where
         if self.from == self.to {
             false
         } else {
-            self.from = self.whole.after(self.from.clone());
+            self.whole.advance(&mut self.from);
             true
         }
     }
@@ -69,6 +69,14 @@ where
 
     fn end(&self) -> Self::Position {
         self.to.clone()
+    }
+
+    fn advance(&self, i: &mut Self::Position) {
+        self.whole.advance(i);
+    }
+
+    fn advance_n(&self, i: &mut Self::Position, n: usize) {
+        self.whole.advance_n(i, n);
     }
 
     fn after(&self, i: Self::Position) -> Self::Position {
@@ -100,6 +108,14 @@ impl<Whole> BidirectionalCollection for Slice<'_, Whole>
 where
     Whole: BidirectionalCollection<Whole = Whole>,
 {
+    fn backstep(&self, i: &mut Self::Position) {
+        self.whole.backstep(i);
+    }
+
+    fn backstep_n(&self, i: &mut Self::Position, n: usize) {
+        self.whole.backstep_n(i, n);
+    }
+
     fn before(&self, i: Self::Position) -> Self::Position {
         self.whole.before(i)
     }
