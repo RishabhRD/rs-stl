@@ -98,7 +98,7 @@ pub trait Collection {
     ///   - `[from, to)` represents valid positions in the collection.
     ///
     /// # Complexity
-    ///   O(n).
+    ///   - O(1) if RandomAccessCollection; O(n) otherwise.
     fn distance(&self, mut from: Self::Position, to: Self::Position) -> usize {
         let mut dist = 0;
         while from != to {
@@ -106,6 +106,14 @@ pub trait Collection {
             from = self.after(from);
         }
         dist
+    }
+
+    /// Returns number of elements in collection.
+    ///
+    /// # Complexity
+    ///   - O(1) if RandomAccessCollection; O(n) otherwise.
+    fn count(&self) -> usize {
+        self.distance(self.start(), self.end())
     }
 
     /// Access element at position i.
