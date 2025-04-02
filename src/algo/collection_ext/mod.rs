@@ -171,7 +171,7 @@ pub trait CollectionExt: Collection {
             if pred(x) {
                 break;
             }
-            rest.pop_first();
+            rest.drop_first();
         }
         rest.start()
     }
