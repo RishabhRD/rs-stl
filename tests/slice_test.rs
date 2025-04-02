@@ -43,6 +43,24 @@ pub mod tests {
     }
 
     #[test]
+    fn advance() {
+        let array = [1, 2, 3];
+        let arr = array.slice(array.start(), array.end());
+        let mut i = 0;
+        arr.advance(&mut i);
+        assert_eq!(i, 1);
+    }
+
+    #[test]
+    fn advance_n() {
+        let array = [1, 2, 3];
+        let arr = array.slice(array.start(), array.end());
+        let mut i = 0;
+        arr.advance_n(&mut i, 2);
+        assert_eq!(i, 2);
+    }
+
+    #[test]
     fn before() {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
@@ -55,6 +73,24 @@ pub mod tests {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
         let i = arr.before_n(3, 2);
+        assert_eq!(i, 1);
+    }
+
+    #[test]
+    fn backstep() {
+        let array = [1, 2, 3];
+        let arr = array.slice(array.start(), array.end());
+        let mut i = 1;
+        arr.backstep(&mut i);
+        assert_eq!(i, 0);
+    }
+
+    #[test]
+    fn backstep_n() {
+        let array = [1, 2, 3];
+        let arr = array.slice(array.start(), array.end());
+        let mut i = 3;
+        arr.backstep_n(&mut i, 2);
         assert_eq!(i, 1);
     }
 
