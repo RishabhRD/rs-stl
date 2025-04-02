@@ -40,6 +40,17 @@ where
             e
         }
     }
+
+    /// Removes the first element if non-empty and returns true; returns
+    /// false otherwise.
+    pub fn drop_first(&mut self) -> bool {
+        if self.from == self.to {
+            false
+        } else {
+            self.from = self.whole.after(self.from.clone());
+            true
+        }
+    }
 }
 
 impl<Whole> Collection for Slice<'_, Whole>

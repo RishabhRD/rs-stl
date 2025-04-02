@@ -106,4 +106,25 @@ pub mod tests {
         let mut arr = [1, 2, 3];
         assert!(arr.suffix_mut(1).equals(&[2, 3]));
     }
+
+    #[test]
+    fn pop_elements() {
+        let mut arr = [1, 2, 3];
+        let mut s = arr.all_mut();
+
+        let e = s.pop_first();
+        assert_eq!(e, Some(&1));
+        assert!(s.equals(&[2, 3]));
+
+        assert!(s.drop_first());
+        assert!(s.equals(&[3]));
+        assert!(s.drop_first());
+        assert!(s.equals(&[]));
+        assert!(!s.drop_first());
+        assert!(s.equals(&[]));
+
+        let e = s.pop_first();
+        assert_eq!(e, None);
+        assert!(s.equals(&[]));
+    }
 }
