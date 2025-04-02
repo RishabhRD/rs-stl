@@ -91,6 +91,10 @@ where
         self.whole.distance(from, to)
     }
 
+    fn count(&self) -> usize {
+        self.whole.count()
+    }
+
     fn at(&self, i: &Self::Position) -> &Self::Element {
         self.whole.at(i)
     }
