@@ -116,6 +116,14 @@ pub trait Collection {
         self.distance(self.start(), self.end())
     }
 
+    /// Returns count less than or equal to number of elements in collection.
+    ///
+    /// # Complexity
+    ///   - O(1) if RandomAccessCollection; O(n) otherwise.
+    fn underestimated_count(&self) -> usize {
+        self.count()
+    }
+
     /// Access element at position i.
     ///
     /// # Precondition
