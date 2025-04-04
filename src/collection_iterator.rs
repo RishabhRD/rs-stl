@@ -28,4 +28,8 @@ where
     fn next(&mut self) -> Option<Self::Item> {
         self.slice.pop_first()
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.slice.underestimated_count(), None)
+    }
 }
