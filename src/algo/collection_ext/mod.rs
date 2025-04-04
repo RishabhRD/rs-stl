@@ -82,10 +82,10 @@ pub trait CollectionExt: Collection {
     /// # Postcondition
     ///   - Returns true if elements of self is equivalent to other by given relation bi_pred.
     ///   - If self and other have different number of elements, then return false.
-    ///   - Complexity: O(min(m, n))
+    ///   - Complexity: `O(min(m, n))`
     ///     where
-    ///       m == self.size(),
-    ///       n == other.size().
+    ///     - `m == self.size()`
+    ///     - `n == other.size()`
     ///
     /// # Examples
     /// ```rust
@@ -122,10 +122,10 @@ pub trait CollectionExt: Collection {
     /// # Postcondition
     ///   - Returns true if elements of self is equal to elements of other.
     ///   - If self and other have different number of elements, then return false.
-    ///   - Complexity: O(min(m, n))
+    ///   - Complexity: `O(min(m, n))`
     ///     where
-    ///       m == self.size(),
-    ///       n == other.size().
+    ///     - `m == self.size()`
+    ///     - `n == other.size()`
     ///
     /// # Examples
     /// ```rust
