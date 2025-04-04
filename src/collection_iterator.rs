@@ -30,6 +30,7 @@ where
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        (self.slice.underestimated_count(), None)
+        let cnt = self.slice.count();
+        (cnt, Some(cnt))
     }
 }
