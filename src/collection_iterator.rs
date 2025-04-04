@@ -3,23 +3,23 @@
 
 use crate::{Collection, Slice};
 
-pub struct SliceIterator<'a, Whole>
+pub struct CollectionIterator<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
 {
     slice: Slice<'a, Whole>,
 }
 
-impl<'a, Whole> SliceIterator<'a, Whole>
+impl<'a, Whole> CollectionIterator<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
 {
     pub fn new(slice: Slice<'a, Whole>) -> Self {
-        SliceIterator { slice }
+        CollectionIterator { slice }
     }
 }
 
-impl<'a, Whole> Iterator for SliceIterator<'a, Whole>
+impl<'a, Whole> Iterator for CollectionIterator<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
 {

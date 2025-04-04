@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{Slice, SliceMut};
+use crate::{CollectionIterator, Slice, SliceMut};
 
 /// Any type that is movable, destructable and equality comparable.
 ///
@@ -134,6 +134,11 @@ pub trait Collection {
         from: Self::Position,
         to: Self::Position,
     ) -> Slice<Self::Whole>;
+
+    /// Returns a non-consuming iterator that iterates over `&Self::Element`.
+    fn iter(&self) -> CollectionIterator<Self::Whole> {
+        CollectionIterator::new(self.slice(self.start(), self.end()))
+    }
 }
 
 /// Models a bidirectional collection, which can be traversed forward as well as backward.
