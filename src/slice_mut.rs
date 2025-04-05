@@ -39,7 +39,7 @@ where
             None
         } else {
             let e = Some(self.whole.at(&self.from));
-            self.whole.advance(&mut self.from);
+            self.whole.form_next(&mut self.from);
             e
         }
     }
@@ -50,7 +50,7 @@ where
         if self.from == self.to {
             false
         } else {
-            self.whole.advance(&mut self.from);
+            self.whole.form_next(&mut self.from);
             true
         }
     }
@@ -74,20 +74,20 @@ where
         self.to.clone()
     }
 
-    fn advance(&self, i: &mut Self::Position) {
-        self.whole.advance(i);
+    fn form_next(&self, i: &mut Self::Position) {
+        self.whole.form_next(i);
     }
 
-    fn advance_n(&self, i: &mut Self::Position, n: usize) {
-        self.whole.advance_n(i, n);
+    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
+        self.whole.form_next_n(i, n);
     }
 
-    fn after(&self, i: Self::Position) -> Self::Position {
-        self.whole.after(i)
+    fn next(&self, i: Self::Position) -> Self::Position {
+        self.whole.next(i)
     }
 
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.whole.after_n(i, n)
+    fn next_n(&self, i: Self::Position, n: usize) -> Self::Position {
+        self.whole.next_n(i, n)
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
@@ -111,20 +111,20 @@ impl<Whole> BidirectionalCollection for SliceMut<'_, Whole>
 where
     Whole: BidirectionalCollection<Whole = Whole> + ReorderableCollection,
 {
-    fn backstep(&self, i: &mut Self::Position) {
-        self.whole.backstep(i);
+    fn form_prior(&self, i: &mut Self::Position) {
+        self.whole.form_prior(i);
     }
 
-    fn backstep_n(&self, i: &mut Self::Position, n: usize) {
-        self.whole.backstep_n(i, n);
+    fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
+        self.whole.form_prior_n(i, n);
     }
 
-    fn before(&self, i: Self::Position) -> Self::Position {
-        self.whole.before(i)
+    fn prior(&self, i: Self::Position) -> Self::Position {
+        self.whole.prior(i)
     }
 
-    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.whole.before_n(i, n)
+    fn prior_n(&self, i: Self::Position, n: usize) -> Self::Position {
+        self.whole.prior_n(i, n)
     }
 }
 

@@ -37,21 +37,21 @@ impl<T, const N: usize> Collection for [T; N] {
         Slice::new(self, from, to)
     }
 
-    fn advance(&self, i: &mut Self::Position) {
+    fn form_next(&self, i: &mut Self::Position) {
         *i += 1
     }
 
-    fn advance_n(&self, i: &mut Self::Position, n: usize) {
+    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
         *i += n
     }
 }
 
 impl<T, const N: usize> BidirectionalCollection for [T; N] {
-    fn backstep(&self, i: &mut Self::Position) {
+    fn form_prior(&self, i: &mut Self::Position) {
         *i -= 1
     }
 
-    fn backstep_n(&self, i: &mut Self::Position, n: usize) {
+    fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
         *i -= n
     }
 }

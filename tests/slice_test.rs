@@ -27,18 +27,18 @@ pub mod tests {
     }
 
     #[test]
-    fn after() {
+    fn next() {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
-        let i = arr.after(0);
+        let i = arr.next(0);
         assert_eq!(i, 1);
     }
 
     #[test]
-    fn after_n() {
+    fn next_n() {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
-        let i = arr.after_n(0, 2);
+        let i = arr.next_n(0, 2);
         assert_eq!(i, 2);
     }
 
@@ -47,7 +47,7 @@ pub mod tests {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
         let mut i = 0;
-        arr.advance(&mut i);
+        arr.form_next(&mut i);
         assert_eq!(i, 1);
     }
 
@@ -56,23 +56,23 @@ pub mod tests {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
         let mut i = 0;
-        arr.advance_n(&mut i, 2);
+        arr.form_next_n(&mut i, 2);
         assert_eq!(i, 2);
     }
 
     #[test]
-    fn before() {
+    fn prior() {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
-        let i = arr.before(1);
+        let i = arr.prior(1);
         assert_eq!(i, 0);
     }
 
     #[test]
-    fn before_n() {
+    fn prior_n() {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
-        let i = arr.before_n(3, 2);
+        let i = arr.prior_n(3, 2);
         assert_eq!(i, 1);
     }
 
@@ -81,7 +81,7 @@ pub mod tests {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
         let mut i = 1;
-        arr.backstep(&mut i);
+        arr.form_prior(&mut i);
         assert_eq!(i, 0);
     }
 
@@ -90,7 +90,7 @@ pub mod tests {
         let array = [1, 2, 3];
         let arr = array.slice(array.start(), array.end());
         let mut i = 3;
-        arr.backstep_n(&mut i, 2);
+        arr.form_prior_n(&mut i, 2);
         assert_eq!(i, 1);
     }
 

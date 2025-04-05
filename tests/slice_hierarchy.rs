@@ -29,7 +29,7 @@ pub mod tests {
                 5
             }
 
-            fn advance(&self, i: &mut Self::Position) {
+            fn form_next(&self, i: &mut Self::Position) {
                 *i += 1
             }
 

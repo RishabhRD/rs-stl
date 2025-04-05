@@ -21,19 +21,19 @@ impl<T> Collection for Vec<T> {
         self.len()
     }
 
-    fn advance(&self, i: &mut Self::Position) {
+    fn form_next(&self, i: &mut Self::Position) {
         *i += 1
     }
 
-    fn advance_n(&self, i: &mut Self::Position, n: usize) {
+    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
         *i += n
     }
 
-    fn after(&self, i: Self::Position) -> Self::Position {
+    fn next(&self, i: Self::Position) -> Self::Position {
         i + 1
     }
 
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
+    fn next_n(&self, i: Self::Position, n: usize) -> Self::Position {
         i + n
     }
 
@@ -55,11 +55,11 @@ impl<T> Collection for Vec<T> {
 }
 
 impl<T> BidirectionalCollection for Vec<T> {
-    fn backstep(&self, i: &mut Self::Position) {
+    fn form_prior(&self, i: &mut Self::Position) {
         *i -= 1
     }
 
-    fn backstep_n(&self, i: &mut Self::Position, n: usize) {
+    fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
         *i -= n
     }
 }

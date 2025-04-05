@@ -201,7 +201,7 @@ pub trait CollectionExt: Collection {
         let end = self.end();
         while start != end {
             f(self.at(&start));
-            start = self.after(start);
+            start = self.next(start);
         }
     }
 }

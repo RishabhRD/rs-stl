@@ -51,45 +51,45 @@ pub trait Collection {
     /// Returns the position just after last element in collection.
     fn end(&self) -> Self::Position;
 
-    /// Advances the given position to position just after i.
+    /// Mutates given `position` to next position in collection.
     ///
     /// # Precondition
-    ///   - i != end()
-    fn advance(&self, i: &mut Self::Position);
+    ///   - `position != end()`
+    fn form_next(&self, position: &mut Self::Position);
 
-    /// Advances the given position to nth position after i.
+    /// Mutates given `position` to nth position after current position.
     ///
     /// # Precondition
-    ///   - There are n valid positions in self after i.
+    ///   - There are `n` valid positions in self after `position`.
     ///
     /// # Complexity
     ///   - O(1) for RandomAccessCollection; O(n) otherwise.
-    fn advance_n(&self, i: &mut Self::Position, mut n: usize) {
+    fn form_next_n(&self, position: &mut Self::Position, mut n: usize) {
         while n > 0 {
-            self.advance(i);
+            self.form_next(position);
             n -= 1;
         }
     }
 
-    /// Returns position immediately after i
+    /// Returns position immediately after `position`.
     ///
     /// # Precondition
-    ///   - i != end()
-    fn after(&self, mut i: Self::Position) -> Self::Position {
-        self.advance(&mut i);
-        i
+    ///   - `position != end()`
+    fn next(&self, mut position: Self::Position) -> Self::Position {
+        self.form_next(&mut position);
+        position
     }
 
-    /// Returns nth position after i.
+    /// Returns nth position after `position`.
     ///
     /// # Precondition
-    ///   - There are n valid positions in self after i.
+    ///   - There are n valid positions in self after `position`.
     ///
     /// # Complexity
     ///   - O(1) for RandomAccessCollection; O(n) otherwise.
-    fn after_n(&self, mut i: Self::Position, n: usize) -> Self::Position {
-        self.advance_n(&mut i, n);
-        i
+    fn next_n(&self, mut position: Self::Position, n: usize) -> Self::Position {
+        self.form_next_n(&mut position, n);
+        position
     }
 
     /// Returns number of elements in `[from, to)`.
@@ -103,7 +103,7 @@ pub trait Collection {
         let mut dist = 0;
         while from != to {
             dist += 1;
-            from = self.after(from);
+            from = self.next(from);
         }
         dist
     }
@@ -150,50 +150,53 @@ pub trait Collection {
 }
 
 /// Models a bidirectional collection, which can be traversed forward as well as backward.
-/// Backward iteration is supported through `before` and `before_n` methods.
 pub trait BidirectionalCollection: Collection
 where
     Self::Whole: BidirectionalCollection,
 {
-    /// Backsteps the given position to position just before i.
+    /// Mutates the given position to position just before `position`.
     ///
     /// # Precondition
-    ///   - i != start()
-    fn backstep(&self, i: &mut Self::Position);
+    ///   - `position != start()`
+    fn form_prior(&self, position: &mut Self::Position);
 
-    /// Backsteps the given position to nth position before i.
+    /// Mutates the given position to nth position before `position`.
     ///
     /// # Precondition
-    ///   - There are n valid positions in self before i.
+    ///   - There are n valid positions in self before `position`.
     ///
     /// # Complexity
     ///   - O(1) for RandomAccessCollection; O(n) otherwise.
-    fn backstep_n(&self, i: &mut Self::Position, mut n: usize) {
+    fn form_prior_n(&self, position: &mut Self::Position, mut n: usize) {
         while n > 0 {
-            self.backstep(i);
+            self.form_prior(position);
             n -= 1;
         }
     }
 
-    /// Returns position immediately before i
+    /// Returns position immediately before `position`
     ///
     /// # Precondition
-    ///   - i != start()
-    fn before(&self, mut i: Self::Position) -> Self::Position {
-        self.backstep(&mut i);
-        i
+    ///   - `position != start()`
+    fn prior(&self, mut position: Self::Position) -> Self::Position {
+        self.form_prior(&mut position);
+        position
     }
 
-    /// Returns nth position before i
+    /// Returns nth position before `position`
     ///
     /// # Precondition
-    ///   - self has n valid positions before i.
+    ///   - self has n valid positions before `position`.
     ///
     /// # Complexity
     /// n applications of before.
-    fn before_n(&self, mut i: Self::Position, n: usize) -> Self::Position {
-        self.backstep_n(&mut i, n);
-        i
+    fn prior_n(
+        &self,
+        mut position: Self::Position,
+        n: usize,
+    ) -> Self::Position {
+        self.form_prior_n(&mut position, n);
+        position
     }
 }
 
@@ -208,10 +211,10 @@ where
 ///
 /// # Complexity Requirements
 ///   - `rng.distance(from, to)` -> O(1).
-///   - `rng.advance_n(i)` -> O(1).
-///   - `rng.backstep_n(i)` -> O(1).
-///   - `rng.after_n(i)` -> O(1).
-///   - `rng.before_n(i)` -> O(1).
+///   - `rng.form_next_n(i)` -> O(1).
+///   - `rng.form_prior_n(i)` -> O(1).
+///   - `rng.next_n(i)` -> O(1).
+///   - `rng.prior_n(i)` -> O(1).
 ///
 ///   NOTE: If complexity requirements are not formed any algorithm on RandomAccessCollection
 ///   have undefined behavior.

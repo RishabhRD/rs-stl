@@ -21,11 +21,11 @@ impl<T> Collection for &[T] {
         self.len()
     }
 
-    fn advance(&self, i: &mut Self::Position) {
+    fn form_next(&self, i: &mut Self::Position) {
         *i += 1
     }
 
-    fn advance_n(&self, i: &mut Self::Position, n: usize) {
+    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
         *i += n
     }
 
@@ -47,11 +47,11 @@ impl<T> Collection for &[T] {
 }
 
 impl<T> BidirectionalCollection for &[T] {
-    fn backstep(&self, i: &mut Self::Position) {
+    fn form_prior(&self, i: &mut Self::Position) {
         *i -= 1;
     }
 
-    fn backstep_n(&self, i: &mut Self::Position, n: usize) {
+    fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
         *i -= n;
     }
 }
@@ -73,11 +73,11 @@ impl<T> Collection for &mut [T] {
         self.len()
     }
 
-    fn advance(&self, i: &mut Self::Position) {
+    fn form_next(&self, i: &mut Self::Position) {
         *i += 1
     }
 
-    fn advance_n(&self, i: &mut Self::Position, n: usize) {
+    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
         *i += n
     }
 
@@ -99,11 +99,11 @@ impl<T> Collection for &mut [T] {
 }
 
 impl<T> BidirectionalCollection for &mut [T] {
-    fn backstep(&self, i: &mut Self::Position) {
+    fn form_prior(&self, i: &mut Self::Position) {
         *i -= 1;
     }
 
-    fn backstep_n(&self, i: &mut Self::Position, n: usize) {
+    fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
         *i -= n;
     }
 }

@@ -19,7 +19,7 @@ let mut start = arr.start();
 let end = arr.end();
 while start != end {
     println!("{}", arr.at(&start));
-    start = arr.after(start);
+    start = arr.next(start);
 }
 ```
 
@@ -34,7 +34,7 @@ let mut start = arr.start();
 let end = arr.end();
 while start != end {
     *arr.at_mut(&start) = 4;
-    start = arr.after(start);
+    start = arr.next(start);
 }
 ```
 
@@ -50,7 +50,7 @@ let arr = [1, 2, 3];
 let start = arr.start();
 let mut end = arr.end();
 while start != end {
-    end = arr.before(end);
+    end = arr.prior(end);
     println!("{}", arr.at(&end));
 }
 ```
@@ -63,14 +63,14 @@ use stl::*;
 let arr = [1, 2, 3, 4, 5];
 
 let mut i = arr.start(); // 0
-let j = arr.after_n(i, 2); // 2
-i = arr.before_n(j, 2); // 0
+let j = arr.next(i, 2); // 2
+i = arr.prior_n(j, 2); // 0
 
 let dist = arr.distance(i, j); // 2
 ```
 
-If collection implements `RandomAccessCollection` trait, then `after_n`,
-`before_n` and `distance` are guaranteed to be O(1), otherwise it would be O(n).
+If collection implements `RandomAccessCollection` trait, then `next_n`,
+`prior_n` and `distance` are guaranteed to be O(1), otherwise it would be O(n).
 
 ## Algorithms
 
@@ -132,7 +132,7 @@ where
         if self.start() != self.end() {
             let p = self.partition_on_pos(&self.start(), |x, y| x < y); // assume a partition method
             self.prefix_mut(p.clone()).quick_sort();
-            self.suffix_mut(self.after(p)).quick_sort();
+            self.suffix_mut(self.next(p)).quick_sort();
         }
     }
 }

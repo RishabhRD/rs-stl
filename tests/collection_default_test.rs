@@ -40,13 +40,13 @@ pub mod tests {
                 Slice::new(self, from, to)
             }
 
-            fn advance(&self, i: &mut Self::Position) {
+            fn form_next(&self, i: &mut Self::Position) {
                 *i += 1
             }
         }
 
         impl BidirectionalCollection for NonJumpableCollection {
-            fn backstep(&self, i: &mut Self::Position) {
+            fn form_prior(&self, i: &mut Self::Position) {
                 *i -= 1
             }
         }
@@ -55,20 +55,20 @@ pub mod tests {
     use details::NonJumpableCollection;
 
     #[test]
-    fn after_n() {
+    fn next_n() {
         let arr = NonJumpableCollection {
             data: [1, 2, 3, 4, 5],
         };
-        let i = arr.after_n(0, 2);
+        let i = arr.next_n(0, 2);
         assert_eq!(i, 2);
     }
 
     #[test]
-    fn before_n() {
+    fn prior() {
         let arr = NonJumpableCollection {
             data: [1, 2, 3, 4, 5],
         };
-        let i = arr.before_n(2, 2);
+        let i = arr.prior_n(2, 2);
         assert_eq!(i, 0);
     }
 

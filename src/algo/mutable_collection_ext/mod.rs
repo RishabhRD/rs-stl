@@ -31,7 +31,7 @@ where
         let end = self.end();
         while start != end {
             f(self.at_mut(&start));
-            start = self.after(start);
+            start = self.next(start);
         }
     }
 }
