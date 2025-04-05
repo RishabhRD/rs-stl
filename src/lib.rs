@@ -22,6 +22,10 @@ mod slice_mut;
 #[doc(inline)]
 pub use slice_mut::*;
 
+mod iterator;
+#[doc(inline)]
+pub use iterator::*;
+
 mod algo;
 #[doc(inline)]
 pub use algo::*;
