@@ -8,7 +8,9 @@ pub trait PeekableIterator: Iterator {
 }
 
 /// Models a factory of PeekableIterator
-pub trait IntoPeekableIterator: IntoIterator {
+pub trait IntoPeekableIterator:
+    IntoIterator<IntoIter: PeekableIterator>
+{
     /// Returns peekable iterator by consuming self.
     fn into_peekable_iter(self) -> Self::IntoIter;
 }
