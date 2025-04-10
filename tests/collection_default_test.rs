@@ -28,10 +28,6 @@ pub mod tests {
                 5
             }
 
-            fn after(&self, i: Self::Position) -> Self::Position {
-                i + 1
-            }
-
             fn at(&self, i: &Self::Position) -> &Self::Element {
                 &self.data[*i]
             }
@@ -43,11 +39,15 @@ pub mod tests {
             ) -> stl::Slice<Self::Whole> {
                 Slice::new(self, from, to)
             }
+
+            fn form_next(&self, i: &mut Self::Position) {
+                *i += 1
+            }
         }
 
         impl BidirectionalCollection for NonJumpableCollection {
-            fn before(&self, i: Self::Position) -> Self::Position {
-                i - 1
+            fn form_prior(&self, i: &mut Self::Position) {
+                *i -= 1
             }
         }
     }
@@ -55,20 +55,20 @@ pub mod tests {
     use details::NonJumpableCollection;
 
     #[test]
-    fn after_n() {
+    fn next_n() {
         let arr = NonJumpableCollection {
             data: [1, 2, 3, 4, 5],
         };
-        let i = arr.after_n(0, 2);
+        let i = arr.next_n(0, 2);
         assert_eq!(i, 2);
     }
 
     #[test]
-    fn before_n() {
+    fn prior() {
         let arr = NonJumpableCollection {
             data: [1, 2, 3, 4, 5],
         };
-        let i = arr.before_n(2, 2);
+        let i = arr.prior_n(2, 2);
         assert_eq!(i, 0);
     }
 

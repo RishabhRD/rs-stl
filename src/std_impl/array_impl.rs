@@ -21,14 +21,6 @@ impl<T, const N: usize> Collection for [T; N] {
         N
     }
 
-    fn after(&self, i: Self::Position) -> Self::Position {
-        i + 1
-    }
-
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i + n
-    }
-
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
         to - from
     }
@@ -44,15 +36,23 @@ impl<T, const N: usize> Collection for [T; N] {
     ) -> Slice<Self::Whole> {
         Slice::new(self, from, to)
     }
+
+    fn form_next(&self, i: &mut Self::Position) {
+        *i += 1
+    }
+
+    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
+        *i += n
+    }
 }
 
 impl<T, const N: usize> BidirectionalCollection for [T; N] {
-    fn before(&self, i: Self::Position) -> Self::Position {
-        i - 1
+    fn form_prior(&self, i: &mut Self::Position) {
+        *i -= 1
     }
 
-    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i - n
+    fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
+        *i -= n
     }
 }
 

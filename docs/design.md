@@ -40,7 +40,7 @@ pub trait Collection {
     /// Returns the position just after last element in collection.
     fn end(&self) -> Self::Position;
     /// Returns position immediately after i
-    fn after(&self, i: Self::Position) -> Self::Position;
+    fn next(&self, i: Self::Position) -> Self::Position;
     /// Access element at position i.
     fn at(&self, i: &Self::Position) -> &Self::Element;
     fn slice(
@@ -57,7 +57,7 @@ an associated position.
 
 To access an element at a position, `at` method can be used.
 
-`start`, `end` and `after` method provides essential methods for forward traversal.
+`start`, `end` and `next` method provides essential methods for forward traversal.
 
 Every collection has provides a slice method, that returns slice of the collection.
 A slice is a dependent collection which internally refers to original collection
@@ -74,7 +74,7 @@ type Whole.
 
 ### BidirectionalCollection
 
-BidirectionalCollection provides `before` method to support backward iteration.
+BidirectionalCollection provides `prior` method to support backward iteration.
 
 ```rust
 pub trait BidirectionalCollection: Collection
@@ -82,15 +82,15 @@ where
     Self::Whole: BidirectionalCollection,
 {
     /// Returns position immediately before i
-    fn before(&self, i: Self::Position) -> Self::Position;
+    fn prior(&self, i: Self::Position) -> Self::Position;
 }
 ```
 
 ### RandomAccessCollection
 
-In actual defintion of `Collection`, it also provides `after_n` and `distance`
+In actual defintion of `Collection`, it also provides `next_n` and `distance`
 method with default implementation of O(n). Similarily, `BidirectionalCollection`
-also provides `before_n` method with default implementation of O(n).
+also provides `prior_n` method with default implementation of O(n).
 
 RandomAccessCollection only mandates these methods to be O(1). For a data
 structure to be RandomAccessCollection, it needs to provide override of above
@@ -168,7 +168,7 @@ pub trait CollectionExt: Collection {
             if pred(self.at(&start)) {
                 return start;
             }
-            start = self.after(start);
+            start = self.next(start);
         }
         start
     }

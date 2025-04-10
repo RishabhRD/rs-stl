@@ -35,34 +35,70 @@ pub mod tests {
     }
 
     #[test]
-    fn after() {
+    fn next() {
         let mut array = [1, 2, 3];
         let arr = array.slice_mut(array.start(), array.end());
-        let i = arr.after(0);
+        let i = arr.next(0);
         assert_eq!(i, 1);
     }
 
     #[test]
-    fn after_n() {
+    fn next_n() {
         let mut array = [1, 2, 3];
         let arr = array.slice_mut(array.start(), array.end());
-        let i = arr.after_n(0, 2);
+        let i = arr.next_n(0, 2);
         assert_eq!(i, 2);
     }
 
     #[test]
-    fn before() {
+    fn form_next() {
         let mut array = [1, 2, 3];
         let arr = array.slice_mut(array.start(), array.end());
-        let i = arr.before(1);
+        let mut i = 0;
+        arr.form_next(&mut i);
+        assert_eq!(i, 1);
+    }
+
+    #[test]
+    fn form_next_n() {
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
+        let mut i = 0;
+        arr.form_next_n(&mut i, 2);
+        assert_eq!(i, 2);
+    }
+
+    #[test]
+    fn prior() {
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
+        let i = arr.prior(1);
         assert_eq!(i, 0);
     }
 
     #[test]
-    fn before_n() {
+    fn prior_n() {
         let mut array = [1, 2, 3];
         let arr = array.slice_mut(array.start(), array.end());
-        let i = arr.before_n(3, 2);
+        let i = arr.prior_n(3, 2);
+        assert_eq!(i, 1);
+    }
+
+    #[test]
+    fn backstep() {
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
+        let mut i = 1;
+        arr.form_prior(&mut i);
+        assert_eq!(i, 0);
+    }
+
+    #[test]
+    fn backstep_n() {
+        let mut array = [1, 2, 3];
+        let arr = array.slice_mut(array.start(), array.end());
+        let mut i = 3;
+        arr.form_prior_n(&mut i, 2);
         assert_eq!(i, 1);
     }
 
@@ -105,5 +141,26 @@ pub mod tests {
     fn suffix_mut() {
         let mut arr = [1, 2, 3];
         assert!(arr.suffix_mut(1).equals(&[2, 3]));
+    }
+
+    #[test]
+    fn pop_elements() {
+        let mut arr = [1, 2, 3];
+        let mut s = arr.all_mut();
+
+        let e = s.pop_first();
+        assert_eq!(e, Some(&1));
+        assert!(s.equals(&[2, 3]));
+
+        assert!(s.drop_first());
+        assert!(s.equals(&[3]));
+        assert!(s.drop_first());
+        assert!(s.equals(&[]));
+        assert!(!s.drop_first());
+        assert!(s.equals(&[]));
+
+        let e = s.pop_first();
+        assert_eq!(e, None);
+        assert!(s.equals(&[]));
     }
 }

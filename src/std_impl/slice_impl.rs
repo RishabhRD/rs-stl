@@ -21,12 +21,12 @@ impl<T> Collection for &[T] {
         self.len()
     }
 
-    fn after(&self, i: Self::Position) -> Self::Position {
-        i + 1
+    fn form_next(&self, i: &mut Self::Position) {
+        *i += 1
     }
 
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i + n
+    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
+        *i += n
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
@@ -47,12 +47,12 @@ impl<T> Collection for &[T] {
 }
 
 impl<T> BidirectionalCollection for &[T] {
-    fn before(&self, i: Self::Position) -> Self::Position {
-        i - 1
+    fn form_prior(&self, i: &mut Self::Position) {
+        *i -= 1;
     }
 
-    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i - n
+    fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
+        *i -= n;
     }
 }
 
@@ -73,12 +73,12 @@ impl<T> Collection for &mut [T] {
         self.len()
     }
 
-    fn after(&self, i: Self::Position) -> Self::Position {
-        i + 1
+    fn form_next(&self, i: &mut Self::Position) {
+        *i += 1
     }
 
-    fn after_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i + n
+    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
+        *i += n
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
@@ -99,12 +99,12 @@ impl<T> Collection for &mut [T] {
 }
 
 impl<T> BidirectionalCollection for &mut [T] {
-    fn before(&self, i: Self::Position) -> Self::Position {
-        i - 1
+    fn form_prior(&self, i: &mut Self::Position) {
+        *i -= 1;
     }
 
-    fn before_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        i - n
+    fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
+        *i -= n;
     }
 }
 

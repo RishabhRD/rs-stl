@@ -31,30 +31,30 @@ pub mod tests {
     }
 
     #[test]
-    fn after() {
+    fn next() {
         let arr = [1, 2, 3];
-        let i = arr.after(0);
+        let i = arr.next(0);
         assert_eq!(i, 1);
     }
 
     #[test]
-    fn after_n() {
+    fn next_n() {
         let arr = [1, 2, 3];
-        let i = arr.after_n(0, 2);
+        let i = arr.next_n(0, 2);
         assert_eq!(i, 2);
     }
 
     #[test]
-    fn before() {
+    fn prior() {
         let arr = [1, 2, 3];
-        let i = arr.before(1);
+        let i = arr.prior(1);
         assert_eq!(i, 0);
     }
 
     #[test]
-    fn before_n() {
+    fn prior_n() {
         let arr = [1, 2, 3];
-        let i = arr.before_n(3, 2);
+        let i = arr.prior_n(3, 2);
         assert_eq!(i, 1);
     }
 

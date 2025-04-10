@@ -47,54 +47,54 @@ pub mod tests {
     }
 
     #[test]
-    fn after() {
+    fn next() {
         let array = [1, 2, 3];
         let arr: &[i32] = &array;
-        let i = arr.after(0);
+        let i = arr.next(0);
         assert_eq!(i, 1);
 
         let mut array = [1, 2, 3];
         let arr: &mut [i32] = &mut array;
-        let i = arr.after(0);
+        let i = arr.next(0);
         assert_eq!(i, 1);
     }
 
     #[test]
-    fn after_n() {
+    fn next_n() {
         let array = [1, 2, 3];
         let arr: &[i32] = &array;
-        let i = arr.after_n(0, 2);
+        let i = arr.next_n(0, 2);
         assert_eq!(i, 2);
 
         let mut array = [1, 2, 3];
         let arr: &mut [i32] = &mut array;
-        let i = arr.after_n(0, 2);
+        let i = arr.next_n(0, 2);
         assert_eq!(i, 2);
     }
 
     #[test]
-    fn before() {
+    fn prior() {
         let array = [1, 2, 3];
         let arr: &[i32] = &array;
-        let i = arr.before(1);
+        let i = arr.prior(1);
         assert_eq!(i, 0);
 
         let mut array = [1, 2, 3];
         let arr: &mut [i32] = &mut array;
-        let i = arr.before(1);
+        let i = arr.prior(1);
         assert_eq!(i, 0);
     }
 
     #[test]
-    fn before_n() {
+    fn prior_n() {
         let array = [1, 2, 3];
         let arr: &[i32] = &array;
-        let i = arr.before_n(3, 2);
+        let i = arr.prior_n(3, 2);
         assert_eq!(i, 1);
 
         let mut array = [1, 2, 3];
         let arr: &mut [i32] = &mut array;
-        let i = arr.before_n(3, 2);
+        let i = arr.prior_n(3, 2);
         assert_eq!(i, 1);
     }
 
