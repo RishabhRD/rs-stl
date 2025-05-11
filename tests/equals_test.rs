@@ -1,176 +1,38 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
+// Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 #[cfg(test)]
 pub mod tests {
-    use rng::infix::*;
     use stl::*;
 
-    fn assert_equals_prefix_by<const N1: usize, const N2: usize>(
-        arr1: [i32; N1],
-        arr2: [i32; N2],
-        expected: bool,
-    ) {
-        let res = algo::equals_prefix_by(
-            &arr1,
-            arr1.start(),
-            arr1.end(),
-            &arr2,
-            arr2.start(),
-            arr2.end(),
-            |x, y| x == y,
-        );
-        assert_eq!(res, expected);
-
-        let res = rng::equals_prefix_by(&arr1, &arr2, |x, y| x == y);
-        assert_eq!(res, expected);
-
-        let res = arr1.equals_prefix_by(&arr2, |x, y| x == y);
-        assert_eq!(res, expected);
-    }
-
-    fn assert_equals_prefix<const N1: usize, const N2: usize>(
-        arr1: [i32; N1],
-        arr2: [i32; N2],
-        expected: bool,
-    ) {
-        let res = algo::equals_prefix(
-            &arr1,
-            arr1.start(),
-            arr1.end(),
-            &arr2,
-            arr2.start(),
-            arr2.end(),
-        );
-        assert_eq!(res, expected);
-
-        let res = rng::equals_prefix(&arr1, &arr2);
-        assert_eq!(res, expected);
-
-        let res = arr1.equals_prefix(&arr2);
-        assert_eq!(res, expected);
-    }
-
-    fn assert_equals_by<const N1: usize, const N2: usize>(
-        arr1: [i32; N1],
-        arr2: [i32; N2],
-        expected: bool,
-    ) {
-        let res = algo::equals_by(
-            &arr1,
-            arr1.start(),
-            arr1.end(),
-            &arr2,
-            arr2.start(),
-            arr2.end(),
-            |x, y| x == y,
-        );
-        assert_eq!(res, expected);
-
-        let res = rng::equals_by(&arr1, &arr2, |x, y| x == y);
-        assert_eq!(res, expected);
-
-        let res = arr1.equals_by(&arr2, |x, y| x == y);
-        assert_eq!(res, expected);
-    }
-
-    fn assert_equals<const N1: usize, const N2: usize>(
-        arr1: [i32; N1],
-        arr2: [i32; N2],
-        expected: bool,
-    ) {
-        let res = algo::equals(
-            &arr1,
-            arr1.start(),
-            arr1.end(),
-            &arr2,
-            arr2.start(),
-            arr2.end(),
-        );
-        assert_eq!(res, expected);
-
-        let res = rng::equals(&arr1, &arr2);
-        assert_eq!(res, expected);
-
-        let res = arr1.equals(&arr2);
-        assert_eq!(res, expected);
+    #[test]
+    fn should_not_equal_on_different_length() {
+        assert!(![1, 2, 3].equals(&[1, 2]));
+        assert!(![1, 2].equals(&[1, 2, 3]));
+        assert!(![].equals(&[1, 2]));
+        assert!(![1, 2].equals(&[]));
     }
 
     #[test]
-    fn equals_prefix_by() {
-        let arr1 = [1, 2, 3, 4];
-        let arr2 = [1, 2, 3, 4];
-        assert_equals_prefix_by(arr1, arr2, true);
-
-        let arr2 = [1, 2, 3];
-        assert_equals_prefix_by(arr1, arr2, false);
-
-        let arr1 = [1, 2];
-        assert_equals_prefix_by(arr1, arr2, true);
-
-        let arr2 = [2, 2];
-        assert_equals_prefix_by(arr1, arr2, false);
-
-        let arr1 = [];
-        assert_equals_prefix_by(arr1, arr2, true);
-
-        let arr2 = [];
-        assert_equals_prefix_by(arr1, arr2, true);
+    fn should_not_equal_on_different_content() {
+        assert!(![1, 2].equals(&[2, 3]));
     }
 
     #[test]
-    fn equals_prefix() {
-        let arr1 = [1, 2, 3, 4];
-        let arr2 = [1, 2, 3, 4];
-        assert_equals_prefix(arr1, arr2, true);
-
-        let arr2 = [1, 2, 3];
-        assert_equals_prefix(arr1, arr2, false);
-
-        let arr1 = [1, 2];
-        assert_equals_prefix(arr1, arr2, true);
-
-        let arr2 = [2, 2];
-        assert_equals_prefix(arr1, arr2, false);
-
+    fn should_equal_if_both_are_empty() {
         let arr1 = [];
-        assert_equals_prefix(arr1, arr2, true);
+        let arr2: [i32; 0] = [];
+        assert!(arr1.equals(&arr2));
+    }
 
-        let arr2 = [];
-        assert_equals_prefix(arr1, arr2, true);
+    #[test]
+    fn should_equal_if_both_have_same_content() {
+        assert!([1, 2, 3].equals(&[1, 2, 3]));
+        assert!(vec![1, 2, 3].equals(&[1, 2, 3])); // different types
     }
 
     #[test]
     fn equals_by() {
-        let arr1 = [1, 2, 3, 4];
-        let arr2 = [1, 2, 3, 4];
-        assert_equals_by(arr1, arr2, true);
-
-        let arr2 = [2, 2, 3, 4];
-        assert_equals_by(arr1, arr2, false);
-
-        let arr2 = [1, 2];
-        assert_equals_by(arr1, arr2, false);
-
-        let arr1 = [1];
-        assert_equals_by(arr1, arr2, false);
-        assert_equals_by([], [], true);
-    }
-
-    #[test]
-    fn equals() {
-        let arr1 = [1, 2, 3, 4];
-        let arr2 = [1, 2, 3, 4];
-        assert_equals(arr1, arr2, true);
-
-        let arr2 = [2, 2, 3, 4];
-        assert_equals(arr1, arr2, false);
-
-        let arr2 = [1, 2];
-        assert_equals(arr1, arr2, false);
-
-        let arr1 = [1];
-        assert_equals(arr1, arr2, false);
-        assert_equals([], [], true);
+        assert!([1, 2, 3].equals_by(&[2, 3, 4], |x, y| *y == *x + 1));
     }
 }

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Copyright (c) 2024 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
+// Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 //! # STL module
 //!
@@ -9,23 +9,26 @@
 //! - `[T;n]` (array)
 //! - `[T]` (slice)
 //! - `Vec<T>` (Vec)
-//! - `str`
-//! - `String`
 
-pub mod algo;
-pub mod array;
-#[doc(hidden)]
-pub mod core;
-pub mod rng;
-pub mod slice;
-pub mod str;
-#[doc(hidden)]
-pub mod util;
-pub mod vec;
-
+mod core;
 #[doc(inline)]
 pub use core::*;
 
-pub mod view;
-pub use view::STLMutableViewExt;
-pub use view::STLViewExt;
+mod collection_iterator;
+#[doc(inline)]
+pub use collection_iterator::*;
+
+mod slice;
+#[doc(inline)]
+pub use slice::*;
+
+mod slice_mut;
+#[doc(inline)]
+pub use slice_mut::*;
+
+mod algo;
+#[doc(inline)]
+pub use algo::*;
+
+#[doc(hidden)]
+pub(crate) mod std_impl;

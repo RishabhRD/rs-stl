@@ -1,24 +1,27 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalCollection, Collection, RandomAccessCollection};
+use crate::{
+    BidirectionalCollection, Collection, MutableCollection,
+    RandomAccessCollection, ReorderableCollection, Slice,
+};
 
-#[derive(Clone, PartialEq, Eq)]
-pub struct Slice<'a, Whole>
+#[derive(PartialEq, Eq)]
+pub struct SliceMut<'a, Whole>
 where
-    Whole: Collection<Whole = Whole>,
+    Whole: ReorderableCollection<Whole = Whole>,
 {
-    whole: &'a Whole,
+    whole: &'a mut Whole,
     from: Whole::Position,
     to: Whole::Position,
 }
 
-impl<'a, Whole> Slice<'a, Whole>
+impl<'a, Whole> SliceMut<'a, Whole>
 where
-    Whole: Collection<Whole = Whole>,
+    Whole: ReorderableCollection<Whole = Whole>,
 {
     pub fn new(
-        collection: &'a Whole,
+        collection: &'a mut Whole,
         from: Whole::Position,
         to: Whole::Position,
     ) -> Self {
@@ -31,7 +34,7 @@ where
 
     /// Removes and returns the first element if non-empty; returns
     /// None otherwise.
-    pub fn pop_first(&mut self) -> Option<&'a <Self as Collection>::Element> {
+    pub fn pop_first(&mut self) -> Option<&<Self as Collection>::Element> {
         if self.from == self.to {
             None
         } else {
@@ -53,9 +56,9 @@ where
     }
 }
 
-impl<Whole> Collection for Slice<'_, Whole>
+impl<Whole> Collection for SliceMut<'_, Whole>
 where
-    Whole: Collection<Whole = Whole>,
+    Whole: ReorderableCollection<Whole = Whole>,
 {
     type Position = Whole::Position;
 
@@ -104,9 +107,9 @@ where
     }
 }
 
-impl<Whole> BidirectionalCollection for Slice<'_, Whole>
+impl<Whole> BidirectionalCollection for SliceMut<'_, Whole>
 where
-    Whole: BidirectionalCollection<Whole = Whole>,
+    Whole: BidirectionalCollection<Whole = Whole> + ReorderableCollection,
 {
     fn form_prior(&self, i: &mut Self::Position) {
         self.whole.form_prior(i);
@@ -125,7 +128,33 @@ where
     }
 }
 
-impl<Whole> RandomAccessCollection for Slice<'_, Whole> where
-    Whole: RandomAccessCollection<Whole = Whole>
+impl<Whole> RandomAccessCollection for SliceMut<'_, Whole> where
+    Whole: RandomAccessCollection<Whole = Whole> + ReorderableCollection
 {
+}
+
+impl<Whole> ReorderableCollection for SliceMut<'_, Whole>
+where
+    Whole: ReorderableCollection<Whole = Whole>,
+{
+    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
+        self.whole.swap_at(i, j);
+    }
+
+    fn slice_mut(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> SliceMut<Self::Whole> {
+        SliceMut::new(self.whole, from, to)
+    }
+}
+
+impl<Whole> MutableCollection for SliceMut<'_, Whole>
+where
+    Whole: MutableCollection<Whole = Whole>,
+{
+    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
+        self.whole.at_mut(i)
+    }
 }
