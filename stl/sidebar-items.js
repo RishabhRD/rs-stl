@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CollectionIterator","Slice","SliceMut"],"trait":["BidirectionalCollection","Collection","CollectionExt","MutableCollection","MutableCollectionExt","RandomAccessCollection","RandomAccessCollectionExt","Regular","ReorderableCollection","ReorderableCollectionExt","SemiRegular"]};

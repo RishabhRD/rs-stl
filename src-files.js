@@ -1,0 +1,3 @@
+var srcIndex = new Map(JSON.parse('[["stl",["",[["algo",[["collection_ext",[],["mod.rs"]],["mutable_collection_ext",[],["mod.rs"]],["random_access_collection_ext",[],["mod.rs"]],["reorderable_collection_ext",[],["mod.rs"]]],["mod.rs"]],["std_impl",[],["array_impl.rs","mod.rs","slice_impl.rs","vec_impl.rs"]]],["collection_iterator.rs","core.rs","lib.rs","slice.rs","slice_mut.rs"]]]]'));
+createSrcSidebar();
+//{"start":36,"fragment_lengths":[347]}
