@@ -19,6 +19,11 @@ pub mod tests {
 
             type Element = i32;
 
+            type ElementRef<'a>
+                = &'a i32
+            where
+                Self: 'a;
+
             type Whole = Self;
 
             fn start(&self) -> Self::Position {

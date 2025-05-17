@@ -11,6 +11,11 @@ impl<T> Collection for Vec<T> {
 
     type Element = T;
 
+    type ElementRef<'a>
+        = &'a T
+    where
+        Self: 'a;
+
     type Whole = Self;
 
     fn start(&self) -> Self::Position {

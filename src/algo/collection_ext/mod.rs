@@ -5,7 +5,7 @@ use crate::{Collection, Slice};
 
 pub trait CollectionExt: Collection {
     /// Returns the first element, or nil if `self` is empty.
-    fn first(&self) -> Option<&<Self as Collection>::Element> {
+    fn first(&self) -> Option<<Self as Collection>::ElementRef<'_>> {
         if self.start() == self.end() {
             None
         } else {
@@ -108,7 +108,7 @@ pub trait CollectionExt: Collection {
         let mut other1 = other.all();
         loop {
             match (self1.pop_first(), other1.pop_first()) {
-                (Some(x), Some(y)) if bi_pred(x, y) => {}
+                (Some(x), Some(y)) if bi_pred(&x, &y) => {}
                 (None, None) => return true,
                 _ => return false,
             }
@@ -167,8 +167,12 @@ pub trait CollectionExt: Collection {
         Pred: Fn(&Self::Element) -> bool,
     {
         let mut rest = self.all();
-        while let Some(x) = rest.first() {
-            if pred(x) {
+        loop {
+            if let Some(x) = rest.first() {
+                if pred(&x) {
+                    break;
+                }
+            } else {
                 break;
             }
             rest.drop_first();
@@ -200,7 +204,7 @@ pub trait CollectionExt: Collection {
         let mut start = self.start();
         let end = self.end();
         while start != end {
-            f(self.at(&start));
+            f(&self.at(&start));
             start = self.next(start);
         }
     }
