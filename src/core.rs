@@ -136,7 +136,7 @@ pub trait Collection {
     ///   - i is a valid position in self and i != end()
     ///
     /// # Complexity Requirement
-    ///   O(1)
+    ///   - O(1)
     fn at(&self, i: &Self::Position) -> Self::ElementRef<'_>;
 
     /// Returns slice of collection in positions [from, to).
@@ -153,6 +153,18 @@ pub trait Collection {
     fn iter(&self) -> CollectionIterator<Self::Whole> {
         CollectionIterator::new(self.slice(self.start(), self.end()))
     }
+}
+
+/// Models a collection whose elements are computed on memory access.
+pub trait LazyCollection: Collection {
+    /// Computes element at position `i`.
+    ///
+    /// # Precondition
+    ///   - i is a valid position in self and i != end()
+    ///
+    /// # Complexity Requirement
+    ///   - O(1)
+    fn compute_at(&self, i: &Self::Position) -> Self::Element;
 }
 
 /// Models a bidirectional collection, which can be traversed forward as well as backward.
@@ -261,6 +273,6 @@ where
     ///   - i is a valid position in self and i != end()
     ///
     /// # Complexity Requirement
-    ///   O(1)
+    ///   - O(1)
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
 }
