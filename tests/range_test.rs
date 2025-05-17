@@ -16,6 +16,7 @@ pub mod tests {
         assert_eq!(arr.prior_n(2, 2), 0);
         assert_eq!(arr.compute_at(&2), 2);
         assert_eq!(*(&arr.at(&2) as &i32), 2);
+        assert!(arr.all().equals(&[1, 2, 3, 4]));
     }
 
     #[test]
@@ -29,5 +30,6 @@ pub mod tests {
         assert_eq!(arr.prior_n(2, 2), 0);
         assert_eq!(arr.compute_at(&2), 2);
         assert_eq!(*(&arr.at(&2) as &i32), 2);
+        assert!(arr.all().equals(&[1, 2, 3, 4, 5]));
     }
 }
