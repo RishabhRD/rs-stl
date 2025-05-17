@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalCollection, Collection, RandomAccessCollection};
+use crate::{
+    BidirectionalCollection, Collection, LazyCollection, RandomAccessCollection,
+};
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct Slice<'a, Whole>
@@ -108,6 +110,15 @@ where
         to: Self::Position,
     ) -> Slice<Self::Whole> {
         Slice::new(self.whole, from, to)
+    }
+}
+
+impl<Whole> LazyCollection for Slice<'_, Whole>
+where
+    Whole: LazyCollection<Whole = Whole>,
+{
+    fn compute_at(&self, i: &Self::Position) -> Self::Element {
+        self.whole.compute_at(i)
     }
 }
 

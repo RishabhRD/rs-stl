@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, MutableCollection,
+    BidirectionalCollection, Collection, LazyCollection, MutableCollection,
     RandomAccessCollection, ReorderableCollection, Slice,
 };
 
@@ -111,6 +111,15 @@ where
         to: Self::Position,
     ) -> Slice<Self::Whole> {
         Slice::new(self.whole, from, to)
+    }
+}
+
+impl<Whole> LazyCollection for SliceMut<'_, Whole>
+where
+    Whole: LazyCollection<Whole = Whole> + ReorderableCollection,
+{
+    fn compute_at(&self, i: &Self::Position) -> Self::Element {
+        self.whole.compute_at(i)
     }
 }
 
