@@ -36,6 +36,8 @@ pub trait Collection {
     /// Type of element in the collection.
     type Element; // TODO: Finalize what to do with LazyCollection?
 
+    /// Type that is like `&Element`. For collections whose elements are in
+    /// memory, its simply `&Element`.
     type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
     where
         Self: 'a;
