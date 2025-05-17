@@ -151,4 +151,10 @@ pub mod tests {
         assert_eq!(e, None);
         assert!(s.equals(&[]));
     }
+
+    #[test]
+    fn compute_at() {
+        let arr = 0..=3;
+        assert_eq!(arr.all().compute_at(&0), 0);
+    }
 }
