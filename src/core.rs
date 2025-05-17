@@ -156,7 +156,10 @@ pub trait Collection {
 }
 
 /// Models a collection whose elements are computed on memory access.
-pub trait LazyCollection: Collection {
+pub trait LazyCollection: Collection
+where
+    Self::Whole: LazyCollection,
+{
     /// Computes element at position `i`.
     ///
     /// # Precondition
