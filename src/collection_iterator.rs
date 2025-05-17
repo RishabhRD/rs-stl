@@ -23,7 +23,7 @@ impl<'a, Whole> Iterator for CollectionIterator<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
 {
-    type Item = &'a Whole::Element;
+    type Item = <Slice<'a, Whole> as Collection>::ElementRef<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
         self.slice.pop_first()

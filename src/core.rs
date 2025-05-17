@@ -36,6 +36,10 @@ pub trait Collection {
     /// Type of element in the collection.
     type Element; // TODO: Finalize what to do with LazyCollection?
 
+    type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
+    where
+        Self: 'a;
+
     /// Type representing whole collection.
     /// i.e., `Self == Slice<W> ? W : Self`
     type Whole: Collection<
@@ -131,7 +135,7 @@ pub trait Collection {
     ///
     /// # Complexity Requirement
     ///   O(1)
-    fn at(&self, i: &Self::Position) -> &Self::Element;
+    fn at(&self, i: &Self::Position) -> Self::ElementRef<'_>;
 
     /// Returns slice of collection in positions [from, to).
     ///

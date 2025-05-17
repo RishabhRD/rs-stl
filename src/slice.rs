@@ -31,7 +31,9 @@ where
 
     /// Removes and returns the first element if non-empty; returns
     /// None otherwise.
-    pub fn pop_first(&mut self) -> Option<&'a <Self as Collection>::Element> {
+    pub fn pop_first(
+        &mut self,
+    ) -> Option<<Self as Collection>::ElementRef<'a>> {
         if self.from == self.to {
             None
         } else {
@@ -60,6 +62,11 @@ where
     type Position = Whole::Position;
 
     type Element = Whole::Element;
+
+    type ElementRef<'a>
+        = Whole::ElementRef<'a>
+    where
+        Self: 'a;
 
     type Whole = Whole;
 
@@ -91,7 +98,7 @@ where
         self.whole.distance(from, to)
     }
 
-    fn at(&self, i: &Self::Position) -> &Self::Element {
+    fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
         self.whole.at(i)
     }
 
