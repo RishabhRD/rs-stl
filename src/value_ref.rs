@@ -8,6 +8,12 @@ pub struct ValueRef<T> {
     val: T,
 }
 
+impl<T> ValueRef<T> {
+    pub fn new(val: T) -> Self {
+        ValueRef { val }
+    }
+}
+
 impl<T> Deref for ValueRef<T> {
     type Target = T;
 
