@@ -20,6 +20,22 @@ impl<T> SemiRegular for T where T: Eq {}
 pub trait Regular: SemiRegular + Clone {}
 impl<T> Regular for T where T: SemiRegular + Clone {}
 
+/// A `Predicate<T>` is a "cheap" to copy function that accepts
+/// T by reference and returns bool.
+///
+/// Because `Predicate<T>` is cheap to copy, functions should accept
+/// predicates by value.
+pub trait Predicate<T>: Fn(&T) -> bool + Copy {}
+impl<T, F> Predicate<T> for F where F: Fn(&T) -> bool + Copy {}
+
+/// A `BinaryPredicate<T, U>` is a "cheap" to copy function that accepts
+/// `T` and `U` by reference and returns bool.
+///
+/// Because `BinaryPredicate<T, U>` is cheap to copy,
+/// functions should accept binary predicates by value.
+pub trait BinaryPredicate<T, U>: Fn(&T, &U) -> bool + Copy {}
+impl<T, U, F> BinaryPredicate<T, U> for F where F: Fn(&T, &U) -> bool + Copy {}
+
 /// Models a multi-pass linear sequence of elements.
 ///
 /// Representation:
