@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{Collection, Slice};
+use crate::{Collection, Predicate, Slice};
 
 pub trait CollectionExt: Collection {
     /// Returns the first element, or nil if `self` is empty.
@@ -164,7 +164,7 @@ pub trait CollectionExt: Collection {
     /// ```
     fn find_if<Pred>(&self, pred: Pred) -> Self::Position
     where
-        Pred: Fn(&Self::Element) -> bool,
+        Pred: Predicate<Self::Element>,
     {
         let mut rest = self.all();
         loop {
