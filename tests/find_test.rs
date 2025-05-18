@@ -10,6 +10,11 @@ pub mod tests {
         let arr = [1, 2, 3, 4];
         let i = arr.find_if(|x| *x == 2);
         assert_eq!(i, 1);
+
+        let arr = ["Hello".to_string(), "Test".to_string()];
+        let to_find = "Test".to_string();
+        let i = arr.find_if(|x| *x == to_find);
+        assert_eq!(i, 1);
     }
 
     #[test]
