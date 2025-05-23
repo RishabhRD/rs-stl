@@ -4,6 +4,9 @@
 mod collection_ext;
 pub use collection_ext::*;
 
+mod lazy_collection_ext;
+pub use lazy_collection_ext::*;
+
 mod random_access_collection_ext;
 pub use random_access_collection_ext::*;
 
