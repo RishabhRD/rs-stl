@@ -57,6 +57,23 @@ where
     }
 }
 
+impl<Whole> Slice<'_, Whole>
+where
+    Whole: LazyCollection<Whole = Whole>,
+{
+    /// Removes and returns the "lazily computed" first element if non-empty; returns
+    /// None otherwise.
+    pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = Some(self.whole.compute_at(&self.from));
+            self.whole.form_next(&mut self.from);
+            e
+        }
+    }
+}
+
 impl<Whole> Collection for Slice<'_, Whole>
 where
     Whole: Collection<Whole = Whole>,

@@ -157,4 +157,19 @@ pub mod tests {
         let arr = 0..=3;
         assert_eq!(arr.all().compute_at(&0), 0);
     }
+
+    #[test]
+    fn lazy_pop_first() {
+        let arr = 0..=3;
+        let mut s = arr.all();
+        let e = s.lazy_pop_first();
+        assert_eq!(e, Some(0));
+        assert!(s.equals(&[1, 2, 3]));
+
+        let arr = 0..0;
+        let mut s = arr.all();
+        let e = s.lazy_pop_first();
+        assert_eq!(e, None);
+        assert!(s.equals(&[]));
+    }
 }

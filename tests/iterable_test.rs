@@ -14,4 +14,14 @@ pub mod tests {
         }
         assert_eq!(sum, 6);
     }
+
+    #[test]
+    fn sum_by_lazy_iteration() {
+        let arr = 1..=3;
+        let mut sum = 0;
+        for i in arr.lazy_iter() {
+            sum += i;
+        }
+        assert_eq!(sum, 6);
+    }
 }

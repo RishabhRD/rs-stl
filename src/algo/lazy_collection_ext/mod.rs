@@ -1,12 +1,21 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::LazyCollection;
+use crate::{Collection, LazyCollection, LazyCollectionIterator};
 
 pub trait LazyCollectionExt: LazyCollection
 where
     Self::Whole: LazyCollection,
 {
+    /// Returns the "lazily computed" first element, or nil if `self` is empty.
+    fn lazy_first(&self) -> Option<<Self as Collection>::Element> {
+        if self.start() == self.end() {
+            None
+        } else {
+            Some(self.compute_at(&self.start()))
+        }
+    }
+
     /// Applies f to each "lazily computed" element of collection.
     ///
     /// # Precondition
@@ -34,6 +43,12 @@ where
             f(self.compute_at(&start));
             start = self.next(start);
         }
+    }
+
+    /// Returns a non-consuming iterator that iterates over `Self::Element`.
+    /// The iterator lazily computes the value on each `next` call.
+    fn lazy_iter(&self) -> LazyCollectionIterator<Self::Whole> {
+        LazyCollectionIterator::new(self.slice(self.start(), self.end()))
     }
 }
 
