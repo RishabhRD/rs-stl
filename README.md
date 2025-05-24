@@ -75,8 +75,8 @@ Currently collection traits have been implemented for:
 - `[T]`
 - `Vec<T>`
 - `Option<T>`
-- `Range<T>` where T is an signed/unsigned integer type.
-- `RangeInclusive<T>` where T is an signed/unsigned integer type.
+- `Range<T>` (`a..b`) where T is an signed/unsigned integer type.
+- `RangeInclusive<T>` (`a..=b`) where T is an signed/unsigned integer type.
 
 In future, we plan to support more stdlib data structures.
 

@@ -3,12 +3,18 @@
 
 //! # STL module
 //!
-//! The `stl` module provides core traits that define regularity, ranges, etc.
-//! This module also provides implementation of those traits for many commmon
-//! data structures. Currently supported data structures are:
+//! The `stl` module provides formal definition of "Collections" in terms of traits.
+//! Based on primitives exposed by traits, the module provides many generic algorithms
+//! for types satisfying "Collection" traits.
+//!
+//! The module also implements the "Collection" related traits for stdlib
+//! data structures. Currently "Collection" traits have been implemented for:
 //! - `[T;n]` (array)
 //! - `[T]` (slice)
 //! - `Vec<T>` (Vec)
+//! - `Option<T>` (Option)
+//! - `Range<T>` (a..b) where `T` is a signed/unsigned integer type.
+//! - `RangeInclusive<T>` (a..=b) where `T` is a signed/unsigned integer type.
 
 mod core;
 #[doc(inline)]
