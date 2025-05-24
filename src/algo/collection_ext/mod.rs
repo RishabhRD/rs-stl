@@ -3,6 +3,7 @@
 
 use crate::{Collection, CollectionIterator, Predicate, Slice};
 
+/// Algorithms for `Collection`.
 pub trait CollectionExt: Collection {
     /// Returns a non-consuming iterator that iterates over `&Self::Element`.
     fn iter(&self) -> CollectionIterator<Self::Whole> {

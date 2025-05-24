@@ -3,6 +3,7 @@
 
 use crate::MutableCollection;
 
+/// Algorithms for `MutableCollection`.
 pub trait MutableCollectionExt: MutableCollection
 where
     Self::Whole: MutableCollection,

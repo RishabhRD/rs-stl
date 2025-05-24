@@ -3,6 +3,7 @@
 
 use crate::RandomAccessCollection;
 
+/// Algorithms for `RandomAccessCollection`.
 pub trait RandomAccessCollectionExt: RandomAccessCollection
 where
     Self::Whole: RandomAccessCollection,

@@ -3,6 +3,7 @@
 
 use crate::{ReorderableCollection, SliceMut};
 
+/// Algorithms for `ReorderableCollection`.
 pub trait ReorderableCollectionExt: ReorderableCollection
 where
     Self::Whole: ReorderableCollection,
