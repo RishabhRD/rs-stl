@@ -3,6 +3,7 @@
 
 use crate::{Collection, LazyCollection, Slice};
 
+/// Generic iterator to iterate over `ElementRef` of any `Collection`.
 pub struct CollectionIterator<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
@@ -42,6 +43,7 @@ where
     slice: Slice<'a, Whole>,
 }
 
+/// Generic iterator to iterate over `Element` of any `LazyCollection`.
 impl<'a, Whole> LazyCollectionIterator<'a, Whole>
 where
     Whole: LazyCollection<Whole = Whole>,

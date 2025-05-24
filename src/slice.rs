@@ -5,6 +5,7 @@ use crate::{
     BidirectionalCollection, Collection, LazyCollection, RandomAccessCollection,
 };
 
+/// A contiguous sub-collection of a collection.
 #[derive(Clone, PartialEq, Eq)]
 pub struct Slice<'a, Whole>
 where

@@ -6,6 +6,7 @@ use crate::{
     RandomAccessCollection, ReorderableCollection, Slice,
 };
 
+/// A contiguous mutable sub-collection of a mutable collection.
 #[derive(PartialEq, Eq)]
 pub struct SliceMut<'a, Whole>
 where

@@ -6,7 +6,7 @@ use crate::{
     RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
 };
 
-/// Models an empty collection.
+/// An empty collection.
 pub struct EmptyCollection<E> {
     phantom: std::marker::PhantomData<E>,
 }
