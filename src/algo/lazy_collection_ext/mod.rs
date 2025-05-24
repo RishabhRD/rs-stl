@@ -3,6 +3,7 @@
 
 use crate::{Collection, LazyCollection, LazyCollectionIterator};
 
+/// Algorithms for `LazyCollection`.
 pub trait LazyCollectionExt: LazyCollection
 where
     Self::Whole: LazyCollection,
