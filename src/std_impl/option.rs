@@ -6,31 +6,20 @@ use crate::{
     RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
 };
 
-/// A collection of one element.
-pub struct CollectionOfOne<E> {
-    element: E,
-}
-
-impl<E> CollectionOfOne<E> {
-    pub fn new(element: E) -> Self {
-        CollectionOfOne { element }
-    }
-}
-
-impl<E> Collection for CollectionOfOne<E> {
+impl<T> Collection for Option<T> {
     type Position = bool;
 
-    type Element = E;
+    type Element = T;
 
     type ElementRef<'a>
-        = &'a E
+        = &'a T
     where
         Self: 'a;
 
     type Whole = Self;
 
     fn start(&self) -> Self::Position {
-        false
+        !self.is_some()
     }
 
     fn end(&self) -> Self::Position {
@@ -43,9 +32,13 @@ impl<E> Collection for CollectionOfOne<E> {
 
     fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
         if *i {
-            panic!("Out of bound access");
+            panic!("Out of bounds access");
         }
-        &self.element
+
+        match self {
+            Some(e) => e,
+            None => panic!("Out of bounds access"),
+        }
     }
 
     fn slice(
@@ -64,21 +57,26 @@ impl<E> Collection for CollectionOfOne<E> {
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
         if from == to {
-            return 0;
+            0
+        } else {
+            1
         }
-        1
     }
 
     fn count(&self) -> usize {
-        1
+        if self.is_some() {
+            1
+        } else {
+            0
+        }
     }
 
     fn underestimated_count(&self) -> usize {
-        1
+        self.count()
     }
 }
 
-impl<E> BidirectionalCollection for CollectionOfOne<E> {
+impl<T> BidirectionalCollection for Option<T> {
     fn form_prior(&self, position: &mut Self::Position) {
         *position = false
     }
@@ -90,12 +88,12 @@ impl<E> BidirectionalCollection for CollectionOfOne<E> {
     }
 }
 
-impl<E> RandomAccessCollection for CollectionOfOne<E> {}
+impl<T> RandomAccessCollection for Option<T> {}
 
-impl<E> ReorderableCollection for CollectionOfOne<E> {
+impl<T> ReorderableCollection for Option<T> {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         if *i || *j {
-            panic!("Out of bound access");
+            panic!("Out of bounds access")
         }
     }
 
@@ -108,11 +106,15 @@ impl<E> ReorderableCollection for CollectionOfOne<E> {
     }
 }
 
-impl<E> MutableCollection for CollectionOfOne<E> {
+impl<T> MutableCollection for Option<T> {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         if *i {
-            panic!("Out of bound access");
+            panic!("Out of bounds access");
         }
-        &mut self.element
+
+        match self {
+            Some(e) => e,
+            None => panic!("Out of bounds access"),
+        }
     }
 }
