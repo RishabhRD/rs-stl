@@ -25,10 +25,14 @@ on special types like `[T]`.
 
 ### Collection
 
+Collection is the base trait that formally defines the linear sequence of
+elements. Elements are not necessarily needed to be stored in memory.
+
 ```rust
 pub trait Collection {
     type Position: Regular;
     type Element;
+    type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
     type Whole: Collection<
         Position = Self::Position,
         Element = Self::Element,
@@ -42,7 +46,8 @@ pub trait Collection {
     /// Returns position immediately after i
     fn next(&self, i: Self::Position) -> Self::Position;
     /// Access element at position i.
-    fn at(&self, i: &Self::Position) -> &Self::Element;
+    fn at(&self, i: &Self::Position) -> Self::ElementRef<'_>;
+    /// Returns a contiguous subrange of given collection.
     fn slice(
         &self,
         from: Self::Position,
@@ -150,6 +155,26 @@ where
 
 MutableCollection provides mutable access to any element in collection for
 supporting external mutation.
+
+## Collection Hierarchy in terms of laziness
+
+### LazyCollection
+
+LazyCollection is a collection whose elements are computed on element access.
+This suggests that the returned element are not actually stored in memory.
+
+LazyCollection trait is mostly for optimization purposes where one might
+need ownership of returned element, then it would avoid redundant copy.
+
+```rust
+pub trait LazyCollection: Collection
+where
+    Self::Whole: LazyCollection,
+{
+    /// Computes element at position `i`.
+    fn compute_at(&self, i: &Self::Position) -> Self::Element;
+}
+```
 
 ## Algorithms
 

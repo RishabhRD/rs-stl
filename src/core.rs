@@ -50,13 +50,14 @@ pub trait Collection {
     type Position: Regular;
 
     /// Type of element in the collection.
-    type Element; // TODO: Finalize what to do with LazyCollection?
+    type Element;
 
     /// Type that is like `&Element`. For collections whose elements are in
     /// memory, its simply `&Element`.
     type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
     where
-        Self: 'a;
+        Self: 'a; // Someday if rust supports yield once coroutines like swift,
+                  // then this proxy reference technique is not needed.
 
     /// Type representing whole collection.
     /// i.e., `Self == Slice<W> ? W : Self`
@@ -171,7 +172,7 @@ pub trait Collection {
     }
 }
 
-/// Models a collection whose elements are computed on memory access.
+/// Models a collection whose elements are computed on element access.
 pub trait LazyCollection: Collection
 where
     Self::Whole: LazyCollection,
