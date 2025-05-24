@@ -69,11 +69,14 @@ assert_eq!(odd_count, 2);
 
 ## Support for Standard Library
 
-Currently collection concepts have been implemented for:
+Currently collection traits have been implemented for:
 
 - `[T; N]`
 - `[T]`
 - `Vec<T>`
+- `Option<T>`
+- `Range<T>` where T is an signed/unsigned integer type.
+- `RangeInclusive<T>` where T is an signed/unsigned integer type.
 
 In future, we plan to support more stdlib data structures.
 
