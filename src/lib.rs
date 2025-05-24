@@ -34,3 +34,6 @@ pub use algo::*;
 pub(crate) mod std_impl;
 
 mod value_ref;
+
+mod collections;
+pub use collections::*;
