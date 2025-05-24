@@ -1,9 +1,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{Collection, Predicate, Slice};
+use crate::{Collection, CollectionIterator, Predicate, Slice};
 
 pub trait CollectionExt: Collection {
+    /// Returns a non-consuming iterator that iterates over `&Self::Element`.
+    fn iter(&self) -> CollectionIterator<Self::Whole> {
+        CollectionIterator::new(self.slice(self.start(), self.end()))
+    }
+
     /// Returns the first element, or nil if `self` is empty.
     fn first(&self) -> Option<<Self as Collection>::ElementRef<'_>> {
         if self.start() == self.end() {
