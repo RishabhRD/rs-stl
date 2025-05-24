@@ -6,6 +6,7 @@ use crate::{
     RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
 };
 
+/// A collection of one element.
 pub struct CollectionOfOne<E> {
     element: E,
 }
@@ -79,7 +80,7 @@ impl<E> Collection for CollectionOfOne<E> {
 
 impl<E> BidirectionalCollection for CollectionOfOne<E> {
     fn form_prior(&self, position: &mut Self::Position) {
-        *position = true
+        *position = false
     }
 
     fn form_prior_n(&self, position: &mut Self::Position, n: usize) {

@@ -3,3 +3,6 @@
 
 mod collection_of_one;
 pub use collection_of_one::*;
+
+mod empty_collection;
+pub use empty_collection::*;
