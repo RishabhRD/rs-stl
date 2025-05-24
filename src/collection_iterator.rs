@@ -36,6 +36,7 @@ where
     }
 }
 
+/// Generic iterator to iterate over `Element` of any `LazyCollection`.
 pub struct LazyCollectionIterator<'a, Whole>
 where
     Whole: LazyCollection<Whole = Whole>,
@@ -43,7 +44,6 @@ where
     slice: Slice<'a, Whole>,
 }
 
-/// Generic iterator to iterate over `Element` of any `LazyCollection`.
 impl<'a, Whole> LazyCollectionIterator<'a, Whole>
 where
     Whole: LazyCollection<Whole = Whole>,
