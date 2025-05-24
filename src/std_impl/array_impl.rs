@@ -11,6 +11,11 @@ impl<T, const N: usize> Collection for [T; N] {
 
     type Element = T;
 
+    type ElementRef<'a>
+        = &'a T
+    where
+        Self: 'a;
+
     type Whole = Self;
 
     fn start(&self) -> Self::Position {

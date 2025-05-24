@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalCollection, Collection, RandomAccessCollection};
+use crate::{
+    BidirectionalCollection, Collection, LazyCollection, RandomAccessCollection,
+};
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct Slice<'a, Whole>
@@ -31,7 +33,9 @@ where
 
     /// Removes and returns the first element if non-empty; returns
     /// None otherwise.
-    pub fn pop_first(&mut self) -> Option<&'a <Self as Collection>::Element> {
+    pub fn pop_first(
+        &mut self,
+    ) -> Option<<Self as Collection>::ElementRef<'a>> {
         if self.from == self.to {
             None
         } else {
@@ -53,6 +57,23 @@ where
     }
 }
 
+impl<Whole> Slice<'_, Whole>
+where
+    Whole: LazyCollection<Whole = Whole>,
+{
+    /// Removes and returns the "lazily computed" first element if non-empty; returns
+    /// None otherwise.
+    pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = Some(self.whole.compute_at(&self.from));
+            self.whole.form_next(&mut self.from);
+            e
+        }
+    }
+}
+
 impl<Whole> Collection for Slice<'_, Whole>
 where
     Whole: Collection<Whole = Whole>,
@@ -60,6 +81,11 @@ where
     type Position = Whole::Position;
 
     type Element = Whole::Element;
+
+    type ElementRef<'a>
+        = Whole::ElementRef<'a>
+    where
+        Self: 'a;
 
     type Whole = Whole;
 
@@ -91,7 +117,7 @@ where
         self.whole.distance(from, to)
     }
 
-    fn at(&self, i: &Self::Position) -> &Self::Element {
+    fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
         self.whole.at(i)
     }
 
@@ -101,6 +127,15 @@ where
         to: Self::Position,
     ) -> Slice<Self::Whole> {
         Slice::new(self.whole, from, to)
+    }
+}
+
+impl<Whole> LazyCollection for Slice<'_, Whole>
+where
+    Whole: LazyCollection<Whole = Whole>,
+{
+    fn compute_at(&self, i: &Self::Position) -> Self::Element {
+        self.whole.compute_at(i)
     }
 }
 

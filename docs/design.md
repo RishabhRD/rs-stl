@@ -25,10 +25,14 @@ on special types like `[T]`.
 
 ### Collection
 
+Collection is the base trait that formally defines the linear sequence of
+elements. Elements are not necessarily needed to be stored in memory.
+
 ```rust
 pub trait Collection {
     type Position: Regular;
     type Element;
+    type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
     type Whole: Collection<
         Position = Self::Position,
         Element = Self::Element,
@@ -42,7 +46,8 @@ pub trait Collection {
     /// Returns position immediately after i
     fn next(&self, i: Self::Position) -> Self::Position;
     /// Access element at position i.
-    fn at(&self, i: &Self::Position) -> &Self::Element;
+    fn at(&self, i: &Self::Position) -> Self::ElementRef<'_>;
+    /// Returns a contiguous subrange of given collection.
     fn slice(
         &self,
         from: Self::Position,
@@ -151,6 +156,26 @@ where
 MutableCollection provides mutable access to any element in collection for
 supporting external mutation.
 
+## Collection Hierarchy in terms of laziness
+
+### LazyCollection
+
+LazyCollection is a collection whose elements are computed on element access.
+This suggests that the returned element are not actually stored in memory.
+
+LazyCollection trait is mostly for optimization purposes where one might
+need ownership of returned element, then it would avoid redundant copy.
+
+```rust
+pub trait LazyCollection: Collection
+where
+    Self::Whole: LazyCollection,
+{
+    /// Computes element at position `i`.
+    fn compute_at(&self, i: &Self::Position) -> Self::Element;
+}
+```
+
 ## Algorithms
 
 rs-stl provides multiple generic algorithms over these abstractions. These
@@ -237,3 +262,76 @@ Similar properties are held for `SliceMut` type.
 For convenience, `all`, `prefix`, `suffix`, `all_mut`, `prefix_mut`,
 `suffix_mut` methods are also provided as algorithms in addition to `slice` and
 `slice_mut` method for slicing.
+
+## Iterators
+
+Collections expose iterators using `.iter()` method. This actually helps to
+use all existing single pass algorithms on Iterators. Iterators returned by
+collections iterate over `ElementRef`.
+
+LazyCollection also exposes `.lazy_iter()` method, that traverses over
+`Element`.
+
+## Language Limitations
+
+There are some language limitations rs-stl suffer with. This leads to some
+ugly corners in library that is unavoidable.
+
+### Lifetime GATs are useless right now
+
+Ideally `Collection` should expose `iter()` method and `MutableCollection`
+should expose `iter_mut()` method. However, current implementation of `iter()`
+is very tricky and `iter_mut()` is not even possible.
+
+For solving the same `LendingIterator` is required whose `Item` associated type
+is lifetime bounded. However, `for<..>` syntax works really bad with `LendingIterator`.
+
+So, we need to settle on the hacky version of `iter()`.
+
+Also, this leads to introduction of `Whole` associated type in `Collection` trait.
+Ideally, it should have `Slice<'a>` associated type that would enable to have
+custom slice for every collection.
+
+### Lack of yield-once coroutines
+
+Swift's subscript operator provide ability to `yield` element. This is actually
+really helpful to project `ephermal` parts of data structure. This enables
+swift to have `Collection` trait that doesn't require `Element` in memory.
+
+However, rs-stl needs to incorporate proxy references using `ElementRef` for the
+same purpose. This is actually ugly and hurts ergonomics of API. Even worse is
+rust community doesn't seem to be very enthusiastic about this feature.
+
+With yield-once coroutine, `at` method can return reference to elements that
+doesn't actually exist in memory and API would be really simple:
+
+```rust
+    fn at(&self, i: &Self::Position) -> &Self::Element;
+```
+
+### Unable of handling recursive trait conditionals
+
+For example this just not compiles:
+
+```rust
+pub trait LazyCollection: Collection<Whole: LazyCollection> {
+    // details here...
+}
+```
+
+So one needs to write `Whole: LazyCollection` all the time one might want to
+depends on `LazyCollection` extension.
+
+### Lack of extension keyword
+
+Swift has really great extension keyword which enables to add methods to
+traits/structs after the definition of trait/structs.
+
+This enables Single Responsibility Principle as trait would only include
+the core/primitive methods required for implementing the trait. Other algorithms
+can be provided as an extension to trait/struct.
+
+Currently for coping the same, `extension-traits` are used that requires
+defining another trait like `CollectionExt: Collection` and implement it for
+all `Collection`. This hurts ergonomics in terms of IDE perspective as end-user
+doesn't need to know about `CollectionExt`.
