@@ -214,6 +214,48 @@ pub trait CollectionExt: Collection {
             start = self.next(start);
         }
     }
+
+    /// Returns position of first element of collection for which predicate returns false.
+    ///
+    /// # Precondition
+    ///   - The collection should be already partitioned wrt predicate i.e,
+    ///     there exist a position `i` such that predicate is true for every
+    ///     element of `self.prefix(i)` and predicate is false for every
+    ///     element of `self.suffix(i)`.
+    ///
+    /// # Complexity
+    ///   - O(log n) where `n == self.count()` for RandomAccessCollection,
+    ///   - O(n) otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 3, 5, 2, 4];
+    /// let i = arr.partition_point(|x| x % 2 == 1);
+    /// assert_eq!(i, 3);
+    /// ```
+    fn partition_point<F>(
+        &self,
+        belongs_to_first_partition: F,
+    ) -> Self::Position
+    where
+        F: Fn(&Self::Element) -> bool,
+    {
+        let mut f = self.start();
+        let mut n = self.count();
+        while n > 0 {
+            let half = n / 2;
+            let m = self.next_n(f.clone(), half);
+            if belongs_to_first_partition(&self.at(&m)) {
+                f = self.next(m);
+                n -= half + 1;
+            } else {
+                n = half;
+            }
+        }
+        f
+    }
 }
 
 impl<R> CollectionExt for R where R: Collection + ?Sized {}
