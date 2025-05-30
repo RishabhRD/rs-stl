@@ -436,7 +436,7 @@ pub trait CollectionExt: Collection {
     /// ```
     fn partition_point<F>(&self, belongs_in_second_half: F) -> Self::Position
     where
-        F: Fn(&Self::Element) -> bool,
+        F: Predicate<Self::Element>,
     {
         let mut f = self.start();
         let mut n = self.count();
