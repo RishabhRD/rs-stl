@@ -250,6 +250,71 @@ pub trait CollectionExt: Collection {
         self.find_if(|x| x == e)
     }
 
+    /*-----------------Predicate Satisfication Algorithms-----------------*/
+
+    /// Returns true if all element in `self` satisfies `pred`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use stl::*;
+    /// 
+    /// let arr = [1, 3, 5];
+    /// assert!(arr.all_satisfy(|x| x % 2 == 1));
+    /// ```
+    fn all_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
+        let mut cur = self.all();
+        while let Some(e) = cur.pop_first() {
+            if !pred(&e) { return false; }
+        }
+        true
+    }
+
+    /// Returns true if atleast one element in `self` satisfies `pred`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use stl::*;
+    /// 
+    /// let arr = [1, 2, 5];
+    /// assert!(arr.any_satisfy(|x| x % 2 == 1));
+    /// ```
+    fn any_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
+        let mut cur = self.all();
+        while let Some(e) = cur.pop_first() {
+            if pred(&e) { return true; }
+        }
+        false
+    }
+
+    /// Returns true if none of elements in `self` satisfy `pred`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use stl::*;
+    /// 
+    /// let arr = [2, 4, 6];
+    /// assert!(arr.none_satisfy(|x| x % 2 == 1));
+    /// ```
+    fn none_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
+        let mut cur = self.all();
+        while let Some(e) = cur.pop_first() {
+            if pred(&e) { return false; }
+        }
+        true
+    }
+
     /*-----------------Partition Algorithms-----------------*/
 
     /// Returns position of first element of collection for which predicate returns false.
