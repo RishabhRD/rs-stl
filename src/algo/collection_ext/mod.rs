@@ -232,12 +232,12 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 3, 5, 2, 4];
-    /// let i = arr.partition_point(|x| x % 2 == 1);
+    /// let i = arr.partition_point(|x| x % 2 == 0);
     /// assert_eq!(i, 3);
     /// ```
     fn partition_point<F>(
         &self,
-        belongs_to_first_partition: F,
+        belongs_in_second_half: F,
     ) -> Self::Position
     where
         F: Fn(&Self::Element) -> bool,
@@ -247,11 +247,11 @@ pub trait CollectionExt: Collection {
         while n > 0 {
             let half = n / 2;
             let m = self.next_n(f.clone(), half);
-            if belongs_to_first_partition(&self.at(&m)) {
+            if belongs_in_second_half(&self.at(&m)) {
+                n = half;
+            } else {
                 f = self.next(m);
                 n -= half + 1;
-            } else {
-                n = half;
             }
         }
         f
