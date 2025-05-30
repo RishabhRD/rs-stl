@@ -32,8 +32,8 @@ pub mod tests {
     }
 
     #[test]
-    fn find() {
+    fn find_element() {
         let arr = [1, 2, 3];
-        assert_eq!(arr.find(&2), 1);
+        assert_eq!(arr.find_element(&2), 1);
     }
 }

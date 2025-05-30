@@ -241,10 +241,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3];
-    /// let i = arr.find(&3);
+    /// let i = arr.find_element(&3);
     /// assert_eq!(i, 2);
     /// ```
-    fn find(&self, e: &Self::Element) -> Self::Position
+    fn find_element(&self, e: &Self::Element) -> Self::Position
     where Self::Element: Eq
     {
         self.find_if(|x| x == e)
@@ -313,6 +313,55 @@ pub trait CollectionExt: Collection {
             if pred(&e) { return false; }
         }
         true
+    }
+
+    /*-----------------Count Algorithms-----------------*/
+
+    /// Returns number of elements in `self` satisfying `pred`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let n = arr.count_if(|x| x % 2 == 1);
+    /// assert_eq!(n, 2);
+    /// ```
+    fn count_if<Pred>(&self, pred: Pred) -> usize
+    where
+        Pred: Predicate<Self::Element>,
+    {
+        let mut cur = self.all();
+        let mut count = 0;
+        while let Some(e) = cur.pop_first() {
+            if pred(&e) {
+                count += 1;
+            }
+        }
+        count
+    }
+
+    /// Returns number of elements in `self` equals `e`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let n = arr.count_if(|x| x % 2 == 1);
+    /// assert_eq!(n, 2);
+    /// ```
+    fn count_element(&self, e: &Self::Element) -> usize
+    where
+    Self::Element: Eq
+    {
+        self.count_if(|x| x == e)
     }
 
     /*-----------------Partition Algorithms-----------------*/
