@@ -8,13 +8,12 @@ pub trait ReorderableCollectionExt: ReorderableCollection
 where
     Self::Whole: ReorderableCollection,
 {
+    /*-----------------Slice Algorithms-----------------*/
+
     /// Returns mutable slice of the collection covering full collection.
     ///
-    /// # Precondition
-    ///
-    /// # Postcondition
-    ///   - Returns slice of the collection covering full collection.
-    ///   - Complexity: O(1).
+    /// # Complexity
+    ///   - O(1).
     ///
     /// # Examples
     /// ```rust
@@ -36,9 +35,8 @@ where
     /// # Precondition
     ///   - `to` is a valid position in the collection.
     ///
-    /// # Postcondition
-    ///   - Returns prefix slice of the collection ending at `to` exclusive.
-    ///   - Complexity: O(1).
+    /// # Complexity
+    ///   - O(1).
     ///
     /// # Examples
     /// ```rust
@@ -60,9 +58,8 @@ where
     /// # Precondition
     ///   - `from` is a valid position in the collection.
     ///
-    /// # Postcondition
-    ///   - Returns suffix slice of the collection starting from `from` inclusive.
-    ///   - Complexity: O(1).
+    /// # Complexity
+    ///   - O(1).
     ///
     /// # Examples
     /// ```rust

@@ -8,13 +8,10 @@ pub trait MutableCollectionExt: MutableCollection
 where
     Self::Whole: MutableCollection,
 {
-    /// Applies f to each element of collection.
+    /// Applies `f` to each element of collection.
     ///
-    /// # Precondition
-    ///
-    /// # Postcondition
-    ///   - Applies f to each element of collection.
-    ///   - Complexity: O(n). Exactly n applications of f.
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
     ///
     /// # Example
     /// ```rust

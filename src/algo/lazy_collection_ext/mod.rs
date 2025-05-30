@@ -19,11 +19,8 @@ where
 
     /// Applies f to each "lazily computed" element of collection.
     ///
-    /// # Precondition
-    ///
-    /// # Postcondition
-    ///   - Applies f to each element of collection.
-    ///   - Complexity: O(n). Exactly n applications of f.
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
     ///
     /// # Example
     /// ```rust

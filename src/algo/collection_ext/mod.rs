@@ -55,11 +55,8 @@ pub trait CollectionExt: Collection {
 
     /// Returns slice of the collection covering full collection.
     ///
-    /// # Precondition
-    ///
-    /// # Postcondition
-    ///   - Returns slice of the collection covering full collection.
-    ///   - Complexity: O(1).
+    /// # Complexity
+    ///   - O(1).
     ///
     /// # Examples
     /// ```rust
@@ -412,7 +409,7 @@ pub trait CollectionExt: Collection {
         self.count_where(|x| x == e)
     }
 
-    /*-----------------Partition Algorithms-----------------*/
+    /*-----------------Partition Find Algorithms-----------------*/
 
     /// Returns position of first element of collection for which predicate returns false.
     ///
