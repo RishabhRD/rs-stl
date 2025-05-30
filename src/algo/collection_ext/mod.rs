@@ -423,8 +423,8 @@ pub trait CollectionExt: Collection {
     ///     element of `self.suffix(i)`.
     ///
     /// # Complexity
-    ///   - O(log n) where `n == self.count()` for RandomAccessCollection,
-    ///   - O(n) otherwise.
+    ///   - O(log n) for RandomAccessCollection, O(n) otherwise; where `n == self.count()`.
+    ///   - O(log n) application of `belongs_in_second_half`.
     ///
     /// # Example
     /// ```rust
