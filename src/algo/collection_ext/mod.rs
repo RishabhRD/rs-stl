@@ -5,10 +5,43 @@ use crate::{Collection, CollectionIterator, Predicate, Slice};
 
 /// Algorithms for `Collection`.
 pub trait CollectionExt: Collection {
+    /*-----------------Iteration Algorithms-----------------*/
+
     /// Returns a non-consuming iterator that iterates over `&Self::Element`.
     fn iter(&self) -> CollectionIterator<Self::Whole> {
         CollectionIterator::new(self.slice(self.start(), self.end()))
     }
+
+    /// Applies f to each element of collection.
+    ///
+    /// # Precondition
+    ///
+    /// # Postcondition
+    ///   - Applies f to each element of collection.
+    ///   - Complexity: O(n). Exactly n applications of f.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let mut sum = 0;
+    /// arr.for_each(|x| sum = sum + x);
+    /// assert_eq!(sum, 6);
+    /// ```
+    fn for_each<F>(&self, mut f: F)
+    where
+        F: FnMut(&Self::Element),
+    {
+        let mut start = self.start();
+        let end = self.end();
+        while start != end {
+            f(&self.at(&start));
+            start = self.next(start);
+        }
+    }
+
+    /*-----------------Element Access Algorithms-----------------*/
 
     /// Returns the first element, or nil if `self` is empty.
     fn first(&self) -> Option<<Self as Collection>::ElementRef<'_>> {
@@ -18,6 +51,8 @@ pub trait CollectionExt: Collection {
             Some(self.at(&self.start()))
         }
     }
+
+    /*-----------------Slice Algorithms-----------------*/
 
     /// Returns slice of the collection covering full collection.
     ///
@@ -80,6 +115,8 @@ pub trait CollectionExt: Collection {
     fn suffix(&self, from: Self::Position) -> Slice<Self::Whole> {
         self.slice(from, self.end())
     }
+
+    /*-----------------Equality algorithms-----------------*/
 
     /// Returns true if elements of self is equivalent to elements of other by given relation bi_pred.
     ///
@@ -149,7 +186,7 @@ pub trait CollectionExt: Collection {
         self.equals_by(other, |x, y| x == y)
     }
 
-    //-----------------FIND ALGORITHMS------------------------------//
+    /*-----------------Find Algorithms-----------------*/
 
     /// Finds position of first element satisfying predicate.
     ///
@@ -213,36 +250,7 @@ pub trait CollectionExt: Collection {
         self.find_if(|x| x == e)
     }
 
-    //-----------------END FIND ALGORITHMS---------------------------//
-
-    /// Applies f to each element of collection.
-    ///
-    /// # Precondition
-    ///
-    /// # Postcondition
-    ///   - Applies f to each element of collection.
-    ///   - Complexity: O(n). Exactly n applications of f.
-    ///
-    /// # Example
-    /// ```rust
-    /// use stl::*;
-    ///
-    /// let arr = [1, 2, 3];
-    /// let mut sum = 0;
-    /// arr.for_each(|x| sum = sum + x);
-    /// assert_eq!(sum, 6);
-    /// ```
-    fn for_each<F>(&self, mut f: F)
-    where
-        F: FnMut(&Self::Element),
-    {
-        let mut start = self.start();
-        let end = self.end();
-        while start != end {
-            f(&self.at(&start));
-            start = self.next(start);
-        }
-    }
+    /*-----------------Partition Algorithms-----------------*/
 
     /// Returns position of first element of collection for which predicate returns false.
     ///
