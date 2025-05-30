@@ -204,10 +204,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3];
-    /// let i = arr.find_if(|x| *x == 3);
+    /// let i = arr.first_position_where(|x| *x == 3);
     /// assert_eq!(i, 2);
     /// ```
-    fn find_if<Pred>(&self, pred: Pred) -> Self::Position
+    fn first_position_where<Pred>(&self, pred: Pred) -> Self::Position
     where
         Pred: Predicate<Self::Element>,
     {
@@ -241,13 +241,13 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3];
-    /// let i = arr.find_element(&3);
+    /// let i = arr.first_position_of(&3);
     /// assert_eq!(i, 2);
     /// ```
-    fn find_element(&self, e: &Self::Element) -> Self::Position
+    fn first_position_of(&self, e: &Self::Element) -> Self::Position
     where Self::Element: Eq
     {
-        self.find_if(|x| x == e)
+        self.first_position_where(|x| x == e)
     }
 
     /*-----------------Predicate Satisfication Algorithms-----------------*/
@@ -327,10 +327,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3];
-    /// let n = arr.count_if(|x| x % 2 == 1);
+    /// let n = arr.count_where(|x| x % 2 == 1);
     /// assert_eq!(n, 2);
     /// ```
-    fn count_if<Pred>(&self, pred: Pred) -> usize
+    fn count_where<Pred>(&self, pred: Pred) -> usize
     where
         Pred: Predicate<Self::Element>,
     {
@@ -353,15 +353,15 @@ pub trait CollectionExt: Collection {
     /// ```rust
     /// use stl::*;
     ///
-    /// let arr = [1, 2, 3];
-    /// let n = arr.count_if(|x| x % 2 == 1);
+    /// let arr = [3, 0, 3];
+    /// let n = arr.count_of(&3);
     /// assert_eq!(n, 2);
     /// ```
-    fn count_element(&self, e: &Self::Element) -> usize
+    fn count_of(&self, e: &Self::Element) -> usize
     where
     Self::Element: Eq
     {
-        self.count_if(|x| x == e)
+        self.count_where(|x| x == e)
     }
 
     /*-----------------Partition Algorithms-----------------*/
