@@ -188,16 +188,11 @@ pub trait CollectionExt: Collection {
 
     /*-----------------Find Algorithms-----------------*/
 
-    /// Finds position of first element satisfying predicate.
+    /// Finds position of first element in `self` satisfying `pred`. If no such
+    /// element exists, returns `self.end()`.
     ///
-    /// # Precondition
-    ///
-    /// # Postcondition
-    ///   - Returns position of first element in self satisfying pred.
-    ///   - Returns end position if no such element exists.
-    ///   - Complexity: O(n). Maximum `n` applications of `pred`.
-    ///
-    ///     where n is number of elements in self.
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
     ///
     /// # Example
     /// ```rust
@@ -225,16 +220,11 @@ pub trait CollectionExt: Collection {
         rest.start()
     }
 
-    /// Finds position of first element equals e.
+    /// Finds position of first element in `self` equals `e`. If no such element
+    /// exists, returns `self.end()`.
     ///
-    /// # Precondition
-    ///
-    /// # Postcondition
-    ///   - Returns position of first element equals e.
-    ///   - Returns end position if no such element exists.
-    ///   - Complexity: O(n). Maximum `n` applications of `pred`.
-    ///
-    ///     where n is number of elements in self.
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
     ///
     /// # Example
     /// ```rust
