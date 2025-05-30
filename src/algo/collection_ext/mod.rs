@@ -240,14 +240,69 @@ pub trait CollectionExt: Collection {
     /// ```rust
     /// use stl::*;
     ///
-    /// let arr = [1, 2, 3];
+    /// let arr = [1, 2, 3, 3];
     /// let i = arr.first_position_of(&3);
     /// assert_eq!(i, 2);
     /// ```
     fn first_position_of(&self, e: &Self::Element) -> Self::Position
-    where Self::Element: Eq
+    where
+        Self::Element: Eq,
     {
         self.first_position_where(|x| x == e)
+    }
+
+    /// Finds position of last element in `self` satisfying `pred`. If no such
+    /// element exists, returns `self.end()`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4];
+    /// let i = arr.last_position_where(|x| x % 2 == 1);
+    /// assert_eq!(i, 2);
+    /// ```
+    fn last_position_where<Pred>(&self, pred: Pred) -> Self::Position
+    where
+        Pred: Predicate<Self::Element>,
+    {
+        let mut result = self.end();
+        let mut rest = self.all();
+        loop {
+            if let Some(x) = rest.first() {
+                if pred(&x) {
+                    result = rest.start();
+                }
+            } else {
+                break;
+            }
+            rest.drop_first();
+        }
+        result
+    }
+
+    /// Finds position of `last` element equals `e`. If no such element exist,
+    /// return `self.end()`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 3, 3];
+    /// let i = arr.last_position_of(&3);
+    /// assert_eq!(i, 2);
+    /// ```
+    fn last_position_of(&self, e: &Self::Element) -> Self::Position
+    where
+        Self::Element: Eq,
+    {
+        self.last_position_where(|x| x == e)
     }
 
     /*-----------------Predicate Satisfication Algorithms-----------------*/
@@ -261,14 +316,16 @@ pub trait CollectionExt: Collection {
     ///
     /// ```rust
     /// use stl::*;
-    /// 
+    ///
     /// let arr = [1, 3, 5];
     /// assert!(arr.all_satisfy(|x| x % 2 == 1));
     /// ```
     fn all_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
         let mut cur = self.all();
         while let Some(e) = cur.pop_first() {
-            if !pred(&e) { return false; }
+            if !pred(&e) {
+                return false;
+            }
         }
         true
     }
@@ -282,14 +339,16 @@ pub trait CollectionExt: Collection {
     ///
     /// ```rust
     /// use stl::*;
-    /// 
+    ///
     /// let arr = [1, 2, 5];
     /// assert!(arr.any_satisfy(|x| x % 2 == 1));
     /// ```
     fn any_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
         let mut cur = self.all();
         while let Some(e) = cur.pop_first() {
-            if pred(&e) { return true; }
+            if pred(&e) {
+                return true;
+            }
         }
         false
     }
@@ -303,14 +362,16 @@ pub trait CollectionExt: Collection {
     ///
     /// ```rust
     /// use stl::*;
-    /// 
+    ///
     /// let arr = [2, 4, 6];
     /// assert!(arr.none_satisfy(|x| x % 2 == 1));
     /// ```
     fn none_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
         let mut cur = self.all();
         while let Some(e) = cur.pop_first() {
-            if pred(&e) { return false; }
+            if pred(&e) {
+                return false;
+            }
         }
         true
     }
@@ -359,7 +420,7 @@ pub trait CollectionExt: Collection {
     /// ```
     fn count_of(&self, e: &Self::Element) -> usize
     where
-    Self::Element: Eq
+        Self::Element: Eq,
     {
         self.count_where(|x| x == e)
     }
@@ -386,10 +447,7 @@ pub trait CollectionExt: Collection {
     /// let i = arr.partition_point(|x| x % 2 == 0);
     /// assert_eq!(i, 3);
     /// ```
-    fn partition_point<F>(
-        &self,
-        belongs_in_second_half: F,
-    ) -> Self::Position
+    fn partition_point<F>(&self, belongs_in_second_half: F) -> Self::Position
     where
         F: Fn(&Self::Element) -> bool,
     {
