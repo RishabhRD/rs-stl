@@ -14,11 +14,8 @@ pub trait CollectionExt: Collection {
 
     /// Applies f to each element of collection.
     ///
-    /// # Precondition
-    ///
-    /// # Postcondition
-    ///   - Applies f to each element of collection.
-    ///   - Complexity: O(n). Exactly n applications of f.
+    /// # Complexity:
+    ///   - O(n) where `n == self.count()`.
     ///
     /// # Example
     /// ```rust
@@ -79,9 +76,8 @@ pub trait CollectionExt: Collection {
     /// # Precondition
     ///   - `to` is a valid position in the collection.
     ///
-    /// # Postcondition
-    ///   - Returns prefix slice of the collection ending at `to` exclusive.
-    ///   - Complexity: O(1).
+    /// # Complexity
+    ///   - O(1).
     ///
     /// # Examples
     /// ```rust
@@ -100,9 +96,8 @@ pub trait CollectionExt: Collection {
     /// # Precondition
     ///   - `from` is a valid position in the collection.
     ///
-    /// # Postcondition
-    ///   - Returns suffix slice of the collection starting from `from` inclusive.
-    ///   - Complexity: O(1).
+    /// # Complexity
+    ///   - O(1).
     ///
     /// # Examples
     /// ```rust
@@ -120,15 +115,15 @@ pub trait CollectionExt: Collection {
 
     /// Returns true if elements of self is equivalent to elements of other by given relation bi_pred.
     ///
-    /// # Precondition
-    ///
     /// # Postcondition
     ///   - Returns true if elements of self is equivalent to other by given relation bi_pred.
     ///   - If self and other have different number of elements, then return false.
-    ///   - Complexity: `O(min(m, n))`
+    ///
+    /// # Complexity
+    ///   - `O(min(m, n))`
     ///     where
-    ///     - `m == self.size()`
-    ///     - `n == other.size()`
+    ///     - `m == self.count()`
+    ///     - `n == other.count()`
     ///
     /// # Examples
     /// ```rust
@@ -160,15 +155,15 @@ pub trait CollectionExt: Collection {
 
     /// Returns true if elements of self is equal to elements of other.
     ///
-    /// # Precondition
-    ///
     /// # Postcondition
     ///   - Returns true if elements of self is equal to elements of other.
     ///   - If self and other have different number of elements, then return false.
-    ///   - Complexity: `O(min(m, n))`
+    ///
+    /// # Complexity
+    ///   - `O(min(m, n))`
     ///     where
-    ///     - `m == self.size()`
-    ///     - `n == other.size()`
+    ///     - `m == self.count()`
+    ///     - `n == other.count()`
     ///
     /// # Examples
     /// ```rust
