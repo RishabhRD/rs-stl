@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{Collection, CollectionIterator, Predicate, Slice};
+use crate::{
+    BinaryPredicate, Collection, CollectionIterator, Predicate, Slice,
+};
 
 /// Algorithms for `Collection`.
 pub trait CollectionExt: Collection {
@@ -140,7 +142,7 @@ pub trait CollectionExt: Collection {
     ) -> bool
     where
         OtherCollection: Collection,
-        F: Fn(&Self::Element, &OtherCollection::Element) -> bool,
+        F: BinaryPredicate<Self::Element, OtherCollection::Element>,
     {
         let mut self1 = self.all();
         let mut other1 = other.all();
