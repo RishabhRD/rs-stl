@@ -149,6 +149,8 @@ pub trait CollectionExt: Collection {
         self.equals_by(other, |x, y| x == y)
     }
 
+    //-----------------FIND ALGORITHMS------------------------------//
+
     /// Finds position of first element satisfying predicate.
     ///
     /// # Precondition
@@ -185,6 +187,33 @@ pub trait CollectionExt: Collection {
         }
         rest.start()
     }
+
+    /// Finds position of first element equals e.
+    ///
+    /// # Precondition
+    ///
+    /// # Postcondition
+    ///   - Returns position of first element equals e.
+    ///   - Returns end position if no such element exists.
+    ///   - Complexity: O(n). Maximum `n` applications of `pred`.
+    ///
+    ///     where n is number of elements in self.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let i = arr.find(&3);
+    /// assert_eq!(i, 2);
+    /// ```
+    fn find(&self, e: &Self::Element) -> Self::Position
+    where Self::Element: Eq
+    {
+        self.find_if(|x| x == e)
+    }
+
+    //-----------------END FIND ALGORITHMS---------------------------//
 
     /// Applies f to each element of collection.
     ///

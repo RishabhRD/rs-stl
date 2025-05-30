@@ -30,4 +30,10 @@ pub mod tests {
         let i = arr.find_if(|x| *x == 2);
         assert_eq!(i, 0);
     }
+
+    #[test]
+    fn find() {
+        let arr = [1, 2, 3];
+        assert_eq!(arr.find(&2), 1);
+    }
 }
