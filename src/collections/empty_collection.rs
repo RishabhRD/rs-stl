@@ -30,8 +30,16 @@ pub struct EmptyCollectionIter<'a, T> {
     _phantom: std::marker::PhantomData<&'a T>,
 }
 
-impl<'a, E> EmptyCollectionIter<'a, E> {
+impl<E> EmptyCollectionIter<'_, E> {
     pub fn new() -> Self {
+        EmptyCollectionIter {
+            _phantom: std::marker::PhantomData,
+        }
+    }
+}
+
+impl<E> Default for EmptyCollectionIter<'_, E> {
+    fn default() -> Self {
         EmptyCollectionIter {
             _phantom: std::marker::PhantomData,
         }
@@ -51,11 +59,17 @@ pub struct EmptyCollectionIterMut<'a, T> {
     _phantom: std::marker::PhantomData<&'a T>,
 }
 
-impl<'a, E> EmptyCollectionIterMut<'a, E> {
+impl<E> EmptyCollectionIterMut<'_, E> {
     pub fn new() -> Self {
         EmptyCollectionIterMut {
             _phantom: std::marker::PhantomData,
         }
+    }
+}
+
+impl<E> Default for EmptyCollectionIterMut<'_, E> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -77,6 +91,12 @@ impl<E> EmptyCollectionIterLazy<E> {
         EmptyCollectionIterLazy {
             _phantom: std::marker::PhantomData,
         }
+    }
+}
+
+impl<E> Default for EmptyCollectionIterLazy<E> {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
