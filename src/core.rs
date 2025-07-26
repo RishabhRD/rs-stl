@@ -67,6 +67,11 @@ pub trait Collection {
         Whole = Self::Whole,
     >;
 
+    /// Type of non-owning iterator yielded by collection.
+    type Iter<'a>: Iterator<Item = Self::ElementRef<'a>>
+    where
+        Self: 'a; // If someday rust have LendingIterator, then use LendingIterator.
+
     /// Returns the position of first element in self,
     /// or if self is empty then start() == end()
     fn start(&self) -> Self::Position;
@@ -156,15 +161,30 @@ pub trait Collection {
     ///   - O(1)
     fn at(&self, i: &Self::Position) -> Self::ElementRef<'_>;
 
-    /// Returns slice of collection in positions [from, to).
+    /// Returns slice of collection in positions `[from, to)`.
     ///
     /// # Precondition
-    ///   - [from, to) represents valid positions in collection.
+    ///   - `[from, to)` represents valid positions in collection.
     fn slice(
         &self,
         from: Self::Position,
         to: Self::Position,
     ) -> Slice<Self::Whole>;
+
+    /// Returns a iterator to iterate element-ref over `[from, to)`.
+    ///
+    /// # Precondition
+    ///   - `[from, to)` represents valid positions in collection.
+    fn iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::Iter<'_>;
+
+    /// Returns a non-owning iterator to iterate over element-ref of `self`.
+    fn iter(&self) -> Self::Iter<'_> {
+        self.iter_pos(self.start(), self.end())
+    }
 }
 
 /// Models a collection whose elements are computed on element access.
@@ -172,6 +192,11 @@ pub trait LazyCollection: Collection
 where
     Self::Whole: LazyCollection,
 {
+    /// Type of iterator to iterate of lazy values of `self`.
+    type LazyIter<'a>: Iterator<Item = Self::Element>
+    where
+        Self: 'a;
+
     /// Computes element at position `i`.
     ///
     /// # Precondition
@@ -180,6 +205,21 @@ where
     /// # Complexity Requirement
     ///   - O(1)
     fn compute_at(&self, i: &Self::Position) -> Self::Element;
+
+    /// Returns a lazy iterator that iterate over lazy element values in `[from, to)`.
+    ///
+    /// # Precondition
+    ///   - `[from, to)` represents valid positions in collection.
+    fn lazy_iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::LazyIter<'_>;
+
+    /// Returns a lazy iterator that iterate over lazy element values.
+    fn lazy_iter(&self) -> Self::LazyIter<'_> {
+        self.lazy_iter_pos(self.start(), self.end())
+    }
 }
 
 /// Models a bidirectional collection, which can be traversed forward as well as backward.
@@ -266,10 +306,10 @@ where
     /// Swaps element at position i with element at position j.
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
 
-    /// Returns mutable slice of collection in positions [from, to).
+    /// Returns mutable slice of collection in positions `[from, to)`.
     ///
     /// # Precondition
-    ///   - [from, to) represents valid positions in collection.
+    ///   - `[from, to)` represents valid positions in collection.
     fn slice_mut(
         &mut self,
         from: Self::Position,
@@ -282,6 +322,11 @@ pub trait MutableCollection: ReorderableCollection
 where
     Self::Whole: MutableCollection,
 {
+    /// Type of iterator that can iterate over mutable-ref of elements in `self`.
+    type IterMut<'a>: Iterator<Item = &'a mut Self::Element>
+    where
+        Self: 'a;
+
     /// Mutably Access element at position i.
     ///
     /// # Precondition
@@ -290,4 +335,19 @@ where
     /// # Complexity Requirement
     ///   - O(1)
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
+
+    /// Returns a mutable iterator of self that iterates through `[from, to)`.
+    ///
+    /// # Precondition
+    ///   - `[from, to)` represents valid positions in collection.
+    fn iter_mut_pos(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::IterMut<'_>;
+
+    /// Returns a mutable iterator of self.
+    fn iter_mut(&mut self) -> Self::IterMut<'_> {
+        self.iter_mut_pos(self.start(), self.end())
+    }
 }

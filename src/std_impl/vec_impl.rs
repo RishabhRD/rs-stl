@@ -18,6 +18,11 @@ impl<T> Collection for Vec<T> {
 
     type Whole = Self;
 
+    type Iter<'a>
+        = std::slice::Iter<'a, T>
+    where
+        Self: 'a;
+
     fn start(&self) -> Self::Position {
         0
     }
@@ -57,6 +62,18 @@ impl<T> Collection for Vec<T> {
     ) -> Slice<Self::Whole> {
         Slice::new(self, from, to)
     }
+
+    fn iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::Iter<'_> {
+        self.as_slice()[from..to].iter()
+    }
+
+    fn iter(&self) -> Self::Iter<'_> {
+        self.as_slice().iter()
+    }
 }
 
 impl<T> BidirectionalCollection for Vec<T> {
@@ -86,7 +103,24 @@ impl<T> ReorderableCollection for Vec<T> {
 }
 
 impl<T> MutableCollection for Vec<T> {
+    type IterMut<'a>
+        = std::slice::IterMut<'a, T>
+    where
+        Self: 'a;
+
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         &mut self[*i]
+    }
+
+    fn iter_mut_pos(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::IterMut<'_> {
+        self.as_mut_slice()[from..to].iter_mut()
+    }
+
+    fn iter_mut(&mut self) -> Self::IterMut<'_> {
+        self.as_mut_slice().iter_mut()
     }
 }

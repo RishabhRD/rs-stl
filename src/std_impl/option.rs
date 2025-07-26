@@ -18,6 +18,11 @@ impl<T> Collection for Option<T> {
 
     type Whole = Self;
 
+    type Iter<'a>
+        = std::slice::Iter<'a, T>
+    where
+        Self: 'a;
+
     fn start(&self) -> Self::Position {
         !self.is_some()
     }
@@ -28,25 +33,6 @@ impl<T> Collection for Option<T> {
 
     fn form_next(&self, position: &mut Self::Position) {
         *position = true
-    }
-
-    fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
-        if *i {
-            panic!("Out of bounds access");
-        }
-
-        match self {
-            Some(e) => e,
-            None => panic!("Out of bounds access"),
-        }
-    }
-
-    fn slice(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> crate::Slice<Self::Whole> {
-        Slice::new(self, from, to)
     }
 
     fn form_next_n(&self, position: &mut Self::Position, n: usize) {
@@ -73,6 +59,36 @@ impl<T> Collection for Option<T> {
 
     fn underestimated_count(&self) -> usize {
         self.count()
+    }
+
+    fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
+        if *i {
+            panic!("Out of bounds access");
+        }
+
+        match self {
+            Some(e) => e,
+            None => panic!("Out of bounds access"),
+        }
+    }
+
+    fn slice(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> crate::Slice<Self::Whole> {
+        Slice::new(self, from, to)
+    }
+
+    fn iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::Iter<'_> {
+        match (self, from, to) {
+            (Some(value), false, true) => std::slice::from_ref(value).iter(),
+            _ => [].iter(),
+        }
     }
 }
 
@@ -107,6 +123,11 @@ impl<T> ReorderableCollection for Option<T> {
 }
 
 impl<T> MutableCollection for Option<T> {
+    type IterMut<'a>
+        = std::slice::IterMut<'a, T>
+    where
+        Self: 'a;
+
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         if *i {
             panic!("Out of bounds access");
@@ -115,6 +136,19 @@ impl<T> MutableCollection for Option<T> {
         match self {
             Some(e) => e,
             None => panic!("Out of bounds access"),
+        }
+    }
+
+    fn iter_mut_pos(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::IterMut<'_> {
+        match (self, from, to) {
+            (Some(value), false, true) => {
+                std::slice::from_mut(value).iter_mut()
+            }
+            _ => [].iter_mut(),
         }
     }
 }

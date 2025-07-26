@@ -9,7 +9,7 @@ pub mod tests {
     fn sum_by_iteration() {
         let arr = [1, 2, 3];
         let mut sum = 0;
-        for i in CollectionExt::iter(&arr) {
+        for i in Collection::iter(&arr) {
             sum += i;
         }
         assert_eq!(sum, 6);

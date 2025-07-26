@@ -17,6 +17,40 @@ impl<E> CollectionOfOne<E> {
     }
 }
 
+/// Iterator for `CollectionOfOne`.
+pub enum CollectionOfOneIter<'a, E> {
+    First(&'a E),
+    Last,
+}
+
+impl<'a, E> Iterator for CollectionOfOneIter<'a, E> {
+    type Item = &'a E;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match std::mem::replace(self, CollectionOfOneIter::Last) {
+            CollectionOfOneIter::First(e) => Some(e),
+            CollectionOfOneIter::Last => None,
+        }
+    }
+}
+
+/// Mutable Iterator for `CollectionOfOne`.
+pub enum CollectionOfOneIterMut<'a, E> {
+    First(&'a mut E),
+    Last,
+}
+
+impl<'a, E> Iterator for CollectionOfOneIterMut<'a, E> {
+    type Item = &'a mut E;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        match std::mem::replace(self, CollectionOfOneIterMut::Last) {
+            CollectionOfOneIterMut::First(e) => Some(e),
+            CollectionOfOneIterMut::Last => None,
+        }
+    }
+}
+
 impl<E> Collection for CollectionOfOne<E> {
     type Position = bool;
 
@@ -29,6 +63,11 @@ impl<E> Collection for CollectionOfOne<E> {
 
     type Whole = Self;
 
+    type Iter<'a>
+        = CollectionOfOneIter<'a, E>
+    where
+        Self: 'a;
+
     fn start(&self) -> Self::Position {
         false
     }
@@ -39,21 +78,6 @@ impl<E> Collection for CollectionOfOne<E> {
 
     fn form_next(&self, position: &mut Self::Position) {
         *position = true
-    }
-
-    fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
-        if *i {
-            panic!("Out of bound access");
-        }
-        &self.element
-    }
-
-    fn slice(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> crate::Slice<Self::Whole> {
-        Slice::new(self, from, to)
     }
 
     fn form_next_n(&self, position: &mut Self::Position, n: usize) {
@@ -75,6 +99,37 @@ impl<E> Collection for CollectionOfOne<E> {
 
     fn underestimated_count(&self) -> usize {
         1
+    }
+
+    fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
+        if *i {
+            panic!("Out of bound access");
+        }
+        &self.element
+    }
+
+    fn slice(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> crate::Slice<Self::Whole> {
+        Slice::new(self, from, to)
+    }
+
+    fn iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::Iter<'_> {
+        if from == to {
+            CollectionOfOneIter::Last
+        } else {
+            CollectionOfOneIter::First(&self.element)
+        }
+    }
+
+    fn iter(&self) -> Self::Iter<'_> {
+        CollectionOfOneIter::First(&self.element)
     }
 }
 
@@ -109,10 +164,31 @@ impl<E> ReorderableCollection for CollectionOfOne<E> {
 }
 
 impl<E> MutableCollection for CollectionOfOne<E> {
+    type IterMut<'a>
+        = CollectionOfOneIterMut<'a, E>
+    where
+        Self: 'a;
+
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         if *i {
             panic!("Out of bound access");
         }
         &mut self.element
+    }
+
+    fn iter_mut_pos(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::IterMut<'_> {
+        if from == to {
+            CollectionOfOneIterMut::Last
+        } else {
+            CollectionOfOneIterMut::First(&mut self.element)
+        }
+    }
+
+    fn iter_mut(&mut self) -> Self::IterMut<'_> {
+        CollectionOfOneIterMut::First(&mut self.element)
     }
 }
