@@ -19,29 +19,16 @@ pub mod tests {
         assert_eq!(*c.at(&c.start()), 3);
 
         let c = CollectionOfOne::new(2);
+        assert_eq!(c.iter().sum::<i32>(), 2);
 
-        let mut sum = 0;
-        for i in c.iter() {
-            sum += i;
-        }
-        assert_eq!(sum, 2);
-
-        let mut sum = 0;
         let mut s = c.all();
         s.drop_first();
-        for i in s.iter() {
-            sum += i
-        }
-        assert_eq!(sum, 0);
+        assert_eq!(s.iter().sum::<i32>(), 0);
     }
 
     #[test]
     fn empty_collection() {
         let c: EmptyCollection<i32> = EmptyCollection::new();
-        let mut sum = 0;
-        for i in c.iter() {
-            sum += i;
-        }
-        assert_eq!(sum, 0)
+        assert_eq!(c.iter().sum::<i32>(), 0)
     }
 }

@@ -30,20 +30,14 @@ pub mod tests {
     #[test]
     fn iter_full_some() {
         let c = Some(5);
-        let mut sum = 0;
-        for i in Collection::iter(&c) {
-            sum += i
-        }
+        let sum = Collection::iter(&c).sum::<i32>();
         assert_eq!(sum, 5)
     }
 
     #[test]
     fn iter_full_none() {
         let c: Option<i32> = None;
-        let mut sum = 0;
-        for i in Collection::iter(&c) {
-            sum += i
-        }
+        let sum = Collection::iter(&c).sum::<i32>();
         assert_eq!(sum, 0)
     }
 
@@ -52,10 +46,7 @@ pub mod tests {
         let c = Some(5);
         let mut s = c.all();
         s.drop_first();
-        let mut sum = 0;
-        for i in s.iter() {
-            sum += i
-        }
+        let sum = s.iter().sum::<i32>();
         assert_eq!(sum, 0)
     }
 }
