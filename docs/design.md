@@ -218,6 +218,9 @@ Currently
 - `[T; N]`
 - `[T]`
 - `Vec<T>`
+- `Option<T>`
+- `Range<T>`
+- `RangeInclusive<T>`
 
 is supported. Will support more data structures in future.
 
