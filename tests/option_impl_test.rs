@@ -26,4 +26,36 @@ pub mod tests {
         assert!(c.start());
         assert!(c.end());
     }
+
+    #[test]
+    fn iter_full_some() {
+        let c = Some(5);
+        let mut sum = 0;
+        for i in Collection::iter(&c) {
+            sum += i
+        }
+        assert_eq!(sum, 5)
+    }
+
+    #[test]
+    fn iter_full_none() {
+        let c: Option<i32> = None;
+        let mut sum = 0;
+        for i in Collection::iter(&c) {
+            sum += i
+        }
+        assert_eq!(sum, 0)
+    }
+
+    #[test]
+    fn iter_sliced_some() {
+        let c = Some(5);
+        let mut s = c.all();
+        s.drop_first();
+        let mut sum = 0;
+        for i in s.iter() {
+            sum += i
+        }
+        assert_eq!(sum, 0)
+    }
 }
