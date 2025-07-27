@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-mod collection_of_one;
-pub use collection_of_one::*;
+pub mod empty;
+pub use empty::EmptyCollection;
 
-mod empty_collection;
-pub use empty_collection::*;
+pub mod singleton;
+pub use singleton::SingletonCollection;

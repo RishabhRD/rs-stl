@@ -7,51 +7,51 @@ use crate::{
 };
 
 /// A collection of one element.
-pub struct CollectionOfOne<E> {
+pub struct SingletonCollection<E> {
     element: E,
 }
 
-impl<E> CollectionOfOne<E> {
+impl<E> SingletonCollection<E> {
     pub fn new(element: E) -> Self {
-        CollectionOfOne { element }
+        SingletonCollection { element }
     }
 }
 
 /// Iterator for `CollectionOfOne`.
-pub enum CollectionOfOneIter<'a, E> {
+pub enum Iter<'a, E> {
     First(&'a E),
     Last,
 }
 
-impl<'a, E> Iterator for CollectionOfOneIter<'a, E> {
+impl<'a, E> Iterator for Iter<'a, E> {
     type Item = &'a E;
 
     fn next(&mut self) -> Option<Self::Item> {
-        match std::mem::replace(self, CollectionOfOneIter::Last) {
-            CollectionOfOneIter::First(e) => Some(e),
-            CollectionOfOneIter::Last => None,
+        match std::mem::replace(self, Iter::Last) {
+            Iter::First(e) => Some(e),
+            Iter::Last => None,
         }
     }
 }
 
 /// Mutable Iterator for `CollectionOfOne`.
-pub enum CollectionOfOneIterMut<'a, E> {
+pub enum IterMut<'a, E> {
     First(&'a mut E),
     Last,
 }
 
-impl<'a, E> Iterator for CollectionOfOneIterMut<'a, E> {
+impl<'a, E> Iterator for IterMut<'a, E> {
     type Item = &'a mut E;
 
     fn next(&mut self) -> Option<Self::Item> {
-        match std::mem::replace(self, CollectionOfOneIterMut::Last) {
-            CollectionOfOneIterMut::First(e) => Some(e),
-            CollectionOfOneIterMut::Last => None,
+        match std::mem::replace(self, IterMut::Last) {
+            IterMut::First(e) => Some(e),
+            IterMut::Last => None,
         }
     }
 }
 
-impl<E> Collection for CollectionOfOne<E> {
+impl<E> Collection for SingletonCollection<E> {
     type Position = bool;
 
     type Element = E;
@@ -64,7 +64,7 @@ impl<E> Collection for CollectionOfOne<E> {
     type Whole = Self;
 
     type Iter<'a>
-        = CollectionOfOneIter<'a, E>
+        = Iter<'a, E>
     where
         Self: 'a;
 
@@ -122,18 +122,18 @@ impl<E> Collection for CollectionOfOne<E> {
         to: Self::Position,
     ) -> Self::Iter<'_> {
         if from == to {
-            CollectionOfOneIter::Last
+            Iter::Last
         } else {
-            CollectionOfOneIter::First(&self.element)
+            Iter::First(&self.element)
         }
     }
 
     fn iter(&self) -> Self::Iter<'_> {
-        CollectionOfOneIter::First(&self.element)
+        Iter::First(&self.element)
     }
 }
 
-impl<E> BidirectionalCollection for CollectionOfOne<E> {
+impl<E> BidirectionalCollection for SingletonCollection<E> {
     fn form_prior(&self, position: &mut Self::Position) {
         *position = false
     }
@@ -145,9 +145,9 @@ impl<E> BidirectionalCollection for CollectionOfOne<E> {
     }
 }
 
-impl<E> RandomAccessCollection for CollectionOfOne<E> {}
+impl<E> RandomAccessCollection for SingletonCollection<E> {}
 
-impl<E> ReorderableCollection for CollectionOfOne<E> {
+impl<E> ReorderableCollection for SingletonCollection<E> {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         if *i || *j {
             panic!("Out of bound access");
@@ -163,9 +163,9 @@ impl<E> ReorderableCollection for CollectionOfOne<E> {
     }
 }
 
-impl<E> MutableCollection for CollectionOfOne<E> {
+impl<E> MutableCollection for SingletonCollection<E> {
     type IterMut<'a>
-        = CollectionOfOneIterMut<'a, E>
+        = IterMut<'a, E>
     where
         Self: 'a;
 
@@ -182,13 +182,13 @@ impl<E> MutableCollection for CollectionOfOne<E> {
         to: Self::Position,
     ) -> Self::IterMut<'_> {
         if from == to {
-            CollectionOfOneIterMut::Last
+            IterMut::Last
         } else {
-            CollectionOfOneIterMut::First(&mut self.element)
+            IterMut::First(&mut self.element)
         }
     }
 
     fn iter_mut(&mut self) -> Self::IterMut<'_> {
-        CollectionOfOneIterMut::First(&mut self.element)
+        IterMut::First(&mut self.element)
     }
 }

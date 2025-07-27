@@ -26,27 +26,27 @@ impl<E> Default for EmptyCollection<E> {
 }
 
 /// An iterator for empty collection.
-pub struct EmptyCollectionIter<'a, T> {
+pub struct Iter<'a, T> {
     _phantom: std::marker::PhantomData<&'a T>,
 }
 
-impl<E> EmptyCollectionIter<'_, E> {
+impl<E> Iter<'_, E> {
     pub fn new() -> Self {
-        EmptyCollectionIter {
+        Iter {
             _phantom: std::marker::PhantomData,
         }
     }
 }
 
-impl<E> Default for EmptyCollectionIter<'_, E> {
+impl<E> Default for Iter<'_, E> {
     fn default() -> Self {
-        EmptyCollectionIter {
+        Iter {
             _phantom: std::marker::PhantomData,
         }
     }
 }
 
-impl<'a, E> Iterator for EmptyCollectionIter<'a, E> {
+impl<'a, E> Iterator for Iter<'a, E> {
     type Item = &'a E;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -55,25 +55,25 @@ impl<'a, E> Iterator for EmptyCollectionIter<'a, E> {
 }
 
 /// A lazy iterator for empty collection.
-pub struct EmptyCollectionIterMut<'a, T> {
+pub struct IterMut<'a, T> {
     _phantom: std::marker::PhantomData<&'a T>,
 }
 
-impl<E> EmptyCollectionIterMut<'_, E> {
+impl<E> IterMut<'_, E> {
     pub fn new() -> Self {
-        EmptyCollectionIterMut {
+        IterMut {
             _phantom: std::marker::PhantomData,
         }
     }
 }
 
-impl<E> Default for EmptyCollectionIterMut<'_, E> {
+impl<E> Default for IterMut<'_, E> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<'a, E> Iterator for EmptyCollectionIterMut<'a, E> {
+impl<'a, E> Iterator for IterMut<'a, E> {
     type Item = &'a mut E;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -82,25 +82,25 @@ impl<'a, E> Iterator for EmptyCollectionIterMut<'a, E> {
 }
 
 /// A lazy iterator for empty collection.
-pub struct EmptyCollectionIterLazy<T> {
+pub struct LazyIter<T> {
     _phantom: std::marker::PhantomData<T>,
 }
 
-impl<E> EmptyCollectionIterLazy<E> {
+impl<E> LazyIter<E> {
     pub fn new() -> Self {
-        EmptyCollectionIterLazy {
+        LazyIter {
             _phantom: std::marker::PhantomData,
         }
     }
 }
 
-impl<E> Default for EmptyCollectionIterLazy<E> {
+impl<E> Default for LazyIter<E> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<E> Iterator for EmptyCollectionIterLazy<E> {
+impl<E> Iterator for LazyIter<E> {
     type Item = E;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -121,7 +121,7 @@ impl<E> Collection for EmptyCollection<E> {
     type Whole = Self;
 
     type Iter<'a>
-        = EmptyCollectionIter<'a, E>
+        = Iter<'a, E>
     where
         Self: 'a;
 
@@ -158,11 +158,11 @@ impl<E> Collection for EmptyCollection<E> {
     }
 
     fn iter_pos(&self, _: Self::Position, _: Self::Position) -> Self::Iter<'_> {
-        EmptyCollectionIter::new()
+        Iter::new()
     }
 
     fn iter(&self) -> Self::Iter<'_> {
-        EmptyCollectionIter::new()
+        Iter::new()
     }
 }
 
@@ -190,7 +190,7 @@ impl<E> ReorderableCollection for EmptyCollection<E> {
 
 impl<E> MutableCollection for EmptyCollection<E> {
     type IterMut<'a>
-        = EmptyCollectionIterMut<'a, E>
+        = IterMut<'a, E>
     where
         Self: 'a;
 
@@ -203,17 +203,17 @@ impl<E> MutableCollection for EmptyCollection<E> {
         _: Self::Position,
         _: Self::Position,
     ) -> Self::IterMut<'_> {
-        EmptyCollectionIterMut::new()
+        IterMut::new()
     }
 
     fn iter_mut(&mut self) -> Self::IterMut<'_> {
-        EmptyCollectionIterMut::new()
+        IterMut::new()
     }
 }
 
 impl<E> LazyCollection for EmptyCollection<E> {
     type LazyIter<'a>
-        = EmptyCollectionIterLazy<E>
+        = LazyIter<E>
     where
         Self: 'a;
 
@@ -226,10 +226,10 @@ impl<E> LazyCollection for EmptyCollection<E> {
         _: Self::Position,
         _: Self::Position,
     ) -> Self::LazyIter<'_> {
-        EmptyCollectionIterLazy::new()
+        LazyIter::new()
     }
 
     fn lazy_iter(&self) -> Self::LazyIter<'_> {
-        EmptyCollectionIterLazy::new()
+        LazyIter::new()
     }
 }

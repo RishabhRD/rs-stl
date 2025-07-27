@@ -3,11 +3,14 @@
 
 #[cfg(test)]
 pub mod tests {
-    use stl::*;
+    use stl::{
+        collections::{EmptyCollection, SingletonCollection},
+        *,
+    };
 
     #[test]
     fn collection_of_one() {
-        let mut c = CollectionOfOne::new(2);
+        let mut c = SingletonCollection::new(2);
 
         assert!(!c.start());
         assert!(c.end());
@@ -18,7 +21,7 @@ pub mod tests {
         *c.at_mut(&c.start()) = 3;
         assert_eq!(*c.at(&c.start()), 3);
 
-        let c = CollectionOfOne::new(2);
+        let c = SingletonCollection::new(2);
         assert_eq!(c.iter().sum::<i32>(), 2);
 
         let mut s = c.all();
