@@ -54,7 +54,7 @@ impl<'a, E> Iterator for Iter<'a, E> {
     }
 }
 
-/// A lazy iterator for empty collection.
+/// A mutable iterator for empty collection.
 pub struct IterMut<'a, T> {
     _phantom: std::marker::PhantomData<&'a T>,
 }
