@@ -36,7 +36,7 @@ where
     /// None otherwise.
     pub fn pop_first(
         &mut self,
-    ) -> Option<<Self as Collection>::ElementRef<'a>> {
+    ) -> Option<<Self as Collection>::ElementRef<'_>> {
         if self.from == self.to {
             None
         } else {
