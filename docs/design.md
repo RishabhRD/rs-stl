@@ -265,42 +265,115 @@ For convenience, `all`, `prefix`, `suffix`, `all_mut`, `prefix_mut`,
 
 ## Iterators
 
-Collections expose iterators using `.iter()` method. This actually helps to
-use all existing single pass algorithms on Iterators. Iterators returned by
-collections iterate over `ElementRef`.
+Collections expose iterators to iterate over elements. This enables collections
+to utilize all iterator based algorithms of rust by default.
 
-LazyCollection also exposes `.lazy_iter()` method, that traverses over
-`Element`.
+### Iterator support by Collection trait
+
+Collection trait requires:
+
+1. An associated type `Iter`:
+
+```rust
+    type Iter<'a>: Iterator<Item = Self::ElementRef<'a>>
+    where
+        Self: 'a;
+```
+
+This is the type of Iterator, collection would expose to traverse over elements
+of collection by reference i.e., `Self::ElementRef`.
+
+2. An `iter_pos` method to yield iterator:
+
+```rust
+    fn iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::Iter<'_>;
+```
+
+`iter_pos` method yields an iterator that traverses in elements at `[from, to)`
+positions.
+
+3. An `iter` method to yield iterator:
+
+```rust
+    fn iter(&self) -> Self::Iter<'_> {
+        self.iter_pos(self.start(), self.end())
+    }
+```
+
+`iter` method yields an iterator that traverses all elements in collection.
+By default it calls `iter_pos` method. It is present as `Collection` impls
+can override it for more efficient implementation.
+
+`iter_pos` method enables `Slice` and `SliceMut` structures to yield iterators
+of base collections iteself, rather than creating a new wrapper iterator.
+
+### Iterator support by LazyCollection trait
+
+Similarily, `LazyCollection` trait requires:
+
+```rust
+    type LazyIter<'a>: Iterator<Item = Self::Element>
+    where
+        Self: 'a;
+
+    fn lazy_iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::LazyIter<'_>;
+
+    fn lazy_iter(&self) -> Self::LazyIter<'_> {
+        self.lazy_iter_pos(self.start(), self.end())
+    }
+```
+
+As `LazyCollection` can lazily compute the values, `LazyIter` associated type
+is an iterator that traverses over those lazy computed values.
+Similar reasoning goes for `lazy_iter_pos` and `lazy_iter`.
+
+### Iterator support by MutableCollection trait
+
+`MutableCollection` trait requires:
+
+```rust
+    type IterMut<'a>: Iterator<Item = &'a mut Self::Element>
+    where
+        Self: 'a;
+
+    fn iter_mut_pos(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::IterMut<'_>;
+
+    fn iter_mut(&mut self) -> Self::IterMut<'_> {
+        self.iter_mut_pos(self.start(), self.end())
+    }
+```
+
+`IterMut` associated type is an iterator that traverses over mut-ref of
+elements in collection.
+Similar reasoning goes for `iter_mut_pos` and `iter_mut`.
 
 ## Language Limitations
 
 There are some language limitations rs-stl suffer with. This leads to some
 ugly corners in library that is unavoidable.
 
-### Lifetime GATs are useless right now
-
-Ideally `Collection` should expose `iter()` method and `MutableCollection`
-should expose `iter_mut()` method. However, current implementation of `iter()`
-is very tricky and `iter_mut()` is not even possible.
-
-For solving the same `LendingIterator` is required whose `Item` associated type
-is lifetime bounded. However, `for<..>` syntax works really bad with `LendingIterator`.
-
-So, we need to settle on the hacky version of `iter()`.
-
-Also, this leads to introduction of `Whole` associated type in `Collection` trait.
-Ideally, it should have `Slice<'a>` associated type that would enable to have
-custom slice for every collection.
-
 ### Lack of yield-once coroutines
 
-Swift's subscript operator provide ability to `yield` element. This is actually
+Swift's subscript operator provide ability to `yield` element. This is
 really helpful to project `ephermal` parts of data structure. This enables
 swift to have `Collection` trait that doesn't require `Element` in memory.
 
 However, rs-stl needs to incorporate proxy references using `ElementRef` for the
-same purpose. This is actually ugly and hurts ergonomics of API. Even worse is
-rust community doesn't seem to be very enthusiastic about this feature.
+same purpose. For example, `Range<i32>` can't be modelled as `Collection` without
+`ElementRef` abstraction as `Range<i32>` doesn't actually contains `i32`.
+`ElementRef` is ugly and hurts ergonomics of API.
 
 With yield-once coroutine, `at` method can return reference to elements that
 doesn't actually exist in memory and API would be really simple:
@@ -308,6 +381,26 @@ doesn't actually exist in memory and API would be really simple:
 ```rust
     fn at(&self, i: &Self::Position) -> &Self::Element;
 ```
+
+This is simpler in terms of use and also symmetrical with `MutableCollection`.
+**If rust community chooses to pick one thing from here, please pick yield-once
+coroutines.**
+
+### Lifetime GATs are useless right now
+
+Similar to how collections exposes their custom `Iterator` type, collections
+could expose their custom `Slice` type too. However, when working with
+refinement like `BidirectionalCollection`, associated `Slice` type should also
+need to conform to `BidirectionalCollection`. However, that would require
+`for<...>` syntax on lifetimes of `Slice` associated type, that would require
+lifetime of `Slice` associated type to be `'static`. This is a well known
+language limitation currently.
+
+To overcome the same, `Whole` associated type is exposed on which generic `Slice`
+and `SliceMut` structs can be built.
+
+The same bug is also the reason why rust currently not have `LendingIterator`
+abstraction at all.
 
 ### Unable of handling recursive trait conditionals
 

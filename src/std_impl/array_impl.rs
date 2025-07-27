@@ -18,6 +18,11 @@ impl<T, const N: usize> Collection for [T; N] {
 
     type Whole = Self;
 
+    type Iter<'a>
+        = std::slice::Iter<'a, T>
+    where
+        Self: 'a;
+
     fn start(&self) -> Self::Position {
         0
     }
@@ -26,8 +31,30 @@ impl<T, const N: usize> Collection for [T; N] {
         N
     }
 
+    fn form_next(&self, i: &mut Self::Position) {
+        *i += 1
+    }
+
+    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
+        *i += n
+    }
+
+    fn next(&self, mut position: Self::Position) -> Self::Position {
+        self.form_next(&mut position);
+        position
+    }
+
+    fn next_n(&self, mut position: Self::Position, n: usize) -> Self::Position {
+        self.form_next_n(&mut position, n);
+        position
+    }
+
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
         to - from
+    }
+
+    fn count(&self) -> usize {
+        self.distance(self.start(), self.end())
     }
 
     fn at(&self, i: &Self::Position) -> &Self::Element {
@@ -42,12 +69,16 @@ impl<T, const N: usize> Collection for [T; N] {
         Slice::new(self, from, to)
     }
 
-    fn form_next(&self, i: &mut Self::Position) {
-        *i += 1
+    fn iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::Iter<'_> {
+        self.as_slice()[from..to].iter()
     }
 
-    fn form_next_n(&self, i: &mut Self::Position, n: usize) {
-        *i += n
+    fn iter(&self) -> Self::Iter<'_> {
+        self.as_slice().iter()
     }
 }
 
@@ -78,7 +109,24 @@ impl<T, const N: usize> ReorderableCollection for [T; N] {
 }
 
 impl<T, const N: usize> MutableCollection for [T; N] {
+    type IterMut<'a>
+        = std::slice::IterMut<'a, T>
+    where
+        Self: 'a;
+
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         &mut self[*i]
+    }
+
+    fn iter_mut_pos(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::IterMut<'_> {
+        self.as_mut_slice()[from..to].iter_mut()
+    }
+
+    fn iter_mut(&mut self) -> Self::IterMut<'_> {
+        self.as_mut_slice().iter_mut()
     }
 }

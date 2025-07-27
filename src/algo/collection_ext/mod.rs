@@ -1,18 +1,11 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{
-    BinaryPredicate, Collection, CollectionIterator, Predicate, Slice,
-};
+use crate::{BinaryPredicate, Collection, Predicate, Slice};
 
 /// Algorithms for `Collection`.
 pub trait CollectionExt: Collection {
     /*-----------------Iteration Algorithms-----------------*/
-
-    /// Returns a non-consuming iterator that iterates over `&Self::Element`.
-    fn iter(&self) -> CollectionIterator<Self::Whole> {
-        CollectionIterator::new(self.slice(self.start(), self.end()))
-    }
 
     /// Applies f to each element of collection.
     ///

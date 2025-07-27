@@ -36,7 +36,7 @@ where
     /// None otherwise.
     pub fn pop_first(
         &mut self,
-    ) -> Option<<Self as Collection>::ElementRef<'a>> {
+    ) -> Option<<Self as Collection>::ElementRef<'_>> {
         if self.from == self.to {
             None
         } else {
@@ -90,6 +90,11 @@ where
 
     type Whole = Whole;
 
+    type Iter<'a>
+        = Whole::Iter<'a>
+    where
+        Self: 'a;
+
     fn start(&self) -> Self::Position {
         self.from.clone()
     }
@@ -129,14 +134,35 @@ where
     ) -> Slice<Self::Whole> {
         Slice::new(self.whole, from, to)
     }
+
+    fn iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::Iter<'_> {
+        self.whole.iter_pos(from, to)
+    }
 }
 
 impl<Whole> LazyCollection for Slice<'_, Whole>
 where
     Whole: LazyCollection<Whole = Whole>,
 {
+    type LazyIter<'a>
+        = Whole::LazyIter<'a>
+    where
+        Self: 'a;
+
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
         self.whole.compute_at(i)
+    }
+
+    fn lazy_iter_pos(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::LazyIter<'_> {
+        self.whole.lazy_iter_pos(from, to)
     }
 }
 

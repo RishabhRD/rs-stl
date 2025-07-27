@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{Collection, LazyCollection, LazyCollectionIterator};
+use crate::{Collection, LazyCollection};
 
 /// Algorithms for `LazyCollection`.
 pub trait LazyCollectionExt: LazyCollection
@@ -41,12 +41,6 @@ where
             f(self.compute_at(&start));
             start = self.next(start);
         }
-    }
-
-    /// Returns a non-consuming iterator that iterates over `Self::Element`.
-    /// The iterator lazily computes the value on each `next` call.
-    fn lazy_iter(&self) -> LazyCollectionIterator<Self::Whole> {
-        LazyCollectionIterator::new(self.slice(self.start(), self.end()))
     }
 }
 

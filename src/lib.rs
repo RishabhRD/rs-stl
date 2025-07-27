@@ -20,10 +20,6 @@ mod core;
 #[doc(inline)]
 pub use core::*;
 
-mod collection_iterator;
-#[doc(inline)]
-pub use collection_iterator::*;
-
 mod slice;
 #[doc(inline)]
 pub use slice::*;
