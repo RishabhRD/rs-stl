@@ -17,6 +17,14 @@ pub mod tests {
         assert_eq!(arr.compute_at(&2), 2);
         assert_eq!(*(&arr.at(&2) as &i32), 2);
         assert!(arr.all().equals(&[1, 2, 3, 4]));
+
+        let arr = 1_i32..3;
+        let mut sum = 0;
+        for i in arr.iter() {
+            sum += *i;
+        }
+        assert_eq!(sum, 3);
+        assert_eq!(arr.lazy_iter().sum::<i32>(), 3);
     }
 
     #[test]
@@ -31,5 +39,13 @@ pub mod tests {
         assert_eq!(arr.compute_at(&2), 2);
         assert_eq!(*(&arr.at(&2) as &i32), 2);
         assert!(arr.all().equals(&[1, 2, 3, 4, 5]));
+
+        let arr = 1_i32..=3;
+        let mut sum = 0;
+        for i in arr.iter() {
+            sum += *i;
+        }
+        assert_eq!(sum, 6);
+        assert_eq!(arr.lazy_iter().sum::<i32>(), 6);
     }
 }
