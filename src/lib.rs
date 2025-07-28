@@ -35,6 +35,6 @@ pub use algo::*;
 #[doc(hidden)]
 pub(crate) mod std_impl;
 
-mod value_ref;
+pub mod value_ref;
 
 pub mod collections;

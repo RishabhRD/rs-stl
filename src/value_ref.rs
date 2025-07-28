@@ -4,8 +4,9 @@
 use std::ops::Deref;
 
 /// Proxy Reference to temporary value.
+#[derive(Clone, Copy, Debug)]
 pub struct ValueRef<T> {
-    val: T,
+    pub val: T,
 }
 
 impl<T> ValueRef<T> {
@@ -18,6 +19,12 @@ impl<T> Deref for ValueRef<T> {
     type Target = T;
 
     fn deref(&self) -> &Self::Target {
+        &self.val
+    }
+}
+
+impl<T> AsRef<T> for ValueRef<T> {
+    fn as_ref(&self) -> &T {
         &self.val
     }
 }
