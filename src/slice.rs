@@ -75,6 +75,35 @@ where
     }
 }
 
+impl<Whole> Slice<'_, Whole>
+where
+    Whole: BidirectionalCollection<Whole = Whole>,
+{
+    /// Removes and returns the last element if non-empty; returns
+    /// None otherwise.
+    pub fn pop_last(&mut self) -> Option<<Self as Collection>::ElementRef<'_>> {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self.whole.prior(self.to.clone());
+            let e = Some(self.whole.at(&ele_pos));
+            self.whole.form_prior(&mut self.to);
+            e
+        }
+    }
+
+    /// Removes the last element if non-empty and returns true; returns
+    /// false otherwise.
+    pub fn drop_last(&mut self) -> bool {
+        if self.from == self.to {
+            false
+        } else {
+            self.whole.form_prior(&mut self.to);
+            true
+        }
+    }
+}
+
 impl<Whole> Collection for Slice<'_, Whole>
 where
     Whole: Collection<Whole = Whole>,

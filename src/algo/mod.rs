@@ -15,3 +15,6 @@ pub use reorderable_collection_ext::*;
 
 mod mutable_collection_ext;
 pub use mutable_collection_ext::*;
+
+mod bidirectional_collection_ext;
+pub use bidirectional_collection_ext::*;
