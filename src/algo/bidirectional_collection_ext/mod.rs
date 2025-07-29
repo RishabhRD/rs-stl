@@ -6,16 +6,17 @@ use crate::Collection;
 use crate::ReorderableCollection;
 use crate::ReorderableCollectionExt;
 
+/// Algorithms for `BidirectionalCollection`.
 pub trait BidirectionalCollectionExt: BidirectionalCollection
 where
     Self::Whole: BidirectionalCollection,
 {
-    /// Reverses the order of elements in the collection.
+    /// Reverses the order of elements in `self`.
     ///
-    /// # Complexity
+    /// # Complexity:
     ///   O(n)
     ///
-    /// # Examples
+    /// # Example
     /// ```
     /// use stl::*;
     ///
