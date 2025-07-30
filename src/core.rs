@@ -171,7 +171,7 @@ pub trait Collection {
         to: Self::Position,
     ) -> Slice<Self::Whole>;
 
-    /// Returns a iterator to iterate element-ref over `[from, to)`.
+    /// Returns a iterator to iterate element-ref in `[from, to)` positions.
     ///
     /// # Precondition
     ///   - `[from, to)` represents valid positions in collection.
@@ -206,7 +206,7 @@ where
     ///   - O(1)
     fn compute_at(&self, i: &Self::Position) -> Self::Element;
 
-    /// Returns a lazy iterator that iterate over lazy element values in `[from, to)`.
+    /// Returns a lazy iterator that iterate lazy element values in `[from, to)` positions.
     ///
     /// # Precondition
     ///   - `[from, to)` represents valid positions in collection.
@@ -336,7 +336,7 @@ where
     ///   - O(1)
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
 
-    /// Returns a mutable iterator of self that iterates through `[from, to)`.
+    /// Returns a mutable iterator of self that iterates mutable reference of elements in `[from, to)` positions.
     ///
     /// # Precondition
     ///   - `[from, to)` represents valid positions in collection.
