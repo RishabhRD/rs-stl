@@ -60,7 +60,7 @@ macro_rules! impl_collection_for_range_inclusive {
           (to - from) as usize
       }
 
-       fn iter_pos(
+       fn iter_within(
            &self,
            from: Self::Position,
            to: Self::Position,
@@ -83,7 +83,7 @@ macro_rules! impl_collection_for_range_inclusive {
           *i
       }
 
-      fn lazy_iter_pos(
+      fn lazy_iter_within(
           &self,
           from: Self::Position,
           to: Self::Position,
@@ -165,7 +165,7 @@ macro_rules! impl_collection_for_range {
           (to - from) as usize
       }
 
-      fn iter_pos(
+      fn iter_within(
           &self,
           from: Self::Position,
           to: Self::Position,
@@ -188,7 +188,7 @@ macro_rules! impl_collection_for_range {
           *i
       }
 
-      fn lazy_iter_pos(
+      fn lazy_iter_within(
           &self,
           from: Self::Position,
           to: Self::Position,

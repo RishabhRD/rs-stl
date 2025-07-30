@@ -80,7 +80,7 @@ impl<T> Collection for Option<T> {
         Slice::new(self, from, to)
     }
 
-    fn iter_pos(
+    fn iter_within(
         &self,
         from: Self::Position,
         to: Self::Position,
@@ -139,7 +139,7 @@ impl<T> MutableCollection for Option<T> {
         }
     }
 
-    fn iter_mut_pos(
+    fn iter_mut_within(
         &mut self,
         from: Self::Position,
         to: Self::Position,

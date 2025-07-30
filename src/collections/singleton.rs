@@ -116,7 +116,7 @@ impl<E> Collection for SingletonCollection<E> {
         Slice::new(self, from, to)
     }
 
-    fn iter_pos(
+    fn iter_within(
         &self,
         from: Self::Position,
         to: Self::Position,
@@ -176,7 +176,7 @@ impl<E> MutableCollection for SingletonCollection<E> {
         &mut self.element
     }
 
-    fn iter_mut_pos(
+    fn iter_mut_within(
         &mut self,
         from: Self::Position,
         to: Self::Position,

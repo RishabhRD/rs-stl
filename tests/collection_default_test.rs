@@ -54,7 +54,7 @@ pub mod tests {
                 *i += 1
             }
 
-            fn iter_pos(
+            fn iter_within(
                 &self,
                 from: Self::Position,
                 to: Self::Position,

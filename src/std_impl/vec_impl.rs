@@ -63,7 +63,7 @@ impl<T> Collection for Vec<T> {
         Slice::new(self, from, to)
     }
 
-    fn iter_pos(
+    fn iter_within(
         &self,
         from: Self::Position,
         to: Self::Position,
@@ -112,7 +112,7 @@ impl<T> MutableCollection for Vec<T> {
         &mut self[*i]
     }
 
-    fn iter_mut_pos(
+    fn iter_mut_within(
         &mut self,
         from: Self::Position,
         to: Self::Position,

@@ -175,7 +175,7 @@ pub trait Collection {
     ///
     /// # Precondition
     ///   - `[from, to)` represents valid positions in collection.
-    fn iter_pos(
+    fn iter_within(
         &self,
         from: Self::Position,
         to: Self::Position,
@@ -183,7 +183,7 @@ pub trait Collection {
 
     /// Returns a non-owning iterator to iterate over element-ref of `self`.
     fn iter(&self) -> Self::Iter<'_> {
-        self.iter_pos(self.start(), self.end())
+        self.iter_within(self.start(), self.end())
     }
 }
 
@@ -210,7 +210,7 @@ where
     ///
     /// # Precondition
     ///   - `[from, to)` represents valid positions in collection.
-    fn lazy_iter_pos(
+    fn lazy_iter_within(
         &self,
         from: Self::Position,
         to: Self::Position,
@@ -218,7 +218,7 @@ where
 
     /// Returns a lazy iterator that iterate over lazy element values.
     fn lazy_iter(&self) -> Self::LazyIter<'_> {
-        self.lazy_iter_pos(self.start(), self.end())
+        self.lazy_iter_within(self.start(), self.end())
     }
 }
 
@@ -340,7 +340,7 @@ where
     ///
     /// # Precondition
     ///   - `[from, to)` represents valid positions in collection.
-    fn iter_mut_pos(
+    fn iter_mut_within(
         &mut self,
         from: Self::Position,
         to: Self::Position,
@@ -348,6 +348,6 @@ where
 
     /// Returns a mutable iterator of self.
     fn iter_mut(&mut self) -> Self::IterMut<'_> {
-        self.iter_mut_pos(self.start(), self.end())
+        self.iter_mut_within(self.start(), self.end())
     }
 }

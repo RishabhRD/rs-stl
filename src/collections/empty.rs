@@ -157,7 +157,11 @@ impl<E> Collection for EmptyCollection<E> {
         Slice::new(self, from, to)
     }
 
-    fn iter_pos(&self, _: Self::Position, _: Self::Position) -> Self::Iter<'_> {
+    fn iter_within(
+        &self,
+        _: Self::Position,
+        _: Self::Position,
+    ) -> Self::Iter<'_> {
         Iter::new()
     }
 
@@ -198,7 +202,7 @@ impl<E> MutableCollection for EmptyCollection<E> {
         panic!("Out of bound access")
     }
 
-    fn iter_mut_pos(
+    fn iter_mut_within(
         &mut self,
         _: Self::Position,
         _: Self::Position,
@@ -221,7 +225,7 @@ impl<E> LazyCollection for EmptyCollection<E> {
         panic!("Out of bound access")
     }
 
-    fn lazy_iter_pos(
+    fn lazy_iter_within(
         &self,
         _: Self::Position,
         _: Self::Position,

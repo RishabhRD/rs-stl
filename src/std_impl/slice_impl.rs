@@ -55,7 +55,7 @@ impl<T> Collection for &[T] {
         Slice::new(self, from, to)
     }
 
-    fn iter_pos(
+    fn iter_within(
         &self,
         from: Self::Position,
         to: Self::Position,
@@ -129,7 +129,7 @@ impl<T> Collection for &mut [T] {
         Slice::new(self, from, to)
     }
 
-    fn iter_pos(
+    fn iter_within(
         &self,
         from: Self::Position,
         to: Self::Position,
@@ -178,7 +178,7 @@ impl<T> MutableCollection for &mut [T] {
         &mut self[*i]
     }
 
-    fn iter_mut_pos(
+    fn iter_mut_within(
         &mut self,
         from: Self::Position,
         to: Self::Position,

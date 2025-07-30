@@ -165,12 +165,12 @@ where
         Slice::new(self.whole, from, to)
     }
 
-    fn iter_pos(
+    fn iter_within(
         &self,
         from: Self::Position,
         to: Self::Position,
     ) -> Self::Iter<'_> {
-        self.whole.iter_pos(from, to)
+        self.whole.iter_within(from, to)
     }
 }
 
@@ -187,12 +187,12 @@ where
         self.whole.compute_at(i)
     }
 
-    fn lazy_iter_pos(
+    fn lazy_iter_within(
         &self,
         from: Self::Position,
         to: Self::Position,
     ) -> Self::LazyIter<'_> {
-        self.whole.lazy_iter_pos(from, to)
+        self.whole.lazy_iter_within(from, to)
     }
 }
 
@@ -252,11 +252,11 @@ where
         self.whole.at_mut(i)
     }
 
-    fn iter_mut_pos(
+    fn iter_mut_within(
         &mut self,
         from: Self::Position,
         to: Self::Position,
     ) -> Self::IterMut<'_> {
-        self.whole.iter_mut_pos(from, to)
+        self.whole.iter_mut_within(from, to)
     }
 }

@@ -55,7 +55,7 @@ pub mod tests {
                 Slice::new(self, from, to)
             }
 
-            fn iter_pos(
+            fn iter_within(
                 &self,
                 from: Self::Position,
                 to: Self::Position,
