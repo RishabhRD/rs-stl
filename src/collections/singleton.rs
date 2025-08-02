@@ -17,7 +17,7 @@ impl<E> SingletonCollection<E> {
     }
 }
 
-/// Iterator for `CollectionOfOne`.
+/// Iterator for `SingletonCollection`.
 pub enum Iter<'a, E> {
     First(&'a E),
     Last,
@@ -34,7 +34,7 @@ impl<'a, E> Iterator for Iter<'a, E> {
     }
 }
 
-/// Mutable Iterator for `CollectionOfOne`.
+/// Mutable Iterator for `SingletonCollection`.
 pub enum IterMut<'a, E> {
     First(&'a mut E),
     Last,
