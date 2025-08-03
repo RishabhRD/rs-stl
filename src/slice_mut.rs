@@ -33,8 +33,24 @@ where
         }
     }
 
-    /// Removes and returns the first element if non-empty; returns
-    /// None otherwise.
+    /// Removes and returns the first element and its position if non-empty; returns None otherwise.
+    pub fn pop_first_with_pos(
+        &mut self,
+    ) -> Option<(
+        <Self as Collection>::Position,
+        <Self as Collection>::ElementRef<'_>,
+    )> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = self.whole.at(&self.from);
+            let p = self.from.clone();
+            self.whole.form_next(&mut self.from);
+            Some((p, e))
+        }
+    }
+
+    /// Removes and returns the first element if non-empty; returns None otherwise.
     pub fn pop_first(
         &mut self,
     ) -> Option<<Self as Collection>::ElementRef<'_>> {
@@ -47,8 +63,7 @@ where
         }
     }
 
-    /// Removes the first element if non-empty and returns true; returns
-    /// false otherwise.
+    /// Removes the first element if non-empty and returns true; returns false otherwise.
     pub fn drop_first(&mut self) -> bool {
         if self.from == self.to {
             false
@@ -63,8 +78,7 @@ impl<Whole> SliceMut<'_, Whole>
 where
     Whole: LazyCollection<Whole = Whole> + ReorderableCollection,
 {
-    /// Removes and returns the "lazily computed" first element if non-empty; returns
-    /// None otherwise.
+    /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
     pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
         if self.from == self.to {
             None
@@ -80,8 +94,24 @@ impl<Whole> SliceMut<'_, Whole>
 where
     Whole: BidirectionalCollection<Whole = Whole> + ReorderableCollection,
 {
-    /// Removes and returns the last element if non-empty; returns
-    /// None otherwise.
+    /// Removes and returns the last element and its position if non-empty; returns None otherwise.
+    pub fn pop_last_with_pos(
+        &mut self,
+    ) -> Option<(
+        <Self as Collection>::Position,
+        <Self as Collection>::ElementRef<'_>,
+    )> {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self.whole.prior(self.to.clone());
+            let e = self.whole.at(&ele_pos);
+            self.whole.form_prior(&mut self.to);
+            Some((ele_pos, e))
+        }
+    }
+
+    /// Removes and returns the last element if non-empty; returns None otherwise.
     pub fn pop_last(&mut self) -> Option<<Self as Collection>::ElementRef<'_>> {
         if self.from == self.to {
             None
@@ -93,8 +123,7 @@ where
         }
     }
 
-    /// Removes the last element if non-empty and returns true; returns
-    /// false otherwise.
+    /// Removes the last element if non-empty and returns true; returns false otherwise.
     pub fn drop_last(&mut self) -> bool {
         if self.from == self.to {
             false

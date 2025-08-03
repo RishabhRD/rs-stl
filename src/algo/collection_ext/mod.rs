@@ -194,17 +194,12 @@ pub trait CollectionExt: Collection {
         Pred: Predicate<Self::Element>,
     {
         let mut rest = self.all();
-        loop {
-            if let Some(x) = rest.first() {
-                if pred(&x) {
-                    break;
-                }
-            } else {
-                break;
+        while let Some((p, e)) = rest.pop_first_with_pos() {
+            if pred(&e) {
+                return p;
             }
-            rest.drop_first();
         }
-        rest.start()
+        self.end()
     }
 
     /// Finds position of first element in `self` equals `e`. If no such element
@@ -246,19 +241,14 @@ pub trait CollectionExt: Collection {
     where
         Pred: Predicate<Self::Element>,
     {
-        let mut result = self.end();
         let mut rest = self.all();
-        loop {
-            if let Some(x) = rest.first() {
-                if pred(&x) {
-                    result = rest.start();
-                }
-            } else {
-                break;
+        let mut res = self.end();
+        while let Some((p, e)) = rest.pop_first_with_pos() {
+            if pred(&e) {
+                res = p;
             }
-            rest.drop_first();
         }
-        result
+        res
     }
 
     /// Finds position of `last` element equals `e`. If no such element exist,
