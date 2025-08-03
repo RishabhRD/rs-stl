@@ -128,9 +128,9 @@ pub mod tests {
     }
 
     #[test]
-    fn suffix() {
+    fn suffix_from() {
         let arr = [1, 2, 3];
-        assert!(arr.suffix(1).equals(&[2, 3]));
+        assert!(arr.suffix_from(1).equals(&[2, 3]));
     }
 
     #[test]

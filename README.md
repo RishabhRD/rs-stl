@@ -56,7 +56,7 @@ assert_eq!(odd_count, 3);
 ```
 
 For working on a contiguous part of collection,
-use `slice`, `prefix_upto`, `suffix` or `full` method to obtain slice of collection.
+use `slice`, `prefix_upto`, `suffix_from` or `full` method to obtain slice of collection.
 
 ```rust
 use stl::*;
