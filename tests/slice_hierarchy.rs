@@ -84,7 +84,7 @@ pub mod tests {
         let arr = Basic {
             data: [1, 2, 3, 4, 5],
         };
-        let slice: Slice<Basic> = arr.all();
+        let slice: Slice<Basic> = arr.full();
         assert!(slice == Slice::<Basic>::new(&arr, arr.start(), arr.end()));
     }
 
@@ -93,8 +93,8 @@ pub mod tests {
         let arr = Basic {
             data: [1, 2, 3, 4, 5],
         };
-        let slice1: Slice<Basic> = arr.all();
-        let slice2: Slice<Basic> = slice1.all();
+        let slice1: Slice<Basic> = arr.full();
+        let slice2: Slice<Basic> = slice1.full();
         assert!(slice1 == slice2);
     }
 
@@ -103,7 +103,7 @@ pub mod tests {
         let mut arr = Basic {
             data: [1, 2, 3, 4, 5],
         };
-        let _: SliceMut<Basic> = arr.all_mut();
+        let _: SliceMut<Basic> = arr.full_mut();
         // Can't assert equality as 2 mutable references are not possible at a time.
     }
 
@@ -112,8 +112,8 @@ pub mod tests {
         let mut arr = Basic {
             data: [1, 2, 3, 4, 5],
         };
-        let mut slice1: SliceMut<Basic> = arr.all_mut();
-        let _: SliceMut<Basic> = slice1.all_mut();
+        let mut slice1: SliceMut<Basic> = arr.full_mut();
+        let _: SliceMut<Basic> = slice1.full_mut();
         // Can't assert equality as 2 mutable references are not possible at a time.
     }
 }

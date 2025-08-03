@@ -147,7 +147,7 @@ pub mod tests {
     #[test]
     fn pop_elements() {
         let mut arr = [1, 2, 3];
-        let mut s = arr.all_mut();
+        let mut s = arr.full_mut();
 
         let e = s.pop_first();
         assert_eq!(e, Some(&1));
@@ -168,6 +168,6 @@ pub mod tests {
     #[test]
     fn compute_at() {
         let arr = 0..=3;
-        assert_eq!(arr.all().compute_at(&0), 0);
+        assert_eq!(arr.full().compute_at(&0), 0);
     }
 }

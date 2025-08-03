@@ -20,13 +20,13 @@ where
     /// use stl::*;
     ///
     /// let mut arr = [1, 2, 3, 4, 5];
-    /// let mut s = arr.all_mut();
+    /// let mut s = arr.full_mut();
     /// let start = s.start();
     /// *s.at_mut(&start) = 0;
     /// assert!(s.equals(&[0, 2, 3, 4, 5]));
     /// assert!(arr.equals(&[0, 2, 3, 4, 5]));
     /// ```
-    fn all_mut(&mut self) -> SliceMut<Self::Whole> {
+    fn full_mut(&mut self) -> SliceMut<Self::Whole> {
         self.slice_mut(self.start(), self.end())
     }
 

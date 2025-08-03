@@ -56,10 +56,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.all();
+    /// let s = arr.full();
     /// assert!(s.equals(&[1, 2, 3, 4, 5]));
     /// ```
-    fn all(&self) -> Slice<Self::Whole> {
+    fn full(&self) -> Slice<Self::Whole> {
         self.slice(self.start(), self.end())
     }
 
@@ -134,8 +134,8 @@ pub trait CollectionExt: Collection {
         OtherCollection: Collection,
         F: BinaryPredicate<Self::Element, OtherCollection::Element>,
     {
-        let mut self1 = self.all();
-        let mut other1 = other.all();
+        let mut self1 = self.full();
+        let mut other1 = other.full();
         loop {
             match (self1.pop_first(), other1.pop_first()) {
                 (Some(x), Some(y)) if bi_pred(&x, &y) => {}
@@ -193,7 +193,7 @@ pub trait CollectionExt: Collection {
     where
         Pred: Predicate<Self::Element>,
     {
-        let mut rest = self.all();
+        let mut rest = self.full();
         while let Some((p, e)) = rest.pop_first_with_pos() {
             if pred(&e) {
                 return p;
@@ -241,7 +241,7 @@ pub trait CollectionExt: Collection {
     where
         Pred: Predicate<Self::Element>,
     {
-        let mut rest = self.all();
+        let mut rest = self.full();
         let mut res = self.end();
         while let Some((p, e)) = rest.pop_first_with_pos() {
             if pred(&e) {
@@ -288,7 +288,7 @@ pub trait CollectionExt: Collection {
     /// assert!(arr.all_satisfy(|x| x % 2 == 1));
     /// ```
     fn all_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
-        let mut cur = self.all();
+        let mut cur = self.full();
         while let Some(e) = cur.pop_first() {
             if !pred(&e) {
                 return false;
@@ -311,7 +311,7 @@ pub trait CollectionExt: Collection {
     /// assert!(arr.any_satisfy(|x| x % 2 == 1));
     /// ```
     fn any_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
-        let mut cur = self.all();
+        let mut cur = self.full();
         while let Some(e) = cur.pop_first() {
             if pred(&e) {
                 return true;
@@ -334,7 +334,7 @@ pub trait CollectionExt: Collection {
     /// assert!(arr.none_satisfy(|x| x % 2 == 1));
     /// ```
     fn none_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
-        let mut cur = self.all();
+        let mut cur = self.full();
         while let Some(e) = cur.pop_first() {
             if pred(&e) {
                 return false;
@@ -362,7 +362,7 @@ pub trait CollectionExt: Collection {
     where
         Pred: Predicate<Self::Element>,
     {
-        let mut cur = self.all();
+        let mut cur = self.full();
         let mut count = 0;
         while let Some(e) = cur.pop_first() {
             if pred(&e) {

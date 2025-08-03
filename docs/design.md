@@ -262,7 +262,7 @@ recursive algorithms composition without any efficiency loss.
 
 Similar properties are held for `SliceMut` type.
 
-For convenience, `all`, `prefix`, `suffix`, `all_mut`, `prefix_mut`,
+For convenience, `full`, `prefix`, `suffix`, `full_mut`, `prefix_mut`,
 `suffix_mut` methods are also provided as algorithms in addition to `slice` and
 `slice_mut` method for slicing.
 

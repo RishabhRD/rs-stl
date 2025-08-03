@@ -116,7 +116,7 @@ pub mod tests {
     #[test]
     fn swap_at() {
         let mut array = [1, 2, 3, 4];
-        let mut slice = array.all_mut();
+        let mut slice = array.full_mut();
         slice.swap_at(&0, &2);
         assert_eq!(array, [3, 2, 1, 4]);
     }
@@ -136,7 +136,7 @@ pub mod tests {
     #[test]
     fn pop_elements() {
         let arr = [1, 2, 3];
-        let mut s = arr.all();
+        let mut s = arr.full();
         let e = s.pop_first();
         assert_eq!(e, Some(&1));
         assert!(s.equals(&[2, 3]));
@@ -156,19 +156,19 @@ pub mod tests {
     #[test]
     fn compute_at() {
         let arr = 0..=3;
-        assert_eq!(arr.all().compute_at(&0), 0);
+        assert_eq!(arr.full().compute_at(&0), 0);
     }
 
     #[test]
     fn lazy_pop_first() {
         let arr = 0..=3;
-        let mut s = arr.all();
+        let mut s = arr.full();
         let e = s.lazy_pop_first();
         assert_eq!(e, Some(0));
         assert!(s.equals(&[1, 2, 3]));
 
         let arr = 0..0;
-        let mut s = arr.all();
+        let mut s = arr.full();
         let e = s.lazy_pop_first();
         assert_eq!(e, None);
         assert!(s.equals(&[]));

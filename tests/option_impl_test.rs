@@ -44,7 +44,7 @@ pub mod tests {
     #[test]
     fn iter_sliced_some() {
         let c = Some(5);
-        let mut s = c.all();
+        let mut s = c.full();
         s.drop_first();
         let sum = s.iter().sum::<i32>();
         assert_eq!(sum, 0)

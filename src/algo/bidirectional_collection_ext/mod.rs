@@ -29,7 +29,7 @@ where
         Self: ReorderableCollection,
         Self::Whole: ReorderableCollection,
     {
-        let mut s = self.all_mut();
+        let mut s = self.full_mut();
         while s.count() > 1 {
             s.swap_at(&s.start(), &s.prior(s.end()));
             s.drop_first();

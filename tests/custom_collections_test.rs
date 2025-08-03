@@ -24,7 +24,7 @@ pub mod tests {
         let c = SingletonCollection::new(2);
         assert_eq!(c.iter().sum::<i32>(), 2);
 
-        let mut s = c.all();
+        let mut s = c.full();
         s.drop_first();
         assert_eq!(s.iter().sum::<i32>(), 0);
     }

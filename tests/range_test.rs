@@ -16,7 +16,7 @@ pub mod tests {
         assert_eq!(arr.prior_n(2, 2), 0);
         assert_eq!(arr.compute_at(&2), 2);
         assert_eq!(*(&arr.at(&2) as &i32), 2);
-        assert!(arr.all().equals(&[1, 2, 3, 4]));
+        assert!(arr.full().equals(&[1, 2, 3, 4]));
 
         let arr = 1_i32..3;
         let mut sum = 0;
@@ -38,7 +38,7 @@ pub mod tests {
         assert_eq!(arr.prior_n(2, 2), 0);
         assert_eq!(arr.compute_at(&2), 2);
         assert_eq!(*(&arr.at(&2) as &i32), 2);
-        assert!(arr.all().equals(&[1, 2, 3, 4, 5]));
+        assert!(arr.full().equals(&[1, 2, 3, 4, 5]));
 
         let arr = 1_i32..=3;
         let mut sum = 0;
