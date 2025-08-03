@@ -63,7 +63,7 @@ pub trait CollectionExt: Collection {
         self.slice(self.start(), self.end())
     }
 
-    /// Returns prefix slice of the collection ending at `to` exclusive.
+    /// Returns prefix_upto slice of the collection ending at `to` exclusive.
     ///
     /// # Precondition
     ///   - `to` is a valid position in the collection.
@@ -76,10 +76,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3, 4, 5];
-    /// let p = arr.prefix(3);
+    /// let p = arr.prefix_upto(3);
     /// assert!(p.equals(&[1, 2, 3]));
     /// ```
-    fn prefix(&self, to: Self::Position) -> Slice<Self::Whole> {
+    fn prefix_upto(&self, to: Self::Position) -> Slice<Self::Whole> {
         self.slice(self.start(), to)
     }
 
@@ -399,7 +399,7 @@ pub trait CollectionExt: Collection {
     /// # Precondition
     ///   - The collection should be already partitioned wrt predicate i.e,
     ///     there exist a position `i` such that predicate is true for every
-    ///     element of `self.prefix(i)` and predicate is false for every
+    ///     element of `self.prefix_upto(i)` and predicate is false for every
     ///     element of `self.suffix(i)`.
     ///
     /// # Complexity

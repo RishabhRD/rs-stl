@@ -106,14 +106,14 @@ to work over part of collections rather than full collections e.g, quick sort.
 For tackling the same, every collection has slicing ability with `slice` method.
 If collections supports mutation of any kind it also has `slice_mut` method.
 
-For convenience `prefix`, `suffix`, `full`, `prefix_mut`, `suffix_mut`, `full_mut`
+For convenience `prefix_upto`, `suffix`, `full`, `prefix_upto_mut`, `suffix_mut`, `full_mut`
 method is also exposed.
 
 ```rust
 use stl::*;
 
 let arr = [1, 2, 3, 4, 5];
-let slice = arr.prefix(3);
+let slice = arr.prefix_upto(3);
 let odd_count = slice.count_if(|x| x % 2 == 1);
 assert_eq!(odd_count, 2);
 ```
@@ -131,7 +131,7 @@ where
     {
         if self.start() != self.end() {
             let p = self.partition_on_pos(&self.start(), |x, y| x < y); // assume a partition method
-            self.prefix_mut(p.clone()).quick_sort();
+            self.prefix_upto_mut(p.clone()).quick_sort();
             self.suffix_mut(self.next(p)).quick_sort();
         }
     }

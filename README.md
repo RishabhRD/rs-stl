@@ -56,13 +56,13 @@ assert_eq!(odd_count, 3);
 ```
 
 For working on a contiguous part of collection,
-use `slice`, `prefix`, `suffix` or `all` method to obtain slice of collection.
+use `slice`, `prefix_upto`, `suffix` or `full` method to obtain slice of collection.
 
 ```rust
 use stl::*;
 
 let arr = [1, 2, 3, 4, 5];
-let slice = arr.prefix(3);
+let slice = arr.prefix_upto(3);
 let odd_count = slice.count_if(|x| x % 2 == 1);
 assert_eq!(odd_count, 2);
 ```

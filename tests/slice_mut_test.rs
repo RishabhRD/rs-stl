@@ -133,9 +133,9 @@ pub mod tests {
     }
 
     #[test]
-    fn prefix_mut() {
+    fn prefix_upto_mut() {
         let mut arr = [1, 2, 3];
-        assert!(arr.prefix_mut(1).equals(&[1]));
+        assert!(arr.prefix_upto_mut(1).equals(&[1]));
     }
 
     #[test]

@@ -30,7 +30,7 @@ where
         self.slice_mut(self.start(), self.end())
     }
 
-    /// Returns mutable prefix slice of the collection ending at `to` exclusive.
+    /// Returns mutable prefix_upto slice of the collection ending at `to` exclusive.
     ///
     /// # Precondition
     ///   - `to` is a valid position in the collection.
@@ -43,13 +43,13 @@ where
     /// use stl::*;
     ///
     /// let mut arr = [1, 2, 3, 4, 5];
-    /// let mut p = arr.prefix_mut(3);
+    /// let mut p = arr.prefix_upto_mut(3);
     /// let start = p.start();
     /// *p.at_mut(&start) = 0;
     /// assert!(p.equals(&[0, 2, 3]));
     /// assert!(arr.equals(&[0, 2, 3, 4, 5]));
     /// ```
-    fn prefix_mut(&mut self, to: Self::Position) -> SliceMut<Self::Whole> {
+    fn prefix_upto_mut(&mut self, to: Self::Position) -> SliceMut<Self::Whole> {
         self.slice_mut(self.start(), to)
     }
 

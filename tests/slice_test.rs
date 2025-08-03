@@ -122,9 +122,9 @@ pub mod tests {
     }
 
     #[test]
-    fn prefix() {
+    fn prefix_upto() {
         let arr = [1, 2, 3];
-        assert!(arr.prefix(1).equals(&[1]));
+        assert!(arr.prefix_upto(1).equals(&[1]));
     }
 
     #[test]
