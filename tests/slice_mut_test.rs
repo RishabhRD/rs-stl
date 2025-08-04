@@ -139,6 +139,12 @@ pub mod tests {
     }
 
     #[test]
+    fn prefix_through_mut() {
+        let mut arr = [1, 2, 3];
+        assert!(arr.prefix_through_mut(1).equals(&[1, 2]));
+    }
+
+    #[test]
     fn suffix_from_mut() {
         let mut arr = [1, 2, 3];
         assert!(arr.suffix_from_mut(1).equals(&[2, 3]));

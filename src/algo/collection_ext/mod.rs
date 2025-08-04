@@ -79,8 +79,28 @@ pub trait CollectionExt: Collection {
     /// let p = arr.prefix_upto(3);
     /// assert!(p.equals(&[1, 2, 3]));
     /// ```
-    fn prefix_upto(&self, to: Self::Position) -> Slice<Self::Whole> {
-        self.slice(self.start(), to)
+    fn prefix_upto(&self, pos: Self::Position) -> Slice<Self::Whole> {
+        self.slice(self.start(), pos)
+    }
+
+    /// Returns prefix slice of the collection ending at `to` inclusive.
+    ///
+    /// # Precondition
+    ///   - `to` is a valid position in the collection and `to != self.end()`.
+    ///
+    /// # Complexity
+    ///   - O(1).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4, 5];
+    /// let p = arr.prefix_through(3);
+    /// assert!(p.equals(&[1, 2, 3, 4]));
+    /// ```
+    fn prefix_through(&self, pos: Self::Position) -> Slice<Self::Whole> {
+        self.prefix_upto(self.next(pos))
     }
 
     /// Returns suffix slice of the collection starting from `from` inclusive.

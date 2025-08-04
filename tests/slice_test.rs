@@ -128,6 +128,12 @@ pub mod tests {
     }
 
     #[test]
+    fn prefix_through() {
+        let arr = [1, 2, 3];
+        assert!(arr.prefix_through(1).equals(&[1, 2]));
+    }
+
+    #[test]
     fn suffix_from() {
         let arr = [1, 2, 3];
         assert!(arr.suffix_from(1).equals(&[2, 3]));

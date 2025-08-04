@@ -53,6 +53,30 @@ where
         self.slice_mut(self.start(), to)
     }
 
+    /// Returns mutable prefix slice of the collection ending at `to` inclusive.
+    ///
+    /// # Precondition
+    ///   - `to` is a valid position in the collection and `to != self.end()`.
+    ///
+    /// # Complexity
+    ///   - O(1).
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let p = arr.prefix_through_mut(3);
+    /// assert!(p.equals(&[1, 2, 3, 4]));
+    /// ```
+    fn prefix_through_mut(
+        &mut self,
+        pos: Self::Position,
+    ) -> SliceMut<Self::Whole> {
+        let next = self.next(pos);
+        self.prefix_upto_mut(next)
+    }
+
     /// Returns mutable suffix slice of the collection starting from `from` inclusive.
     ///
     /// # Precondition
