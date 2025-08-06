@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
+use crate::algo::collection_ext::CollectionExt;
 use crate::{ReorderableCollection, SliceMut};
 
 /// Algorithms for `ReorderableCollection`.
@@ -75,6 +76,28 @@ where
     ) -> SliceMut<Self::Whole> {
         let next = self.next(pos);
         self.prefix_upto_mut(next)
+    }
+
+    /// Returns mutable prefix slice containing the initial elements until `predicate` returns
+    /// false skipping the remaining elements.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 3, 5, 2, 7];
+    /// let p = arr.prefix_while_mut(|x| x % 2 == 1);
+    /// assert!(p.equals(&[1, 3, 5]));
+    /// ```
+    fn prefix_while_mut<F: Fn(&Self::Element) -> bool>(
+        &mut self,
+        predicate: F,
+    ) -> SliceMut<Self::Whole> {
+        let p = self.first_position_where(|x| !predicate(x));
+        self.prefix_upto_mut(p)
     }
 
     /// Returns mutable suffix slice of the collection starting from `from` inclusive.

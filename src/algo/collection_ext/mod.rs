@@ -103,6 +103,28 @@ pub trait CollectionExt: Collection {
         self.prefix_upto(self.next(pos))
     }
 
+    /// Returns prefix slice containing the initial elements until `predicate` returns false and
+    /// skipping the remaining elements.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 3, 5, 2, 7];
+    /// let p = arr.prefix_while(|x| x % 2 == 1);
+    /// assert!(p.equals(&[1, 3, 5]));
+    /// ```
+    fn prefix_while<F: Fn(&Self::Element) -> bool>(
+        &self,
+        predicate: F,
+    ) -> Slice<Self::Whole> {
+        let p = self.first_position_where(|x| !predicate(x));
+        self.prefix_upto(p)
+    }
+
     /// Returns suffix slice of the collection starting from `from` inclusive.
     ///
     /// # Precondition

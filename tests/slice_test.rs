@@ -134,6 +134,13 @@ pub mod tests {
     }
 
     #[test]
+    fn prefix_while() {
+        let arr = [1, 3, 5, 2, 7];
+        let p = arr.prefix_while(|x| x % 2 == 1);
+        assert!(p.equals(&[1, 3, 5]));
+    }
+
+    #[test]
     fn suffix_from() {
         let arr = [1, 2, 3];
         assert!(arr.suffix_from(1).equals(&[2, 3]));

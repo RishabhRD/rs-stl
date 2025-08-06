@@ -145,6 +145,13 @@ pub mod tests {
     }
 
     #[test]
+    fn prefix_while_mut() {
+        let mut arr = [1, 3, 5, 2, 7];
+        let p = arr.prefix_while_mut(|x| x % 2 == 1);
+        assert!(p.equals(&[1, 3, 5]));
+    }
+
+    #[test]
     fn suffix_from_mut() {
         let mut arr = [1, 2, 3];
         assert!(arr.suffix_from_mut(1).equals(&[2, 3]));
