@@ -173,6 +173,14 @@ pub mod tests {
     }
 
     #[test]
+    fn prefix_mut() {
+        let mut arr = [1, 2, 3, 4, 5];
+        assert!(arr.prefix_mut(3).equals(&[1, 2, 3]));
+        assert!(arr.prefix_mut(5).equals(&[1, 2, 3, 4, 5]));
+        assert!(arr.prefix_mut(7).equals(&[1, 2, 3, 4, 5]));
+    }
+
+    #[test]
     fn prefix_upto_mut() {
         let mut arr = [1, 2, 3];
         assert!(arr.prefix_upto_mut(1).equals(&[1]));

@@ -163,6 +163,14 @@ pub mod tests {
     }
 
     #[test]
+    fn prefix() {
+        let arr = [1, 2, 3, 4, 5];
+        assert!(arr.prefix(3).equals(&[1, 2, 3]));
+        assert!(arr.prefix(5).equals(&[1, 2, 3, 4, 5]));
+        assert!(arr.prefix(7).equals(&[1, 2, 3, 4, 5]));
+    }
+
+    #[test]
     fn prefix_upto() {
         let arr = [1, 2, 3];
         assert!(arr.prefix_upto(1).equals(&[1]));

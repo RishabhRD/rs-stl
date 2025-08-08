@@ -31,6 +31,31 @@ where
         self.slice_mut(self.start(), self.end())
     }
 
+    /// Returns a slice, upto specified maximum length, containing the initial elements of
+    /// collection.
+    ///
+    /// # Postcondition
+    ///   - If the maximum length exceeds the number of elements in the
+    ///     collection, the result contains all elements in the collection.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection; otherwise O(k) where k is the
+    ///     number of elements in resultant slice.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let s = arr.prefix_mut(3);
+    /// assert!(s.equals(&[1, 2, 3]));
+    /// ```
+    fn prefix_mut(&mut self, max_length: usize) -> SliceMut<Self::Whole> {
+        let mut end = self.start();
+        self.form_next_n_limited_by(&mut end, max_length, self.end());
+        self.prefix_upto_mut(end)
+    }
+
     /// Returns mutable prefix slice of the collection ending at `to` exclusive.
     ///
     /// # Precondition
