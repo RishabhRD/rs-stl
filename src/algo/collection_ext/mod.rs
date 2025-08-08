@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BinaryPredicate, Collection, Predicate, Slice};
+use crate::{Collection, Slice};
 
 /// Algorithms for `Collection`.
 pub trait CollectionExt: Collection {
@@ -223,11 +223,11 @@ pub trait CollectionExt: Collection {
     fn equals_by<OtherCollection, F>(
         &self,
         other: &OtherCollection,
-        bi_pred: F,
+        mut bi_pred: F,
     ) -> bool
     where
         OtherCollection: Collection,
-        F: BinaryPredicate<Self::Element, OtherCollection::Element>,
+        F: FnMut(&Self::Element, &OtherCollection::Element) -> bool,
     {
         let mut self1 = self.full();
         let mut other1 = other.full();
@@ -284,9 +284,9 @@ pub trait CollectionExt: Collection {
     /// let i = arr.first_position_where(|x| *x == 3);
     /// assert_eq!(i, 2);
     /// ```
-    fn first_position_where<Pred>(&self, pred: Pred) -> Self::Position
+    fn first_position_where<Pred>(&self, mut pred: Pred) -> Self::Position
     where
-        Pred: Predicate<Self::Element>,
+        Pred: FnMut(&Self::Element) -> bool,
     {
         let mut rest = self.full();
         while let Some((p, e)) = rest.pop_first_with_pos() {
@@ -332,9 +332,9 @@ pub trait CollectionExt: Collection {
     /// let i = arr.last_position_where(|x| x % 2 == 1);
     /// assert_eq!(i, 2);
     /// ```
-    fn last_position_where<Pred>(&self, pred: Pred) -> Self::Position
+    fn last_position_where<Pred>(&self, mut pred: Pred) -> Self::Position
     where
-        Pred: Predicate<Self::Element>,
+        Pred: FnMut(&Self::Element) -> bool,
     {
         let mut rest = self.full();
         let mut res = self.end();
@@ -382,7 +382,10 @@ pub trait CollectionExt: Collection {
     /// let arr = [1, 3, 5];
     /// assert!(arr.all_satisfy(|x| x % 2 == 1));
     /// ```
-    fn all_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
+    fn all_satisfy<Pred>(&self, mut pred: Pred) -> bool
+    where
+        Pred: FnMut(&Self::Element) -> bool,
+    {
         let mut cur = self.full();
         while let Some(e) = cur.pop_first() {
             if !pred(&e) {
@@ -405,7 +408,10 @@ pub trait CollectionExt: Collection {
     /// let arr = [1, 2, 5];
     /// assert!(arr.any_satisfy(|x| x % 2 == 1));
     /// ```
-    fn any_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
+    fn any_satisfy<Pred>(&self, mut pred: Pred) -> bool
+    where
+        Pred: FnMut(&Self::Element) -> bool,
+    {
         let mut cur = self.full();
         while let Some(e) = cur.pop_first() {
             if pred(&e) {
@@ -428,7 +434,10 @@ pub trait CollectionExt: Collection {
     /// let arr = [2, 4, 6];
     /// assert!(arr.none_satisfy(|x| x % 2 == 1));
     /// ```
-    fn none_satisfy<Pred: Predicate<Self::Element>>(&self, pred: Pred) -> bool {
+    fn none_satisfy<Pred>(&self, mut pred: Pred) -> bool
+    where
+        Pred: FnMut(&Self::Element) -> bool,
+    {
         let mut cur = self.full();
         while let Some(e) = cur.pop_first() {
             if pred(&e) {
@@ -453,9 +462,9 @@ pub trait CollectionExt: Collection {
     /// let n = arr.count_where(|x| x % 2 == 1);
     /// assert_eq!(n, 2);
     /// ```
-    fn count_where<Pred>(&self, pred: Pred) -> usize
+    fn count_where<Pred>(&self, mut pred: Pred) -> usize
     where
-        Pred: Predicate<Self::Element>,
+        Pred: FnMut(&Self::Element) -> bool,
     {
         let mut cur = self.full();
         let mut count = 0;
@@ -509,9 +518,12 @@ pub trait CollectionExt: Collection {
     /// let i = arr.partition_point(|x| x % 2 == 0);
     /// assert_eq!(i, 3);
     /// ```
-    fn partition_point<F>(&self, belongs_in_second_half: F) -> Self::Position
+    fn partition_point<F>(
+        &self,
+        mut belongs_in_second_half: F,
+    ) -> Self::Position
     where
-        F: Predicate<Self::Element>,
+        F: FnMut(&Self::Element) -> bool,
     {
         let mut f = self.start();
         let mut n = self.count();
