@@ -150,6 +150,34 @@ pub trait CollectionExt: Collection {
         self.prefix_upto(p)
     }
 
+    /// Returns a slice, upto specified maximum length, containing the final elements of the
+    /// collection.
+    ///
+    /// # Postcondition
+    ///   - If the maximum length exceeds the number of elements in the
+    ///     collection, the result contains all elements in the collection.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection; otherwise O(n) where
+    ///     `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4, 5];
+    /// let s = arr.suffix(3);
+    /// assert!(s.equals(&[3, 4, 5]));
+    /// ```
+    fn suffix(&self, max_length: usize) -> Slice<Self::Whole> {
+        let n = self.count();
+        if max_length > n {
+            self.full()
+        } else {
+            self.suffix_from(self.next_n(self.start(), n - max_length))
+        }
+    }
+
     /// Returns suffix slice of the collection starting from `from` inclusive.
     ///
     /// # Precondition

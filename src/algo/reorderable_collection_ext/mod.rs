@@ -125,6 +125,34 @@ where
         self.prefix_upto_mut(p)
     }
 
+    /// Returns a slice, upto specified maximum length, containing the final elements of the
+    /// collection.
+    ///
+    /// # Postcondition
+    ///   - If the maximum length exceeds the number of elements in the
+    ///     collection, the result contains all elements in the collection.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection; otherwise O(n) where
+    ///     `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let s = arr.suffix_mut(3);
+    /// assert!(s.equals(&[3, 4, 5]));
+    /// ```
+    fn suffix_mut(&mut self, max_length: usize) -> SliceMut<Self::Whole> {
+        let n = self.count();
+        if max_length > n {
+            self.full_mut()
+        } else {
+            self.suffix_from_mut(self.next_n(self.start(), n - max_length))
+        }
+    }
+
     /// Returns mutable suffix slice of the collection starting from `from` inclusive.
     ///
     /// # Precondition

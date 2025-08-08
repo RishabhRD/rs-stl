@@ -190,6 +190,14 @@ pub mod tests {
     }
 
     #[test]
+    fn suffix() {
+        let arr = [1, 2, 3, 4, 5];
+        assert!(arr.suffix(3).equals(&[3, 4, 5]));
+        assert!(arr.suffix(5).equals(&[1, 2, 3, 4, 5]));
+        assert!(arr.suffix(7).equals(&[1, 2, 3, 4, 5]));
+    }
+
+    #[test]
     fn suffix_from() {
         let arr = [1, 2, 3];
         assert!(arr.suffix_from(1).equals(&[2, 3]));
