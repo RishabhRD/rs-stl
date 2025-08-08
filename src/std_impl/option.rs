@@ -41,6 +41,22 @@ impl<T> Collection for Option<T> {
         }
     }
 
+    fn form_next_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        match (n, *position) {
+            (0, _) => true,
+            (_, p) if p == limit => false,
+            _ => {
+                *position = limit;
+                n == 1
+            }
+        }
+    }
+
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
         if from == to {
             0
@@ -100,6 +116,22 @@ impl<T> BidirectionalCollection for Option<T> {
     fn form_prior_n(&self, position: &mut Self::Position, n: usize) {
         if n != 0 {
             *position = false
+        }
+    }
+
+    fn form_prior_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        match (n, *position) {
+            (0, _) => true,
+            (_, p) if p == limit => false,
+            _ => {
+                *position = limit;
+                n == 1
+            }
         }
     }
 }

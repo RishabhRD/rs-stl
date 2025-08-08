@@ -169,6 +169,15 @@ where
         self.whole.form_next_n(i, n);
     }
 
+    fn form_next_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        self.whole.form_next_n_limited_by(position, n, limit)
+    }
+
     fn next(&self, i: Self::Position) -> Self::Position {
         self.whole.next(i)
     }
@@ -234,6 +243,15 @@ where
 
     fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
         self.whole.form_prior_n(i, n);
+    }
+
+    fn form_prior_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        self.whole.form_prior_n_limited_by(position, n, limit)
     }
 
     fn prior(&self, i: Self::Position) -> Self::Position {

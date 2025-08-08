@@ -27,11 +27,67 @@ pub mod tests {
         let mut s = c.full();
         s.drop_first();
         assert_eq!(s.iter().sum::<i32>(), 0);
+
+        let mut i = c.start();
+        let succ = c.form_next_n_limited_by(&mut i, 0, c.start());
+        assert_eq!(i, c.start());
+        assert!(succ);
+
+        let mut i = c.start();
+        let succ = c.form_next_n_limited_by(&mut i, 1, c.start());
+        assert_eq!(i, c.start());
+        assert!(!succ);
+
+        let mut i = c.start();
+        let succ = c.form_next_n_limited_by(&mut i, 1, c.end());
+        assert_eq!(i, c.end());
+        assert!(succ);
+
+        let mut i = c.start();
+        let succ = c.form_next_n_limited_by(&mut i, 2, c.end());
+        assert_eq!(i, c.end());
+        assert!(!succ);
+
+        let mut i = c.start();
+        let succ = c.form_prior_n_limited_by(&mut i, 0, c.start());
+        assert_eq!(i, c.start());
+        assert!(succ);
+
+        let mut i = c.start();
+        let succ = c.form_prior_n_limited_by(&mut i, 1, c.start());
+        assert_eq!(i, c.start());
+        assert!(!succ);
+
+        let mut i = c.end();
+        let succ = c.form_prior_n_limited_by(&mut i, 1, c.start());
+        assert_eq!(i, c.start());
+        assert!(succ);
+
+        let mut i = c.end();
+        let succ = c.form_prior_n_limited_by(&mut i, 2, c.start());
+        assert_eq!(i, c.start());
+        assert!(!succ);
     }
 
     #[test]
     fn empty_collection() {
         let c: EmptyCollection<i32> = EmptyCollection::new();
-        assert_eq!(c.iter().sum::<i32>(), 0)
+        assert_eq!(c.iter().sum::<i32>(), 0);
+
+        let mut i = ();
+        let succ = c.form_next_n_limited_by(&mut i, 0, ());
+        assert!(succ);
+
+        let mut i = ();
+        let succ = c.form_next_n_limited_by(&mut i, 2, ());
+        assert!(!succ);
+
+        let mut i = ();
+        let succ = c.form_prior_n_limited_by(&mut i, 0, ());
+        assert!(succ);
+
+        let mut i = ();
+        let succ = c.form_prior_n_limited_by(&mut i, 2, ());
+        assert!(!succ);
     }
 }

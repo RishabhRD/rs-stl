@@ -39,6 +39,21 @@ impl<T> Collection for Vec<T> {
         *i += n
     }
 
+    fn form_next_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        if *position + n <= limit {
+            *position += n;
+            true
+        } else {
+            *position = limit;
+            false
+        }
+    }
+
     fn next(&self, i: Self::Position) -> Self::Position {
         i + 1
     }
@@ -83,6 +98,21 @@ impl<T> BidirectionalCollection for Vec<T> {
 
     fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
         *i -= n
+    }
+
+    fn form_prior_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        if *position - n >= limit {
+            *position -= n;
+            true
+        } else {
+            *position = limit;
+            false
+        }
     }
 }
 

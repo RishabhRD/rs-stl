@@ -85,7 +85,7 @@ pub trait Collection {
     ///   - `position != end()`
     fn form_next(&self, position: &mut Self::Position);
 
-    /// Mutates given `position` to nth position after current position.
+    /// Increments given position by `n`.
     ///
     /// # Precondition
     ///   - There are `n` valid positions in self after `position`.
@@ -97,6 +97,34 @@ pub trait Collection {
             self.form_next(position);
             n -= 1;
         }
+    }
+
+    /// Increments given position by `n`, or so that it equals the given limit.
+    ///
+    /// # Precondition
+    ///   - `limit` is a valid position in `self`.
+    ///   - `limit` should be increment-reachable from `position`.
+    ///
+    /// # Postcondition
+    ///   - Returns true if `position` has been incremented exactly by `n`
+    ///     without going beyond limit, otherwise returns false.
+    ///   - When the return value is false, the value `position` is equal to
+    ///     `limit`.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    fn form_next_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        let mut n = n;
+        while *position != limit && n > 0 {
+            self.form_next(position);
+            n -= 1;
+        }
+        n == 0
     }
 
     /// Returns position immediately after `position`.
@@ -118,6 +146,32 @@ pub trait Collection {
     fn next_n(&self, mut position: Self::Position, n: usize) -> Self::Position {
         self.form_next_n(&mut position, n);
         position
+    }
+
+    /// Returns `n`th position after given position, unless `n` is beyond `limit`.
+    ///
+    /// # Precondition
+    ///   - `limit` is a valid position in `self`.
+    ///   - `limit` should be increment-reachable from `position`.
+    ///
+    /// # Postcondition
+    ///   - Returns `n`th position after given position, unless `n` is beyond `limit`.
+    ///   - Otherwise, returns None.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    fn next_n_limited_by(
+        &self,
+        mut position: Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> Option<Self::Position> {
+        let success = self.form_next_n_limited_by(&mut position, n, limit);
+        if success {
+            Some(position)
+        } else {
+            None
+        }
     }
 
     /// Returns number of elements in `[from, to)`.
@@ -247,6 +301,34 @@ where
         }
     }
 
+    /// Decrements given position by `n`, or so that it equals the given limit.
+    ///
+    /// # Precondition
+    ///   - `limit` is a valid position in `self`.
+    ///   - `limit` should be decrement-reachable from `position`.
+    ///
+    /// # Postcondition
+    ///   - Returns true if `position` has been decremented exactly by `n`
+    ///     without going beyond limit, otherwise returns false.
+    ///   - When the return value is false, the value `position` is equal to
+    ///     `limit`.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    fn form_prior_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        let mut n = n;
+        while *position != limit && n > 0 {
+            self.form_prior(position);
+            n -= 1;
+        }
+        n == 0
+    }
+
     /// Returns position immediately before `position`
     ///
     /// # Precondition
@@ -270,6 +352,32 @@ where
     ) -> Self::Position {
         self.form_prior_n(&mut position, n);
         position
+    }
+
+    /// Returns `n`th position before given position, unless `n` is beyond `limit`.
+    ///
+    /// # Precondition
+    ///   - `limit` is a valid position in `self`.
+    ///   - `limit` should be increment-reachable from `position`.
+    ///
+    /// # Postcondition
+    ///   - Returns `n`th position before given position, unless `n` is beyond `limit`.
+    ///   - Otherwise, returns None.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    fn prior_n_limited_by(
+        &self,
+        mut position: Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> Option<Self::Position> {
+        let success = self.form_prior_n_limited_by(&mut position, n, limit);
+        if success {
+            Some(position)
+        } else {
+            None
+        }
     }
 }
 

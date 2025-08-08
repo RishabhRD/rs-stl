@@ -56,6 +56,21 @@ macro_rules! impl_collection_for_range_inclusive {
           *position += n as $t
       }
 
+      fn form_next_n_limited_by(
+          &self,
+          position: &mut Self::Position,
+          n: usize,
+          limit: Self::Position,
+      ) -> bool {
+          if *position + n as Self::Position <= limit {
+              *position += n as Self::Position;
+              true
+          } else {
+              *position = limit;
+              false
+          }
+      }
+
       fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
           (to - from) as usize
       }
@@ -103,6 +118,21 @@ macro_rules! impl_collection_for_range_inclusive {
 
       fn form_prior_n(&self, position: &mut Self::Position, n: usize) {
           *position -= n as $t
+      }
+
+      fn form_prior_n_limited_by(
+          &self,
+          position: &mut Self::Position,
+          n: usize,
+          limit: Self::Position,
+      ) -> bool {
+          if *position - n as Self::Position >= limit {
+              *position -= n as Self::Position;
+              true
+          } else {
+              *position = limit;
+              false
+          }
       }
   }
 
@@ -161,6 +191,21 @@ macro_rules! impl_collection_for_range {
           *position += n as $t
       }
 
+      fn form_next_n_limited_by(
+          &self,
+          position: &mut Self::Position,
+          n: usize,
+          limit: Self::Position,
+      ) -> bool {
+          if *position + n as Self::Position <= limit {
+              *position += n as Self::Position;
+              true
+          } else {
+              *position = limit;
+              false
+          }
+      }
+
       fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
           (to - from) as usize
       }
@@ -208,6 +253,21 @@ macro_rules! impl_collection_for_range {
 
       fn form_prior_n(&self, position: &mut Self::Position, n: usize) {
           *position -= n as $t
+      }
+
+      fn form_prior_n_limited_by(
+          &self,
+          position: &mut Self::Position,
+          n: usize,
+          limit: Self::Position,
+      ) -> bool {
+          if *position - n as Self::Position >= limit {
+              *position -= n as Self::Position;
+              true
+          } else {
+              *position = limit;
+              false
+          }
       }
   }
 

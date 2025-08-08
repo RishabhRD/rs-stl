@@ -45,6 +45,26 @@ pub mod tests {
     }
 
     #[test]
+    fn form_next_n_limited_by() {
+        let arr = [1, 2, 3];
+
+        let mut i = 0;
+        let succ = arr.form_next_n_limited_by(&mut i, 0, 0);
+        assert_eq!(i, 0);
+        assert!(succ);
+
+        let mut i = 0;
+        let succ = arr.form_next_n_limited_by(&mut i, 1, 0);
+        assert_eq!(i, 0);
+        assert!(!succ);
+
+        let mut i = 0;
+        let succ = arr.form_next_n_limited_by(&mut i, 5, 3);
+        assert_eq!(i, 3);
+        assert!(!succ);
+    }
+
+    #[test]
     fn prior() {
         let arr = vec![1, 2, 3];
         let i = arr.prior(1);
@@ -56,6 +76,26 @@ pub mod tests {
         let arr = vec![1, 2, 3];
         let i = arr.prior_n(3, 2);
         assert_eq!(i, 1);
+    }
+
+    #[test]
+    fn form_prior_n_limited_by() {
+        let arr = [1, 2, 3];
+
+        let mut i = 3;
+        let succ = arr.form_prior_n_limited_by(&mut i, 0, 0);
+        assert_eq!(i, 3);
+        assert!(succ);
+
+        let mut i = 3;
+        let succ = arr.form_prior_n_limited_by(&mut i, 1, 3);
+        assert_eq!(i, 3);
+        assert!(!succ);
+
+        let mut i = 3;
+        let succ = arr.form_prior_n_limited_by(&mut i, 1, 2);
+        assert_eq!(i, 2);
+        assert!(succ);
     }
 
     #[test]

@@ -133,6 +133,15 @@ impl<E> Collection for EmptyCollection<E> {
 
     fn form_next_n(&self, _: &mut Self::Position, _: usize) {}
 
+    fn form_next_n_limited_by(
+        &self,
+        _: &mut Self::Position,
+        n: usize,
+        _: Self::Position,
+    ) -> bool {
+        n == 0
+    }
+
     fn distance(&self, _: Self::Position, _: Self::Position) -> usize {
         0
     }
@@ -174,6 +183,15 @@ impl<E> BidirectionalCollection for EmptyCollection<E> {
     fn form_prior(&self, _: &mut Self::Position) {}
 
     fn form_prior_n(&self, _: &mut Self::Position, _: usize) {}
+
+    fn form_prior_n_limited_by(
+        &self,
+        _: &mut Self::Position,
+        n: usize,
+        _: Self::Position,
+    ) -> bool {
+        n == 0
+    }
 }
 
 impl<E> RandomAccessCollection for EmptyCollection<E> {}

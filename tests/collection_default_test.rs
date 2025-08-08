@@ -82,12 +82,56 @@ pub mod tests {
     }
 
     #[test]
+    fn form_next_n_limited_by() {
+        let arr = NonJumpableCollection {
+            data: [1, 2, 3, 4, 5],
+        };
+
+        let mut i = 0;
+        let succ = arr.form_next_n_limited_by(&mut i, 0, 0);
+        assert_eq!(i, 0);
+        assert!(succ);
+
+        let mut i = 0;
+        let succ = arr.form_next_n_limited_by(&mut i, 1, 0);
+        assert_eq!(i, 0);
+        assert!(!succ);
+
+        let mut i = 0;
+        let succ = arr.form_next_n_limited_by(&mut i, 5, 3);
+        assert_eq!(i, 3);
+        assert!(!succ);
+    }
+
+    #[test]
     fn prior() {
         let arr = NonJumpableCollection {
             data: [1, 2, 3, 4, 5],
         };
         let i = arr.prior_n(2, 2);
         assert_eq!(i, 0);
+    }
+
+    #[test]
+    fn form_prior_n_limited_by() {
+        let arr = NonJumpableCollection {
+            data: [1, 2, 3, 4, 5],
+        };
+
+        let mut i = 3;
+        let succ = arr.form_prior_n_limited_by(&mut i, 0, 0);
+        assert_eq!(i, 3);
+        assert!(succ);
+
+        let mut i = 3;
+        let succ = arr.form_prior_n_limited_by(&mut i, 1, 3);
+        assert_eq!(i, 3);
+        assert!(!succ);
+
+        let mut i = 3;
+        let succ = arr.form_prior_n_limited_by(&mut i, 1, 2);
+        assert_eq!(i, 2);
+        assert!(succ);
     }
 
     #[test]

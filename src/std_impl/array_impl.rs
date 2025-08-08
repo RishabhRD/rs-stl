@@ -39,6 +39,21 @@ impl<T, const N: usize> Collection for [T; N] {
         *i += n
     }
 
+    fn form_next_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        if *position + n <= limit {
+            *position += n;
+            true
+        } else {
+            *position = limit;
+            false
+        }
+    }
+
     fn next(&self, mut position: Self::Position) -> Self::Position {
         self.form_next(&mut position);
         position
@@ -55,6 +70,10 @@ impl<T, const N: usize> Collection for [T; N] {
 
     fn count(&self) -> usize {
         self.distance(self.start(), self.end())
+    }
+
+    fn underestimated_count(&self) -> usize {
+        self.count()
     }
 
     fn at(&self, i: &Self::Position) -> &Self::Element {
@@ -89,6 +108,21 @@ impl<T, const N: usize> BidirectionalCollection for [T; N] {
 
     fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
         *i -= n
+    }
+
+    fn form_prior_n_limited_by(
+        &self,
+        position: &mut Self::Position,
+        n: usize,
+        limit: Self::Position,
+    ) -> bool {
+        if *position - n >= limit {
+            *position -= n;
+            true
+        } else {
+            *position = limit;
+            false
+        }
     }
 }
 
