@@ -117,9 +117,9 @@ where
     /// let p = arr.prefix_while_mut(|x| x % 2 == 1);
     /// assert!(p.equals(&[1, 3, 5]));
     /// ```
-    fn prefix_while_mut<F: Fn(&Self::Element) -> bool>(
+    fn prefix_while_mut<F: FnMut(&Self::Element) -> bool>(
         &mut self,
-        predicate: F,
+        mut predicate: F,
     ) -> SliceMut<Self::Whole> {
         let p = self.first_position_where(|x| !predicate(x));
         self.prefix_upto_mut(p)

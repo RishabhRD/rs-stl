@@ -142,9 +142,9 @@ pub trait CollectionExt: Collection {
     /// let p = arr.prefix_while(|x| x % 2 == 1);
     /// assert!(p.equals(&[1, 3, 5]));
     /// ```
-    fn prefix_while<F: Fn(&Self::Element) -> bool>(
+    fn prefix_while<F: FnMut(&Self::Element) -> bool>(
         &self,
-        predicate: F,
+        mut predicate: F,
     ) -> Slice<Self::Whole> {
         let p = self.first_position_where(|x| !predicate(x));
         self.prefix_upto(p)

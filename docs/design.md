@@ -183,9 +183,9 @@ algorithms are exposed as methods using extension traits like this:
 
 ```rust
 pub trait CollectionExt: Collection {
-    fn find_if<Pred>(&self, pred: Pred) -> Self::Position
+    fn find_if<Pred>(&self, mut pred: Pred) -> Self::Position
     where
-        Pred: Fn(&Self::Element) -> bool,
+        Pred: FnMut(&Self::Element) -> bool,
     {
         let mut start = self.start();
         let end = self.end();
