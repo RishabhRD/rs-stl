@@ -198,6 +198,15 @@ pub mod tests {
     }
 
     #[test]
+    fn drop() {
+        let arr = [1, 3, 5, 2, 4, 7];
+        assert!(arr.drop(3).equals(&[2, 4, 7]));
+        assert!(arr.drop(0).equals(&[1, 3, 5, 2, 4, 7]));
+        assert!(arr.drop(6).equals(&[]));
+        assert!(arr.drop(7).equals(&[]));
+    }
+
+    #[test]
     fn suffix() {
         let arr = [1, 2, 3, 4, 5];
         assert!(arr.suffix(3).equals(&[3, 4, 5]));

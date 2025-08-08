@@ -171,6 +171,29 @@ pub trait CollectionExt: Collection {
         self.suffix_from(self.first_position_where(|x| !predicate(x)))
     }
 
+    /// Returns a slice containing all but the given number of initial elements.
+    ///
+    /// # Postcondition
+    ///   - If `n > self.count()`, returns an empty slice.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection;
+    ///   - O(k) otherwise, where k is number of elements to drop from beginning of collection.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4, 5];
+    /// let s = arr.drop(3);
+    /// assert!(s.equals(&[4, 5]));
+    /// ```
+    fn drop(&self, n: usize) -> Slice<Self::Whole> {
+        let mut start = self.start();
+        self.form_next_n_limited_by(&mut start, n, self.end());
+        self.suffix_from(start)
+    }
+
     /// Returns a slice, upto specified maximum length, containing the final elements of the
     /// collection.
     ///
