@@ -200,6 +200,14 @@ pub mod tests {
     }
 
     #[test]
+    fn drop_while_mut() {
+        let mut arr = [1, 3, 5, 2, 4, 7];
+        assert!(arr.drop_while_mut(|x| x % 2 == 1).equals(&[2, 4, 7]));
+        assert!(arr.drop_while_mut(|x| *x < 10).equals(&[]));
+        assert!(arr.drop_while_mut(|x| *x < 1).equals(&[1, 3, 5, 2, 4, 7]));
+    }
+
+    #[test]
     fn suffix_mut() {
         let mut arr = [1, 2, 3, 4, 5];
         assert!(arr.suffix_mut(3).equals(&[3, 4, 5]));

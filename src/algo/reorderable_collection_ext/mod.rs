@@ -125,6 +125,27 @@ where
         self.prefix_upto_mut(p)
     }
 
+    /// Returns a slice by skipping initial elements while `predicate` returns true,
+    /// returning the remaining elements.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 3, 5, 2, 4, 7];
+    /// let s = arr.drop_while_mut(|x| x % 2 == 1);
+    /// assert!(s.equals(&[2, 4, 7]));
+    /// ```
+    fn drop_while_mut<F>(&mut self, mut predicate: F) -> SliceMut<Self::Whole>
+    where
+        F: FnMut(&Self::Element) -> bool,
+    {
+        self.suffix_from_mut(self.first_position_where(|x| !predicate(x)))
+    }
+
     /// Returns a slice, upto specified maximum length, containing the final elements of the
     /// collection.
     ///
