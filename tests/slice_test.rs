@@ -207,6 +207,15 @@ pub mod tests {
     }
 
     #[test]
+    fn drop_end() {
+        let arr = [1, 3, 5, 2, 4, 7];
+        assert!(arr.drop_end(3).equals(&[1, 3, 5]));
+        assert!(arr.drop_end(0).equals(&[1, 3, 5, 2, 4, 7]));
+        assert!(arr.drop_end(6).equals(&[]));
+        assert!(arr.drop_end(7).equals(&[]));
+    }
+
+    #[test]
     fn suffix() {
         let arr = [1, 2, 3, 4, 5];
         assert!(arr.suffix(3).equals(&[3, 4, 5]));

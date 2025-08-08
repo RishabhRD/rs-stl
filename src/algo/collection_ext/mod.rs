@@ -174,7 +174,7 @@ pub trait CollectionExt: Collection {
     /// Returns a slice containing all but the given number of initial elements.
     ///
     /// # Postcondition
-    ///   - If `n > self.count()`, returns an empty slice.
+    ///   - If `count > self.count()`, returns an empty slice.
     ///
     /// # Complexity
     ///   - O(1) for RandomAccessCollection;
@@ -188,10 +188,35 @@ pub trait CollectionExt: Collection {
     /// let s = arr.drop(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn drop(&self, n: usize) -> Slice<Self::Whole> {
+    fn drop(&self, count: usize) -> Slice<Self::Whole> {
         let mut start = self.start();
-        self.form_next_n_limited_by(&mut start, n, self.end());
+        self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from(start)
+    }
+
+    /// Returns a slice containing all but the given number of final elements.
+    ///
+    /// # Postcondition
+    ///   - If `count > self.count()`, returns an empty slice.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection;
+    ///   - O(n) otherwise, where `n == self.count()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4, 5];
+    /// let s = arr.drop_end(3);
+    /// assert!(s.equals(&[1, 2]));
+    /// ```
+    fn drop_end(&self, count: usize) -> Slice<Self::Whole> {
+        let n = self.count();
+        if count > n {
+            return self.prefix_upto(self.start());
+        }
+        self.prefix_upto(self.next_n(self.start(), n - count))
     }
 
     /// Returns a slice, upto specified maximum length, containing the final elements of the
