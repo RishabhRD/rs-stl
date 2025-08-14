@@ -247,6 +247,55 @@ where
     ) -> SliceMut<Self::Whole> {
         self.slice_mut(from, self.end())
     }
+
+    /*-----------------Reordering Algorithms-----------------*/
+
+    /// Rotates the elements of `self` such that element at `to_start_at`
+    /// becomes the start of the collection without disturbing relative ordering
+    /// of other elements.
+    ///
+    /// # Precondition
+    ///   - `to_start_at` is a valid position in `self`.
+    ///
+    /// # Complexity
+    ///   - O(n). At most `n` swaps. Where n == `self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let i = arr.rotate(2);
+    /// assert_eq!(i, 3);
+    /// assert!(arr.equals(&[3, 4, 5, 1, 2]));
+    /// ```
+    fn rotate(&mut self, to_start_at: Self::Position) -> Self::Position {
+        // Base case
+        if self.start() == to_start_at {
+            return self.end();
+        }
+
+        if to_start_at == self.end() {
+            return self.start();
+        }
+
+        let mut write = self.start();
+        let mut next_read = self.start();
+
+        let mut read = to_start_at;
+        while read != self.end() {
+            if write == next_read {
+                next_read = read.clone();
+            }
+            self.swap_at(&write, &read);
+            self.form_next(&mut write);
+            self.form_next(&mut read);
+        }
+
+        self.suffix_from_mut(write.clone()).rotate(next_read);
+
+        write
+    }
 }
 
 impl<R> ReorderableCollectionExt for R
