@@ -250,12 +250,13 @@ where
 
     /*-----------------Reordering Algorithms-----------------*/
 
-    /// Rotates the elements of `self` such that element at `to_start_at`
-    /// becomes the start of the collection without disturbing relative ordering
-    /// of other elements.
+    /// Swaps the order in which the values `self.prefix_upto(at)` and
+    /// `self.suffix_from(at)` occur, so that the end of the latter sequence of
+    /// element values is the start of the former sequence, and returns that
+    /// position.
     ///
     /// # Precondition
-    ///   - `to_start_at` is a valid position in `self`.
+    ///   - `at` is a valid position in `self`.
     ///
     /// # Complexity
     ///   - O(n). At most `n` swaps. Where n == `self.count()`.
@@ -269,20 +270,20 @@ where
     /// assert_eq!(i, 3);
     /// assert!(arr.equals(&[3, 4, 5, 1, 2]));
     /// ```
-    fn rotate(&mut self, to_start_at: Self::Position) -> Self::Position {
+    fn rotate(&mut self, at: Self::Position) -> Self::Position {
         // Base case
-        if self.start() == to_start_at {
+        if self.start() == at {
             return self.end();
         }
 
-        if to_start_at == self.end() {
+        if at == self.end() {
             return self.start();
         }
 
         let mut write = self.start();
         let mut next_read = self.start();
 
-        let mut read = to_start_at;
+        let mut read = at;
         while read != self.end() {
             if write == next_read {
                 next_read = read.clone();
