@@ -270,32 +270,49 @@ where
     /// assert_eq!(i, 3);
     /// assert!(arr.equals(&[3, 4, 5, 1, 2]));
     /// ```
-    fn rotate(&mut self, at: Self::Position) -> Self::Position {
-        // Base case
+    fn rotate(&mut self, mut at: Self::Position) -> Self::Position {
+        // Trivial cases
         if self.start() == at {
             return self.end();
         }
-
         if at == self.end() {
             return self.start();
         }
 
-        let mut write = self.start();
-        let mut next_read = self.start();
+        let mut s1 = self.start();
 
-        let mut read = at;
-        while read != self.end() {
-            if write == next_read {
-                next_read = read.clone();
+        // An impossible return value.
+        let mut ret = self.end();
+
+        loop {
+            let mut m1 = at.clone();
+            // Swap initials elements of 2 partitions.
+            while s1 != at && m1 != self.end() {
+                self.swap_at(&s1, &m1);
+                self.form_next(&mut s1);
+                self.form_next(&mut m1);
             }
-            self.swap_at(&write, &read);
-            self.form_next(&mut write);
-            self.form_next(&mut read);
+
+            // If we are done moving the last element of second partition,
+            // we can conclude the return value if not already concluded.
+            if m1 == self.end() {
+                if ret == self.end() {
+                    // Return value is not found till now.
+                    ret = s1.clone();
+                }
+                // Both partitions were of same size.
+                if s1 == at {
+                    break;
+                }
+            }
+
+            // We got to a smaller subproblem, that is also a rotate.
+            if s1 == at {
+                at = m1.clone();
+            }
         }
 
-        self.suffix_from_mut(write.clone()).rotate(next_read);
-
-        write
+        ret
     }
 }
 
