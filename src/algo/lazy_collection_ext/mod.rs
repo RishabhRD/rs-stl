@@ -45,8 +45,12 @@ where
 
     /*-----------------Numeric Algorithms-----------------*/
 
-    /// Reduces the given lazy collection by applying given reduction operation
-    /// from left to right on lazy computed elements of lazy collection.
+    /// Returns the result of combining elements of given collection using given
+    /// accumulation operation from left to right.
+    ///
+    /// # Postcondition
+    ///   - Result is `(((init + e1) + e2) + ... + en)`.
+    ///     where e1, e2, ..., en are the lazily computed values of collection.
     ///
     /// # Complexity:
     ///   - O(`count`)

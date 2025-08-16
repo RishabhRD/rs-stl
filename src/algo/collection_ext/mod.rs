@@ -611,8 +611,12 @@ pub trait CollectionExt: Collection {
 
     /*-----------------Numeric Algorithms-----------------*/
 
-    /// Reduces the given collection by applying given reduction operation
-    /// from left to right of the collection.
+    /// Returns the result of combining elements of given collection using given
+    /// accumulation operation from left to right.
+    ///
+    /// # Postcondition
+    ///   - Result is `(((init + e1) + e2) + ... + en)`.
+    ///     where e1, e2, ..., en are the references to collection elements.
     ///
     /// # Complexity:
     ///   - O(`count`)
