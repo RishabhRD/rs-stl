@@ -78,7 +78,7 @@ where
     Whole: LazyCollection<Whole = Whole>,
 {
     /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
-    pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
+    pub fn pop_first_lazy(&mut self) -> Option<<Self as Collection>::Element> {
         if self.from == self.to {
             None
         } else {
