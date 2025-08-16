@@ -151,6 +151,42 @@ where
     }
 }
 
+impl<Whole> SliceMut<'_, Whole>
+where
+    Whole: BidirectionalCollection<Whole = Whole>
+        + LazyCollection
+        + ReorderableCollection,
+{
+    /// Removes and returns the last element and its position if non-empty; returns None otherwise.
+    pub fn pop_last_with_pos_lazy(
+        &mut self,
+    ) -> Option<(
+        <Self as Collection>::Position,
+        <Self as Collection>::Element,
+    )> {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self.whole.prior(self.to.clone());
+            let e = self.whole.compute_at(&ele_pos);
+            self.whole.form_prior(&mut self.to);
+            Some((ele_pos, e))
+        }
+    }
+
+    /// Removes and returns the last element if non-empty; returns None otherwise.
+    pub fn pop_last_lazy(&mut self) -> Option<<Self as Collection>::Element> {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self.whole.prior(self.to.clone());
+            let e = Some(self.whole.compute_at(&ele_pos));
+            self.whole.form_prior(&mut self.to);
+            e
+        }
+    }
+}
+
 impl<Whole> Collection for SliceMut<'_, Whole>
 where
     Whole: ReorderableCollection<Whole = Whole>,

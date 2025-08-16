@@ -77,17 +77,6 @@ impl<Whole> Slice<'_, Whole>
 where
     Whole: LazyCollection<Whole = Whole>,
 {
-    /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
-    pub fn pop_first_lazy(&mut self) -> Option<<Self as Collection>::Element> {
-        if self.from == self.to {
-            None
-        } else {
-            let e = Some(self.whole.compute_at(&self.from));
-            self.whole.form_next(&mut self.from);
-            e
-        }
-    }
-
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.
     pub fn pop_first_with_pos_lazy(
         &mut self,
@@ -102,6 +91,17 @@ where
             let p = self.from.clone();
             self.whole.form_next(&mut self.from);
             Some((p, e))
+        }
+    }
+
+    /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
+    pub fn pop_first_lazy(&mut self) -> Option<<Self as Collection>::Element> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = Some(self.whole.compute_at(&self.from));
+            self.whole.form_next(&mut self.from);
+            e
         }
     }
 }
@@ -146,6 +146,40 @@ where
         } else {
             self.whole.form_prior(&mut self.to);
             true
+        }
+    }
+}
+
+impl<Whole> Slice<'_, Whole>
+where
+    Whole: BidirectionalCollection<Whole = Whole> + LazyCollection,
+{
+    /// Removes and returns the last element and its position if non-empty; returns None otherwise.
+    pub fn pop_last_with_pos_lazy(
+        &mut self,
+    ) -> Option<(
+        <Self as Collection>::Position,
+        <Self as Collection>::Element,
+    )> {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self.whole.prior(self.to.clone());
+            let e = self.whole.compute_at(&ele_pos);
+            self.whole.form_prior(&mut self.to);
+            Some((ele_pos, e))
+        }
+    }
+
+    /// Removes and returns the last element if non-empty; returns None otherwise.
+    pub fn pop_last_lazy(&mut self) -> Option<<Self as Collection>::Element> {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self.whole.prior(self.to.clone());
+            let e = Some(self.whole.compute_at(&ele_pos));
+            self.whole.form_prior(&mut self.to);
+            e
         }
     }
 }
