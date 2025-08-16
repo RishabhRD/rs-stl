@@ -103,7 +103,7 @@ macro_rules! impl_collection_for_range_inclusive {
           from: Self::Position,
           to: Self::Position,
       ) -> Self::LazyIter<'_> {
-          from..=(to + 1)
+          from..=(to - 1)
       }
 
       fn lazy_iter(&self) -> Self::LazyIter<'_> {

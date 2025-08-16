@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
+use crate::algo::collection_ext::CollectionExt;
 use crate::BidirectionalCollection;
 use crate::Collection;
 use crate::ReorderableCollection;
@@ -35,6 +36,37 @@ where
             s.drop_first();
             s.drop_last();
         }
+    }
+
+    /*-----------------Numeric Algorithms-----------------*/
+
+    /// Returns the result of combining elements of given collection using given
+    /// accumulation operation from right to left.
+    ///
+    /// # Postcondition
+    ///   - Result is `(e0 + ... + (e(n-1) + (e(n) + init)))`.
+    ///     where e1, e2, ..., en are the references to collection elements.
+    ///
+    /// # Complexity:
+    ///   - O(`count`)
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// assert_eq!(arr.fold_right(0, |x, y| x + y), 6);
+    /// ```
+    fn fold_right<R, F>(&self, init: R, mut op: F) -> R
+    where
+        F: FnMut(&Self::Element, R) -> R,
+    {
+        let mut res = init;
+        let mut rest = self.full();
+        while let Some(e) = rest.pop_last() {
+            res = op(&e, res)
+        }
+        res
     }
 }
 
