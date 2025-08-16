@@ -608,6 +608,32 @@ pub trait CollectionExt: Collection {
         }
         f
     }
+
+    /*-----------------Numeric Algorithms-----------------*/
+
+    /// Reduces the given collection by applying given reduction operation
+    /// from left to right of the collection.
+    ///
+    /// # Complexity:
+    ///   - O(`count`)
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// assert_eq!(arr.fold_left(0, |x, y| x + y), 6);
+    /// ```
+    fn fold_left<R, F>(&self, init: R, mut op: F) -> R
+    where
+        F: FnMut(R, &Self::Element) -> R,
+    {
+        let mut res = init;
+        for e in self.iter() {
+            res = op(res, &e)
+        }
+        res
+    }
 }
 
 impl<R> CollectionExt for R where R: Collection + ?Sized {}
