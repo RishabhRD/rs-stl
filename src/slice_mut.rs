@@ -79,7 +79,7 @@ where
     Whole: LazyCollection<Whole = Whole> + ReorderableCollection,
 {
     /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
-    pub fn pop_first_lazy(&mut self) -> Option<<Self as Collection>::Element> {
+    pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
         if self.from == self.to {
             None
         } else {
@@ -90,7 +90,7 @@ where
     }
 
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.
-    pub fn pop_first_with_pos_lazy(
+    pub fn lazy_pop_first_with_pos(
         &mut self,
     ) -> Option<(
         <Self as Collection>::Position,
@@ -158,7 +158,7 @@ where
         + ReorderableCollection,
 {
     /// Removes and returns the last element and its position if non-empty; returns None otherwise.
-    pub fn pop_last_with_pos_lazy(
+    pub fn lazy_pop_last_with_pos(
         &mut self,
     ) -> Option<(
         <Self as Collection>::Position,
@@ -175,7 +175,7 @@ where
     }
 
     /// Removes and returns the last element if non-empty; returns None otherwise.
-    pub fn pop_last_lazy(&mut self) -> Option<<Self as Collection>::Element> {
+    pub fn lazy_pop_last(&mut self) -> Option<<Self as Collection>::Element> {
         if self.from == self.to {
             None
         } else {

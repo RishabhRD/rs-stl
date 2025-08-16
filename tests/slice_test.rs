@@ -259,13 +259,13 @@ pub mod tests {
     fn lazy_pop_first() {
         let arr = 0..=3;
         let mut s = arr.full();
-        let e = s.pop_first_lazy();
+        let e = s.lazy_pop_first();
         assert_eq!(e, Some(0));
         assert!(s.equals(&[1, 2, 3]));
 
         let arr = 0..0;
         let mut s = arr.full();
-        let e = s.pop_first_lazy();
+        let e = s.lazy_pop_first();
         assert_eq!(e, None);
         assert!(s.equals(&[]));
     }
