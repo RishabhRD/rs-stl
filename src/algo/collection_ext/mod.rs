@@ -616,7 +616,8 @@ pub trait CollectionExt: Collection {
     ///
     /// # Postcondition
     ///   - Result is `(((init + e1) + e2) + ... + en)`.
-    ///     where e1, e2, ..., en are the references to collection elements.
+    ///     where e1, e2, ..., en are the references to collection elements,
+    ///     where (a + b) represents op(a, b).
     ///
     /// # Complexity:
     ///   - O(`count`)

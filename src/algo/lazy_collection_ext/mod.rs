@@ -51,7 +51,8 @@ where
     ///
     /// # Postcondition
     ///   - Result is `(((init + e1) + e2) + ... + en)`.
-    ///     where e1, e2, ..., en are the lazily computed values of collection.
+    ///     where e1, e2, ..., en are the lazily computed values of collection,
+    ///     where (a + b) represents op(a, b).
     ///
     /// # Complexity:
     ///   - O(`count`)
@@ -79,7 +80,8 @@ where
     ///
     /// # Postcondition
     ///   - Result is `(e0 + ... + (e(n-1) + (e(n) + init)))`.
-    ///     where e1, e2, ..., en are the references to collection elements.
+    ///     where e1, e2, ..., en are the references to collection elements,
+    ///     where (a + b) represents op(a, b).
     ///
     /// # Complexity:
     ///   - O(`count`)
