@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{Collection, LazyCollection};
+use crate::algo::collection_ext::CollectionExt;
+use crate::{BidirectionalCollection, Collection, LazyCollection};
 
 /// Algorithms for `LazyCollection`.
 pub trait LazyCollectionExt: LazyCollection
@@ -69,6 +70,37 @@ where
         let mut res = init;
         for e in self.lazy_iter() {
             res = op(res, e)
+        }
+        res
+    }
+
+    /// Returns the result of combining elements of given collection using given
+    /// accumulation operation from right to left.
+    ///
+    /// # Postcondition
+    ///   - Result is `(e0 + ... + (e(n-1) + (e(n) + init)))`.
+    ///     where e1, e2, ..., en are the references to collection elements.
+    ///
+    /// # Complexity:
+    ///   - O(`count`)
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = 1..=3;
+    /// assert_eq!(arr.lazy_fold_right(0, |x, y| x + y), 6);
+    /// ```
+    fn lazy_fold_right<R, F>(&self, init: R, mut op: F) -> R
+    where
+        F: FnMut(Self::Element, R) -> R,
+        Self: BidirectionalCollection,
+        Self::Whole: BidirectionalCollection,
+    {
+        let mut res = init;
+        let mut rest = self.full();
+        while let Some(e) = rest.lazy_pop_last() {
+            res = op(e, res)
         }
         res
     }
