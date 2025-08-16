@@ -87,6 +87,23 @@ where
             e
         }
     }
+
+    /// Removes and returns the first element and its position if non-empty; returns None otherwise.
+    pub fn pop_first_with_pos_lazy(
+        &mut self,
+    ) -> Option<(
+        <Self as Collection>::Position,
+        <Self as Collection>::Element,
+    )> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = self.whole.compute_at(&self.from);
+            let p = self.from.clone();
+            self.whole.form_next(&mut self.from);
+            Some((p, e))
+        }
+    }
 }
 
 impl<Whole> Slice<'_, Whole>
