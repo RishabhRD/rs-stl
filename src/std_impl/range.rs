@@ -80,7 +80,7 @@ macro_rules! impl_collection_for_range_inclusive {
            from: Self::Position,
            to: Self::Position,
        ) -> Self::Iter<'_> {
-           (from..=(to + 1)).iter()
+           (from..=(to - 1)).iter()
        }
 
       fn iter(&self) -> Self::Iter<'_> {

@@ -42,6 +42,32 @@ where
             start = self.next(start);
         }
     }
+
+    /*-----------------Numeric Algorithms-----------------*/
+
+    /// Reduces the given lazy collection by applying given reduction operation
+    /// from left to right on lazy computed elements of lazy collection.
+    ///
+    /// # Complexity:
+    ///   - O(`count`)
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = 1..=3;
+    /// assert_eq!(arr.fold_left_lazy(0, |x, y| x + y), 6);
+    /// ```
+    fn fold_left_lazy<R, F>(&self, init: R, mut op: F) -> R
+    where
+        F: FnMut(R, Self::Element) -> R,
+    {
+        let mut res = init;
+        for e in self.lazy_iter() {
+            res = op(res, e)
+        }
+        res
+    }
 }
 
 impl<R> LazyCollectionExt for R
