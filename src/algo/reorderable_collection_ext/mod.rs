@@ -314,6 +314,53 @@ where
 
         ret
     }
+
+    /// Reorders the collection such that elements satisfying given predicate are
+    /// followed by elements which don't satisfy the predicate.
+    ///
+    /// # Postcondition
+    ///   - The position of first element in collection after reordering that
+    ///     satisfies `belongs_in_second_partition`. If no such element exists,
+    ///     then return `self.end()`.
+    ///   - Relative ordering of elements in the partitions are not preserved.
+    ///
+    /// # Complexity
+    ///   - O(`count`)
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let i = arr.partition(|x| x % 2 == 1);
+    /// assert_eq!(i, 2);
+    /// assert!(arr.prefix_upto(i).all_satisfy(|x| x % 2 == 0));
+    /// assert!(arr.suffix_from(i).all_satisfy(|x| x % 2 == 1));
+    /// ```
+    fn partition<F>(
+        &mut self,
+        mut belongs_in_second_partition: F,
+    ) -> Self::Position
+    where
+        F: FnMut(&Self::Element) -> bool + Clone,
+    {
+        let mut write_pos =
+            self.first_position_where(belongs_in_second_partition.clone());
+        if write_pos == self.end() {
+            return self.end();
+        }
+
+        let mut i = self.next(write_pos.clone());
+        while i != self.end() {
+            if !belongs_in_second_partition(&self.at(&i)) {
+                self.swap_at(&write_pos, &i);
+                self.form_next(&mut write_pos);
+            }
+            self.form_next(&mut i);
+        }
+
+        write_pos
+    }
 }
 
 impl<R> ReorderableCollectionExt for R
