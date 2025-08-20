@@ -3,6 +3,8 @@
 
 use crate::algo::collection_ext::CollectionExt;
 use crate::{ReorderableCollection, SliceMut};
+mod stable_partition;
+use stable_partition::*;
 
 /// Algorithms for `ReorderableCollection`.
 pub trait ReorderableCollectionExt: ReorderableCollection
@@ -315,13 +317,11 @@ where
         ret
     }
 
-    /// Reorders the collection such that elements satisfying given predicate are
-    /// followed by elements which don't satisfy the predicate.
+    /// Moves all elements satisfying the given predicate into a suffix of the
+    /// collection, returning the start position of the resulting suffix.
     ///
     /// # Postcondition
-    ///   - The position of first element in collection after reordering that
-    ///     satisfies `belongs_in_second_partition`. If no such element exists,
-    ///     then return `self.end()`.
+    ///   - If no elements exist in suffix, returns `self.end()`.
     ///   - Relative ordering of elements in the partitions are not preserved.
     ///
     /// # Complexity
@@ -360,6 +360,36 @@ where
         }
 
         write_pos
+    }
+
+    /// Moves all elements satisfying the given predicate into a suffix of the
+    /// given range, preserving the relative order of the elements in both
+    /// partitions, and returns the start of the resulting suffix.
+    ///
+    /// # Postcondition
+    ///   - If no element exists in suffix, returns `self.end()`.
+    ///
+    /// # Complexity
+    ///   - O(n log(n)) where `n == self.count()`
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let i = arr.stable_partition(|x| x % 2 == 1);
+    /// assert_eq!(i, 2);
+    /// assert!(arr.equals(&[2, 4, 1, 3, 5]));
+    /// ```
+    fn stable_partition<F>(
+        &mut self,
+        belongs_in_second_partition: F,
+    ) -> Self::Position
+    where
+        F: FnMut(&Self::Element) -> bool + Clone,
+    {
+        let n = self.count();
+        stable_partition(self, belongs_in_second_partition, n)
     }
 }
 
