@@ -106,4 +106,36 @@ pub mod tests {
         assert_eq!(evens, []);
         assert_eq!(odds, []);
     }
+
+    #[test]
+    fn lazy_partitioned_when_both_parts_are_not_empty() {
+        let arr = 1..=5;
+        let (evens, odds) = arr.lazy_partitioned(|x| x % 2 == 1);
+        assert_eq!(evens, [2, 4]);
+        assert_eq!(odds, [1, 3, 5]);
+    }
+
+    #[test]
+    fn lazy_partitioned_when_first_part_is_empty() {
+        let arr = 1..=1;
+        let (evens, odds) = arr.lazy_partitioned(|x| x % 2 == 1);
+        assert_eq!(evens, []);
+        assert_eq!(odds, [1]);
+    }
+
+    #[test]
+    fn lazy_partitioned_when_second_part_is_empty() {
+        let arr = 2..=2;
+        let (evens, odds) = arr.lazy_partitioned(|x| x % 2 == 1);
+        assert_eq!(evens, [2]);
+        assert_eq!(odds, []);
+    }
+
+    #[test]
+    fn lazy_partitioned_when_both_parts_are_empty() {
+        let arr = 1..1;
+        let (evens, odds) = arr.lazy_partitioned(|x| x % 2 == 1);
+        assert_eq!(evens, []);
+        assert_eq!(odds, []);
+    }
 }

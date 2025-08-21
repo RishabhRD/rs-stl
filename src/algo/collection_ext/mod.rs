@@ -565,7 +565,7 @@ pub trait CollectionExt: Collection {
         self.count_where(|x| x == e)
     }
 
-    /*-----------------Partition Find Algorithms-----------------*/
+    /*-----------------Partition Algorithms-----------------*/
 
     /// Returns position of first element of collection for which predicate returns false.
     ///

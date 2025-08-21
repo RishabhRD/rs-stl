@@ -44,6 +44,62 @@ where
         }
     }
 
+    /*-----------------Partition Algorithms-----------------*/
+
+    /// Returns two Vec containing the elements of the collection that
+    /// don’t and do satisfy the given predicate, respectively.
+    ///
+    /// # Postcondition
+    ///   - Returns `(falseVec, trueVec)` where `falseVec` contains all elements
+    ///     that don't satisfy predicate and `trueVec` contains all elements
+    ///     that do satisfy predicate.
+    ///   - Relative ordering of elements is preserved in both Vec.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = 1..=5;
+    /// let (evens, odds) = arr.lazy_partitioned(|x| x % 2 == 1);
+    /// assert_eq!(evens, [2, 4]);
+    /// assert_eq!(odds, [1, 3, 5]);
+    /// ```
+    fn lazy_partitioned<F>(
+        &self,
+        mut belongs_in_second_half: F,
+    ) -> (Vec<Self::Element>, Vec<Self::Element>)
+    where
+        F: FnMut(&Self::Element) -> bool,
+    {
+        let n = self.count();
+        let mut left = Vec::with_capacity(n);
+        let arr = left.spare_capacity_mut();
+        let mut left_idx = 0;
+        let mut right_idx = n;
+
+        for e in self.lazy_iter() {
+            if belongs_in_second_half(&e) {
+                right_idx -= 1;
+                arr[right_idx].write(e);
+            } else {
+                arr[left_idx].write(e);
+                left_idx += 1;
+            }
+        }
+
+        unsafe {
+            left.set_len(n);
+        }
+
+        let mut right = left.split_off(right_idx);
+        right.reverse();
+
+        (left, right)
+    }
+
     /*-----------------Numeric Algorithms-----------------*/
 
     /// Returns the result of combining elements of given collection using given
