@@ -52,6 +52,15 @@ pub mod tests {
     }
 
     #[test]
+    fn partition_when_both_parts_are_empty() {
+        let mut arr: [i32; 0] = [];
+        let i = arr.partition(|x| x % 2 == 1);
+        assert_eq!(i, 0);
+        assert!(arr.prefix_upto(i).all_satisfy(|x| x % 2 == 0));
+        assert!(arr.suffix_from(i).all_satisfy(|x| x % 2 == 1));
+    }
+
+    #[test]
     fn stable_partition_when_both_parts_are_not_empty() {
         let mut arr = [1, 2, 3, 4, 5];
         let i = arr.stable_partition(|x| x % 2 == 1);
@@ -73,6 +82,14 @@ pub mod tests {
         let i = arr.stable_partition(|x| x % 2 == 1);
         assert_eq!(i, 3);
         assert!(arr.equals(&[2, 4, 6]));
+    }
+
+    #[test]
+    fn stable_partition_when_both_parts_are_empty() {
+        let mut arr: [i32; 0] = [];
+        let i = arr.stable_partition(|x| x % 2 == 1);
+        assert_eq!(i, 0);
+        assert_eq!(arr, []);
     }
 
     #[test]
