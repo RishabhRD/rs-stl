@@ -74,4 +74,36 @@ pub mod tests {
         assert_eq!(i, 3);
         assert!(arr.equals(&[2, 4, 6]));
     }
+
+    #[test]
+    fn partitioned_when_both_parts_are_not_empty() {
+        let arr = [1, 2, 3, 4, 5];
+        let (evens, odds) = arr.partitioned(|x| x % 2 == 1);
+        assert_eq!(evens, [2, 4]);
+        assert_eq!(odds, [1, 3, 5]);
+    }
+
+    #[test]
+    fn partitioned_when_first_part_is_empty() {
+        let arr = [1, 3, 5];
+        let (evens, odds) = arr.partitioned(|x| x % 2 == 1);
+        assert_eq!(evens, []);
+        assert_eq!(odds, [1, 3, 5]);
+    }
+
+    #[test]
+    fn partitioned_when_second_part_is_empty() {
+        let arr = [2, 4];
+        let (evens, odds) = arr.partitioned(|x| x % 2 == 1);
+        assert_eq!(evens, [2, 4]);
+        assert_eq!(odds, []);
+    }
+
+    #[test]
+    fn partitioned_when_both_parts_are_empty() {
+        let arr: [i32; 0] = [];
+        let (evens, odds) = arr.partitioned(|x| x % 2 == 1);
+        assert_eq!(evens, []);
+        assert_eq!(odds, []);
+    }
 }
