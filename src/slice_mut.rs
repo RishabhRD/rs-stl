@@ -63,6 +63,38 @@ where
         }
     }
 
+    /// Removes and returns the mutable reference to first element and its position if non-empty; returns None otherwise.
+    pub fn pop_first_with_pos_mut(
+        &mut self,
+    ) -> Option<(<Self as Collection>::Position, &mut Whole::Element)>
+    where
+        Whole: MutableCollection,
+    {
+        if self.from == self.to {
+            None
+        } else {
+            let p = self.from.clone();
+            self.whole.form_next(&mut self.from);
+            let e = self.whole.at_mut(&p);
+            Some((p, e))
+        }
+    }
+
+    /// Removes and returns the mutable reference to first element if non-empty; returns None otherwise.
+    pub fn pop_first_mut(&mut self) -> Option<&mut Whole::Element>
+    where
+        Whole: MutableCollection,
+    {
+        if self.from == self.to {
+            None
+        } else {
+            let p = self.from.clone();
+            self.whole.form_next(&mut self.from);
+            let e = Some(self.whole.at_mut(&p));
+            e
+        }
+    }
+
     /// Removes the first element if non-empty and returns true; returns false otherwise.
     pub fn drop_first(&mut self) -> bool {
         if self.from == self.to {
