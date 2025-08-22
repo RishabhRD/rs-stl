@@ -375,11 +375,11 @@ where
 ///   any position jump is O(1).
 ///
 /// # Complexity Requirements
-///   - `rng.distance(from, to)` -> O(1).
-///   - `rng.form_next_n(i)` -> O(1).
-///   - `rng.form_prior_n(i)` -> O(1).
-///   - `rng.next_n(i)` -> O(1).
-///   - `rng.prior_n(i)` -> O(1).
+///   - `self.distance(from, to)` -> O(1).
+///   - `self.form_next_n(i)` -> O(1).
+///   - `self.form_prior_n(i)` -> O(1).
+///   - `self.next_n(i)` -> O(1).
+///   - `self.prior_n(i)` -> O(1).
 ///
 ///   NOTE: If complexity requirements are not formed any algorithm on RandomAccessCollection
 ///   have undefined behavior.
