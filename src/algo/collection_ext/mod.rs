@@ -5,6 +5,14 @@ use crate::{Collection, Slice};
 
 /// Algorithms for `Collection`.
 pub trait CollectionExt: Collection {
+    /// Returns true if given collection is empty.
+    ///
+    /// # Complexity
+    ///   - O(1).
+    fn is_empty(&self) -> bool {
+        self.start() == self.end()
+    }
+
     /*-----------------Iteration Algorithms-----------------*/
 
     /// Applies f to each element of collection.

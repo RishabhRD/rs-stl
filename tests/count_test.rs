@@ -26,4 +26,12 @@ pub mod tests {
         let n = arr.count_of(&3);
         assert_eq!(n, 0);
     }
+
+    #[test]
+    fn is_empty() {
+        let arr = 1..1;
+        assert!(CollectionExt::is_empty(&arr));
+        let arr = 1..2;
+        assert!(!CollectionExt::is_empty(&arr));
+    }
 }
