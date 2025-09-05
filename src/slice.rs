@@ -244,7 +244,7 @@ where
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::Whole> {
+    ) -> Slice<'_, Self::Whole> {
         Slice::new(self.whole, from, to)
     }
 }
