@@ -185,6 +185,35 @@ where
 
 impl<Whole> SliceMut<'_, Whole>
 where
+    Whole: BidirectionalCollection<Whole = Whole> + MutableCollection,
+{
+    /// Removes and returns the last element and its position if non-empty; returns None otherwise.
+    pub fn pop_last_with_pos_mut(
+        &mut self,
+    ) -> Option<(<Self as Collection>::Position, &'_ mut Whole::Element)> {
+        if self.from == self.to {
+            None
+        } else {
+            self.whole.form_prior(&mut self.to);
+            let e = self.whole.at_mut(&self.to);
+            Some((self.to.clone(), e))
+        }
+    }
+
+    /// Removes and returns the last element if non-empty; returns None otherwise.
+    pub fn pop_last_mut(&mut self) -> Option<&'_ mut Whole::Element> {
+        if self.from == self.to {
+            None
+        } else {
+            self.whole.form_prior(&mut self.to);
+            let e = Some(self.whole.at_mut(&self.to));
+            e
+        }
+    }
+}
+
+impl<Whole> SliceMut<'_, Whole>
+where
     Whole: BidirectionalCollection<Whole = Whole>
         + LazyCollection
         + ReorderableCollection,
