@@ -79,7 +79,7 @@ impl<T, const N: usize> Collection for [T; N] {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::Whole> {
+    ) -> Slice<'_, Self::Whole> {
         Slice::new(self, from, to)
     }
 }
@@ -120,7 +120,7 @@ impl<T, const N: usize> ReorderableCollection for [T; N] {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<Self::Whole> {
+    ) -> crate::SliceMut<'_, Self::Whole> {
         SliceMut::new(self, from, to)
     }
 }

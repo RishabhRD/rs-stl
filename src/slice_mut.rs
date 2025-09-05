@@ -308,7 +308,7 @@ where
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::Whole> {
+    ) -> Slice<'_, Self::Whole> {
         Slice::new(self.whole, from, to)
     }
 }
@@ -369,7 +369,7 @@ where
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> SliceMut<Self::Whole> {
+    ) -> SliceMut<'_, Self::Whole> {
         SliceMut::new(self.whole, from, to)
     }
 }

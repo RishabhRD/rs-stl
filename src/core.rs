@@ -202,7 +202,7 @@ pub trait Collection {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::Whole>;
+    ) -> Slice<'_, Self::Whole>;
 }
 
 /// Models a collection whose elements are computed on element access.
@@ -366,7 +366,7 @@ where
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> SliceMut<Self::Whole>;
+    ) -> SliceMut<'_, Self::Whole>;
 }
 
 /// Models a collection which supports mutating its element

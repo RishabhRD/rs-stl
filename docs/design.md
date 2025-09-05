@@ -52,7 +52,7 @@ pub trait Collection {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::Whole>;
+    ) -> Slice<'_, Self::Whole>;
 }
 ```
 
@@ -133,7 +133,7 @@ where
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> SliceMut<Self::Whole>;
+    ) -> SliceMut<'_, Self::Whole>;
 }
 ```
 
@@ -249,7 +249,7 @@ pub trait Collection {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::Whole>;
+    ) -> Slice<'_, Self::Whole>;
 }
 ```
 

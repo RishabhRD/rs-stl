@@ -87,7 +87,7 @@ impl<T> Collection for Option<T> {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::Slice<Self::Whole> {
+    ) -> crate::Slice<'_, Self::Whole> {
         Slice::new(self, from, to)
     }
 }
@@ -133,7 +133,7 @@ impl<T> ReorderableCollection for Option<T> {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<Self::Whole> {
+    ) -> crate::SliceMut<'_, Self::Whole> {
         SliceMut::new(self, from, to)
     }
 }

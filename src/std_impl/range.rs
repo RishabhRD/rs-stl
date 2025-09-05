@@ -44,7 +44,7 @@ macro_rules! impl_collection_for_range_inclusive {
           &self,
           from: Self::Position,
           to: Self::Position,
-      ) -> crate::Slice<Self::Whole> {
+      ) -> crate::Slice<'_, Self::Whole> {
           Slice::new(self, from, to)
       }
 
@@ -147,7 +147,7 @@ macro_rules! impl_collection_for_range {
           &self,
           from: Self::Position,
           to: Self::Position,
-      ) -> crate::Slice<Self::Whole> {
+      ) -> crate::Slice<'_, Self::Whole> {
           Slice::new(self, from, to)
       }
 

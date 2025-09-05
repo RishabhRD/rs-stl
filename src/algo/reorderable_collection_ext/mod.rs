@@ -29,7 +29,7 @@ where
     /// assert!(s.equals(&[0, 2, 3, 4, 5]));
     /// assert!(arr.equals(&[0, 2, 3, 4, 5]));
     /// ```
-    fn full_mut(&mut self) -> SliceMut<Self::Whole> {
+    fn full_mut(&mut self) -> SliceMut<'_, Self::Whole> {
         self.slice_mut(self.start(), self.end())
     }
 
@@ -52,7 +52,7 @@ where
     /// let s = arr.prefix_mut(3);
     /// assert!(s.equals(&[1, 2, 3]));
     /// ```
-    fn prefix_mut(&mut self, max_length: usize) -> SliceMut<Self::Whole> {
+    fn prefix_mut(&mut self, max_length: usize) -> SliceMut<'_, Self::Whole> {
         let mut end = self.start();
         self.form_next_n_limited_by(&mut end, max_length, self.end());
         self.prefix_upto_mut(end)
@@ -77,7 +77,10 @@ where
     /// assert!(p.equals(&[0, 2, 3]));
     /// assert!(arr.equals(&[0, 2, 3, 4, 5]));
     /// ```
-    fn prefix_upto_mut(&mut self, to: Self::Position) -> SliceMut<Self::Whole> {
+    fn prefix_upto_mut(
+        &mut self,
+        to: Self::Position,
+    ) -> SliceMut<'_, Self::Whole> {
         self.slice_mut(self.start(), to)
     }
 
@@ -100,7 +103,7 @@ where
     fn prefix_through_mut(
         &mut self,
         pos: Self::Position,
-    ) -> SliceMut<Self::Whole> {
+    ) -> SliceMut<'_, Self::Whole> {
         let next = self.next(pos);
         self.prefix_upto_mut(next)
     }
@@ -122,7 +125,7 @@ where
     fn prefix_while_mut<F: FnMut(&Self::Element) -> bool>(
         &mut self,
         mut predicate: F,
-    ) -> SliceMut<Self::Whole> {
+    ) -> SliceMut<'_, Self::Whole> {
         let p = self.first_position_where(|x| !predicate(x));
         self.prefix_upto_mut(p)
     }
@@ -141,7 +144,10 @@ where
     /// let s = arr.drop_while_mut(|x| x % 2 == 1);
     /// assert!(s.equals(&[2, 4, 7]));
     /// ```
-    fn drop_while_mut<F>(&mut self, mut predicate: F) -> SliceMut<Self::Whole>
+    fn drop_while_mut<F>(
+        &mut self,
+        mut predicate: F,
+    ) -> SliceMut<'_, Self::Whole>
     where
         F: FnMut(&Self::Element) -> bool,
     {
@@ -165,7 +171,7 @@ where
     /// let s = arr.drop(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn drop_mut(&mut self, count: usize) -> SliceMut<Self::Whole> {
+    fn drop_mut(&mut self, count: usize) -> SliceMut<'_, Self::Whole> {
         let mut start = self.start();
         self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from_mut(start)
@@ -188,7 +194,7 @@ where
     /// let s = arr.drop_end(3);
     /// assert!(s.equals(&[1, 2]));
     /// ```
-    fn drop_end_mut(&mut self, count: usize) -> SliceMut<Self::Whole> {
+    fn drop_end_mut(&mut self, count: usize) -> SliceMut<'_, Self::Whole> {
         let n = self.count();
         if count > n {
             return self.prefix_upto_mut(self.start());
@@ -215,7 +221,7 @@ where
     /// let s = arr.suffix_mut(3);
     /// assert!(s.equals(&[3, 4, 5]));
     /// ```
-    fn suffix_mut(&mut self, max_length: usize) -> SliceMut<Self::Whole> {
+    fn suffix_mut(&mut self, max_length: usize) -> SliceMut<'_, Self::Whole> {
         let n = self.count();
         if max_length > n {
             self.full_mut()
@@ -246,7 +252,7 @@ where
     fn suffix_from_mut(
         &mut self,
         from: Self::Position,
-    ) -> SliceMut<Self::Whole> {
+    ) -> SliceMut<'_, Self::Whole> {
         self.slice_mut(from, self.end())
     }
 

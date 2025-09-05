@@ -72,7 +72,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.full();
     /// assert!(s.equals(&[1, 2, 3, 4, 5]));
     /// ```
-    fn full(&self) -> Slice<Self::Whole> {
+    fn full(&self) -> Slice<'_, Self::Whole> {
         self.slice(self.start(), self.end())
     }
 
@@ -95,7 +95,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.prefix(3);
     /// assert!(s.equals(&[1, 2, 3]));
     /// ```
-    fn prefix(&self, max_length: usize) -> Slice<Self::Whole> {
+    fn prefix(&self, max_length: usize) -> Slice<'_, Self::Whole> {
         let mut end = self.start();
         self.form_next_n_limited_by(&mut end, max_length, self.end());
         self.prefix_upto(end)
@@ -117,7 +117,7 @@ pub trait CollectionExt: Collection {
     /// let p = arr.prefix_upto(3);
     /// assert!(p.equals(&[1, 2, 3]));
     /// ```
-    fn prefix_upto(&self, pos: Self::Position) -> Slice<Self::Whole> {
+    fn prefix_upto(&self, pos: Self::Position) -> Slice<'_, Self::Whole> {
         self.slice(self.start(), pos)
     }
 
@@ -137,7 +137,7 @@ pub trait CollectionExt: Collection {
     /// let p = arr.prefix_through(3);
     /// assert!(p.equals(&[1, 2, 3, 4]));
     /// ```
-    fn prefix_through(&self, pos: Self::Position) -> Slice<Self::Whole> {
+    fn prefix_through(&self, pos: Self::Position) -> Slice<'_, Self::Whole> {
         self.prefix_upto(self.next(pos))
     }
 
@@ -158,7 +158,7 @@ pub trait CollectionExt: Collection {
     fn prefix_while<F: FnMut(&Self::Element) -> bool>(
         &self,
         mut predicate: F,
-    ) -> Slice<Self::Whole> {
+    ) -> Slice<'_, Self::Whole> {
         let p = self.first_position_where(|x| !predicate(x));
         self.prefix_upto(p)
     }
@@ -177,7 +177,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.drop_while(|x| x % 2 == 1);
     /// assert!(s.equals(&[2, 4, 7]));
     /// ```
-    fn drop_while<F>(&self, mut predicate: F) -> Slice<Self::Whole>
+    fn drop_while<F>(&self, mut predicate: F) -> Slice<'_, Self::Whole>
     where
         F: FnMut(&Self::Element) -> bool,
     {
@@ -201,7 +201,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.drop(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn drop(&self, count: usize) -> Slice<Self::Whole> {
+    fn drop(&self, count: usize) -> Slice<'_, Self::Whole> {
         let mut start = self.start();
         self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from(start)
@@ -224,7 +224,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.drop_end(3);
     /// assert!(s.equals(&[1, 2]));
     /// ```
-    fn drop_end(&self, count: usize) -> Slice<Self::Whole> {
+    fn drop_end(&self, count: usize) -> Slice<'_, Self::Whole> {
         let n = self.count();
         if count > n {
             return self.prefix_upto(self.start());
@@ -251,7 +251,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.suffix(3);
     /// assert!(s.equals(&[3, 4, 5]));
     /// ```
-    fn suffix(&self, max_length: usize) -> Slice<Self::Whole> {
+    fn suffix(&self, max_length: usize) -> Slice<'_, Self::Whole> {
         let n = self.count();
         if max_length > n {
             self.full()
@@ -276,7 +276,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.suffix_from(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn suffix_from(&self, from: Self::Position) -> Slice<Self::Whole> {
+    fn suffix_from(&self, from: Self::Position) -> Slice<'_, Self::Whole> {
         self.slice(from, self.end())
     }
 

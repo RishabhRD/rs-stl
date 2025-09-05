@@ -41,7 +41,7 @@ pub mod tests {
                 &self,
                 from: Self::Position,
                 to: Self::Position,
-            ) -> stl::Slice<Self::Whole> {
+            ) -> stl::Slice<'_, Self::Whole> {
                 Slice::new(self, from, to)
             }
 
