@@ -263,11 +263,6 @@ where
 
     type Whole = Whole;
 
-    type Iter<'a>
-        = Whole::Iter<'a>
-    where
-        Self: 'a;
-
     fn start(&self) -> Self::Position {
         self.from.clone()
     }
@@ -316,35 +311,14 @@ where
     ) -> Slice<Self::Whole> {
         Slice::new(self.whole, from, to)
     }
-
-    fn iter_within(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::Iter<'_> {
-        self.whole.iter_within(from, to)
-    }
 }
 
 impl<Whole> LazyCollection for SliceMut<'_, Whole>
 where
     Whole: LazyCollection<Whole = Whole> + ReorderableCollection,
 {
-    type LazyIter<'a>
-        = Whole::LazyIter<'a>
-    where
-        Self: 'a;
-
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
         self.whole.compute_at(i)
-    }
-
-    fn lazy_iter_within(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::LazyIter<'_> {
-        self.whole.lazy_iter_within(from, to)
     }
 }
 
@@ -404,20 +378,7 @@ impl<Whole> MutableCollection for SliceMut<'_, Whole>
 where
     Whole: MutableCollection<Whole = Whole>,
 {
-    type IterMut<'a>
-        = Whole::IterMut<'a>
-    where
-        Self: 'a;
-
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         self.whole.at_mut(i)
-    }
-
-    fn iter_mut_within(
-        &mut self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::IterMut<'_> {
-        self.whole.iter_mut_within(from, to)
     }
 }

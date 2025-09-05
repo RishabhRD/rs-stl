@@ -26,11 +26,6 @@ pub mod tests {
 
             type Whole = Self;
 
-            type Iter<'a>
-                = std::slice::Iter<'a, i32>
-            where
-                Self: 'a;
-
             fn start(&self) -> Self::Position {
                 0
             }
@@ -53,14 +48,6 @@ pub mod tests {
                 to: Self::Position,
             ) -> stl::Slice<Self::Whole> {
                 Slice::new(self, from, to)
-            }
-
-            fn iter_within(
-                &self,
-                from: Self::Position,
-                to: Self::Position,
-            ) -> Self::Iter<'_> {
-                <[i32]>::iter(&self.data[from..to])
             }
         }
 

@@ -120,11 +120,6 @@ impl<E> Collection for EmptyCollection<E> {
 
     type Whole = Self;
 
-    type Iter<'a>
-        = Iter<'a, E>
-    where
-        Self: 'a;
-
     fn start(&self) -> Self::Position {}
 
     fn end(&self) -> Self::Position {}
@@ -165,18 +160,6 @@ impl<E> Collection for EmptyCollection<E> {
     ) -> crate::Slice<Self::Whole> {
         Slice::new(self, from, to)
     }
-
-    fn iter_within(
-        &self,
-        _: Self::Position,
-        _: Self::Position,
-    ) -> Self::Iter<'_> {
-        Iter::new()
-    }
-
-    fn iter(&self) -> Self::Iter<'_> {
-        Iter::new()
-    }
 }
 
 impl<E> BidirectionalCollection for EmptyCollection<E> {
@@ -211,47 +194,13 @@ impl<E> ReorderableCollection for EmptyCollection<E> {
 }
 
 impl<E> MutableCollection for EmptyCollection<E> {
-    type IterMut<'a>
-        = IterMut<'a, E>
-    where
-        Self: 'a;
-
     fn at_mut(&mut self, _: &Self::Position) -> &mut Self::Element {
         panic!("Out of bound access")
-    }
-
-    fn iter_mut_within(
-        &mut self,
-        _: Self::Position,
-        _: Self::Position,
-    ) -> Self::IterMut<'_> {
-        IterMut::new()
-    }
-
-    fn iter_mut(&mut self) -> Self::IterMut<'_> {
-        IterMut::new()
     }
 }
 
 impl<E> LazyCollection for EmptyCollection<E> {
-    type LazyIter<'a>
-        = LazyIter<E>
-    where
-        Self: 'a;
-
     fn compute_at(&self, _: &Self::Position) -> Self::Element {
         panic!("Out of bound access")
-    }
-
-    fn lazy_iter_within(
-        &self,
-        _: Self::Position,
-        _: Self::Position,
-    ) -> Self::LazyIter<'_> {
-        LazyIter::new()
-    }
-
-    fn lazy_iter(&self) -> Self::LazyIter<'_> {
-        LazyIter::new()
     }
 }

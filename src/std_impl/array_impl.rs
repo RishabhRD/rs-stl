@@ -18,11 +18,6 @@ impl<T, const N: usize> Collection for [T; N] {
 
     type Whole = Self;
 
-    type Iter<'a>
-        = std::slice::Iter<'a, T>
-    where
-        Self: 'a;
-
     fn start(&self) -> Self::Position {
         0
     }
@@ -87,18 +82,6 @@ impl<T, const N: usize> Collection for [T; N] {
     ) -> Slice<Self::Whole> {
         Slice::new(self, from, to)
     }
-
-    fn iter_within(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::Iter<'_> {
-        self.as_slice()[from..to].iter()
-    }
-
-    fn iter(&self) -> Self::Iter<'_> {
-        self.as_slice().iter()
-    }
 }
 
 impl<T, const N: usize> BidirectionalCollection for [T; N] {
@@ -143,24 +126,7 @@ impl<T, const N: usize> ReorderableCollection for [T; N] {
 }
 
 impl<T, const N: usize> MutableCollection for [T; N] {
-    type IterMut<'a>
-        = std::slice::IterMut<'a, T>
-    where
-        Self: 'a;
-
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         &mut self[*i]
-    }
-
-    fn iter_mut_within(
-        &mut self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::IterMut<'_> {
-        self.as_mut_slice()[from..to].iter_mut()
-    }
-
-    fn iter_mut(&mut self) -> Self::IterMut<'_> {
-        self.as_mut_slice().iter_mut()
     }
 }

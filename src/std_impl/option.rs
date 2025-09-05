@@ -18,11 +18,6 @@ impl<T> Collection for Option<T> {
 
     type Whole = Self;
 
-    type Iter<'a>
-        = std::slice::Iter<'a, T>
-    where
-        Self: 'a;
-
     fn start(&self) -> Self::Position {
         !self.is_some()
     }
@@ -95,17 +90,6 @@ impl<T> Collection for Option<T> {
     ) -> crate::Slice<Self::Whole> {
         Slice::new(self, from, to)
     }
-
-    fn iter_within(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::Iter<'_> {
-        match (self, from, to) {
-            (Some(value), false, true) => std::slice::from_ref(value).iter(),
-            _ => [].iter(),
-        }
-    }
 }
 
 impl<T> BidirectionalCollection for Option<T> {
@@ -155,11 +139,6 @@ impl<T> ReorderableCollection for Option<T> {
 }
 
 impl<T> MutableCollection for Option<T> {
-    type IterMut<'a>
-        = std::slice::IterMut<'a, T>
-    where
-        Self: 'a;
-
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         if *i {
             panic!("Out of bounds access");
@@ -168,19 +147,6 @@ impl<T> MutableCollection for Option<T> {
         match self {
             Some(e) => e,
             None => panic!("Out of bounds access"),
-        }
-    }
-
-    fn iter_mut_within(
-        &mut self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::IterMut<'_> {
-        match (self, from, to) {
-            (Some(value), false, true) => {
-                std::slice::from_mut(value).iter_mut()
-            }
-            _ => [].iter_mut(),
         }
     }
 }

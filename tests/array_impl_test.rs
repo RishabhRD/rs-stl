@@ -112,7 +112,6 @@ pub mod tests {
         assert_eq!(s.start(), 2);
         assert_eq!(s.end(), 4);
         assert_eq!(*s.at(&2), 3);
-        assert_eq!(s.iter().sum::<i32>(), 7)
     }
 
     #[test]

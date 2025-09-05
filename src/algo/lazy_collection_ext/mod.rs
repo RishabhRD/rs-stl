@@ -2,7 +2,9 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::collection_ext::CollectionExt;
-use crate::{BidirectionalCollection, Collection, LazyCollection};
+use crate::{
+    BidirectionalCollection, Collection, LazyCollection, LazyCollectionIter,
+};
 
 /// Algorithms for `LazyCollection`.
 pub trait LazyCollectionExt: LazyCollection
@@ -16,6 +18,13 @@ where
         } else {
             Some(self.compute_at(&self.start()))
         }
+    }
+
+    /*-----------------Iteration Algorithms-----------------*/
+
+    /// Returns an iterator to iterate over lazyily computed elements in collection.
+    fn lazy_iter(&self) -> LazyCollectionIter<'_, Self::Whole> {
+        LazyCollectionIter::new(self.full())
     }
 
     /// Applies f to each "lazily computed" element of collection.

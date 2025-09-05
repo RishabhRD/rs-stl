@@ -21,10 +21,6 @@ macro_rules! impl_collection_for_range_inclusive {
       where
           Self: 'a;
 
-      type Iter<'a>
-          = std::iter::Map<Self, fn($t) -> ValueRef<$t>>
-      where
-          Self: 'a;
 
       type Whole = Self;
 
@@ -74,40 +70,12 @@ macro_rules! impl_collection_for_range_inclusive {
       fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
           (to - from) as usize
       }
-
-       fn iter_within(
-           &self,
-           from: Self::Position,
-           to: Self::Position,
-       ) -> Self::Iter<'_> {
-           (from..=(to - 1)).iter()
-       }
-
-      fn iter(&self) -> Self::Iter<'_> {
-          self.clone().map(ValueRef::new)
-      }
   }
 
   impl LazyCollection for RangeInclusive<$t> {
-      type LazyIter<'a>
-          = Self
-      where
-          Self: 'a;
 
       fn compute_at(&self, i: &Self::Position) -> Self::Element {
           *i
-      }
-
-      fn lazy_iter_within(
-          &self,
-          from: Self::Position,
-          to: Self::Position,
-      ) -> Self::LazyIter<'_> {
-          from..=(to - 1)
-      }
-
-      fn lazy_iter(&self) -> Self::LazyIter<'_> {
-          self.clone()
       }
   }
 
@@ -158,10 +126,6 @@ macro_rules! impl_collection_for_range {
 
       type Whole = Self;
 
-      type Iter<'a>
-          = std::iter::Map<Self, fn($t) -> ValueRef<$t>>
-      where
-          Self: 'a;
 
       fn start(&self) -> Self::Position {
           self.start
@@ -209,41 +173,14 @@ macro_rules! impl_collection_for_range {
       fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
           (to - from) as usize
       }
-
-      fn iter_within(
-          &self,
-          from: Self::Position,
-          to: Self::Position,
-      ) -> Self::Iter<'_> {
-          (from..to).iter()
-      }
-
-      fn iter(&self) -> Self::Iter<'_> {
-          self.clone().map(ValueRef::new)
-      }
   }
 
   impl LazyCollection for Range<$t> {
-      type LazyIter<'a>
-          = Self
-      where
-          Self: 'a;
 
       fn compute_at(&self, i: &Self::Position) -> Self::Element {
           *i
       }
 
-      fn lazy_iter_within(
-          &self,
-          from: Self::Position,
-          to: Self::Position,
-      ) -> Self::LazyIter<'_> {
-          from..to
-      }
-
-      fn lazy_iter(&self) -> Self::LazyIter<'_> {
-          self.clone()
-      }
   }
 
   impl BidirectionalCollection for Range<$t> {

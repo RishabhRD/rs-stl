@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{Collection, Slice};
+use crate::{Collection, CollectionIter, Slice};
 
 /// Algorithms for `Collection`.
 pub trait CollectionExt: Collection {
@@ -14,6 +14,11 @@ pub trait CollectionExt: Collection {
     }
 
     /*-----------------Iteration Algorithms-----------------*/
+
+    /// Returns an iterator to iterate over element refs in collection.
+    fn iter(&self) -> CollectionIter<'_, Self::Whole> {
+        CollectionIter::new(self.full())
+    }
 
     /// Applies f to each element of collection.
     ///
@@ -652,7 +657,8 @@ pub trait CollectionExt: Collection {
         let mut left_idx = 0;
         let mut right_idx = n;
 
-        for e in self.iter() {
+        let mut rest = self.full();
+        while let Some(e) = rest.pop_first() {
             if belongs_in_second_half(&e) {
                 right_idx -= 1;
                 arr[right_idx].write((*e).clone());
@@ -697,7 +703,8 @@ pub trait CollectionExt: Collection {
         F: FnMut(R, &Self::Element) -> R,
     {
         let mut res = init;
-        for e in self.iter() {
+        let mut rest = self.full();
+        while let Some(e) = rest.pop_first() {
             res = op(res, &e)
         }
         res

@@ -22,11 +22,11 @@ pub mod tests {
         assert_eq!(*c.at(&c.start()), 3);
 
         let c = SingletonCollection::new(2);
-        assert_eq!(c.iter().sum::<i32>(), 2);
+        assert!(!c.is_empty());
 
         let mut s = c.full();
         s.drop_first();
-        assert_eq!(s.iter().sum::<i32>(), 0);
+        assert!(s.is_empty());
 
         let mut i = c.start();
         let succ = c.form_next_n_limited_by(&mut i, 0, c.start());
@@ -72,7 +72,6 @@ pub mod tests {
     #[test]
     fn empty_collection() {
         let c: EmptyCollection<i32> = EmptyCollection::new();
-        assert_eq!(c.iter().sum::<i32>(), 0);
 
         let mut i = ();
         let succ = c.form_next_n_limited_by(&mut i, 0, ());

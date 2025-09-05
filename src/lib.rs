@@ -32,6 +32,10 @@ mod algo;
 #[doc(inline)]
 pub use algo::*;
 
+mod iterator;
+#[doc(inline)]
+pub use iterator::*;
+
 #[doc(hidden)]
 pub(crate) mod std_impl;
 
