@@ -34,10 +34,21 @@ where
     where
         Self: 'a;
 
+    // TODO: fix the implementation when borrow checker once we have polonius.
     fn next(&mut self) -> Option<Self::Item<'_>> {
-        while let Some(e) = self.base.next() {
-            if (self.predicate)(&e) {
-                return Some(e);
+        while let Some(mut item) = self.base.next() {
+            if (self.predicate)(&item) {
+                let item = unsafe {
+                    let ptr = &mut item as *mut Self::Item<'_>;
+                    let ptr = std::mem::transmute::<
+                        *mut Self::Item<'_>,
+                        *mut Self::Item<'_>,
+                    >(ptr);
+                    let res = ptr.read();
+                    core::mem::forget(item);
+                    res
+                };
+                return Some(item);
             }
         }
         None
