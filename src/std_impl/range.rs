@@ -94,7 +94,7 @@ macro_rules! impl_collection_for_range_inclusive {
           n: usize,
           limit: Self::Position,
       ) -> bool {
-          if *position - n as Self::Position >= limit {
+          if *position >= limit + n as Self::Position{
               *position -= n as Self::Position;
               true
           } else {
@@ -198,7 +198,7 @@ macro_rules! impl_collection_for_range {
           n: usize,
           limit: Self::Position,
       ) -> bool {
-          if *position - n as Self::Position >= limit {
+          if *position >= limit + n as Self::Position {
               *position -= n as Self::Position;
               true
           } else {

@@ -99,7 +99,7 @@ impl<T, const N: usize> BidirectionalCollection for [T; N] {
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        if *position - n >= limit {
+        if *position >= limit + n {
             *position -= n;
             true
         } else {

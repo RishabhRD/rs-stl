@@ -81,7 +81,7 @@ impl<T> BidirectionalCollection for &[T] {
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        if *position - n >= limit {
+        if *position >= limit + n {
             *position -= n;
             true
         } else {
@@ -168,7 +168,7 @@ impl<T> BidirectionalCollection for &mut [T] {
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        if *position - n >= limit {
+        if *position >= limit + n {
             *position -= n;
             true
         } else {
