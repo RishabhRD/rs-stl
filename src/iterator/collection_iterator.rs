@@ -2,26 +2,9 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, LazyCollection, MutableCollection,
-    Slice, SliceMut,
+    BidirectionalCollection, Collection, DoubleEndedLendingIterator,
+    LazyCollection, LendingIterator, MutableCollection, Slice, SliceMut,
 };
-
-/// An iterator whose items are part of iterator.
-pub trait LendingIterator {
-    /// Type of item, iterator yields.
-    type Item<'a>
-    where
-        Self: 'a;
-
-    /// Returns next element if any, and consumes that element.
-    fn next(&mut self) -> Option<Self::Item<'_>>;
-}
-
-/// A lending iterator whose elements can be consumed from other side too.
-pub trait DoubleEndedLendingIterator: LendingIterator {
-    /// Returns next back element if any, and consumes that element.
-    fn next_back(&mut self) -> Option<Self::Item<'_>>;
-}
 
 /// An iterator to iterate over element-ref of collection.
 pub struct CollectionIter<'a, C>
