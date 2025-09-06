@@ -6,7 +6,7 @@ use crate::{
 };
 
 /// A contiguous sub-collection of a collection.
-#[derive(Clone, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 pub struct Slice<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
