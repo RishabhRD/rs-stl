@@ -2,6 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::collection_ext::CollectionExt;
+use crate::collections::ReversedCollection;
 use crate::BidirectionalCollection;
 use crate::Collection;
 use crate::ReorderableCollection;
@@ -36,6 +37,20 @@ where
             s.drop_first();
             s.drop_last();
         }
+    }
+
+    /// Returns a collection whose elements are in reversed order of given collection.
+    ///
+    /// # Postcondition:
+    ///   - No allocations are done for forming collection.
+    ///
+    /// # Complexity:
+    ///   - O(1).
+    fn reversed(self) -> ReversedCollection<Self>
+    where
+        Self: Sized,
+    {
+        ReversedCollection::new(self)
     }
 
     /*-----------------Numeric Algorithms-----------------*/

@@ -8,3 +8,7 @@ pub use empty::EmptyCollection;
 pub mod singleton;
 #[doc(inline)]
 pub use singleton::SingletonCollection;
+
+pub mod reversed;
+#[doc(inline)]
+pub use reversed::ReversedCollection;
