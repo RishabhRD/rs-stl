@@ -4,3 +4,5 @@
 pub mod lending_iterator;
 #[doc(inline)]
 pub use lending_iterator::*;
+
+pub mod filter;
