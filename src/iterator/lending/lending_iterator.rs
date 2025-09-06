@@ -12,24 +12,45 @@ pub trait LendingIterator {
     fn next(&mut self) -> Option<Self::Item<'_>>;
 
     /// Calls `f` with items of iterator until `pred` returns true for first time.
-    fn for_each_until<F, Pred>(&mut self, mut f: F, mut pred: Pred)
+    fn for_each_until<'a, F, Pred>(&'a mut self, mut f: F, mut pred: Pred)
     where
-        F: FnMut(Self::Item<'_>),
-        Pred: FnMut(&Self::Item<'_>) -> bool,
+        F: FnMut(Self::Item<'a>),
+        Pred: FnMut(&Self::Item<'a>) -> bool,
     {
-        while let Some(e) = self.next() {
+        while let Some(mut e) = self.next() {
+            let e = unsafe {
+                let ptr = &mut e as *mut Self::Item<'_>;
+                let ptr = std::mem::transmute::<
+                    *mut Self::Item<'_>,
+                    *mut Self::Item<'_>,
+                >(ptr);
+                let res = ptr.read();
+                core::mem::forget(e);
+                res
+            };
             if pred(&e) {
-                f(e)
+                break;
             }
+            f(e)
         }
     }
 
     /// Calls `f` with every items of iterator.
-    fn for_each<F>(&mut self, mut f: F)
+    fn for_each<'a, F>(&'a mut self, mut f: F)
     where
-        F: FnMut(Self::Item<'_>),
+        F: FnMut(Self::Item<'a>),
     {
-        while let Some(e) = self.next() {
+        while let Some(mut e) = self.next() {
+            let e = unsafe {
+                let ptr = &mut e as *mut Self::Item<'_>;
+                let ptr = std::mem::transmute::<
+                    *mut Self::Item<'_>,
+                    *mut Self::Item<'_>,
+                >(ptr);
+                let res = ptr.read();
+                core::mem::forget(e);
+                res
+            };
             f(e)
         }
     }
