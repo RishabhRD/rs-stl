@@ -18,11 +18,6 @@ impl<T> Collection for &[T] {
 
     type Whole = Self;
 
-    type Iter<'a>
-        = std::slice::Iter<'a, T>
-    where
-        Self: 'a;
-
     fn start(&self) -> Self::Position {
         0
     }
@@ -66,20 +61,8 @@ impl<T> Collection for &[T] {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::Whole> {
+    ) -> Slice<'_, Self::Whole> {
         Slice::new(self, from, to)
-    }
-
-    fn iter_within(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::Iter<'_> {
-        <[T]>::iter(&self[from..to])
-    }
-
-    fn iter(&self) -> Self::Iter<'_> {
-        <[T]>::iter(self)
     }
 }
 
@@ -122,11 +105,6 @@ impl<T> Collection for &mut [T] {
 
     type Whole = Self;
 
-    type Iter<'a>
-        = std::slice::Iter<'a, T>
-    where
-        Self: 'a;
-
     fn start(&self) -> Self::Position {
         0
     }
@@ -170,20 +148,8 @@ impl<T> Collection for &mut [T] {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<Self::Whole> {
+    ) -> Slice<'_, Self::Whole> {
         Slice::new(self, from, to)
-    }
-
-    fn iter_within(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::Iter<'_> {
-        <[T]>::iter(&self[from..to])
-    }
-
-    fn iter(&self) -> Self::Iter<'_> {
-        <[T]>::iter(self)
     }
 }
 
@@ -223,30 +189,13 @@ impl<T> ReorderableCollection for &mut [T] {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<Self::Whole> {
+    ) -> crate::SliceMut<'_, Self::Whole> {
         SliceMut::new(self, from, to)
     }
 }
 
 impl<T> MutableCollection for &mut [T] {
-    type IterMut<'a>
-        = std::slice::IterMut<'a, T>
-    where
-        Self: 'a;
-
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         &mut self[*i]
-    }
-
-    fn iter_mut_within(
-        &mut self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::IterMut<'_> {
-        <[T]>::iter_mut(&mut self[from..to])
-    }
-
-    fn iter_mut(&mut self) -> Self::IterMut<'_> {
-        <[T]>::iter_mut(self)
     }
 }

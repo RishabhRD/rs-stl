@@ -100,27 +100,4 @@ pub mod tests {
         assert!(c.start());
         assert!(c.end());
     }
-
-    #[test]
-    fn iter_full_some() {
-        let c = Some(5);
-        let sum = Collection::iter(&c).sum::<i32>();
-        assert_eq!(sum, 5)
-    }
-
-    #[test]
-    fn iter_full_none() {
-        let c: Option<i32> = None;
-        let sum = Collection::iter(&c).sum::<i32>();
-        assert_eq!(sum, 0)
-    }
-
-    #[test]
-    fn iter_sliced_some() {
-        let c = Some(5);
-        let mut s = c.full();
-        s.drop_first();
-        let sum = s.iter().sum::<i32>();
-        assert_eq!(sum, 0)
-    }
 }

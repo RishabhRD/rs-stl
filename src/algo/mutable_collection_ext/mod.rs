@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::MutableCollection;
+use crate::algo::reorderable_collection_ext::ReorderableCollectionExt;
+use crate::{MutableCollection, MutableCollectionIter};
 
 /// Algorithms for `MutableCollection`.
 pub trait MutableCollectionExt: MutableCollection
 where
     Self::Whole: MutableCollection,
 {
+    /*-----------------Iteration Algorithms-----------------*/
+
     /// Applies `f` to each element of collection.
     ///
     /// # Complexity
@@ -31,6 +34,11 @@ where
             f(self.at_mut(&start));
             start = self.next(start);
         }
+    }
+
+    /// Returns an iterator to iterate over mutable element refs in collection.
+    fn iter_mut(&mut self) -> MutableCollectionIter<'_, Self::Whole> {
+        MutableCollectionIter::new(self.full_mut())
     }
 }
 

@@ -26,11 +26,6 @@ pub mod tests {
 
             type Whole = Self;
 
-            type Iter<'a>
-                = std::slice::Iter<'a, i32>
-            where
-                Self: 'a;
-
             fn start(&self) -> Self::Position {
                 0
             }
@@ -51,16 +46,8 @@ pub mod tests {
                 &self,
                 from: Self::Position,
                 to: Self::Position,
-            ) -> stl::Slice<Self::Whole> {
+            ) -> stl::Slice<'_, Self::Whole> {
                 Slice::new(self, from, to)
-            }
-
-            fn iter_within(
-                &self,
-                from: Self::Position,
-                to: Self::Position,
-            ) -> Self::Iter<'_> {
-                <[i32]>::iter(&self.data[from..to])
             }
         }
 
@@ -73,7 +60,7 @@ pub mod tests {
                 &mut self,
                 from: Self::Position,
                 to: Self::Position,
-            ) -> stl::SliceMut<Self::Whole> {
+            ) -> stl::SliceMut<'_, Self::Whole> {
                 SliceMut::new(self, from, to)
             }
         }
@@ -84,7 +71,7 @@ pub mod tests {
         let arr = Basic {
             data: [1, 2, 3, 4, 5],
         };
-        let slice: Slice<Basic> = arr.full();
+        let slice: Slice<'_, Basic> = arr.full();
         assert!(slice == Slice::<Basic>::new(&arr, arr.start(), arr.end()));
     }
 
@@ -93,8 +80,8 @@ pub mod tests {
         let arr = Basic {
             data: [1, 2, 3, 4, 5],
         };
-        let slice1: Slice<Basic> = arr.full();
-        let slice2: Slice<Basic> = slice1.full();
+        let slice1: Slice<'_, Basic> = arr.full();
+        let slice2: Slice<'_, Basic> = slice1.full();
         assert!(slice1 == slice2);
     }
 
@@ -103,7 +90,7 @@ pub mod tests {
         let mut arr = Basic {
             data: [1, 2, 3, 4, 5],
         };
-        let _: SliceMut<Basic> = arr.full_mut();
+        let _: SliceMut<'_, Basic> = arr.full_mut();
         // Can't assert equality as 2 mutable references are not possible at a time.
     }
 
@@ -112,8 +99,8 @@ pub mod tests {
         let mut arr = Basic {
             data: [1, 2, 3, 4, 5],
         };
-        let mut slice1: SliceMut<Basic> = arr.full_mut();
-        let _: SliceMut<Basic> = slice1.full_mut();
+        let mut slice1: SliceMut<'_, Basic> = arr.full_mut();
+        let _: SliceMut<'_, Basic> = slice1.full_mut();
         // Can't assert equality as 2 mutable references are not possible at a time.
     }
 }

@@ -63,11 +63,6 @@ impl<E> Collection for SingletonCollection<E> {
 
     type Whole = Self;
 
-    type Iter<'a>
-        = Iter<'a, E>
-    where
-        Self: 'a;
-
     fn start(&self) -> Self::Position {
         false
     }
@@ -128,24 +123,8 @@ impl<E> Collection for SingletonCollection<E> {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::Slice<Self::Whole> {
+    ) -> crate::Slice<'_, Self::Whole> {
         Slice::new(self, from, to)
-    }
-
-    fn iter_within(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::Iter<'_> {
-        if from == to {
-            Iter::Last
-        } else {
-            Iter::First(&self.element)
-        }
-    }
-
-    fn iter(&self) -> Self::Iter<'_> {
-        Iter::First(&self.element)
     }
 }
 
@@ -190,37 +169,16 @@ impl<E> ReorderableCollection for SingletonCollection<E> {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<Self::Whole> {
+    ) -> crate::SliceMut<'_, Self::Whole> {
         SliceMut::new(self, from, to)
     }
 }
 
 impl<E> MutableCollection for SingletonCollection<E> {
-    type IterMut<'a>
-        = IterMut<'a, E>
-    where
-        Self: 'a;
-
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         if *i {
             panic!("Out of bound access");
         }
         &mut self.element
-    }
-
-    fn iter_mut_within(
-        &mut self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::IterMut<'_> {
-        if from == to {
-            IterMut::Last
-        } else {
-            IterMut::First(&mut self.element)
-        }
-    }
-
-    fn iter_mut(&mut self) -> Self::IterMut<'_> {
-        IterMut::First(&mut self.element)
     }
 }

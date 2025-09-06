@@ -20,7 +20,8 @@ pub mod tests {
 
         let arr = 1_i32..3;
         let mut sum = 0;
-        for i in arr.iter() {
+        let mut rest = arr.full();
+        while let Some(i) = rest.pop_first() {
             sum += *i;
         }
         assert_eq!(sum, 3);
@@ -42,7 +43,8 @@ pub mod tests {
 
         let arr = 1_i32..=3;
         let mut sum = 0;
-        for i in arr.iter() {
+        let mut rest = arr.full();
+        while let Some(i) = rest.pop_first() {
             sum += *i;
         }
         assert_eq!(sum, 6);
