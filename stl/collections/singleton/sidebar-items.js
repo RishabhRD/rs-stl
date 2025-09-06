@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Iter","IterMut"],"struct":["SingletonCollection"]};

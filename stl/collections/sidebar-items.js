@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["empty","reversed","singleton"],"struct":["EmptyCollection","ReversedCollection","SingletonCollection"]};
