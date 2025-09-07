@@ -2,7 +2,9 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    iterators::CollectionIter, iterators::SplitIterator, Collection, Slice,
+    collections::MappedCollection,
+    iterators::{CollectionIter, SplitIterator},
+    Collection, Slice,
 };
 
 /// Algorithms for `Collection`.
@@ -302,6 +304,28 @@ pub trait CollectionExt: Collection {
         Self: Sized,
     {
         SplitIterator::new(self.full(), pred)
+    }
+
+    /*-----------------Transformation algorithms-----------------*/
+
+    /// Returns a lazy collection projecting elements of mapping the given closure over elements.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4, 5].map(|x| x * 2);
+    /// assert!(arr.equals(&[2, 4, 6, 8, 10]));
+    /// ```
+    fn map<MapFn, MappedType>(
+        self,
+        map_fn: MapFn,
+    ) -> MappedCollection<Self, MapFn, MappedType>
+    where
+        Self: Sized,
+        MapFn: Fn(&Self::Element) -> MappedType,
+    {
+        MappedCollection::new(self, map_fn)
     }
 
     /*-----------------Equality algorithms-----------------*/

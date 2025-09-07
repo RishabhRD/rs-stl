@@ -14,3 +14,8 @@ pub use singleton::SingletonCollection;
 pub mod reversed;
 #[doc(inline)]
 pub use reversed::ReversedCollection;
+
+#[doc(hidden)]
+pub mod mapped;
+#[doc(inline)]
+pub use mapped::*;
