@@ -32,12 +32,16 @@ mod algo;
 #[doc(inline)]
 pub use algo::*;
 
+/// All the collections exposed from library.
 pub mod collections;
+
+/// All the iterators exposed from library.
 pub mod iterators;
 
 #[doc(hidden)]
 pub(crate) mod std_impl;
 
+/// Proxy Reference to temporary value.
 pub mod value_ref;
 
 pub use lender::{DoubleEndedLender, Lend, Lender, Lending};
