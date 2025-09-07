@@ -40,4 +40,4 @@ pub(crate) mod std_impl;
 
 pub mod value_ref;
 
-pub use lender::*;
+pub use lender::{DoubleEndedLender, Lend, Lender, Lending};
