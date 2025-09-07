@@ -210,6 +210,25 @@ Exposing algorithms as methods instead of free functions are helpful for:
 Different extension traits are used for algorithms that require different
 capabilities of collections like `RandomAccessCollectionExt`.
 
+## Iterators
+
+Slices can be seen as primitive for iteration for collections. And thus rs-stl
+can provide generic iterators for collections. rs-stl provides:
+
+1. `CollectionIterator`
+2. `MutableCollectionIterator`
+3. `LazyCollectionIterator`
+
+- `CollectionExt` exposes `iter()` method that returns `CollectionIterator` that iterates over `ElementRef` of collection.
+- `MutableCollectionExt` exposes `iter_mut()` method that returns `MutableCollectionIterator` that iterates over mutable references to elements of collection.
+- `LazyCollectionExt` exposes `lazy_iter()` method that returns `LazyCollectionIterator` that iterates over lazily computed element values of collection.
+
+`CollectionIterator` and `MutableCollectionIterator` are not rust stdlib's `Iterator` trait
+as `Iterator` trait can only yield owned values. Instead, they are lending iterator from
+`lender` crate that provides `Lender` trait for the same and respective iterator algorithms.
+
+rs-stl also exports multiple algorithms on collections that yield iterators like `split`, `split_mut`.
+
 ## Data Structures
 
 Implementation for these traits are provided for standard library data structures.
@@ -307,7 +326,7 @@ To overcome the same, `Whole` associated type is exposed on which generic `Slice
 and `SliceMut` structs can be built.
 
 The same bug is also the reason why rust currently not have `LendingIterator`
-abstraction at all.
+in stdlib and library has to rely on `lender` crate.
 
 ### Unable of handling recursive trait conditionals
 
