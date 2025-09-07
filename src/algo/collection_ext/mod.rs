@@ -283,6 +283,19 @@ pub trait CollectionExt: Collection {
     }
 
     /// Returns an iterator of slices which are separated by elements that match `pred`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 3, 5, 2, 2, 3, 4, 5, 5];
+    ///
+    /// // Store sum of each split.
+    /// let mut res = vec![];
+    /// arr.split(|x| x % 2 == 0)
+    ///     .for_each(|s| res.push(s.iter().fold(0, |x, e| x + e)));
+    /// assert_eq!(res, vec![9, 0, 3, 10]);
+    /// ```
     fn split<Pred>(&self, pred: Pred) -> SplitIterator<'_, Self, Pred>
     where
         Pred: FnMut(&Self::Element) -> bool,
