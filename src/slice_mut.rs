@@ -12,9 +12,9 @@ pub struct SliceMut<'a, Whole>
 where
     Whole: ReorderableCollection<Whole = Whole>,
 {
-    whole: &'a mut Whole,
-    from: Whole::Position,
-    to: Whole::Position,
+    pub whole: &'a mut Whole,
+    pub from: Whole::Position,
+    pub to: Whole::Position,
 }
 
 impl<'a, Whole> SliceMut<'a, Whole>

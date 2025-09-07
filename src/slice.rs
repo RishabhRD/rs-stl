@@ -11,9 +11,9 @@ pub struct Slice<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
 {
-    whole: &'a Whole,
-    from: Whole::Position,
-    to: Whole::Position,
+    pub whole: &'a Whole,
+    pub from: Whole::Position,
+    pub to: Whole::Position,
 }
 
 impl<'a, Whole> Slice<'a, Whole>
