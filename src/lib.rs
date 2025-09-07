@@ -42,3 +42,5 @@ pub(crate) mod std_impl;
 pub mod value_ref;
 
 pub mod collections;
+
+pub use lender::*;

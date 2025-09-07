@@ -6,3 +6,4 @@ description = "Rust implementation of STL with indices"
 repository = "https://github.com/RishabhRD/rs-stl"
 
 [dependencies]
+lender = "=0.2.2"

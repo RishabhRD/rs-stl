@@ -8,21 +8,12 @@ pub mod tests {
     #[test]
     fn sum_by_iteration() {
         let arr = [1, 2, 3];
-        let mut sum = 0;
-        let mut iter = CollectionExt::iter(&arr);
-        while let Some(i) = iter.next() {
-            sum += i;
-        }
-        assert_eq!(sum, 6);
+        assert_eq!(arr.iter().fold(0, |x, e| x + e), 6);
     }
 
     #[test]
     fn sum_by_lazy_iteration() {
         let arr = 1..=3;
-        let mut sum = 0;
-        for i in arr.lazy_iter() {
-            sum += i;
-        }
-        assert_eq!(sum, 6);
+        assert_eq!(arr.lazy_iter().sum::<i32>(), 6);
     }
 }
