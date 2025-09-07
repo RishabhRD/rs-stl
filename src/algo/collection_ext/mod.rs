@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{Collection, CollectionIter, Slice};
+use crate::{
+    iterators::CollectionIter, iterators::SplitIterator, Collection, Slice,
+};
 
 /// Algorithms for `Collection`.
 pub trait CollectionExt: Collection {
@@ -11,39 +13,6 @@ pub trait CollectionExt: Collection {
     ///   - O(1).
     fn is_empty(&self) -> bool {
         self.start() == self.end()
-    }
-
-    /*-----------------Iteration Algorithms-----------------*/
-
-    /// Returns an iterator to iterate over element refs in collection.
-    fn iter(&self) -> CollectionIter<'_, Self::Whole> {
-        CollectionIter::new(self.full())
-    }
-
-    /// Applies f to each element of collection.
-    ///
-    /// # Complexity:
-    ///   - O(n) where `n == self.count()`.
-    ///
-    /// # Example
-    /// ```rust
-    /// use stl::*;
-    ///
-    /// let arr = [1, 2, 3];
-    /// let mut sum = 0;
-    /// arr.for_each(|x| sum = sum + x);
-    /// assert_eq!(sum, 6);
-    /// ```
-    fn for_each<F>(&self, mut f: F)
-    where
-        F: FnMut(&Self::Element),
-    {
-        let mut start = self.start();
-        let end = self.end();
-        while start != end {
-            f(&self.at(&start));
-            start = self.next(start);
-        }
     }
 
     /*-----------------Element Access Algorithms-----------------*/
@@ -278,6 +247,48 @@ pub trait CollectionExt: Collection {
     /// ```
     fn suffix_from(&self, from: Self::Position) -> Slice<'_, Self::Whole> {
         self.slice(from, self.end())
+    }
+
+    /*-----------------Iterator Algorithms-----------------*/
+
+    /// Returns an iterator to iterate over element refs in collection.
+    fn iter(&self) -> CollectionIter<'_, Self::Whole> {
+        CollectionIter::new(self.full())
+    }
+
+    /// Applies f to each element of collection.
+    ///
+    /// # Complexity:
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let mut sum = 0;
+    /// arr.for_each(|x| sum = sum + x);
+    /// assert_eq!(sum, 6);
+    /// ```
+    fn for_each<F>(&self, mut f: F)
+    where
+        F: FnMut(&Self::Element),
+    {
+        let mut start = self.start();
+        let end = self.end();
+        while start != end {
+            f(&self.at(&start));
+            start = self.next(start);
+        }
+    }
+
+    /// Returns an iterator of slices which are separated by elements that match `pred`.
+    fn split<Pred>(&self, pred: Pred) -> SplitIterator<'_, Self, Pred>
+    where
+        Pred: FnMut(&Self::Element) -> bool,
+        Self: Sized,
+    {
+        SplitIterator::new(self.full(), pred)
     }
 
     /*-----------------Equality algorithms-----------------*/

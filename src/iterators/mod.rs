@@ -5,10 +5,14 @@ pub mod collection_iterator;
 #[doc(inline)]
 pub use collection_iterator::*;
 
+pub mod lazy_collection_iterator;
+#[doc(inline)]
+pub use lazy_collection_iterator::*;
+
 pub mod mutable_collection_iterator;
 #[doc(inline)]
 pub use mutable_collection_iterator::*;
 
-pub mod lazy_collection_iterator;
+pub mod split_iterator;
 #[doc(inline)]
-pub use lazy_collection_iterator::*;
+pub use split_iterator::*;

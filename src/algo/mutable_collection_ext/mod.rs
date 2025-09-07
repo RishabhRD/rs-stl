@@ -2,7 +2,8 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::reorderable_collection_ext::ReorderableCollectionExt;
-use crate::{MutableCollection, MutableCollectionIter};
+use crate::iterators::MutableCollectionIter;
+use crate::MutableCollection;
 
 /// Algorithms for `MutableCollection`.
 pub trait MutableCollectionExt: MutableCollection

@@ -2,6 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::collection_ext::CollectionExt;
+use crate::iterators::SplitIteratorMut;
 use crate::{ReorderableCollection, SliceMut};
 mod stable_partition;
 use stable_partition::*;
@@ -254,6 +255,20 @@ where
         from: Self::Position,
     ) -> SliceMut<'_, Self::Whole> {
         self.slice_mut(from, self.end())
+    }
+
+    /*-----------------Iterator Algorithms-----------------*/
+
+    /// Returns an iterator of mutable slices which are separated by elements that match `pred`.
+    fn split_mut<Pred>(
+        &mut self,
+        pred: Pred,
+    ) -> SplitIteratorMut<'_, Self, Pred>
+    where
+        Pred: FnMut(&Self::Element) -> bool,
+        Self: Sized,
+    {
+        SplitIteratorMut::new(self.full_mut(), pred)
     }
 
     /*-----------------Reordering Algorithms-----------------*/

@@ -19,7 +19,7 @@ where
     C: MutableCollection<Whole = C>,
 {
     /// Creates a new instance of Self with given slice.
-    pub fn new(slice: SliceMut<'a, C>) -> Self {
+    pub(crate) fn new(slice: SliceMut<'a, C>) -> Self {
         Self { slice }
     }
 }

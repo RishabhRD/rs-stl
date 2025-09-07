@@ -32,15 +32,12 @@ mod algo;
 #[doc(inline)]
 pub use algo::*;
 
-mod iterator;
-#[doc(inline)]
-pub use iterator::*;
+pub mod collections;
+pub mod iterators;
 
 #[doc(hidden)]
 pub(crate) mod std_impl;
 
 pub mod value_ref;
-
-pub mod collections;
 
 pub use lender::*;

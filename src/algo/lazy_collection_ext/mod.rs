@@ -2,9 +2,8 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::collection_ext::CollectionExt;
-use crate::{
-    BidirectionalCollection, Collection, LazyCollection, LazyCollectionIter,
-};
+use crate::iterators::LazyCollectionIter;
+use crate::{BidirectionalCollection, Collection, LazyCollection};
 
 /// Algorithms for `LazyCollection`.
 pub trait LazyCollectionExt: LazyCollection

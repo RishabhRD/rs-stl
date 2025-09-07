@@ -19,7 +19,7 @@ where
     C: Collection<Whole = C>,
 {
     /// Creates a new instance of Self with given slice.
-    pub fn new(slice: Slice<'a, C>) -> Self {
+    pub(crate) fn new(slice: Slice<'a, C>) -> Self {
         Self { slice }
     }
 }
