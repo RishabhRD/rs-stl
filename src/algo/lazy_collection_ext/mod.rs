@@ -2,6 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::collection_ext::CollectionExt;
+use crate::collections::LazyMappedCollection;
 use crate::iterators::LazyCollectionIter;
 use crate::{BidirectionalCollection, Collection, LazyCollection};
 
@@ -50,6 +51,29 @@ where
             f(self.compute_at(&start));
             start = self.next(start);
         }
+    }
+
+    /*-----------------Transformation algorithms-----------------*/
+
+    /// Returns a lazy collection projecting elements of mapping the given closure over lazily
+    /// computed values of self.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = (1..=5).lazy_map(|x| x * 2);
+    /// assert!(arr.equals(&[2, 4, 6, 8, 10]));
+    /// ```
+    fn lazy_map<MapFn, MappedType>(
+        self,
+        map_fn: MapFn,
+    ) -> LazyMappedCollection<Self, MapFn, MappedType>
+    where
+        Self: Sized,
+        MapFn: Fn(Self::Element) -> MappedType,
+    {
+        LazyMappedCollection::new(self, map_fn)
     }
 
     /*-----------------Partition Algorithms-----------------*/
