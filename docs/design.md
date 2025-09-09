@@ -30,7 +30,7 @@ elements. Elements are not necessarily needed to be stored in memory.
 
 ```rust
 pub trait Collection {
-    type Position: Regular;
+    type Position: Regular + Ord;
     type Element;
     type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
     type Whole: Collection<
@@ -58,7 +58,9 @@ pub trait Collection {
 
 Collection defines associated type Position and Element that determines type
 of positions in collection and elements in collection. Every element has
-an associated position.
+an associated position. The `Position` associated type is
+- `Regular` so that it can be cloned and stored for multipass traversal as well as checked for equality.
+- `Ord` so that bounds checks are possible for slices (see forward).
 
 To access an element at a position, `at` method can be used.
 
@@ -103,8 +105,7 @@ methods with O(1) implementation. Also, it needs to explicitly provide impl for
 RandomAccessCollection.
 
 ```rust
-pub trait RandomAccessCollection:
-    BidirectionalCollection<Position: Regular + Ord>
+pub trait RandomAccessCollection: BidirectionalCollection
 where
     Self::Whole: RandomAccessCollection,
 {
