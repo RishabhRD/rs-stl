@@ -2,8 +2,8 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, CollectionExt, RandomAccessCollection,
-    ReorderableCollection,
+    BidirectionalCollection, Collection, CollectionExt, RandomAccessCollection,
+    ReorderableCollection, ReorderableCollectionExt,
 };
 
 /// Sorts the collection in place, using the given predicate as comparision between elements.
@@ -94,16 +94,50 @@ pub(crate) fn insertion_sort<C, Compare>(
 /// # Complexity:
 ///   - O(n * `depth`) where `n == collection.count()`.
 pub(crate) fn quick_sort_within<C, Compare>(
-    ollection: &mut C,
+    collection: &mut C,
     are_in_increasing_order: Compare,
     depth: usize,
 ) -> bool
 where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
     C::Whole: ReorderableCollection + RandomAccessCollection,
-    Compare: Fn(&C::Element, &C::Element) -> bool,
+    Compare: Fn(&C::Element, &C::Element) -> bool + Clone,
 {
-    false
+    if collection.start() == collection.end()
+        || collection.next(collection.start()) == collection.end()
+    {
+        return true;
+    }
+
+    if depth == 0 {
+        return false;
+    }
+
+    let start = collection.start();
+
+    // Partition collection except first element.
+    let rest_start = collection.next(start.clone());
+    let (pivot, mut rest) = collection.full_mut().split_at_mut(rest_start);
+    let p = rest.partition(|e| !are_in_increasing_order(e, &pivot.at(&start)));
+
+    // Fix posiiton of first element.
+    let partition_point = collection.prior(p);
+    collection.swap_at(&start, &partition_point);
+
+    // Quick sort both parts.
+    let left = quick_sort_within(
+        &mut collection.prefix_upto_mut(partition_point.clone()),
+        are_in_increasing_order.clone(),
+        depth - 1,
+    );
+
+    let right = quick_sort_within(
+        &mut collection.suffix_from_mut(partition_point),
+        are_in_increasing_order,
+        depth - 1,
+    );
+
+    left && right
 }
 
 /// Sorts the collection in place, using the given predicate as comparision between elements.
