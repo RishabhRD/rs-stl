@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
+use std::marker::PhantomData;
+
 use crate::{
     BidirectionalCollection, Collection, LazyCollection, MutableCollection,
     RandomAccessCollection, ReorderableCollection, Slice,
@@ -12,8 +14,16 @@ pub struct SliceMut<'a, Whole>
 where
     Whole: ReorderableCollection<Whole = Whole>,
 {
-    pub whole: &'a mut Whole,
+    /// Pointer to the whole collection.
+    _whole: *mut Whole,
+
+    /// Phantom data to bind the lifetime to struct.
+    _phantom: PhantomData<&'a mut Whole>,
+
+    /// Start position of slice.
     pub from: Whole::Position,
+
+    /// End position of slice.
     pub to: Whole::Position,
 }
 
@@ -21,16 +31,53 @@ impl<'a, Whole> SliceMut<'a, Whole>
 where
     Whole: ReorderableCollection<Whole = Whole>,
 {
+    /// Creates a new instance of slice with given collection and position range.
     pub fn new(
         collection: &'a mut Whole,
         from: Whole::Position,
         to: Whole::Position,
     ) -> Self {
         Self {
-            whole: collection,
+            _whole: collection as *mut Whole,
+            _phantom: PhantomData,
             from,
             to,
         }
+    }
+
+    /// Returns the mutable reference to whole collection.
+    pub fn whole(&self) -> &'a mut Whole {
+        unsafe { &mut *self._whole }
+    }
+
+    /// Splits slice into 2 parts where first part would have `[from, position)`
+    /// and second part would have `[position, to)`.
+    pub fn split_at(
+        self,
+        position: Whole::Position,
+    ) -> (Slice<'a, Whole>, Slice<'a, Whole>) {
+        let whole = self.whole();
+        let left = Slice::new(whole, self.from, position.clone());
+        let right = Slice::new(whole, position, self.to);
+        (left, right)
+    }
+
+    /// Splits slice into 2 mutable parts where first part would have `[from, position)`
+    /// and second part would have `[position, to)`.
+    pub fn split_at_mut(self, position: Whole::Position) -> (Self, Self) {
+        let left = Self {
+            _whole: self._whole,
+            _phantom: PhantomData,
+            from: self.from.clone(),
+            to: position.clone(),
+        };
+        let right = Self {
+            _whole: self._whole,
+            _phantom: PhantomData,
+            from: position,
+            to: self.to.clone(),
+        };
+        (left, right)
     }
 
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.
@@ -43,9 +90,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = self.whole.at(&self.from);
+            let e = self.whole().at(&self.from);
             let p = self.from.clone();
-            self.whole.form_next(&mut self.from);
+            self.whole().form_next(&mut self.from);
             Some((p, e))
         }
     }
@@ -57,8 +104,8 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = Some(self.whole.at(&self.from));
-            self.whole.form_next(&mut self.from);
+            let e = Some(self.whole().at(&self.from));
+            self.whole().form_next(&mut self.from);
             e
         }
     }
@@ -74,8 +121,8 @@ where
             None
         } else {
             let p = self.from.clone();
-            self.whole.form_next(&mut self.from);
-            let e = self.whole.at_mut(&p);
+            self.whole().form_next(&mut self.from);
+            let e = self.whole().at_mut(&p);
             Some((p, e))
         }
     }
@@ -89,8 +136,8 @@ where
             None
         } else {
             let p = self.from.clone();
-            self.whole.form_next(&mut self.from);
-            let e = Some(self.whole.at_mut(&p));
+            self.whole().form_next(&mut self.from);
+            let e = Some(self.whole().at_mut(&p));
             e
         }
     }
@@ -100,7 +147,7 @@ where
         if self.from == self.to {
             false
         } else {
-            self.whole.form_next(&mut self.from);
+            self.whole().form_next(&mut self.from);
             true
         }
     }
@@ -115,8 +162,8 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = Some(self.whole.compute_at(&self.from));
-            self.whole.form_next(&mut self.from);
+            let e = Some(self.whole().compute_at(&self.from));
+            self.whole().form_next(&mut self.from);
             e
         }
     }
@@ -131,9 +178,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = self.whole.compute_at(&self.from);
+            let e = self.whole().compute_at(&self.from);
             let p = self.from.clone();
-            self.whole.form_next(&mut self.from);
+            self.whole().form_next(&mut self.from);
             Some((p, e))
         }
     }
@@ -153,9 +200,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole.prior(self.to.clone());
-            let e = self.whole.at(&ele_pos);
-            self.whole.form_prior(&mut self.to);
+            let ele_pos = self.whole().prior(self.to.clone());
+            let e = self.whole().at(&ele_pos);
+            self.whole().form_prior(&mut self.to);
             Some((ele_pos, e))
         }
     }
@@ -165,9 +212,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole.prior(self.to.clone());
-            let e = Some(self.whole.at(&ele_pos));
-            self.whole.form_prior(&mut self.to);
+            let ele_pos = self.whole().prior(self.to.clone());
+            let e = Some(self.whole().at(&ele_pos));
+            self.whole().form_prior(&mut self.to);
             e
         }
     }
@@ -177,7 +224,7 @@ where
         if self.from == self.to {
             false
         } else {
-            self.whole.form_prior(&mut self.to);
+            self.whole().form_prior(&mut self.to);
             true
         }
     }
@@ -194,8 +241,8 @@ where
         if self.from == self.to {
             None
         } else {
-            self.whole.form_prior(&mut self.to);
-            let e = self.whole.at_mut(&self.to);
+            self.whole().form_prior(&mut self.to);
+            let e = self.whole().at_mut(&self.to);
             Some((self.to.clone(), e))
         }
     }
@@ -205,8 +252,8 @@ where
         if self.from == self.to {
             None
         } else {
-            self.whole.form_prior(&mut self.to);
-            let e = Some(self.whole.at_mut(&self.to));
+            self.whole().form_prior(&mut self.to);
+            let e = Some(self.whole().at_mut(&self.to));
             e
         }
     }
@@ -228,9 +275,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole.prior(self.to.clone());
-            let e = self.whole.compute_at(&ele_pos);
-            self.whole.form_prior(&mut self.to);
+            let ele_pos = self.whole().prior(self.to.clone());
+            let e = self.whole().compute_at(&ele_pos);
+            self.whole().form_prior(&mut self.to);
             Some((ele_pos, e))
         }
     }
@@ -240,9 +287,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole.prior(self.to.clone());
-            let e = Some(self.whole.compute_at(&ele_pos));
-            self.whole.form_prior(&mut self.to);
+            let ele_pos = self.whole().prior(self.to.clone());
+            let e = Some(self.whole().compute_at(&ele_pos));
+            self.whole().form_prior(&mut self.to);
             e
         }
     }
@@ -272,11 +319,11 @@ where
     }
 
     fn form_next(&self, i: &mut Self::Position) {
-        self.whole.form_next(i);
+        self.whole().form_next(i);
     }
 
     fn form_next_n(&self, i: &mut Self::Position, n: usize) {
-        self.whole.form_next_n(i, n);
+        self.whole().form_next_n(i, n);
     }
 
     fn form_next_n_limited_by(
@@ -285,23 +332,23 @@ where
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        self.whole.form_next_n_limited_by(position, n, limit)
+        self.whole().form_next_n_limited_by(position, n, limit)
     }
 
     fn next(&self, i: Self::Position) -> Self::Position {
-        self.whole.next(i)
+        self.whole().next(i)
     }
 
     fn next_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.whole.next_n(i, n)
+        self.whole().next_n(i, n)
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        self.whole.distance(from, to)
+        self.whole().distance(from, to)
     }
 
     fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
-        self.whole.at(i)
+        self.whole().at(i)
     }
 
     fn slice(
@@ -309,7 +356,7 @@ where
         from: Self::Position,
         to: Self::Position,
     ) -> Slice<'_, Self::Whole> {
-        Slice::new(self.whole, from, to)
+        Slice::new(self.whole(), from, to)
     }
 }
 
@@ -318,7 +365,7 @@ where
     Whole: LazyCollection<Whole = Whole> + ReorderableCollection,
 {
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
-        self.whole.compute_at(i)
+        self.whole().compute_at(i)
     }
 }
 
@@ -327,19 +374,19 @@ where
     Whole: BidirectionalCollection<Whole = Whole> + ReorderableCollection,
 {
     fn form_prior(&self, i: &mut Self::Position) {
-        self.whole.form_prior(i);
+        self.whole().form_prior(i);
     }
 
     fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
-        self.whole.form_prior_n(i, n);
+        self.whole().form_prior_n(i, n);
     }
 
     fn prior(&self, i: Self::Position) -> Self::Position {
-        self.whole.prior(i)
+        self.whole().prior(i)
     }
 
     fn prior_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.whole.prior_n(i, n)
+        self.whole().prior_n(i, n)
     }
 
     fn form_prior_n_limited_by(
@@ -348,7 +395,7 @@ where
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        self.whole.form_prior_n_limited_by(position, n, limit)
+        self.whole().form_prior_n_limited_by(position, n, limit)
     }
 }
 
@@ -362,7 +409,7 @@ where
     Whole: ReorderableCollection<Whole = Whole>,
 {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
-        self.whole.swap_at(i, j);
+        self.whole().swap_at(i, j);
     }
 
     fn slice_mut(
@@ -370,7 +417,7 @@ where
         from: Self::Position,
         to: Self::Position,
     ) -> SliceMut<'_, Self::Whole> {
-        SliceMut::new(self.whole, from, to)
+        SliceMut::new(self.whole(), from, to)
     }
 }
 
@@ -379,6 +426,6 @@ where
     Whole: MutableCollection<Whole = Whole>,
 {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
-        self.whole.at_mut(i)
+        self.whole().at_mut(i)
     }
 }

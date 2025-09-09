@@ -264,4 +264,25 @@ pub mod tests {
         let arr = 0..=3;
         assert_eq!(arr.full().compute_at(&0), 0);
     }
+
+    #[test]
+    fn split_at() {
+        let mut arr = [1, 2, 3, 4, 5];
+        let (s1, s2) = arr.full_mut().split_at(2);
+        assert!(s1.equals(&[1, 2]));
+        assert!(s2.equals(&[3, 4, 5]));
+    }
+
+    #[test]
+    fn split_mut_at() {
+        let mut arr = [1, 2, 3, 4, 5];
+        let (mut s1, mut s2) = arr.full_mut().split_at_mut(2);
+        assert!(s1.equals(&[1, 2]));
+        assert!(s2.equals(&[3, 4, 5]));
+        *s1.at_mut(&0) = 2;
+        *s2.at_mut(&2) = 2;
+        *s1.at_mut(&1) = 3;
+        assert!(s1.equals(&[2, 3]));
+        assert!(s2.equals(&[2, 4, 5]));
+    }
 }

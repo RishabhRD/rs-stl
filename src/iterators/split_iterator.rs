@@ -33,7 +33,7 @@ where
 {
     pub(crate) fn new(slice: Slice<'a, C::Whole>, predicate: Pred) -> Self {
         SplitIterator {
-            base_collection: slice.whole,
+            base_collection: slice.whole(),
             from: slice.from,
             to: slice.to,
             predicate,
@@ -101,7 +101,7 @@ where
 {
     pub(crate) fn new(slice: SliceMut<'a, C::Whole>, predicate: Pred) -> Self {
         SplitIteratorMut {
-            base_collection: slice.whole,
+            base_collection: slice.whole(),
             from: slice.from,
             to: slice.to,
             predicate,
