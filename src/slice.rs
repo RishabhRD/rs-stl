@@ -46,6 +46,7 @@ where
     /// Splits slice into 2 parts where first part would have `[from, position)`
     /// and second part would have `[position, to)`.
     pub fn split_at(self, position: Whole::Position) -> (Self, Self) {
+        self.assert_bounds_check_slice(&position);
         let left = Self {
             _whole: self._whole,
             from: self.from.clone(),
@@ -96,6 +97,20 @@ where
         } else {
             self._whole.form_next(&mut self.from);
             true
+        }
+    }
+
+    /// Panics if position is out of bounds of slice for reading element.
+    fn assert_bounds_check_read(&self, position: &Whole::Position){
+        if *position < self.from || *position >= self.to {
+            panic!("Out of bounds read to slice.");
+        }
+    }
+
+    /// Panics if position is out of bounds of slice for defining sub-slice.
+    fn assert_bounds_check_slice(&self, position: &Whole::Position){
+        if *position < self.from || *position > self.to {
+            panic!("Out of bounds slicing to slice.");
         }
     }
 }
@@ -264,6 +279,7 @@ where
     }
 
     fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
+        self.assert_bounds_check_read(i);
         self._whole.at(i)
     }
 
@@ -272,6 +288,8 @@ where
         from: Self::Position,
         to: Self::Position,
     ) -> Slice<'_, Self::Whole> {
+        self.assert_bounds_check_slice(&from);
+        self.assert_bounds_check_slice(&to);
         Slice::new(self._whole, from, to)
     }
 }
@@ -281,6 +299,7 @@ where
     Whole: LazyCollection<Whole = Whole>,
 {
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
+        self.assert_bounds_check_read(i);
         self._whole.compute_at(i)
     }
 }
