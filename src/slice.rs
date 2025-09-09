@@ -11,8 +11,13 @@ pub struct Slice<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
 {
-    pub whole: &'a Whole,
+    /// Reference to the whole collection.
+    _whole: &'a Whole,
+
+    /// Start position of slice.
     pub from: Whole::Position,
+
+    /// End position of slice.
     pub to: Whole::Position,
 }
 
@@ -20,16 +25,38 @@ impl<'a, Whole> Slice<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
 {
+    /// Creates a new instance of slice with given collection and position range.
     pub fn new(
         collection: &'a Whole,
         from: Whole::Position,
         to: Whole::Position,
     ) -> Self {
         Self {
-            whole: collection,
+            _whole: collection,
             from,
             to,
         }
+    }
+
+    /// Returns the reference to whole collection.
+    pub fn whole(&self) -> &'a Whole {
+        self._whole
+    }
+
+    /// Splits slice into 2 parts where first part would have `[from, position)`
+    /// and second part would have `[position, to)`.
+    pub fn split_at(self, position: Whole::Position) -> (Self, Self) {
+        let left = Self {
+            _whole: self._whole,
+            from: self.from.clone(),
+            to: position.clone(),
+        };
+        let right = Self {
+            _whole: self._whole,
+            from: position,
+            to: self.to.clone(),
+        };
+        (left, right)
     }
 
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.
@@ -42,9 +69,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = self.whole.at(&self.from);
+            let e = self._whole.at(&self.from);
             let p = self.from.clone();
-            self.whole.form_next(&mut self.from);
+            self._whole.form_next(&mut self.from);
             Some((p, e))
         }
     }
@@ -56,8 +83,8 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = Some(self.whole.at(&self.from));
-            self.whole.form_next(&mut self.from);
+            let e = Some(self._whole.at(&self.from));
+            self._whole.form_next(&mut self.from);
             e
         }
     }
@@ -67,7 +94,7 @@ where
         if self.from == self.to {
             false
         } else {
-            self.whole.form_next(&mut self.from);
+            self._whole.form_next(&mut self.from);
             true
         }
     }
@@ -87,9 +114,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = self.whole.compute_at(&self.from);
+            let e = self._whole.compute_at(&self.from);
             let p = self.from.clone();
-            self.whole.form_next(&mut self.from);
+            self._whole.form_next(&mut self.from);
             Some((p, e))
         }
     }
@@ -99,8 +126,8 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = Some(self.whole.compute_at(&self.from));
-            self.whole.form_next(&mut self.from);
+            let e = Some(self._whole.compute_at(&self.from));
+            self._whole.form_next(&mut self.from);
             e
         }
     }
@@ -120,9 +147,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole.prior(self.to.clone());
-            let e = self.whole.at(&ele_pos);
-            self.whole.form_prior(&mut self.to);
+            let ele_pos = self._whole.prior(self.to.clone());
+            let e = self._whole.at(&ele_pos);
+            self._whole.form_prior(&mut self.to);
             Some((ele_pos, e))
         }
     }
@@ -132,9 +159,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole.prior(self.to.clone());
-            let e = Some(self.whole.at(&ele_pos));
-            self.whole.form_prior(&mut self.to);
+            let ele_pos = self._whole.prior(self.to.clone());
+            let e = Some(self._whole.at(&ele_pos));
+            self._whole.form_prior(&mut self.to);
             e
         }
     }
@@ -144,7 +171,7 @@ where
         if self.from == self.to {
             false
         } else {
-            self.whole.form_prior(&mut self.to);
+            self._whole.form_prior(&mut self.to);
             true
         }
     }
@@ -164,9 +191,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole.prior(self.to.clone());
-            let e = self.whole.compute_at(&ele_pos);
-            self.whole.form_prior(&mut self.to);
+            let ele_pos = self._whole.prior(self.to.clone());
+            let e = self._whole.compute_at(&ele_pos);
+            self._whole.form_prior(&mut self.to);
             Some((ele_pos, e))
         }
     }
@@ -176,9 +203,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole.prior(self.to.clone());
-            let e = Some(self.whole.compute_at(&ele_pos));
-            self.whole.form_prior(&mut self.to);
+            let ele_pos = self._whole.prior(self.to.clone());
+            let e = Some(self._whole.compute_at(&ele_pos));
+            self._whole.form_prior(&mut self.to);
             e
         }
     }
@@ -208,11 +235,11 @@ where
     }
 
     fn form_next(&self, i: &mut Self::Position) {
-        self.whole.form_next(i);
+        self._whole.form_next(i);
     }
 
     fn form_next_n(&self, i: &mut Self::Position, n: usize) {
-        self.whole.form_next_n(i, n);
+        self._whole.form_next_n(i, n);
     }
 
     fn form_next_n_limited_by(
@@ -221,23 +248,23 @@ where
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        self.whole.form_next_n_limited_by(position, n, limit)
+        self._whole.form_next_n_limited_by(position, n, limit)
     }
 
     fn next(&self, i: Self::Position) -> Self::Position {
-        self.whole.next(i)
+        self._whole.next(i)
     }
 
     fn next_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.whole.next_n(i, n)
+        self._whole.next_n(i, n)
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        self.whole.distance(from, to)
+        self._whole.distance(from, to)
     }
 
     fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
-        self.whole.at(i)
+        self._whole.at(i)
     }
 
     fn slice(
@@ -245,7 +272,7 @@ where
         from: Self::Position,
         to: Self::Position,
     ) -> Slice<'_, Self::Whole> {
-        Slice::new(self.whole, from, to)
+        Slice::new(self._whole, from, to)
     }
 }
 
@@ -254,7 +281,7 @@ where
     Whole: LazyCollection<Whole = Whole>,
 {
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
-        self.whole.compute_at(i)
+        self._whole.compute_at(i)
     }
 }
 
@@ -263,11 +290,11 @@ where
     Whole: BidirectionalCollection<Whole = Whole>,
 {
     fn form_prior(&self, i: &mut Self::Position) {
-        self.whole.form_prior(i);
+        self._whole.form_prior(i);
     }
 
     fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
-        self.whole.form_prior_n(i, n);
+        self._whole.form_prior_n(i, n);
     }
 
     fn form_prior_n_limited_by(
@@ -276,15 +303,15 @@ where
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        self.whole.form_prior_n_limited_by(position, n, limit)
+        self._whole.form_prior_n_limited_by(position, n, limit)
     }
 
     fn prior(&self, i: Self::Position) -> Self::Position {
-        self.whole.prior(i)
+        self._whole.prior(i)
     }
 
     fn prior_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.whole.prior_n(i, n)
+        self._whole.prior_n(i, n)
     }
 }
 

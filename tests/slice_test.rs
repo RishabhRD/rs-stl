@@ -268,4 +268,12 @@ pub mod tests {
         assert_eq!(e, None);
         assert!(s.equals(&[]));
     }
+
+    #[test]
+    fn split_at() {
+        let arr = [1, 2, 3, 4, 5];
+        let (s1, s2) = arr.full().split_at(2);
+        assert!(s1.equals(&[1, 2]));
+        assert!(s2.equals(&[3, 4, 5]));
+    }
 }
