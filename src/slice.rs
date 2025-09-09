@@ -101,14 +101,14 @@ where
     }
 
     /// Panics if position is out of bounds of slice for reading element.
-    fn assert_bounds_check_read(&self, position: &Whole::Position){
+    fn assert_bounds_check_read(&self, position: &Whole::Position) {
         if *position < self.from || *position >= self.to {
             panic!("Out of bounds read to slice.");
         }
     }
 
     /// Panics if position is out of bounds of slice for defining sub-slice.
-    fn assert_bounds_check_slice(&self, position: &Whole::Position){
+    fn assert_bounds_check_slice(&self, position: &Whole::Position) {
         if *position < self.from || *position > self.to {
             panic!("Out of bounds slicing to slice.");
         }
