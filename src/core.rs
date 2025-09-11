@@ -31,7 +31,7 @@ impl<T> Regular for T where T: SemiRegular + Clone {}
 /// start   -->   end
 pub trait Collection {
     /// Type of positions in the collection.
-    type Position: Regular + Ord;
+    type Position: Regular + Ord + Send;
 
     /// Type of element in the collection.
     type Element;
@@ -46,10 +46,10 @@ pub trait Collection {
     /// Type representing whole collection.
     /// i.e., `Self == Slice<W> ? W : Self`
     type Whole: Collection<
-        Position = Self::Position,
-        Element = Self::Element,
-        Whole = Self::Whole,
-    >;
+            Position = Self::Position,
+            Element = Self::Element,
+            Whole = Self::Whole,
+        > + Sync;
 
     /// Returns the position of first element in self,
     /// or if self is empty then start() == end()
