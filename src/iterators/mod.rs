@@ -20,3 +20,8 @@ pub use mutable_collection_iterator::*;
 pub mod split_iterator;
 #[doc(inline)]
 pub use split_iterator::*;
+
+#[doc(hidden)]
+pub mod split_evenly_iterator;
+#[doc(inline)]
+pub use split_evenly_iterator::*;

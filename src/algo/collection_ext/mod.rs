@@ -3,7 +3,7 @@
 
 use crate::{
     collections::MappedCollection,
-    iterators::{CollectionIter, SplitIterator},
+    iterators::{CollectionIter, SplitEvenlyIterator, SplitIterator},
     Collection, Slice,
 };
 
@@ -756,6 +756,37 @@ pub trait CollectionExt: Collection {
             res = op(res, &e)
         }
         res
+    }
+
+    /// Split the given collection into maximum `max_splits + 1` slices with
+    /// each slice have atleast a size of `min_size` except the last one.
+    ///
+    /// # Precondition
+    ///   - max_splits > 0.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    ///   - `iter.next()`: O(1) for `RandomAccessCollection` otherwise O(`next_slice_size`).
+    fn split_evenly_in(
+        &self,
+        max_splits: usize,
+        mut min_size: usize,
+    ) -> SplitEvenlyIterator<'_, Self::Whole> {
+        let n = self.count();
+        min_size = usize::max(min_size, 1);
+
+        if n.div_ceil(max_splits) >= min_size {
+            return SplitEvenlyIterator::new(
+                self.full(),
+                n.div_ceil(max_splits),
+                max_splits,
+            );
+        }
+
+        let num_splits = n.div_ceil(min_size);
+        let split_size = n.div_ceil(num_splits);
+
+        SplitEvenlyIterator::new(self.full(), split_size, num_splits)
     }
 }
 

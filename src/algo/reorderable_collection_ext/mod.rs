@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::collection_ext::CollectionExt;
-use crate::iterators::SplitIteratorMut;
+use crate::iterators::{SplitEvenlyIteratorMut, SplitIteratorMut};
 use crate::{ReorderableCollection, SliceMut};
 mod stable_partition;
 use stable_partition::*;
@@ -421,6 +421,34 @@ where
     {
         let n = self.count();
         stable_partition(self, belongs_in_second_partition, n)
+    }
+
+    /// Split the given collection into maximum `max_splits + 1` mutable slices with
+    /// each slice have atleast a size of `min_size` except the last one.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    ///   - `iter.next()`: O(1) for `RandomAccessCollection` otherwise O(`next_slice_size`).
+    fn split_evenly_in_mut(
+        &mut self,
+        max_splits: usize,
+        mut min_size: usize,
+    ) -> SplitEvenlyIteratorMut<'_, Self::Whole> {
+        let n = self.count();
+        min_size = usize::max(min_size, 1);
+
+        if n.div_ceil(max_splits) >= min_size {
+            return SplitEvenlyIteratorMut::new(
+                self.full_mut(),
+                n.div_ceil(max_splits),
+                max_splits,
+            );
+        }
+
+        let num_splits = n.div_ceil(min_size);
+        let split_size = n.div_ceil(num_splits);
+
+        SplitEvenlyIteratorMut::new(self.full_mut(), split_size, num_splits)
     }
 }
 
