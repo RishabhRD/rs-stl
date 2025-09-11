@@ -47,17 +47,29 @@ where
     /// and second part would have `[position, to)`.
     pub fn split_at(self, position: Whole::Position) -> (Self, Self) {
         self.assert_bounds_check_slice(&position);
-        let left = Self {
+        let prefix = Self {
             _whole: self._whole,
             from: self.from.clone(),
             to: position.clone(),
         };
-        let right = Self {
+        let suffix = Self {
             _whole: self._whole,
             from: position,
             to: self.to.clone(),
         };
-        (left, right)
+        (prefix, suffix)
+    }
+
+    /// Trims the prefix of slice upto given `position` and returns the prefix.
+    pub fn trim_prefix_upto(&mut self, position: Whole::Position) -> Self {
+        self.assert_bounds_check_slice(&position);
+        let prefix = Self {
+            _whole: self._whole,
+            from: self.from.clone(),
+            to: position.clone(),
+        };
+        self.from = position;
+        prefix
     }
 
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.

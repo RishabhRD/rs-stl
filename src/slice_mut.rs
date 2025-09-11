@@ -58,28 +58,41 @@ where
     ) -> (Slice<'a, Whole>, Slice<'a, Whole>) {
         self.assert_bounds_check_slice(&position);
         let whole = self.whole();
-        let left = Slice::new(whole, self.from, position.clone());
-        let right = Slice::new(whole, position, self.to);
-        (left, right)
+        let prefix = Slice::new(whole, self.from, position.clone());
+        let suffix = Slice::new(whole, position, self.to);
+        (prefix, suffix)
     }
 
     /// Splits slice into 2 mutable parts where first part would have `[from, position)`
     /// and second part would have `[position, to)`.
     pub fn split_at_mut(self, position: Whole::Position) -> (Self, Self) {
         self.assert_bounds_check_slice(&position);
-        let left = Self {
+        let prefix = Self {
             _whole: self._whole,
             _phantom: PhantomData,
             from: self.from.clone(),
             to: position.clone(),
         };
-        let right = Self {
+        let suffix = Self {
             _whole: self._whole,
             _phantom: PhantomData,
             from: position,
             to: self.to.clone(),
         };
-        (left, right)
+        (prefix, suffix)
+    }
+
+    /// Trims the prefix of slice upto given `position` and returns the prefix.
+    pub fn trim_prefix_upto(&mut self, position: Whole::Position) -> Self {
+        self.assert_bounds_check_slice(&position);
+        let prefix = Self {
+            _whole: self._whole,
+            _phantom: PhantomData,
+            from: self.from.clone(),
+            to: position.clone(),
+        };
+        self.from = position;
+        prefix
     }
 
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.
