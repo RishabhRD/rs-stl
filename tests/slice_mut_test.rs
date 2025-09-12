@@ -285,4 +285,29 @@ pub mod tests {
         assert!(s1.equals(&[2, 3]));
         assert!(s2.equals(&[2, 4, 5]));
     }
+
+    #[test]
+    fn split_after() {
+        let mut arr = [1, 2, 3, 4, 5];
+        let (s1, s2) = arr.full_mut().split_after(2);
+        assert!(s1.equals(&[1, 2, 3]));
+        assert!(s2.equals(&[4, 5]));
+    }
+
+    #[test]
+    fn trim_prefix_through() {
+        let mut arr = [1, 2, 3, 4, 5];
+        let mut s = arr.full_mut();
+        let prefix = s.trim_prefix_through(2);
+        assert!(s.equals(&[4, 5]));
+        assert!(prefix.equals(&[1, 2, 3]));
+    }
+
+    #[test]
+    fn split_after_mut() {
+        let mut arr = [1, 2, 3, 4, 5];
+        let (s1, s2) = arr.full_mut().split_after_mut(2);
+        assert!(s1.equals(&[1, 2, 3]));
+        assert!(s2.equals(&[4, 5]));
+    }
 }

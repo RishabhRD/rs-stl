@@ -43,5 +43,3 @@ pub(crate) mod std_impl;
 
 /// Proxy Reference to temporary value.
 pub mod value_ref;
-
-pub use lender::{DoubleEndedLender, Lend, Lender, Lending};
