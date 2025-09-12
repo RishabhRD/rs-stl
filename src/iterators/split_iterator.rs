@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use lender::{Lender, Lending};
-
 use crate::{
     Collection, CollectionExt, ReorderableCollection, Slice, SliceMut,
 };
@@ -13,14 +11,8 @@ where
     C: Collection,
     Pred: FnMut(&C::Element) -> bool,
 {
-    /// Base collection.
-    base_collection: &'a C::Whole,
-
-    /// Position of start of remaining elements.
-    from: C::Position,
-
-    /// Position of end of remaining elements.
-    to: C::Position,
+    /// Rest of collection.
+    rest: Slice<'a, C::Whole>,
 
     /// Predicate upon which splitting would be done.
     predicate: Pred,
@@ -33,42 +25,26 @@ where
 {
     pub(crate) fn new(slice: Slice<'a, C::Whole>, predicate: Pred) -> Self {
         SplitIterator {
-            base_collection: slice.whole(),
-            from: slice.from,
-            to: slice.to,
+            rest: slice,
             predicate,
         }
     }
 }
 
-impl<'a, C, Pred> Lending<'a> for SplitIterator<'_, C, Pred>
-where
-    C: Collection,
-    Pred: FnMut(&C::Element) -> bool,
-{
-    type Lend = Slice<'a, C::Whole>;
-}
-
-impl<C, Pred> Lender for SplitIterator<'_, C, Pred>
+impl<'a, C, Pred> Iterator for SplitIterator<'a, C, Pred>
 where
     C: Collection,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
-    fn next(&mut self) -> Option<lender::Lend<'_, Self>> {
-        if self.from == self.to {
+    type Item = Slice<'a, C::Whole>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.rest.is_empty() {
             return None;
         }
-        let mut next_from = self
-            .base_collection
-            .slice(self.from.clone(), self.to.clone())
-            .first_position_where(self.predicate.clone());
-        let res = self
-            .base_collection
-            .slice(self.from.clone(), next_from.clone());
-        if next_from != self.to {
-            self.base_collection.form_next(&mut next_from);
-        }
-        self.from = next_from;
+        let p = self.rest.first_position_where(self.predicate.clone());
+        let res = self.rest.trim_prefix_upto(p);
+        self.rest.drop_first();
         Some(res)
     }
 }
@@ -80,14 +56,8 @@ where
     C::Whole: ReorderableCollection,
     Pred: FnMut(&C::Element) -> bool,
 {
-    /// Base collection.
-    base_collection: &'a mut C::Whole,
-
-    /// Position of start of remaining elements.
-    from: C::Position,
-
-    /// Position of end of remaining elements.
-    to: C::Position,
+    /// Rest of collection.
+    rest: SliceMut<'a, C::Whole>,
 
     /// Predicate upon which splitting would be done.
     predicate: Pred,
@@ -101,44 +71,27 @@ where
 {
     pub(crate) fn new(slice: SliceMut<'a, C::Whole>, predicate: Pred) -> Self {
         SplitIteratorMut {
-            base_collection: slice.whole(),
-            from: slice.from,
-            to: slice.to,
+            rest: slice,
             predicate,
         }
     }
 }
 
-impl<'a, C, Pred> Lending<'a> for SplitIteratorMut<'_, C, Pred>
-where
-    C: ReorderableCollection,
-    C::Whole: ReorderableCollection,
-    Pred: FnMut(&C::Element) -> bool,
-{
-    type Lend = SliceMut<'a, C::Whole>;
-}
-
-impl<C, Pred> Lender for SplitIteratorMut<'_, C, Pred>
+impl<'a, C, Pred> Iterator for SplitIteratorMut<'a, C, Pred>
 where
     C: ReorderableCollection,
     C::Whole: ReorderableCollection,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
-    fn next(&mut self) -> Option<lender::Lend<'_, Self>> {
-        if self.from == self.to {
+    type Item = SliceMut<'a, C::Whole>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.rest.is_empty() {
             return None;
         }
-        let p = self
-            .base_collection
-            .slice(self.from.clone(), self.to.clone())
-            .first_position_where(self.predicate.clone());
-        let next_from = if p != self.to {
-            self.base_collection.next(p.clone())
-        } else {
-            p.clone()
-        };
-        let res = self.base_collection.slice_mut(self.from.clone(), p);
-        self.from = next_from;
+        let p = self.rest.first_position_where(self.predicate.clone());
+        let res = self.rest.trim_prefix_upto(p);
+        self.rest.drop_first();
         Some(res)
     }
 }
