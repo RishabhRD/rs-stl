@@ -104,6 +104,28 @@ where
         self.from = position;
         prefix
     }
+
+    /// Splits slice into 2 parts where first part would have `[from, position]`
+    /// and second part would have `[next(position), to)`.
+    ///
+    /// # Precondition
+    ///   - `position != self.end()`.
+    pub fn split_after(self, mut position: Whole::Position) -> (Self, Self) {
+        self.form_next(&mut position);
+        self.split_at(position)
+    }
+
+    /// Trims the prefix of slice through given `position`(inclusive) and returns the prefix.
+    ///
+    /// # Precondition
+    ///   - `position != self.end()`.
+    pub fn trim_prefix_through(
+        &mut self,
+        mut position: Whole::Position,
+    ) -> Self {
+        self.form_next(&mut position);
+        self.trim_prefix_upto(position)
+    }
 }
 
 /// Shrinking Algorithms.
