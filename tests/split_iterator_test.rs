@@ -10,7 +10,7 @@ pub mod tests {
         let arr = [1, 3, 5, 2, 2, 3, 4, 5, 5];
         let mut res = vec![];
         arr.split(|x| x % 2 == 0)
-            .for_each(|s| res.push(s.iter().fold(0, |x, e| x + e)));
+            .for_each(|s| res.push(s.iter().sum::<i32>()));
         assert_eq!(res, vec![9, 0, 3, 10]);
     }
 
@@ -21,7 +21,7 @@ pub mod tests {
         {
             let mut res = vec![];
             arr.split_mut(|x| x % 2 == 0)
-                .for_each(|s| res.push(s.iter().fold(0, |x, e| x + e)));
+                .for_each(|s| res.push(s.iter().sum::<i32>()));
             assert_eq!(res, vec![9, 0, 3, 12]);
         }
 
