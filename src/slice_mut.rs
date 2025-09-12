@@ -392,6 +392,11 @@ where
     }
 }
 
+unsafe impl<'a, Whole> Send for SliceMut<'a, Whole> where
+    Whole: ReorderableCollection<Whole = Whole>
+{
+}
+
 impl<Whole> Collection for SliceMut<'_, Whole>
 where
     Whole: ReorderableCollection<Whole = Whole>,

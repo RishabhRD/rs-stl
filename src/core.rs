@@ -9,8 +9,8 @@ use crate::{Slice, SliceMut};
 ///   - Movable
 ///   - Destructable
 ///   - Equality comparable
-pub trait SemiRegular: Eq {}
-impl<T> SemiRegular for T where T: Eq {}
+pub trait SemiRegular: Eq + Send {}
+impl<T> SemiRegular for T where T: Eq + Send {}
 
 /// Any SemiRegular type that is cloneable.
 ///
