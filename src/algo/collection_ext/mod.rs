@@ -295,7 +295,7 @@ pub trait CollectionExt: Collection {
     /// // Store sum of each split.
     /// let mut res = vec![];
     /// arr.split(|x| x % 2 == 0)
-    ///     .for_each(|s| res.push(s.iter().fold(0, |x, e| x + e)));
+    ///     .for_each(|s| res.push(s.iter().sum::<i32>()));
     /// assert_eq!(res, vec![9, 0, 3, 10]);
     /// ```
     fn split<Pred>(&self, pred: Pred) -> SplitIterator<'_, Self, Pred>

@@ -8,7 +8,7 @@ pub mod tests {
     #[test]
     fn sum_by_iteration() {
         let arr = [1, 2, 3];
-        assert_eq!(arr.iter().fold(0, |x, e| x + e), 6);
+        assert_eq!(arr.iter().sum::<i32>(), 6);
     }
 
     #[test]
