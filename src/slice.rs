@@ -114,10 +114,7 @@ where
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.
     pub fn pop_first_with_pos(
         &mut self,
-    ) -> Option<(
-        <Self as Collection>::Position,
-        <Self as Collection>::ElementRef<'_>,
-    )> {
+    ) -> Option<(Whole::Position, Whole::ElementRef<'a>)> {
         if self.from == self.to {
             None
         } else {
@@ -129,9 +126,7 @@ where
     }
 
     /// Removes and returns the first element if non-empty; returns None otherwise.
-    pub fn pop_first(
-        &mut self,
-    ) -> Option<<Self as Collection>::ElementRef<'_>> {
+    pub fn pop_first(&mut self) -> Option<Whole::ElementRef<'a>> {
         if self.from == self.to {
             None
         } else {
@@ -153,17 +148,14 @@ where
 }
 
 /// Shrinking Algorithms for BidirectionalCollection.
-impl<Whole> Slice<'_, Whole>
+impl<'a, Whole> Slice<'a, Whole>
 where
     Whole: BidirectionalCollection<Whole = Whole>,
 {
     /// Removes and returns the last element and its position if non-empty; returns None otherwise.
     pub fn pop_last_with_pos(
         &mut self,
-    ) -> Option<(
-        <Self as Collection>::Position,
-        <Self as Collection>::ElementRef<'_>,
-    )> {
+    ) -> Option<(Whole::Position, Whole::ElementRef<'a>)> {
         if self.from == self.to {
             None
         } else {
@@ -175,7 +167,7 @@ where
     }
 
     /// Removes and returns the last element if non-empty; returns None otherwise.
-    pub fn pop_last(&mut self) -> Option<<Self as Collection>::ElementRef<'_>> {
+    pub fn pop_last(&mut self) -> Option<<Self as Collection>::ElementRef<'a>> {
         if self.from == self.to {
             None
         } else {
@@ -205,10 +197,7 @@ where
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.
     pub fn lazy_pop_first_with_pos(
         &mut self,
-    ) -> Option<(
-        <Self as Collection>::Position,
-        <Self as Collection>::Element,
-    )> {
+    ) -> Option<(Whole::Position, Whole::Element)> {
         if self.from == self.to {
             None
         } else {
@@ -220,7 +209,7 @@ where
     }
 
     /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
-    pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
+    pub fn lazy_pop_first(&mut self) -> Option<Whole::Element> {
         if self.from == self.to {
             None
         } else {
@@ -239,10 +228,7 @@ where
     /// Removes and returns the last element and its position if non-empty; returns None otherwise.
     pub fn lazy_pop_last_with_pos(
         &mut self,
-    ) -> Option<(
-        <Self as Collection>::Position,
-        <Self as Collection>::Element,
-    )> {
+    ) -> Option<(Whole::Position, Whole::Element)> {
         if self.from == self.to {
             None
         } else {
@@ -254,7 +240,7 @@ where
     }
 
     /// Removes and returns the last element if non-empty; returns None otherwise.
-    pub fn lazy_pop_last(&mut self) -> Option<<Self as Collection>::Element> {
+    pub fn lazy_pop_last(&mut self) -> Option<Whole::Element> {
         if self.from == self.to {
             None
         } else {
