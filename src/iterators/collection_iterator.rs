@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalCollection, Collection, Slice};
+use lender::{DoubleEndedLender, Lend, Lender, Lending};
 
-use ::lender::prelude::*;
+use crate::{BidirectionalCollection, Collection, Slice};
 
 /// An iterator to iterate over element-ref of collection.
 pub struct CollectionIter<'a, C>
