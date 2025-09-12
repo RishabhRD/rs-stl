@@ -27,6 +27,7 @@ where
     pub to: Whole::Position,
 }
 
+/// Base accessor algorithms.
 impl<'a, Whole> SliceMut<'a, Whole>
 where
     Whole: ReorderableCollection<Whole = Whole>,
@@ -62,6 +63,41 @@ where
         self.whole().at(i)
     }
 
+    /// Mutably Access element at position i.
+    ///
+    /// # Precondition
+    ///   - i is a valid position in self and i != end()
+    ///
+    /// # Complexity Requirement
+    ///   - O(1)
+    pub fn at_mut(&mut self, i: &Whole::Position) -> &'a mut Whole::Element
+    where
+        Whole: MutableCollection,
+    {
+        self.assert_bounds_check_read(i);
+        self.whole().at_mut(i)
+    }
+
+    /// Panics if position is out of bounds of slice for reading element.
+    fn assert_bounds_check_read(&self, position: &Whole::Position) {
+        if *position < self.from || *position >= self.to {
+            panic!("Out of bounds read to slice.");
+        }
+    }
+
+    /// Panics if position is out of bounds of slice for defining sub-slice.
+    fn assert_bounds_check_slice(&self, position: &Whole::Position) {
+        if *position < self.from || *position > self.to {
+            panic!("Out of bounds slicing to slice.");
+        }
+    }
+}
+
+/// Splitting algorithms.
+impl<'a, Whole> SliceMut<'a, Whole>
+where
+    Whole: ReorderableCollection<Whole = Whole>,
+{
     /// Splits slice into 2 parts where first part would have `[from, position)`
     /// and second part would have `[position, to)`.
     pub fn split_at(
@@ -106,7 +142,13 @@ where
         self.from = position;
         prefix
     }
+}
 
+/// Shrinking algorithms.
+impl<'a, Whole> SliceMut<'a, Whole>
+where
+    Whole: ReorderableCollection<Whole = Whole>,
+{
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.
     pub fn pop_first_with_pos(
         &mut self,
@@ -137,13 +179,26 @@ where
         }
     }
 
+    /// Removes the first element if non-empty and returns true; returns false otherwise.
+    pub fn drop_first(&mut self) -> bool {
+        if self.from == self.to {
+            false
+        } else {
+            self.whole().form_next(&mut self.from);
+            true
+        }
+    }
+}
+
+/// Shrinking algorithms for MutableCollection.
+impl<'a, Whole> SliceMut<'a, Whole>
+where
+    Whole: MutableCollection<Whole = Whole>,
+{
     /// Removes and returns the mutable reference to first element and its position if non-empty; returns None otherwise.
     pub fn pop_first_with_pos_mut(
         &mut self,
-    ) -> Option<(<Self as Collection>::Position, &mut Whole::Element)>
-    where
-        Whole: MutableCollection,
-    {
+    ) -> Option<(Whole::Position, &mut Whole::Element)> {
         if self.from == self.to {
             None
         } else {
@@ -155,10 +210,7 @@ where
     }
 
     /// Removes and returns the mutable reference to first element if non-empty; returns None otherwise.
-    pub fn pop_first_mut(&mut self) -> Option<&mut Whole::Element>
-    where
-        Whole: MutableCollection,
-    {
+    pub fn pop_first_mut(&mut self) -> Option<&mut Whole::Element> {
         if self.from == self.to {
             None
         } else {
@@ -168,82 +220,9 @@ where
             e
         }
     }
-
-    /// Removes the first element if non-empty and returns true; returns false otherwise.
-    pub fn drop_first(&mut self) -> bool {
-        if self.from == self.to {
-            false
-        } else {
-            self.whole().form_next(&mut self.from);
-            true
-        }
-    }
-
-    /// Panics if position is out of bounds of slice for reading element.
-    fn assert_bounds_check_read(&self, position: &Whole::Position) {
-        if *position < self.from || *position >= self.to {
-            panic!("Out of bounds read to slice.");
-        }
-    }
-
-    /// Panics if position is out of bounds of slice for defining sub-slice.
-    fn assert_bounds_check_slice(&self, position: &Whole::Position) {
-        if *position < self.from || *position > self.to {
-            panic!("Out of bounds slicing to slice.");
-        }
-    }
 }
 
-impl<'a, Whole> SliceMut<'a, Whole>
-where
-    Whole: MutableCollection<Whole = Whole>,
-{
-    /// Mutably Access element at position i.
-    ///
-    /// # Precondition
-    ///   - i is a valid position in self and i != end()
-    ///
-    /// # Complexity Requirement
-    ///   - O(1)
-    pub fn at_mut(&mut self, i: &Whole::Position) -> &'a mut Whole::Element {
-        self.assert_bounds_check_read(i);
-        self.whole().at_mut(i)
-    }
-}
-
-impl<Whole> SliceMut<'_, Whole>
-where
-    Whole: LazyCollection<Whole = Whole> + ReorderableCollection,
-{
-    /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
-    pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
-        if self.from == self.to {
-            None
-        } else {
-            let e = Some(self.whole().compute_at(&self.from));
-            self.whole().form_next(&mut self.from);
-            e
-        }
-    }
-
-    /// Removes and returns the first element and its position if non-empty; returns None otherwise.
-    pub fn lazy_pop_first_with_pos(
-        &mut self,
-    ) -> Option<(
-        <Self as Collection>::Position,
-        <Self as Collection>::Element,
-    )> {
-        if self.from == self.to {
-            None
-        } else {
-            let e = self.whole().compute_at(&self.from);
-            let p = self.from.clone();
-            self.whole().form_next(&mut self.from);
-            Some((p, e))
-        }
-    }
-}
-
+/// Shrinking algorithms for BidirectionalCollection.
 impl<Whole> SliceMut<'_, Whole>
 where
     Whole: BidirectionalCollection<Whole = Whole> + ReorderableCollection,
@@ -288,6 +267,7 @@ where
     }
 }
 
+/// Shrinking algorithms for MutableCollection + BidirectionalCollection.
 impl<Whole> SliceMut<'_, Whole>
 where
     Whole: BidirectionalCollection<Whole = Whole> + MutableCollection,
@@ -317,6 +297,41 @@ where
     }
 }
 
+/// Shrinking algorithms for LazyCollection.
+impl<Whole> SliceMut<'_, Whole>
+where
+    Whole: LazyCollection<Whole = Whole> + ReorderableCollection,
+{
+    /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
+    pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = Some(self.whole().compute_at(&self.from));
+            self.whole().form_next(&mut self.from);
+            e
+        }
+    }
+
+    /// Removes and returns the first element and its position if non-empty; returns None otherwise.
+    pub fn lazy_pop_first_with_pos(
+        &mut self,
+    ) -> Option<(
+        <Self as Collection>::Position,
+        <Self as Collection>::Element,
+    )> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = self.whole().compute_at(&self.from);
+            let p = self.from.clone();
+            self.whole().form_next(&mut self.from);
+            Some((p, e))
+        }
+    }
+}
+
+/// Shrinking algorithms for LazyCollection + BidirectionalCollection.
 impl<Whole> SliceMut<'_, Whole>
 where
     Whole: BidirectionalCollection<Whole = Whole>

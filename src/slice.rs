@@ -21,6 +21,7 @@ where
     pub to: Whole::Position,
 }
 
+// Base accessor algorithms.
 impl<'a, Whole> Slice<'a, Whole>
 where
     Whole: Collection<Whole = Whole>,
@@ -55,6 +56,26 @@ where
         self._whole.at(i)
     }
 
+    /// Panics if position is out of bounds of slice for reading element.
+    fn assert_bounds_check_read(&self, position: &Whole::Position) {
+        if *position < self.from || *position >= self.to {
+            panic!("Out of bounds read to slice.");
+        }
+    }
+
+    /// Panics if position is out of bounds of slice for defining sub-slice.
+    fn assert_bounds_check_slice(&self, position: &Whole::Position) {
+        if *position < self.from || *position > self.to {
+            panic!("Out of bounds slicing to slice.");
+        }
+    }
+}
+
+/// Splitting algorithms.
+impl<Whole> Slice<'_, Whole>
+where
+    Whole: Collection<Whole = Whole>,
+{
     /// Splits slice into 2 parts where first part would have `[from, position)`
     /// and second part would have `[position, to)`.
     pub fn split_at(self, position: Whole::Position) -> (Self, Self) {
@@ -83,7 +104,13 @@ where
         self.from = position;
         prefix
     }
+}
 
+/// Shrinking Algorithms.
+impl<'a, Whole> Slice<'a, Whole>
+where
+    Whole: Collection<Whole = Whole>,
+{
     /// Removes and returns the first element and its position if non-empty; returns None otherwise.
     pub fn pop_first_with_pos(
         &mut self,
@@ -123,55 +150,9 @@ where
             true
         }
     }
-
-    /// Panics if position is out of bounds of slice for reading element.
-    fn assert_bounds_check_read(&self, position: &Whole::Position) {
-        if *position < self.from || *position >= self.to {
-            panic!("Out of bounds read to slice.");
-        }
-    }
-
-    /// Panics if position is out of bounds of slice for defining sub-slice.
-    fn assert_bounds_check_slice(&self, position: &Whole::Position) {
-        if *position < self.from || *position > self.to {
-            panic!("Out of bounds slicing to slice.");
-        }
-    }
 }
 
-impl<Whole> Slice<'_, Whole>
-where
-    Whole: LazyCollection<Whole = Whole>,
-{
-    /// Removes and returns the first element and its position if non-empty; returns None otherwise.
-    pub fn lazy_pop_first_with_pos(
-        &mut self,
-    ) -> Option<(
-        <Self as Collection>::Position,
-        <Self as Collection>::Element,
-    )> {
-        if self.from == self.to {
-            None
-        } else {
-            let e = self._whole.compute_at(&self.from);
-            let p = self.from.clone();
-            self._whole.form_next(&mut self.from);
-            Some((p, e))
-        }
-    }
-
-    /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
-    pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
-        if self.from == self.to {
-            None
-        } else {
-            let e = Some(self._whole.compute_at(&self.from));
-            self._whole.form_next(&mut self.from);
-            e
-        }
-    }
-}
-
+/// Shrinking Algorithms for BidirectionalCollection.
 impl<Whole> Slice<'_, Whole>
 where
     Whole: BidirectionalCollection<Whole = Whole>,
@@ -216,6 +197,41 @@ where
     }
 }
 
+/// Shrinking Algorithms for LazyCollection.
+impl<Whole> Slice<'_, Whole>
+where
+    Whole: LazyCollection<Whole = Whole>,
+{
+    /// Removes and returns the first element and its position if non-empty; returns None otherwise.
+    pub fn lazy_pop_first_with_pos(
+        &mut self,
+    ) -> Option<(
+        <Self as Collection>::Position,
+        <Self as Collection>::Element,
+    )> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = self._whole.compute_at(&self.from);
+            let p = self.from.clone();
+            self._whole.form_next(&mut self.from);
+            Some((p, e))
+        }
+    }
+
+    /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
+    pub fn lazy_pop_first(&mut self) -> Option<<Self as Collection>::Element> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = Some(self._whole.compute_at(&self.from));
+            self._whole.form_next(&mut self.from);
+            e
+        }
+    }
+}
+
+/// Shrinking Algorithms for BidirectionalCollection + LazyCollection.
 impl<Whole> Slice<'_, Whole>
 where
     Whole: BidirectionalCollection<Whole = Whole> + LazyCollection,
