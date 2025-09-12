@@ -50,6 +50,18 @@ where
         unsafe { &mut *self._whole }
     }
 
+    /// Access element at position i.
+    ///
+    /// # Precondition
+    ///   - i is a valid position in self and i != end()
+    ///
+    /// # Complexity Requirement
+    ///   - O(1)
+    pub fn at(&self, i: &Whole::Position) -> Whole::ElementRef<'a> {
+        self.assert_bounds_check_read(i);
+        self.whole().at(i)
+    }
+
     /// Splits slice into 2 parts where first part would have `[from, position)`
     /// and second part would have `[position, to)`.
     pub fn split_at(
@@ -179,6 +191,23 @@ where
         if *position < self.from || *position > self.to {
             panic!("Out of bounds slicing to slice.");
         }
+    }
+}
+
+impl<'a, Whole> SliceMut<'a, Whole>
+where
+    Whole: MutableCollection<Whole = Whole>,
+{
+    /// Mutably Access element at position i.
+    ///
+    /// # Precondition
+    ///   - i is a valid position in self and i != end()
+    ///
+    /// # Complexity Requirement
+    ///   - O(1)
+    pub fn at_mut(&mut self, i: &Whole::Position) -> &'a mut Whole::Element {
+        self.assert_bounds_check_read(i);
+        self.whole().at_mut(i)
     }
 }
 

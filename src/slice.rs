@@ -43,6 +43,18 @@ where
         self._whole
     }
 
+    /// Access element at position i.
+    ///
+    /// # Precondition
+    ///   - i is a valid position in self and i != end()
+    ///
+    /// # Complexity Requirement
+    ///   - O(1)
+    pub fn at(&self, i: &Whole::Position) -> Whole::ElementRef<'a> {
+        self.assert_bounds_check_read(i);
+        self._whole.at(i)
+    }
+
     /// Splits slice into 2 parts where first part would have `[from, position)`
     /// and second part would have `[position, to)`.
     pub fn split_at(self, position: Whole::Position) -> (Self, Self) {
