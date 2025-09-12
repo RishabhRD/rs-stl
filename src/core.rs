@@ -9,8 +9,8 @@ use crate::{Slice, SliceMut};
 ///   - Movable
 ///   - Destructable
 ///   - Equality comparable
-pub trait SemiRegular: Eq {}
-impl<T> SemiRegular for T where T: Eq {}
+pub trait SemiRegular: Eq + Send {}
+impl<T> SemiRegular for T where T: Eq + Send {}
 
 /// Any SemiRegular type that is cloneable.
 ///
@@ -31,7 +31,7 @@ impl<T> Regular for T where T: SemiRegular + Clone {}
 /// start   -->   end
 pub trait Collection {
     /// Type of positions in the collection.
-    type Position: Regular + Ord + Send;
+    type Position: Regular + Ord;
 
     /// Type of element in the collection.
     type Element;
@@ -46,10 +46,10 @@ pub trait Collection {
     /// Type representing whole collection.
     /// i.e., `Self == Slice<W> ? W : Self`
     type Whole: Collection<
-            Position = Self::Position,
-            Element = Self::Element,
-            Whole = Self::Whole,
-        > + Sync;
+        Position = Self::Position,
+        Element = Self::Element,
+        Whole = Self::Whole,
+    >;
 
     /// Returns the position of first element in self,
     /// or if self is empty then start() == end()

@@ -2,6 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{Collection, CollectionExt};
+use std::thread;
 
 /// Parallel Algorithms for `Collection`.
 pub trait ParallelCollectionExt: Collection {
@@ -28,33 +29,27 @@ pub trait ParallelCollectionExt: Collection {
         let hardware_concurrency = 2;
         let min_elements_for_core = 5;
 
-        let handles: Vec<_> = self
-            .split_evenly_in(hardware_concurrency, min_elements_for_core)
-            .map(|s| {
-                let pred = pred.clone();
-                std::thread::spawn(move || {
-                    let p = s.first_position_where(pred.clone());
-                    if p == s.end() {
-                        None
-                    } else {
-                        Some(p)
-                    }
+        thread::scope(|scope| {
+            let handles: Vec<_> = self
+                .split_evenly_in(hardware_concurrency, min_elements_for_core)
+                .map(|s| {
+                    let pred = pred.clone();
+                    scope.spawn(move || {
+                        let p = s.first_position_where(pred);
+                        if p == s.end() {
+                            None
+                        } else {
+                            Some(p)
+                        }
+                    })
                 })
-            })
-            .collect();
+                .collect();
 
-        let res = handles.into_iter().map(|h| h.join().unwrap()).fold(
-            None,
-            |res, cur| match (res, cur) {
-                (Some(p), _) => Some(p),
-                (None, None) => None,
-                (None, Some(p)) => Some(p),
-            },
-        );
-        match res {
-            Some(p) => p,
-            None => self.end(),
-        }
+            let res =
+                handles.into_iter().filter_map(|h| h.join().unwrap()).next();
+
+            res.unwrap_or_else(|| self.end())
+        })
     }
 }
 
