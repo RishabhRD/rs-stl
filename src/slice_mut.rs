@@ -801,22 +801,19 @@ impl<'a, Whole> SliceMut<'a, Whole>
 where
     Whole: ReorderableCollection<Whole = Whole>,
 {
-    /// Splits slice into 2 parts where first part would have `[from, position)`
-    /// and second part would have `[position, to)`.
-    pub fn split_at(
-        self,
-        position: Whole::Position,
-    ) -> (Slice<'a, Whole>, Slice<'a, Whole>) {
-        self.assert_bounds_check_slice(&position);
-        let whole = self.whole();
-        let prefix = Slice::new(whole, self.from, position.clone());
-        let suffix = Slice::new(whole, position, self.to);
-        (prefix, suffix)
-    }
-
     /// Splits slice into 2 mutable parts where first part would have `[from, position)`
     /// and second part would have `[position, to)`.
-    pub fn split_at_mut(self, position: Whole::Position) -> (Self, Self) {
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.full_mut().split_at(2);
+    /// assert!(s1.equals(&[0, 1]));
+    /// assert!(s2.equals(&[2, 3, 4]));
+    /// ```
+    pub fn split_at(self, position: Whole::Position) -> (Self, Self) {
         self.assert_bounds_check_slice(&position);
         let prefix = Self {
             _whole: self._whole,
@@ -833,30 +830,24 @@ where
         (prefix, suffix)
     }
 
-    /// Splits slice into 2 parts where first part would have `[from, position]`
-    /// and second part would have `[next(position), to)`.
-    ///
-    /// # Precondition
-    ///   - `position != self.end()`.
-    pub fn split_after(
-        self,
-        mut position: Whole::Position,
-    ) -> (Slice<'a, Whole>, Slice<'a, Whole>) {
-        self.form_next(&mut position);
-        self.split_at(position)
-    }
-
     /// Splits slice into 2 mutable parts where first part would have `[from, position]`
     /// and second part would have `[next(position), to)`.
     ///
     /// # Precondition
     ///   - `position != self.end()`.
-    pub fn split_after_mut(
-        self,
-        mut position: Whole::Position,
-    ) -> (Self, Self) {
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.full_mut().split_after(2);
+    /// assert!(s1.equals(&[0, 1, 2]));
+    /// assert!(s2.equals(&[3, 4]));
+    /// ```
+    pub fn split_after(self, mut position: Whole::Position) -> (Self, Self) {
         self.form_next(&mut position);
-        self.split_at_mut(position)
+        self.split_at(position)
     }
 }
 

@@ -666,6 +666,16 @@ where
 {
     /// Splits slice into 2 parts where first part would have `[from, position)`
     /// and second part would have `[position, to)`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.full().split_at(2);
+    /// assert!(s1.equals(&[0, 1]));
+    /// assert!(s2.equals(&[2, 3, 4]));
+    /// ```
     pub fn split_at(self, position: Whole::Position) -> (Self, Self) {
         self.assert_bounds_check_slice(&position);
         let prefix = Self {
@@ -686,6 +696,16 @@ where
     ///
     /// # Precondition
     ///   - `position != self.end()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.full().split_after(2);
+    /// assert!(s1.equals(&[0, 1, 2]));
+    /// assert!(s2.equals(&[3, 4]));
+    /// ```
     pub fn split_after(self, mut position: Whole::Position) -> (Self, Self) {
         self.form_next(&mut position);
         self.split_at(position)
