@@ -12,7 +12,7 @@ where
     Self::Whole: LazyCollection,
 {
     /// Returns the "lazily computed" first element, or nil if `self` is empty.
-    fn lazy_first(&self) -> Option<<Self as Collection>::Element> {
+    fn lazy_first(&self) -> Option<Self::Element> {
         if self.start() == self.end() {
             None
         } else {

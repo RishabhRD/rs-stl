@@ -20,7 +20,7 @@ pub trait CollectionExt: Collection {
     /*-----------------Element Access Algorithms-----------------*/
 
     /// Returns the first element, or nil if `self` is empty.
-    fn first(&self) -> Option<<Self as Collection>::ElementRef<'_>> {
+    fn first(&self) -> Option<Self::ElementRef<'_>> {
         if self.start() == self.end() {
             None
         } else {
