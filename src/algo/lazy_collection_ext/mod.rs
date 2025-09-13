@@ -4,7 +4,7 @@
 use crate::algo::collection_ext::CollectionExt;
 use crate::collections::LazyMappedCollection;
 use crate::iterators::LazyCollectionIter;
-use crate::{BidirectionalCollection, Collection, LazyCollection};
+use crate::{BidirectionalCollection, LazyCollection};
 
 /// Algorithms for `LazyCollection`.
 pub trait LazyCollectionExt: LazyCollection
