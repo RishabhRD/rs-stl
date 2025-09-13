@@ -43,7 +43,7 @@ where
             return None;
         }
         let p = self.rest.first_position_where(self.predicate.clone());
-        let res = self.rest.trim_prefix_upto(p);
+        let res = self.rest.pop_prefix_upto(p);
         self.rest.drop_first();
         Some(res)
     }
@@ -90,7 +90,7 @@ where
             return None;
         }
         let p = self.rest.first_position_where(self.predicate.clone());
-        let res = self.rest.trim_prefix_upto(p);
+        let res = self.rest.pop_prefix_upto(p);
         self.rest.drop_first();
         Some(res)
     }

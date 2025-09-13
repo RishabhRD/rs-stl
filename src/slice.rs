@@ -2,7 +2,8 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, LazyCollection, RandomAccessCollection,
+    BidirectionalCollection, Collection, CollectionExt, LazyCollection,
+    RandomAccessCollection,
 };
 
 /// A contiguous sub-collection of a collection.
@@ -71,6 +72,593 @@ where
     }
 }
 
+/// Dropping algorithms
+impl<Whole> Slice<'_, Whole>
+where
+    Whole: Collection<Whole = Whole>,
+{
+    /// Removes the first element if non-empty and returns true; returns false otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let mut s = arr.full();
+    /// assert!(s.drop_first());
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn drop_first(&mut self) -> bool {
+        if self.from == self.to {
+            false
+        } else {
+            self._whole.form_next(&mut self.from);
+            true
+        }
+    }
+
+    /// Removes the last element if non-empty and returns true; returns false otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let mut s = arr.full();
+    /// assert!(s.drop_last());
+    /// assert!(s.equals(&[1, 2]));
+    /// ```
+    pub fn drop_last(&mut self) -> bool
+    where
+        Whole: BidirectionalCollection,
+    {
+        if self.from == self.to {
+            false
+        } else {
+            self._whole.form_prior(&mut self.to);
+            true
+        }
+    }
+
+    /// Drops prefix upto specified maximum length.
+    ///
+    /// # Postcondition
+    ///   - If `max_length > self.count()`, make `self` empty.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection;
+    ///   - O(n) otherwise, where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// s.drop_prefix(2);
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn drop_prefix(&mut self, max_length: usize) {
+        let mut new_from = self.from.clone();
+        self._whole.form_next_n_limited_by(
+            &mut new_from,
+            max_length,
+            self.to.clone(),
+        );
+        self.from = new_from;
+    }
+
+    /// Drops the prefix of slice upto given `position`.
+    ///
+    /// # Precondition
+    ///   - `position` is valid position in `self`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// s.drop_prefix_upto(2);
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn drop_prefix_upto(&mut self, position: Whole::Position) {
+        self.assert_bounds_check_slice(&position);
+        self.from = position;
+    }
+
+    /// Drops the prefix of slice till and including given `position`.
+    ///
+    /// # Precondition
+    ///   - `position` is valid position in `self`.
+    ///   - `position != self.end()`
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// s.drop_prefix_through(2);
+    /// assert!(s.equals(&[3]));
+    /// ```
+    pub fn drop_prefix_through(&mut self, position: Whole::Position) {
+        self.assert_bounds_check_read(&position);
+        self.from = self._whole.next(position);
+    }
+
+    /// Drops the element of `self` while the elements satisfy given `predicate`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// s.drop_while(|x| *x < 2);
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn drop_while<Pred>(&mut self, mut predicate: Pred)
+    where
+        Pred: FnMut(&Whole::Element) -> bool,
+    {
+        self.from = self.first_position_where(|e| !predicate(e));
+    }
+
+    /// Drops suffix upto specified maximum length.
+    ///
+    /// # Postcondition
+    ///   - If `max_length > self.count()`, make `self` empty.
+    ///
+    /// # Complexity
+    ///   - O(n), where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// s.drop_suffix(2);
+    /// assert!(s.equals(&[0, 1]));
+    /// ```
+    pub fn drop_suffix(&mut self, max_length: usize) {
+        let n = self.count();
+        if max_length > n {
+            self.to = self.from.clone()
+        } else {
+            self.to = self.next_n(self.start(), n - max_length)
+        }
+    }
+
+    /// Drops suffix from given `position`.
+    ///
+    /// # Precondition
+    ///   - `position` is a valid position in self.
+    ///
+    /// # Complexity
+    ///   - O(n), where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// s.drop_suffix_from(2);
+    /// assert!(s.equals(&[0, 1]));
+    /// ```
+    pub fn drop_suffix_from(&mut self, position: Whole::Position) {
+        self.assert_bounds_check_slice(&position);
+        self.to = position;
+    }
+}
+
+/// Pop algorithms.
+impl<'a, Whole> Slice<'a, Whole>
+where
+    Whole: Collection<Whole = Whole>,
+{
+    /// Removes and returns the first element if non-empty; returns None otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let mut s = arr.full();
+    /// let first = s.pop_first().unwrap();
+    /// assert_eq!(*first, 1);
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn pop_first(&mut self) -> Option<Whole::ElementRef<'a>> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = Some(self._whole.at(&self.from));
+            self._whole.form_next(&mut self.from);
+            e
+        }
+    }
+
+    /// Removes and returns the first element and its position if non-empty; returns None otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let mut s = arr.full();
+    /// let (first_pos, first) = s.pop_first_with_pos().unwrap();
+    /// assert_eq!(first_pos, 0);
+    /// assert_eq!(*first, 1);
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn pop_first_with_pos(
+        &mut self,
+    ) -> Option<(Whole::Position, Whole::ElementRef<'a>)> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = self._whole.at(&self.from);
+            let p = self.from.clone();
+            self._whole.form_next(&mut self.from);
+            Some((p, e))
+        }
+    }
+
+    /// Removes and returns the last element if non-empty; returns None otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let mut s = arr.full();
+    /// let last = s.pop_last().unwrap();
+    /// assert_eq!(*last, 3);
+    /// assert!(s.equals(&[1, 2]));
+    /// ```
+    pub fn pop_last(&mut self) -> Option<Whole::ElementRef<'a>>
+    where
+        Whole: BidirectionalCollection,
+    {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self._whole.prior(self.to.clone());
+            let e = Some(self._whole.at(&ele_pos));
+            self._whole.form_prior(&mut self.to);
+            e
+        }
+    }
+
+    /// Removes and returns the last element and its position if non-empty; returns None otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3];
+    /// let mut s = arr.full();
+    /// let (last_pos, last) = s.pop_last_with_pos().unwrap();
+    /// assert_eq!(last_pos, 2);
+    /// assert_eq!(*last, 3);
+    /// assert!(s.equals(&[1, 2]));
+    /// ```
+    pub fn pop_last_with_pos(
+        &mut self,
+    ) -> Option<(Whole::Position, Whole::ElementRef<'a>)>
+    where
+        Whole: BidirectionalCollection,
+    {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self._whole.prior(self.to.clone());
+            let e = self._whole.at(&ele_pos);
+            self._whole.form_prior(&mut self.to);
+            Some((ele_pos, e))
+        }
+    }
+
+    /// Removes and returns prefix upto specified maximum length.
+    ///
+    /// # Postcondition
+    ///   - If `max_length > self.count()`, make `self` empty and return the full slice as result.
+    ///
+    /// # Complexity
+    ///   - O(1) for RandomAccessCollection;
+    ///   - O(n) otherwise, where `n == self.count()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// let prefix = s.pop_prefix(2);
+    /// assert!(prefix.equals(&[0, 1]));
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn pop_prefix(&mut self, max_length: usize) -> Self {
+        let old_from = self.from.clone();
+        let mut new_from = self.from.clone();
+        self._whole.form_next_n_limited_by(
+            &mut new_from,
+            max_length,
+            self.to.clone(),
+        );
+        self.from = new_from;
+        Self {
+            _whole: self._whole,
+            from: old_from,
+            to: self.from.clone(),
+        }
+    }
+
+    /// Removes and returns the prefix slice upto given `position`.
+    ///
+    /// # Precondition
+    ///   - `position` is valid position in `self`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// let prefix = s.pop_prefix_upto(2);
+    /// assert!(prefix.equals(&[0, 1]));
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn pop_prefix_upto(&mut self, position: Whole::Position) -> Self {
+        self.assert_bounds_check_slice(&position);
+        let prefix = Self {
+            _whole: self._whole,
+            from: self.from.clone(),
+            to: position.clone(),
+        };
+        self.from = position;
+        prefix
+    }
+
+    /// Removes and returns the prefix till and including given `position`.
+    ///
+    /// # Precondition
+    ///   - `position` is valid position in `self`.
+    ///   - `position != self.end()`
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// let prefix = s.pop_prefix_through(2);
+    /// assert!(prefix.equals(&[0, 1, 2]));
+    /// assert!(s.equals(&[3]));
+    /// ```
+    pub fn pop_prefix_through(&mut self, position: Whole::Position) -> Self {
+        self.assert_bounds_check_read(&position);
+        let old_from = self.from.clone();
+        self.from = self._whole.next(position);
+        Self {
+            _whole: self._whole,
+            from: old_from,
+            to: self.from.clone(),
+        }
+    }
+
+    /// Removes and returns  the element of `self` till the first element satisfies `predicate` as a slice.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// let prefix = s.pop_while(|x| *x < 2);
+    /// assert!(prefix.equals(&[0, 1]));
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn pop_while<Pred>(&mut self, mut predicate: Pred) -> Self
+    where
+        Pred: FnMut(&Whole::Element) -> bool,
+    {
+        let p = self.first_position_where(|e| !predicate(e));
+        let res = Slice {
+            _whole: self._whole,
+            from: self.from.clone(),
+            to: p.clone(),
+        };
+        self.from = p;
+        res
+    }
+
+    /// Removes and returns suffix upto specified maximum length.
+    ///
+    /// # Postcondition
+    ///   - If `max_length > self.count()`, make `self` empty and returns the
+    ///     full slice as suffix.
+    ///
+    /// # Complexity
+    ///   - O(n), where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// let suffix = s.pop_suffix(2);
+    /// assert!(s.equals(&[0, 1]));
+    /// assert!(suffix.equals(&[2, 3]));
+    /// ```
+    pub fn pop_suffix(&mut self, max_length: usize) -> Self {
+        let n = self.count();
+        let old_to = self.to.clone();
+        if max_length > n {
+            self.to = self.from.clone()
+        } else {
+            self.to = self.next_n(self.start(), n - max_length)
+        }
+        Self {
+            _whole: self._whole,
+            from: self.to.clone(),
+            to: old_to,
+        }
+    }
+
+    /// Removes and returns suffix from given `position`.
+    ///
+    /// # Precondition
+    ///   - `position` is a valid position in self.
+    ///
+    /// # Complexity
+    ///   - O(n), where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3];
+    /// let mut s = arr.full();
+    /// let suffix = s.pop_suffix_from(2);
+    /// assert!(s.equals(&[0, 1]));
+    /// assert!(suffix.equals(&[2, 3]));
+    /// ```
+    pub fn pop_suffix_from(&mut self, position: Whole::Position) -> Self {
+        self.assert_bounds_check_slice(&position);
+        let old_to = self.to.clone();
+        self.to = position;
+        Self {
+            _whole: self._whole,
+            from: self.to.clone(),
+            to: old_to,
+        }
+    }
+}
+
+/// Pop algorithms for `LazyCollection`.
+impl<'a, Whole> Slice<'a, Whole>
+where
+    Whole: LazyCollection<Whole = Whole>,
+{
+    /// Removes and returns the lazily computed first element if non-empty;
+    /// returns None otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = 1..=3;
+    /// let mut s = arr.full();
+    /// let first = s.lazy_pop_first().unwrap();
+    /// assert_eq!(first, 1);
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn lazy_pop_first(&mut self) -> Option<Whole::Element> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = Some(self._whole.compute_at(&self.from));
+            self._whole.form_next(&mut self.from);
+            e
+        }
+    }
+
+    /// Removes and returns the lazily computed first element and its position if non-empty;
+    /// returns None otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = 1..=3;
+    /// let mut s = arr.full();
+    /// let (first_pos, first) = s.lazy_pop_first_with_pos().unwrap();
+    /// assert_eq!(first_pos, 1);
+    /// assert_eq!(first, 1);
+    /// assert!(s.equals(&[2, 3]));
+    /// ```
+    pub fn lazy_pop_first_with_pos(
+        &mut self,
+    ) -> Option<(Whole::Position, Whole::Element)> {
+        if self.from == self.to {
+            None
+        } else {
+            let e = self._whole.compute_at(&self.from);
+            let p = self.from.clone();
+            self._whole.form_next(&mut self.from);
+            Some((p, e))
+        }
+    }
+
+    /// Removes and returns the lazily computed last element if non-empty;
+    /// returns None otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = 1..=3;
+    /// let mut s = arr.full();
+    /// let last = s.lazy_pop_last().unwrap();
+    /// assert_eq!(last, 3);
+    /// assert!(s.equals(&[1, 2]));
+    /// ```
+    pub fn lazy_pop_last(&mut self) -> Option<Whole::Element>
+    where
+        Whole: BidirectionalCollection,
+    {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self._whole.prior(self.to.clone());
+            let e = Some(self._whole.compute_at(&ele_pos));
+            self._whole.form_prior(&mut self.to);
+            e
+        }
+    }
+
+    /// Removes and returns the lazily computed last element and its position if non-empty;
+    /// returns None otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = 1..=3;
+    /// let mut s = arr.full();
+    /// let (last_pos, last) = s.lazy_pop_last_with_pos().unwrap();
+    /// assert_eq!(last_pos, 3);
+    /// assert_eq!(last, 3);
+    /// assert!(s.equals(&[1, 2]));
+    /// ```
+    pub fn lazy_pop_last_with_pos(
+        &mut self,
+    ) -> Option<(Whole::Position, Whole::Element)>
+    where
+        Whole: BidirectionalCollection,
+    {
+        if self.from == self.to {
+            None
+        } else {
+            let ele_pos = self._whole.prior(self.to.clone());
+            let e = self._whole.compute_at(&ele_pos);
+            self._whole.form_prior(&mut self.to);
+            Some((ele_pos, e))
+        }
+    }
+}
+
 /// Splitting algorithms.
 impl<Whole> Slice<'_, Whole>
 where
@@ -93,18 +681,6 @@ where
         (prefix, suffix)
     }
 
-    /// Trims the prefix of slice upto given `position` and returns the prefix.
-    pub fn trim_prefix_upto(&mut self, position: Whole::Position) -> Self {
-        self.assert_bounds_check_slice(&position);
-        let prefix = Self {
-            _whole: self._whole,
-            from: self.from.clone(),
-            to: position.clone(),
-        };
-        self.from = position;
-        prefix
-    }
-
     /// Splits slice into 2 parts where first part would have `[from, position]`
     /// and second part would have `[next(position), to)`.
     ///
@@ -113,164 +689,6 @@ where
     pub fn split_after(self, mut position: Whole::Position) -> (Self, Self) {
         self.form_next(&mut position);
         self.split_at(position)
-    }
-
-    /// Trims the prefix of slice through given `position`(inclusive) and returns the prefix.
-    ///
-    /// # Precondition
-    ///   - `position != self.end()`.
-    pub fn trim_prefix_through(
-        &mut self,
-        mut position: Whole::Position,
-    ) -> Self {
-        self.form_next(&mut position);
-        self.trim_prefix_upto(position)
-    }
-}
-
-/// Shrinking Algorithms.
-impl<'a, Whole> Slice<'a, Whole>
-where
-    Whole: Collection<Whole = Whole>,
-{
-    /// Removes and returns the first element and its position if non-empty; returns None otherwise.
-    pub fn pop_first_with_pos(
-        &mut self,
-    ) -> Option<(Whole::Position, Whole::ElementRef<'a>)> {
-        if self.from == self.to {
-            None
-        } else {
-            let e = self._whole.at(&self.from);
-            let p = self.from.clone();
-            self._whole.form_next(&mut self.from);
-            Some((p, e))
-        }
-    }
-
-    /// Removes and returns the first element if non-empty; returns None otherwise.
-    pub fn pop_first(&mut self) -> Option<Whole::ElementRef<'a>> {
-        if self.from == self.to {
-            None
-        } else {
-            let e = Some(self._whole.at(&self.from));
-            self._whole.form_next(&mut self.from);
-            e
-        }
-    }
-
-    /// Removes the first element if non-empty and returns true; returns false otherwise.
-    pub fn drop_first(&mut self) -> bool {
-        if self.from == self.to {
-            false
-        } else {
-            self._whole.form_next(&mut self.from);
-            true
-        }
-    }
-}
-
-/// Shrinking Algorithms for BidirectionalCollection.
-impl<'a, Whole> Slice<'a, Whole>
-where
-    Whole: BidirectionalCollection<Whole = Whole>,
-{
-    /// Removes and returns the last element and its position if non-empty; returns None otherwise.
-    pub fn pop_last_with_pos(
-        &mut self,
-    ) -> Option<(Whole::Position, Whole::ElementRef<'a>)> {
-        if self.from == self.to {
-            None
-        } else {
-            let ele_pos = self._whole.prior(self.to.clone());
-            let e = self._whole.at(&ele_pos);
-            self._whole.form_prior(&mut self.to);
-            Some((ele_pos, e))
-        }
-    }
-
-    /// Removes and returns the last element if non-empty; returns None otherwise.
-    pub fn pop_last(&mut self) -> Option<<Self as Collection>::ElementRef<'a>> {
-        if self.from == self.to {
-            None
-        } else {
-            let ele_pos = self._whole.prior(self.to.clone());
-            let e = Some(self._whole.at(&ele_pos));
-            self._whole.form_prior(&mut self.to);
-            e
-        }
-    }
-
-    /// Removes the last element if non-empty and returns true; returns false otherwise.
-    pub fn drop_last(&mut self) -> bool {
-        if self.from == self.to {
-            false
-        } else {
-            self._whole.form_prior(&mut self.to);
-            true
-        }
-    }
-}
-
-/// Shrinking Algorithms for LazyCollection.
-impl<Whole> Slice<'_, Whole>
-where
-    Whole: LazyCollection<Whole = Whole>,
-{
-    /// Removes and returns the first element and its position if non-empty; returns None otherwise.
-    pub fn lazy_pop_first_with_pos(
-        &mut self,
-    ) -> Option<(Whole::Position, Whole::Element)> {
-        if self.from == self.to {
-            None
-        } else {
-            let e = self._whole.compute_at(&self.from);
-            let p = self.from.clone();
-            self._whole.form_next(&mut self.from);
-            Some((p, e))
-        }
-    }
-
-    /// Removes and returns the "lazily computed" first element if non-empty; returns None otherwise.
-    pub fn lazy_pop_first(&mut self) -> Option<Whole::Element> {
-        if self.from == self.to {
-            None
-        } else {
-            let e = Some(self._whole.compute_at(&self.from));
-            self._whole.form_next(&mut self.from);
-            e
-        }
-    }
-}
-
-/// Shrinking Algorithms for BidirectionalCollection + LazyCollection.
-impl<Whole> Slice<'_, Whole>
-where
-    Whole: BidirectionalCollection<Whole = Whole> + LazyCollection,
-{
-    /// Removes and returns the last element and its position if non-empty; returns None otherwise.
-    pub fn lazy_pop_last_with_pos(
-        &mut self,
-    ) -> Option<(Whole::Position, Whole::Element)> {
-        if self.from == self.to {
-            None
-        } else {
-            let ele_pos = self._whole.prior(self.to.clone());
-            let e = self._whole.compute_at(&ele_pos);
-            self._whole.form_prior(&mut self.to);
-            Some((ele_pos, e))
-        }
-    }
-
-    /// Removes and returns the last element if non-empty; returns None otherwise.
-    pub fn lazy_pop_last(&mut self) -> Option<Whole::Element> {
-        if self.from == self.to {
-            None
-        } else {
-            let ele_pos = self._whole.prior(self.to.clone());
-            let e = Some(self._whole.compute_at(&ele_pos));
-            self._whole.form_prior(&mut self.to);
-            e
-        }
     }
 }
 

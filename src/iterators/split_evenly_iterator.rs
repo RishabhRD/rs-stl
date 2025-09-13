@@ -55,7 +55,7 @@ where
             self.rest.end(),
         );
 
-        Some(self.rest.trim_prefix_upto(next_pos))
+        Some(self.rest.pop_prefix_upto(next_pos))
     }
 }
 
@@ -118,7 +118,7 @@ where
             self.rest.end(),
         );
 
-        Some(self.rest.trim_prefix_upto(next_pos))
+        Some(self.rest.pop_prefix_upto(next_pos))
     }
 }
 

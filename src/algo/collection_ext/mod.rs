@@ -145,10 +145,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 3, 5, 2, 4, 7];
-    /// let s = arr.drop_while(|x| x % 2 == 1);
+    /// let s = arr.dropping_while(|x| x % 2 == 1);
     /// assert!(s.equals(&[2, 4, 7]));
     /// ```
-    fn drop_while<F>(&self, mut predicate: F) -> Slice<'_, Self::Whole>
+    fn dropping_while<F>(&self, mut predicate: F) -> Slice<'_, Self::Whole>
     where
         F: FnMut(&Self::Element) -> bool,
     {
@@ -169,10 +169,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop(3);
+    /// let s = arr.dropping_prefix(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn drop(&self, count: usize) -> Slice<'_, Self::Whole> {
+    fn dropping_prefix(&self, count: usize) -> Slice<'_, Self::Whole> {
         let mut start = self.start();
         self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from(start)
@@ -192,10 +192,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop_end(3);
+    /// let s = arr.dropping_suffix(3);
     /// assert!(s.equals(&[1, 2]));
     /// ```
-    fn drop_end(&self, count: usize) -> Slice<'_, Self::Whole> {
+    fn dropping_suffix(&self, count: usize) -> Slice<'_, Self::Whole> {
         let n = self.count();
         if count > n {
             return self.prefix_upto(self.start());
