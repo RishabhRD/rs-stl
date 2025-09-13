@@ -664,8 +664,7 @@ impl<Whole> Slice<'_, Whole>
 where
     Whole: Collection<Whole = Whole>,
 {
-    /// Splits slice into 2 parts where first part would have `[from, position)`
-    /// and second part would have `[position, to)`.
+    /// Returns two disjoint slices of `self` split at the given `position`.
     ///
     /// # Examples
     /// ```rust
@@ -691,8 +690,8 @@ where
         (prefix, suffix)
     }
 
-    /// Splits slice into 2 parts where first part would have `[from, position]`
-    /// and second part would have `[next(position), to)`.
+    /// Returns two disjoint slices of `self`, split immediately *after* the
+    /// given `position`.
     ///
     /// # Precondition
     ///   - `position != self.end()`.

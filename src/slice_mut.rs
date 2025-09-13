@@ -801,8 +801,7 @@ impl<'a, Whole> SliceMut<'a, Whole>
 where
     Whole: ReorderableCollection<Whole = Whole>,
 {
-    /// Splits slice into 2 mutable parts where first part would have `[from, position)`
-    /// and second part would have `[position, to)`.
+    /// Returns two disjoint mutable slices of `self` split at the given `position`.
     ///
     /// # Examples
     /// ```rust
@@ -830,8 +829,8 @@ where
         (prefix, suffix)
     }
 
-    /// Splits slice into 2 mutable parts where first part would have `[from, position]`
-    /// and second part would have `[next(position), to)`.
+    /// Returns two disjoint mutable slices of `self`, split immediately *after* the
+    /// given `position`.
     ///
     /// # Precondition
     ///   - `position != self.end()`.

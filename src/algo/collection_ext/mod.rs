@@ -251,6 +251,46 @@ pub trait CollectionExt: Collection {
         self.slice(from, self.end())
     }
 
+    /// Returns two disjoint slices of `self` split at the given `position`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_at(2);
+    /// assert!(s1.equals(&[0, 1]));
+    /// assert!(s2.equals(&[2, 3, 4]));
+    /// ```
+    fn splitting_at(
+        &self,
+        position: Self::Position,
+    ) -> (Slice<'_, Self::Whole>, Slice<'_, Self::Whole>) {
+        self.full().split_at(position)
+    }
+
+    /// Returns two disjoint slices of `self`, split immediately *after* the
+    /// given `position`.
+    ///
+    /// # Precondition
+    ///   - `position != self.end()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_after(2);
+    /// assert!(s1.equals(&[0, 1, 2]));
+    /// assert!(s2.equals(&[3, 4]));
+    /// ```
+    fn splitting_after(
+        &self,
+        position: Self::Position,
+    ) -> (Slice<'_, Self::Whole>, Slice<'_, Self::Whole>) {
+        self.full().split_after(position)
+    }
+
     /*-----------------Iterator Algorithms-----------------*/
 
     /// Returns an iterator to iterate over element refs in collection.

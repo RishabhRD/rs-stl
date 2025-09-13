@@ -263,6 +263,46 @@ where
         self.slice_mut(from, self.end())
     }
 
+    /// Returns two disjoint mutable slices of `self` split at the given `position`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_at_mut(2);
+    /// assert!(s1.equals(&[0, 1]));
+    /// assert!(s2.equals(&[2, 3, 4]));
+    /// ```
+    fn splitting_at_mut(
+        &mut self,
+        position: Self::Position,
+    ) -> (SliceMut<'_, Self::Whole>, SliceMut<'_, Self::Whole>) {
+        self.full_mut().split_at(position)
+    }
+
+    /// Returns two disjoint mutable slices of `self`, split immediately *after* the
+    /// given `position`.
+    ///
+    /// # Precondition
+    ///   - `position != self.end()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_after_mut(2);
+    /// assert!(s1.equals(&[0, 1, 2]));
+    /// assert!(s2.equals(&[3, 4]));
+    /// ```
+    fn splitting_after_mut(
+        &mut self,
+        position: Self::Position,
+    ) -> (SliceMut<'_, Self::Whole>, SliceMut<'_, Self::Whole>) {
+        self.full_mut().split_after(position)
+    }
+
     /*-----------------Iterator Algorithms-----------------*/
 
     /// Returns an iterator of mutable slices which are separated by elements that match `pred`.
