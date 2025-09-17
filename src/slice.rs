@@ -711,6 +711,11 @@ where
     }
 }
 
+unsafe impl<'a, Whole> Send for Slice<'a, Whole> where
+    Whole: Collection<Whole = Whole> + Send
+{
+}
+
 impl<Whole> Collection for Slice<'_, Whole>
 where
     Whole: Collection<Whole = Whole>,
