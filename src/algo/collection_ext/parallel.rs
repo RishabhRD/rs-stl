@@ -5,7 +5,10 @@ use crate::{Collection, CollectionExt};
 use std::thread;
 
 /// Parallel Algorithms for `Collection`.
-pub trait ParallelCollectionExt: Collection {
+pub trait ParallelCollectionExt: Collection
+where
+    Self::Whole: Send,
+{
     /*-----------------Find Algorithms-----------------*/
 
     /// Finds position of first element in `self` satisfying `pred`. If no such
@@ -53,4 +56,9 @@ pub trait ParallelCollectionExt: Collection {
     }
 }
 
-impl<R> ParallelCollectionExt for R where R: Collection + ?Sized {}
+impl<R> ParallelCollectionExt for R
+where
+    R: Collection + ?Sized,
+    R::Whole: Send,
+{
+}

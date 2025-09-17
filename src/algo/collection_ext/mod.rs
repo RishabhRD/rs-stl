@@ -20,7 +20,7 @@ pub trait CollectionExt: Collection {
     /*-----------------Element Access Algorithms-----------------*/
 
     /// Returns the first element, or nil if `self` is empty.
-    fn first(&self) -> Option<<Self as Collection>::ElementRef<'_>> {
+    fn first(&self) -> Option<Self::ElementRef<'_>> {
         if self.start() == self.end() {
             None
         } else {
@@ -145,10 +145,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 3, 5, 2, 4, 7];
-    /// let s = arr.drop_while(|x| x % 2 == 1);
+    /// let s = arr.dropping_while(|x| x % 2 == 1);
     /// assert!(s.equals(&[2, 4, 7]));
     /// ```
-    fn drop_while<F>(&self, mut predicate: F) -> Slice<'_, Self::Whole>
+    fn dropping_while<F>(&self, mut predicate: F) -> Slice<'_, Self::Whole>
     where
         F: FnMut(&Self::Element) -> bool,
     {
@@ -169,10 +169,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop(3);
+    /// let s = arr.dropping_prefix(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn drop(&self, count: usize) -> Slice<'_, Self::Whole> {
+    fn dropping_prefix(&self, count: usize) -> Slice<'_, Self::Whole> {
         let mut start = self.start();
         self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from(start)
@@ -192,10 +192,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop_end(3);
+    /// let s = arr.dropping_suffix(3);
     /// assert!(s.equals(&[1, 2]));
     /// ```
-    fn drop_end(&self, count: usize) -> Slice<'_, Self::Whole> {
+    fn dropping_suffix(&self, count: usize) -> Slice<'_, Self::Whole> {
         let n = self.count();
         if count > n {
             return self.prefix_upto(self.start());
@@ -249,6 +249,46 @@ pub trait CollectionExt: Collection {
     /// ```
     fn suffix_from(&self, from: Self::Position) -> Slice<'_, Self::Whole> {
         self.slice(from, self.end())
+    }
+
+    /// Returns two disjoint slices of `self` split at the given `position`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_at(2);
+    /// assert!(s1.equals(&[0, 1]));
+    /// assert!(s2.equals(&[2, 3, 4]));
+    /// ```
+    fn splitting_at(
+        &self,
+        position: Self::Position,
+    ) -> (Slice<'_, Self::Whole>, Slice<'_, Self::Whole>) {
+        self.full().split_at(position)
+    }
+
+    /// Returns two disjoint slices of `self`, split immediately *after* the
+    /// given `position`.
+    ///
+    /// # Precondition
+    ///   - `position != self.end()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_after(2);
+    /// assert!(s1.equals(&[0, 1, 2]));
+    /// assert!(s2.equals(&[3, 4]));
+    /// ```
+    fn splitting_after(
+        &self,
+        position: Self::Position,
+    ) -> (Slice<'_, Self::Whole>, Slice<'_, Self::Whole>) {
+        self.full().split_after(position)
     }
 
     /*-----------------Iterator Algorithms-----------------*/

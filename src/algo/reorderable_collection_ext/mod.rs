@@ -142,10 +142,10 @@ where
     /// use stl::*;
     ///
     /// let mut arr = [1, 3, 5, 2, 4, 7];
-    /// let s = arr.drop_while_mut(|x| x % 2 == 1);
+    /// let s = arr.dropping_while_mut(|x| x % 2 == 1);
     /// assert!(s.equals(&[2, 4, 7]));
     /// ```
-    fn drop_while_mut<F>(
+    fn dropping_while_mut<F>(
         &mut self,
         mut predicate: F,
     ) -> SliceMut<'_, Self::Whole>
@@ -168,11 +168,14 @@ where
     /// ```rust
     /// use stl::*;
     ///
-    /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop(3);
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let s = arr.dropping_prefix_mut(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn drop_mut(&mut self, count: usize) -> SliceMut<'_, Self::Whole> {
+    fn dropping_prefix_mut(
+        &mut self,
+        count: usize,
+    ) -> SliceMut<'_, Self::Whole> {
         let mut start = self.start();
         self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from_mut(start)
@@ -191,11 +194,14 @@ where
     /// ```rust
     /// use stl::*;
     ///
-    /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop_end(3);
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let s = arr.dropping_suffix_mut(3);
     /// assert!(s.equals(&[1, 2]));
     /// ```
-    fn drop_end_mut(&mut self, count: usize) -> SliceMut<'_, Self::Whole> {
+    fn dropping_suffix_mut(
+        &mut self,
+        count: usize,
+    ) -> SliceMut<'_, Self::Whole> {
         let n = self.count();
         if count > n {
             return self.prefix_upto_mut(self.start());
@@ -255,6 +261,46 @@ where
         from: Self::Position,
     ) -> SliceMut<'_, Self::Whole> {
         self.slice_mut(from, self.end())
+    }
+
+    /// Returns two disjoint mutable slices of `self` split at the given `position`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_at_mut(2);
+    /// assert!(s1.equals(&[0, 1]));
+    /// assert!(s2.equals(&[2, 3, 4]));
+    /// ```
+    fn splitting_at_mut(
+        &mut self,
+        position: Self::Position,
+    ) -> (SliceMut<'_, Self::Whole>, SliceMut<'_, Self::Whole>) {
+        self.full_mut().split_at(position)
+    }
+
+    /// Returns two disjoint mutable slices of `self`, split immediately *after* the
+    /// given `position`.
+    ///
+    /// # Precondition
+    ///   - `position != self.end()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_after_mut(2);
+    /// assert!(s1.equals(&[0, 1, 2]));
+    /// assert!(s2.equals(&[3, 4]));
+    /// ```
+    fn splitting_after_mut(
+        &mut self,
+        position: Self::Position,
+    ) -> (SliceMut<'_, Self::Whole>, SliceMut<'_, Self::Whole>) {
+        self.full_mut().split_after(position)
     }
 
     /*-----------------Iterator Algorithms-----------------*/
