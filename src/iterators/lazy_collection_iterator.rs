@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{BidirectionalCollection, LazyCollection, Slice};
+use crate::{
+    BidirectionalCollection, Collection, LazyCollection,
+    RandomAccessCollection, Slice,
+};
 
 /// An iterator to iterate over lazily computed elements of collection.
 pub struct LazyCollectionIter<'a, C>
@@ -31,6 +34,10 @@ where
     fn next(&mut self) -> Option<Self::Item> {
         self.slice.lazy_pop_first()
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.slice.underestimated_count(), None)
+    }
 }
 
 impl<C> DoubleEndedIterator for LazyCollectionIter<'_, C>
@@ -39,5 +46,14 @@ where
 {
     fn next_back(&mut self) -> Option<Self::Item> {
         self.slice.lazy_pop_last()
+    }
+}
+
+impl<'a, C> ExactSizeIterator for LazyCollectionIter<'a, C>
+where
+    C: RandomAccessCollection<Whole = C> + LazyCollection,
+{
+    fn len(&self) -> usize {
+        self.slice.count()
     }
 }
