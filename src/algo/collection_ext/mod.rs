@@ -334,11 +334,11 @@ pub trait CollectionExt: Collection {
     ///
     /// // Store sum of each split.
     /// let mut res = vec![];
-    /// arr.split(|x| x % 2 == 0)
+    /// arr.splitting_where(|x| x % 2 == 0)
     ///     .for_each(|s| res.push(s.iter().sum::<i32>()));
     /// assert_eq!(res, vec![9, 0, 3, 10]);
     /// ```
-    fn split<Pred>(&self, pred: Pred) -> SplitIterator<'_, Self, Pred>
+    fn splitting_where<Pred>(&self, pred: Pred) -> SplitIterator<'_, Self, Pred>
     where
         Pred: FnMut(&Self::Element) -> bool,
         Self: Sized,

@@ -313,10 +313,10 @@ where
     ///
     /// let mut arr = [1, 3, 5, 2, 2, 3, 4, 5, 7];
     /// // Reverse each split
-    /// arr.split_mut(|x| x % 2 == 0).for_each(|mut s| s.reverse());
+    /// arr.splitting_where_mut(|x| x % 2 == 0).for_each(|mut s| s.reverse());
     /// assert_eq!(arr, [5, 3, 1, 2, 2, 3, 4, 7, 5]);
     /// ```
-    fn split_mut<Pred>(
+    fn splitting_where_mut<Pred>(
         &mut self,
         pred: Pred,
     ) -> SplitIteratorMut<'_, Self, Pred>

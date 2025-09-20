@@ -2,8 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, CollectionExt, RandomAccessCollection,
-    Slice,
+    BidirectionalCollection, Collection, RandomAccessCollection, Slice,
 };
 
 /// An iterator to iterate over element-ref of collection.
