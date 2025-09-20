@@ -4,9 +4,9 @@
 use std::marker::PhantomData;
 
 use crate::{
-    iterators::SplitEvenlyIteratorMut, BidirectionalCollection, Collection,
-    CollectionExt, LazyCollection, MutableCollection, RandomAccessCollection,
-    ReorderableCollection, Slice,
+    iterators::{SplitEvenlyIteratorMut, SplitWhereIteratorMut},
+    BidirectionalCollection, Collection, CollectionExt, LazyCollection,
+    MutableCollection, RandomAccessCollection, ReorderableCollection, Slice,
 };
 
 /// A contiguous mutable sub-collection of a mutable collection.
@@ -848,6 +848,31 @@ where
     pub fn split_after(self, mut position: Whole::Position) -> (Self, Self) {
         self.form_next(&mut position);
         self.split_at(position)
+    }
+
+    /// Splits `self` into mutable slices separated by elements that satisfy
+    /// `pred` by returning an Iterator of mutable slices.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 3, 5, 2, 2, 3, 4, 5, 7];
+    /// // Reverse each split
+    /// arr.full_mut()
+    ///    .split_where(|x| x % 2 == 0)
+    ///    .for_each(|mut s| s.reverse());
+    /// assert_eq!(arr, [5, 3, 1, 2, 2, 3, 4, 7, 5]);
+    /// ```
+    pub fn split_where<Pred>(
+        self,
+        pred: Pred,
+    ) -> SplitWhereIteratorMut<'a, Whole, Pred>
+    where
+        Pred: FnMut(&Whole::Element) -> bool,
+        Self: Sized,
+    {
+        SplitWhereIteratorMut::new(self, pred)
     }
 
     /// Splits `self` into at max `max_slices` mutable slices with each slice

@@ -2,8 +2,9 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    iterators::SplitEvenlyIterator, BidirectionalCollection, Collection,
-    CollectionExt, LazyCollection, RandomAccessCollection,
+    iterators::{SplitEvenlyIterator, SplitWhereIterator},
+    BidirectionalCollection, Collection, CollectionExt, LazyCollection,
+    RandomAccessCollection,
 };
 
 /// A contiguous sub-collection of a collection.
@@ -708,6 +709,33 @@ where
     pub fn split_after(self, mut position: Whole::Position) -> (Self, Self) {
         self.form_next(&mut position);
         self.split_at(position)
+    }
+
+    /// Splits `self` into slices separated by elements that satisfy `pred` by
+    /// returning an Iterator of slices.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 3, 5, 2, 2, 3, 4, 5, 5];
+    ///
+    /// // Store sum of each split.
+    /// let mut res = vec![];
+    /// arr.full()
+    ///    .split_where(|x| x % 2 == 0)
+    ///    .for_each(|s| res.push(s.iter().sum::<i32>()));
+    /// assert_eq!(res, vec![9, 0, 3, 10]);
+    /// ```
+    pub fn split_where<Pred>(
+        self,
+        pred: Pred,
+    ) -> SplitWhereIterator<'a, Whole, Pred>
+    where
+        Pred: FnMut(&Whole::Element) -> bool,
+        Self: Sized,
+    {
+        SplitWhereIterator::new(self, pred)
     }
 
     /// Splits `self` into at max `max_slices` slices with each slice being of

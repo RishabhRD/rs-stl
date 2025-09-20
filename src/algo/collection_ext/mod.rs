@@ -3,7 +3,7 @@
 
 use crate::{
     collections::MappedCollection,
-    iterators::{CollectionIter, SplitEvenlyIterator, SplitIterator},
+    iterators::{CollectionIter, SplitEvenlyIterator, SplitWhereIterator},
     Collection, Slice,
 };
 
@@ -338,12 +338,15 @@ pub trait CollectionExt: Collection {
     ///     .for_each(|s| res.push(s.iter().sum::<i32>()));
     /// assert_eq!(res, vec![9, 0, 3, 10]);
     /// ```
-    fn splitting_where<Pred>(&self, pred: Pred) -> SplitIterator<'_, Self, Pred>
+    fn splitting_where<Pred>(
+        &self,
+        pred: Pred,
+    ) -> SplitWhereIterator<'_, Self::Whole, Pred>
     where
         Pred: FnMut(&Self::Element) -> bool,
         Self: Sized,
     {
-        SplitIterator::new(self.full(), pred)
+        self.full().split_where(pred)
     }
 
     /// Returns an iterator that iterates through evenly sized consecutive at

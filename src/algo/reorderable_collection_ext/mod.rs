@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::collection_ext::CollectionExt;
-use crate::iterators::{SplitEvenlyIteratorMut, SplitIteratorMut};
+use crate::iterators::{SplitEvenlyIteratorMut, SplitWhereIteratorMut};
 use crate::{ReorderableCollection, SliceMut};
 mod stable_partition;
 use stable_partition::*;
@@ -319,12 +319,12 @@ where
     fn splitting_where_mut<Pred>(
         &mut self,
         pred: Pred,
-    ) -> SplitIteratorMut<'_, Self, Pred>
+    ) -> SplitWhereIteratorMut<'_, Self::Whole, Pred>
     where
         Pred: FnMut(&Self::Element) -> bool,
         Self: Sized,
     {
-        SplitIteratorMut::new(self.full_mut(), pred)
+        self.full_mut().split_where(pred)
     }
 
     /// Returns an iterator that iterates through evenly sized consecutive at

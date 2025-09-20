@@ -6,9 +6,9 @@ use crate::{
 };
 
 /// An iterator of slices which are separated by elements that match `predicate`.
-pub struct SplitIterator<'a, C, Pred>
+pub struct SplitWhereIterator<'a, C, Pred>
 where
-    C: Collection,
+    C: Collection<Whole = C>,
     Pred: FnMut(&C::Element) -> bool,
 {
     /// Rest of collection.
@@ -18,22 +18,22 @@ where
     predicate: Pred,
 }
 
-impl<'a, C, Pred> SplitIterator<'a, C, Pred>
+impl<'a, C, Pred> SplitWhereIterator<'a, C, Pred>
 where
-    C: Collection,
+    C: Collection<Whole = C>,
     Pred: FnMut(&C::Element) -> bool,
 {
     pub(crate) fn new(slice: Slice<'a, C::Whole>, predicate: Pred) -> Self {
-        SplitIterator {
+        SplitWhereIterator {
             rest: slice,
             predicate,
         }
     }
 }
 
-impl<'a, C, Pred> Iterator for SplitIterator<'a, C, Pred>
+impl<'a, C, Pred> Iterator for SplitWhereIterator<'a, C, Pred>
 where
-    C: Collection,
+    C: Collection<Whole = C>,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
     type Item = Slice<'a, C::Whole>;
@@ -50,10 +50,9 @@ where
 }
 
 /// An iterator of mutable slices which are separated by elements that match `predicate`.
-pub struct SplitIteratorMut<'a, C, Pred>
+pub struct SplitWhereIteratorMut<'a, C, Pred>
 where
-    C: ReorderableCollection,
-    C::Whole: ReorderableCollection,
+    C: ReorderableCollection<Whole = C>,
     Pred: FnMut(&C::Element) -> bool,
 {
     /// Rest of collection.
@@ -63,24 +62,22 @@ where
     predicate: Pred,
 }
 
-impl<'a, C, Pred> SplitIteratorMut<'a, C, Pred>
+impl<'a, C, Pred> SplitWhereIteratorMut<'a, C, Pred>
 where
-    C: ReorderableCollection,
-    C::Whole: ReorderableCollection,
+    C: ReorderableCollection<Whole = C>,
     Pred: FnMut(&C::Element) -> bool,
 {
     pub(crate) fn new(slice: SliceMut<'a, C::Whole>, predicate: Pred) -> Self {
-        SplitIteratorMut {
+        SplitWhereIteratorMut {
             rest: slice,
             predicate,
         }
     }
 }
 
-impl<'a, C, Pred> Iterator for SplitIteratorMut<'a, C, Pred>
+impl<'a, C, Pred> Iterator for SplitWhereIteratorMut<'a, C, Pred>
 where
-    C: ReorderableCollection,
-    C::Whole: ReorderableCollection,
+    C: ReorderableCollection<Whole = C>,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
     type Item = SliceMut<'a, C::Whole>;
