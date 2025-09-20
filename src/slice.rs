@@ -746,6 +746,18 @@ where
     ///
     /// # Complexity
     ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4, 5, 6, 7];
+    /// let splits: Vec<Vec<_>> = arr.full()
+    ///     .split_evenly_in_with_min_size(3, 2)
+    ///     .map(|s| s.iter().copied().collect())
+    ///     .collect();
+    /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
+    /// ```
     pub fn split_evenly_in_with_min_size(
         self,
         max_slices: usize,
@@ -776,6 +788,18 @@ where
     ///
     /// # Complexity
     ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4, 5, 6, 7];
+    /// let splits: Vec<Vec<_>> = arr.full()
+    ///     .split_evenly_in(3)
+    ///     .map(|s| s.iter().copied().collect())
+    ///     .collect();
+    /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
+    /// ```
     pub fn split_evenly_in(
         self,
         num_slices: usize,
