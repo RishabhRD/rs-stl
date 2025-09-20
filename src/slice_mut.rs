@@ -4,8 +4,9 @@
 use std::marker::PhantomData;
 
 use crate::{
-    BidirectionalCollection, Collection, CollectionExt, LazyCollection,
-    MutableCollection, RandomAccessCollection, ReorderableCollection, Slice,
+    iterators::SplitEvenlyIteratorMut, BidirectionalCollection, Collection,
+    CollectionExt, LazyCollection, MutableCollection, RandomAccessCollection,
+    ReorderableCollection, Slice,
 };
 
 /// A contiguous mutable sub-collection of a mutable collection.
@@ -847,6 +848,53 @@ where
     pub fn split_after(self, mut position: Whole::Position) -> (Self, Self) {
         self.form_next(&mut position);
         self.split_at(position)
+    }
+
+    /// Splits `self` into at max `max_slices` mutable slices with each slice
+    /// being of at min size of `min_size` by returning an Iterator of mutable
+    /// slices.
+    ///
+    /// # Precondition
+    ///   - `max_slices > 0`,
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    pub fn split_evenly_in_with_min_size(
+        self,
+        max_slices: usize,
+        min_size: usize,
+    ) -> SplitEvenlyIteratorMut<'a, Whole> {
+        let n = self.count();
+        let num_slices = if min_size == 0 {
+            max_slices
+        } else {
+            usize::min(usize::max(n / min_size, 1), max_slices)
+        };
+
+        let slice_size = n / num_slices;
+        let num_bigger_slices = n % num_slices;
+
+        SplitEvenlyIteratorMut::new(
+            self,
+            num_slices,
+            slice_size,
+            num_bigger_slices,
+        )
+    }
+
+    /// Splits `self` into `num_slices` mutable slices by returning an Iterator
+    /// of mutable slices.
+    ///
+    /// # Precondition
+    ///   - `num_slices > 0`,
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    pub fn split_evenly_in(
+        self,
+        num_slices: usize,
+    ) -> SplitEvenlyIteratorMut<'a, Whole> {
+        self.split_evenly_in_with_min_size(num_slices, 0)
     }
 }
 

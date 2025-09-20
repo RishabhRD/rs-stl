@@ -5,35 +5,40 @@ use crate::{
     Collection, CollectionExt, ReorderableCollection, Slice, SliceMut,
 };
 
-/// An iterator that splits the collection evenly into number of given slices.
+/// An iterator yielding evenly sized slices of collection.
 pub struct SplitEvenlyIterator<'a, C>
 where
     C: Collection<Whole = C>,
 {
+    /// Remaining elements.
+    rest: Slice<'a, C::Whole>,
+
     /// Number of slices.
     num_slices: usize,
 
-    /// Maximum size of a split slice.
+    /// Size of a slice.
     slice_size: usize,
 
-    /// Remaining slice.
-    rest: Slice<'a, C::Whole>,
+    /// Number of slices which would have 1 more elements than other.
+    num_bigger_slices: usize,
 }
 
 impl<'a, C> SplitEvenlyIterator<'a, C>
 where
     C: Collection<Whole = C>,
 {
-    /// Creates a new instance of `SplitEvenlyIterator`.
+    /// Creates instance of SplitEvenlyIterator.
     pub(crate) fn new(
         slice: Slice<'a, C::Whole>,
-        split_size: usize,
-        num_splits: usize,
+        num_slices: usize,
+        slice_size: usize,
+        num_bigger_slices: usize,
     ) -> Self {
-        SplitEvenlyIterator {
-            num_slices: num_splits,
-            slice_size: split_size,
+        Self {
             rest: slice,
+            num_slices,
+            slice_size,
+            num_bigger_slices,
         }
     }
 }
@@ -42,20 +47,24 @@ impl<'a, C> Iterator for SplitEvenlyIterator<'a, C>
 where
     C: Collection<Whole = C>,
 {
-    type Item = Slice<'a, C::Whole>;
+    type Item = Slice<'a, C>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {
             return None;
         }
-        let mut next_pos = self.rest.start();
-        self.rest.form_next_n_limited_by(
-            &mut next_pos,
-            self.slice_size,
-            self.rest.end(),
-        );
 
-        Some(self.rest.pop_prefix_upto(next_pos))
+        let mut size = self.slice_size;
+        if self.num_bigger_slices > 0 {
+            size += 1;
+            self.num_bigger_slices -= 1;
+        }
+
+        Some(self.rest.pop_prefix(size))
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.num_slices, Some(self.num_slices))
     }
 }
 
@@ -68,35 +77,40 @@ where
     }
 }
 
-/// An iterator that splits the collection evenly into number of given mutable slices.
+/// An iterator yielding evenly sized mutable slices of collection.
 pub struct SplitEvenlyIteratorMut<'a, C>
 where
     C: ReorderableCollection<Whole = C>,
 {
+    /// Remaining elements.
+    rest: SliceMut<'a, C::Whole>,
+
     /// Number of slices.
     num_slices: usize,
 
-    /// Maximum size of a split slice.
+    /// Size of a slice.
     slice_size: usize,
 
-    /// Remaining slice.
-    rest: SliceMut<'a, C::Whole>,
+    /// Number of slices which would have 1 more elements than other.
+    num_bigger_slices: usize,
 }
 
 impl<'a, C> SplitEvenlyIteratorMut<'a, C>
 where
     C: ReorderableCollection<Whole = C>,
 {
-    /// Creates a new instance of `SplitEvenlyIterator`.
+    /// Creates instance of SplitEvenlyIteratorMut.
     pub(crate) fn new(
         slice: SliceMut<'a, C::Whole>,
-        split_size: usize,
-        num_splits: usize,
+        num_slices: usize,
+        slice_size: usize,
+        num_bigger_slices: usize,
     ) -> Self {
-        SplitEvenlyIteratorMut {
-            num_slices: num_splits,
-            slice_size: split_size,
+        Self {
             rest: slice,
+            num_slices,
+            slice_size,
+            num_bigger_slices,
         }
     }
 }
@@ -105,20 +119,24 @@ impl<'a, C> Iterator for SplitEvenlyIteratorMut<'a, C>
 where
     C: ReorderableCollection<Whole = C>,
 {
-    type Item = SliceMut<'a, C::Whole>;
+    type Item = SliceMut<'a, C>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {
             return None;
         }
-        let mut next_pos = self.rest.start();
-        self.rest.form_next_n_limited_by(
-            &mut next_pos,
-            self.slice_size,
-            self.rest.end(),
-        );
 
-        Some(self.rest.pop_prefix_upto(next_pos))
+        let mut size = self.slice_size;
+        if self.num_bigger_slices > 0 {
+            size += 1;
+            self.num_bigger_slices -= 1;
+        }
+
+        Some(self.rest.pop_prefix(size))
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.num_slices, Some(self.num_slices))
     }
 }
 

@@ -346,6 +346,39 @@ pub trait CollectionExt: Collection {
         SplitIterator::new(self.full(), pred)
     }
 
+    /// Returns an iterator that iterates through evenly sized consecutive at
+    /// max `max_slices` slices of `self` with every slice being atleast of
+    /// size `min_size`.
+    ///
+    /// # Precondition
+    ///   - `max_slices > 0`,
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    fn splitting_evenly_in_with_min_size(
+        &self,
+        max_slices: usize,
+        min_size: usize,
+    ) -> SplitEvenlyIterator<'_, Self::Whole> {
+        self.full()
+            .split_evenly_in_with_min_size(max_slices, min_size)
+    }
+
+    /// Returns an iterator that iterates through evenly sized consecutive
+    /// `num_slices` slices of `self`.
+    ///
+    /// # Precondition
+    ///   - `num_slices > 0`.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    fn splitting_evenly_in(
+        &self,
+        num_slices: usize,
+    ) -> SplitEvenlyIterator<'_, Self::Whole> {
+        self.full().split_evenly_in(num_slices)
+    }
+
     /*-----------------Transformation algorithms-----------------*/
 
     /// Returns a lazy collection projecting elements of mapping the given closure over elements.
@@ -796,37 +829,6 @@ pub trait CollectionExt: Collection {
             res = op(res, &e)
         }
         res
-    }
-
-    /// Split the given collection into maximum `max_splits + 1` slices with
-    /// each slice have atleast a size of `min_size` except the last one.
-    ///
-    /// # Precondition
-    ///   - max_splits > 0.
-    ///
-    /// # Complexity
-    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
-    ///   - `iter.next()`: O(1) for `RandomAccessCollection` otherwise O(`next_slice_size`).
-    fn split_evenly_in(
-        &self,
-        max_splits: usize,
-        mut min_size: usize,
-    ) -> SplitEvenlyIterator<'_, Self::Whole> {
-        let n = self.count();
-        min_size = usize::max(min_size, 1);
-
-        if n.div_ceil(max_splits) >= min_size {
-            return SplitEvenlyIterator::new(
-                self.full(),
-                n.div_ceil(max_splits),
-                max_splits,
-            );
-        }
-
-        let num_splits = n.div_ceil(min_size);
-        let split_size = n.div_ceil(num_splits);
-
-        SplitEvenlyIterator::new(self.full(), split_size, num_splits)
     }
 }
 

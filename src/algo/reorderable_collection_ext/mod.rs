@@ -327,6 +327,39 @@ where
         SplitIteratorMut::new(self.full_mut(), pred)
     }
 
+    /// Returns an iterator that iterates through evenly sized consecutive at
+    /// max `max_slices` mutable slices of `self` with every slice being atleast of
+    /// size `min_size`.
+    ///
+    /// # Precondition
+    ///   - `max_slices > 0`,
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    fn splitting_evenly_in_with_min_size_mut(
+        &mut self,
+        max_slices: usize,
+        min_size: usize,
+    ) -> SplitEvenlyIteratorMut<'_, Self::Whole> {
+        self.full_mut()
+            .split_evenly_in_with_min_size(max_slices, min_size)
+    }
+
+    /// Returns an iterator that iterates through evenly sized consecutive
+    /// `num_slices` mutable slices of `self`.
+    ///
+    /// # Precondition
+    ///   - `num_slices > 0`.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    fn splitting_evenly_in_mut(
+        &mut self,
+        num_slices: usize,
+    ) -> SplitEvenlyIteratorMut<'_, Self::Whole> {
+        self.full_mut().split_evenly_in(num_slices)
+    }
+
     /*-----------------Reordering Algorithms-----------------*/
 
     /// Swaps the order in which the values `self.prefix_upto(at)` and
@@ -467,34 +500,6 @@ where
     {
         let n = self.count();
         stable_partition(self, belongs_in_second_partition, n)
-    }
-
-    /// Split the given collection into maximum `max_splits + 1` mutable slices with
-    /// each slice have atleast a size of `min_size` except the last one.
-    ///
-    /// # Complexity
-    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
-    ///   - `iter.next()`: O(1) for `RandomAccessCollection` otherwise O(`next_slice_size`).
-    fn split_evenly_in_mut(
-        &mut self,
-        max_splits: usize,
-        mut min_size: usize,
-    ) -> SplitEvenlyIteratorMut<'_, Self::Whole> {
-        let n = self.count();
-        min_size = usize::max(min_size, 1);
-
-        if n.div_ceil(max_splits) >= min_size {
-            return SplitEvenlyIteratorMut::new(
-                self.full_mut(),
-                n.div_ceil(max_splits),
-                max_splits,
-            );
-        }
-
-        let num_splits = n.div_ceil(min_size);
-        let split_size = n.div_ceil(num_splits);
-
-        SplitEvenlyIteratorMut::new(self.full_mut(), split_size, num_splits)
     }
 }
 
