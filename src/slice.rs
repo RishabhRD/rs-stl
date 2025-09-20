@@ -744,6 +744,11 @@ where
     /// # Precondition
     ///   - `max_slices > 0`,
     ///
+    /// # Postcondition
+    ///   - If splitting exactly evenly is not possible, then slices on start
+    ///     would have bigger size than slices at end, still maintaining as even
+    ///     splitting as possible.
+    ///
     /// # Complexity
     ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
     ///
@@ -785,6 +790,11 @@ where
     ///
     /// # Precondition
     ///   - `num_slices > 0`,
+    ///
+    /// # Postcondition
+    ///   - If splitting exactly evenly is not possible, then slices on start
+    ///     would have bigger size than slices at end, still maintaining as even
+    ///     splitting as possible.
     ///
     /// # Complexity
     ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
