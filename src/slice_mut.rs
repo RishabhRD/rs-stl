@@ -47,8 +47,9 @@ where
         }
     }
 
-    /// Returns the mutable reference to whole collection.
-    pub(self) fn whole(&self) -> &'a mut Whole {
+    /// Returns the mutable reference to whole collection whose lifetime is
+    /// greater than what it should be.
+    pub(self) fn unsafe_lifetime_whole(&self) -> &'a mut Whole {
         unsafe { &mut *self._whole }
     }
 
@@ -87,7 +88,7 @@ where
         if self.from == self.to {
             false
         } else {
-            self.whole().form_next(&mut self.from);
+            self.unsafe_lifetime_whole().form_next(&mut self.from);
             true
         }
     }
@@ -110,7 +111,7 @@ where
         if self.from == self.to {
             false
         } else {
-            self.whole().form_prior(&mut self.to);
+            self.unsafe_lifetime_whole().form_prior(&mut self.to);
             true
         }
     }
@@ -135,7 +136,7 @@ where
     /// ```
     pub fn drop_prefix(&mut self, max_length: usize) {
         let mut new_from = self.from.clone();
-        self.whole().form_next_n_limited_by(
+        self.unsafe_lifetime_whole().form_next_n_limited_by(
             &mut new_from,
             max_length,
             self.to.clone(),
@@ -179,7 +180,7 @@ where
     /// ```
     pub fn drop_prefix_through(&mut self, position: Whole::Position) {
         self.assert_bounds_check_read(&position);
-        self.from = self.whole().next(position);
+        self.from = self.unsafe_lifetime_whole().next(position);
     }
 
     /// Drops the element of `self` till the first element satisfies `predicate`.
@@ -273,8 +274,8 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = Some(self.whole().at(&self.from));
-            self.whole().form_next(&mut self.from);
+            let e = Some(self.unsafe_lifetime_whole().at(&self.from));
+            self.unsafe_lifetime_whole().form_next(&mut self.from);
             e
         }
     }
@@ -299,8 +300,8 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = Some(self.whole().at_mut(&self.from));
-            self.whole().form_next(&mut self.from);
+            let e = Some(self.unsafe_lifetime_whole().at_mut(&self.from));
+            self.unsafe_lifetime_whole().form_next(&mut self.from);
             e
         }
     }
@@ -324,9 +325,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = self.whole().at(&self.from);
+            let e = self.unsafe_lifetime_whole().at(&self.from);
             let p = self.from.clone();
-            self.whole().form_next(&mut self.from);
+            self.unsafe_lifetime_whole().form_next(&mut self.from);
             Some((p, e))
         }
     }
@@ -353,9 +354,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = self.whole().at_mut(&self.from);
+            let e = self.unsafe_lifetime_whole().at_mut(&self.from);
             let p = self.from.clone();
-            self.whole().form_next(&mut self.from);
+            self.unsafe_lifetime_whole().form_next(&mut self.from);
             Some((p, e))
         }
     }
@@ -379,9 +380,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole().prior(self.to.clone());
-            let e = Some(self.whole().at(&ele_pos));
-            self.whole().form_prior(&mut self.to);
+            let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
+            let e = Some(self.unsafe_lifetime_whole().at(&ele_pos));
+            self.unsafe_lifetime_whole().form_prior(&mut self.to);
             e
         }
     }
@@ -405,9 +406,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole().prior(self.to.clone());
-            let e = Some(self.whole().at_mut(&ele_pos));
-            self.whole().form_prior(&mut self.to);
+            let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
+            let e = Some(self.unsafe_lifetime_whole().at_mut(&ele_pos));
+            self.unsafe_lifetime_whole().form_prior(&mut self.to);
             e
         }
     }
@@ -434,9 +435,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole().prior(self.to.clone());
-            let e = self.whole().at(&ele_pos);
-            self.whole().form_prior(&mut self.to);
+            let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
+            let e = self.unsafe_lifetime_whole().at(&ele_pos);
+            self.unsafe_lifetime_whole().form_prior(&mut self.to);
             Some((ele_pos, e))
         }
     }
@@ -463,9 +464,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole().prior(self.to.clone());
-            let e = self.whole().at_mut(&ele_pos);
-            self.whole().form_prior(&mut self.to);
+            let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
+            let e = self.unsafe_lifetime_whole().at_mut(&ele_pos);
+            self.unsafe_lifetime_whole().form_prior(&mut self.to);
             Some((ele_pos, e))
         }
     }
@@ -492,7 +493,7 @@ where
     pub fn pop_prefix(&mut self, max_length: usize) -> Self {
         let old_from = self.from.clone();
         let mut new_from = self.from.clone();
-        self.whole().form_next_n_limited_by(
+        self.unsafe_lifetime_whole().form_next_n_limited_by(
             &mut new_from,
             max_length,
             self.to.clone(),
@@ -552,7 +553,7 @@ where
     pub fn pop_prefix_through(&mut self, position: Whole::Position) -> Self {
         self.assert_bounds_check_read(&position);
         let old_from = self.from.clone();
-        self.from = self.whole().next(position);
+        self.from = self.unsafe_lifetime_whole().next(position);
         Self {
             _whole: self._whole,
             _phantom: PhantomData,
@@ -679,8 +680,8 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = Some(self.whole().compute_at(&self.from));
-            self.whole().form_next(&mut self.from);
+            let e = Some(self.unsafe_lifetime_whole().compute_at(&self.from));
+            self.unsafe_lifetime_whole().form_next(&mut self.from);
             e
         }
     }
@@ -705,9 +706,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = self.whole().compute_at(&self.from);
+            let e = self.unsafe_lifetime_whole().compute_at(&self.from);
             let p = self.from.clone();
-            self.whole().form_next(&mut self.from);
+            self.unsafe_lifetime_whole().form_next(&mut self.from);
             Some((p, e))
         }
     }
@@ -732,9 +733,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole().prior(self.to.clone());
-            let e = Some(self.whole().compute_at(&ele_pos));
-            self.whole().form_prior(&mut self.to);
+            let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
+            let e = Some(self.unsafe_lifetime_whole().compute_at(&ele_pos));
+            self.unsafe_lifetime_whole().form_prior(&mut self.to);
             e
         }
     }
@@ -762,9 +763,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let ele_pos = self.whole().prior(self.to.clone());
-            let e = self.whole().compute_at(&ele_pos);
-            self.whole().form_prior(&mut self.to);
+            let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
+            let e = self.unsafe_lifetime_whole().compute_at(&ele_pos);
+            self.unsafe_lifetime_whole().form_prior(&mut self.to);
             Some((ele_pos, e))
         }
     }
@@ -959,11 +960,11 @@ where
     }
 
     fn form_next(&self, i: &mut Self::Position) {
-        self.whole().form_next(i);
+        self.unsafe_lifetime_whole().form_next(i);
     }
 
     fn form_next_n(&self, i: &mut Self::Position, n: usize) {
-        self.whole().form_next_n(i, n);
+        self.unsafe_lifetime_whole().form_next_n(i, n);
     }
 
     fn form_next_n_limited_by(
@@ -972,24 +973,25 @@ where
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        self.whole().form_next_n_limited_by(position, n, limit)
+        self.unsafe_lifetime_whole()
+            .form_next_n_limited_by(position, n, limit)
     }
 
     fn next(&self, i: Self::Position) -> Self::Position {
-        self.whole().next(i)
+        self.unsafe_lifetime_whole().next(i)
     }
 
     fn next_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.whole().next_n(i, n)
+        self.unsafe_lifetime_whole().next_n(i, n)
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        self.whole().distance(from, to)
+        self.unsafe_lifetime_whole().distance(from, to)
     }
 
     fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
         self.assert_bounds_check_read(i);
-        self.whole().at(i)
+        self.unsafe_lifetime_whole().at(i)
     }
 
     fn slice(
@@ -999,7 +1001,7 @@ where
     ) -> Slice<'_, Self::Whole> {
         self.assert_bounds_check_slice(&from);
         self.assert_bounds_check_slice(&to);
-        Slice::new(self.whole(), from, to)
+        Slice::new(self.unsafe_lifetime_whole(), from, to)
     }
 }
 
@@ -1009,7 +1011,7 @@ where
 {
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
         self.assert_bounds_check_read(i);
-        self.whole().compute_at(i)
+        self.unsafe_lifetime_whole().compute_at(i)
     }
 }
 
@@ -1018,19 +1020,19 @@ where
     Whole: BidirectionalCollection<Whole = Whole> + ReorderableCollection,
 {
     fn form_prior(&self, i: &mut Self::Position) {
-        self.whole().form_prior(i);
+        self.unsafe_lifetime_whole().form_prior(i);
     }
 
     fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
-        self.whole().form_prior_n(i, n);
+        self.unsafe_lifetime_whole().form_prior_n(i, n);
     }
 
     fn prior(&self, i: Self::Position) -> Self::Position {
-        self.whole().prior(i)
+        self.unsafe_lifetime_whole().prior(i)
     }
 
     fn prior_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self.whole().prior_n(i, n)
+        self.unsafe_lifetime_whole().prior_n(i, n)
     }
 
     fn form_prior_n_limited_by(
@@ -1039,7 +1041,8 @@ where
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        self.whole().form_prior_n_limited_by(position, n, limit)
+        self.unsafe_lifetime_whole()
+            .form_prior_n_limited_by(position, n, limit)
     }
 }
 
@@ -1055,7 +1058,7 @@ where
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         self.assert_bounds_check_read(i);
         self.assert_bounds_check_read(j);
-        self.whole().swap_at(i, j);
+        self.unsafe_lifetime_whole().swap_at(i, j);
     }
 
     fn slice_mut(
@@ -1065,7 +1068,7 @@ where
     ) -> SliceMut<'_, Self::Whole> {
         self.assert_bounds_check_slice(&from);
         self.assert_bounds_check_slice(&to);
-        SliceMut::new(self.whole(), from, to)
+        SliceMut::new(self.unsafe_lifetime_whole(), from, to)
     }
 }
 
@@ -1075,6 +1078,6 @@ where
 {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         self.assert_bounds_check_read(i);
-        self.whole().at_mut(i)
+        self.unsafe_lifetime_whole().at_mut(i)
     }
 }
