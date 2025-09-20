@@ -22,10 +22,10 @@ where
     _phantom: PhantomData<&'a mut Whole>,
 
     /// Start position of slice.
-    pub from: Whole::Position,
+    from: Whole::Position,
 
     /// End position of slice.
-    pub to: Whole::Position,
+    to: Whole::Position,
 }
 
 /// Base accessor algorithms.
@@ -48,35 +48,8 @@ where
     }
 
     /// Returns the mutable reference to whole collection.
-    pub fn whole(&self) -> &'a mut Whole {
+    pub(self) fn whole(&self) -> &'a mut Whole {
         unsafe { &mut *self._whole }
-    }
-
-    /// Access element at position i.
-    ///
-    /// # Precondition
-    ///   - i is a valid position in self and i != end()
-    ///
-    /// # Complexity Requirement
-    ///   - O(1)
-    pub fn at(&self, i: &Whole::Position) -> Whole::ElementRef<'a> {
-        self.assert_bounds_check_read(i);
-        self.whole().at(i)
-    }
-
-    /// Mutably Access element at position i.
-    ///
-    /// # Precondition
-    ///   - i is a valid position in self and i != end()
-    ///
-    /// # Complexity Requirement
-    ///   - O(1)
-    pub fn at_mut(&mut self, i: &Whole::Position) -> &'a mut Whole::Element
-    where
-        Whole: MutableCollection,
-    {
-        self.assert_bounds_check_read(i);
-        self.whole().at_mut(i)
     }
 
     /// Panics if position is out of bounds of slice for reading element.

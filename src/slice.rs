@@ -17,10 +17,10 @@ where
     _whole: &'a Whole,
 
     /// Start position of slice.
-    pub from: Whole::Position,
+    from: Whole::Position,
 
     /// End position of slice.
-    pub to: Whole::Position,
+    to: Whole::Position,
 }
 
 // Base accessor algorithms.
@@ -44,18 +44,6 @@ where
     /// Returns the reference to whole collection.
     pub fn whole(&self) -> &'a Whole {
         self._whole
-    }
-
-    /// Access element at position i.
-    ///
-    /// # Precondition
-    ///   - i is a valid position in self and i != end()
-    ///
-    /// # Complexity Requirement
-    ///   - O(1)
-    pub fn at(&self, i: &Whole::Position) -> Whole::ElementRef<'a> {
-        self.assert_bounds_check_read(i);
-        self._whole.at(i)
     }
 
     /// Panics if position is out of bounds of slice for reading element.
