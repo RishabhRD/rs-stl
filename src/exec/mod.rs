@@ -2,7 +2,16 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::unwrap_option_vec;
-use std::thread;
+use std::sync::LazyLock;
+
+fn global_thread_pool() -> &'static rayon_core::ThreadPool {
+    static POOL: LazyLock<rayon_core::ThreadPool> = LazyLock::new(|| {
+        rayon_core::ThreadPoolBuilder::new()
+            .build()
+            .expect("failed to get global threadpool")
+    });
+    &POOL
+}
 
 /// Executes all task in `tasks` concurrently on global executor.
 ///
@@ -12,12 +21,12 @@ use std::thread;
 pub fn exec_par_void<Task, Tasks>(mut tasks: Tasks)
 where
     Task: FnOnce() + Send,
-    Tasks: Iterator<Item = Task>,
+    Tasks: Iterator<Item = Task> + Send,
 {
-    thread::scope(|s| {
+    global_thread_pool().scope(|s| {
         if let Some(first_task) = tasks.next() {
             for task in tasks {
-                s.spawn(task);
+                s.spawn(|_| task());
             }
             first_task()
         }
@@ -33,7 +42,7 @@ where
 pub fn exec_par<Task, TaskResult, Tasks>(tasks: Tasks) -> Vec<TaskResult>
 where
     Task: FnOnce() -> TaskResult + Send,
-    Tasks: ExactSizeIterator<Item = Task>,
+    Tasks: ExactSizeIterator<Item = Task> + Send,
     TaskResult: Send,
 {
     let mut task_results: Vec<Option<TaskResult>> =
