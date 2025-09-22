@@ -870,3 +870,6 @@ pub trait CollectionExt: Collection {
 }
 
 impl<R> CollectionExt for R where R: Collection + ?Sized {}
+
+mod parallel;
+pub use parallel::*;
