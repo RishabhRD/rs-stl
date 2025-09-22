@@ -4,6 +4,7 @@
 use crate::unwrap_option_vec;
 use std::sync::LazyLock;
 
+/// Returns the global thread pool to execute tasks on.
 fn global_thread_pool() -> &'static rayon_core::ThreadPool {
     static POOL: LazyLock<rayon_core::ThreadPool> = LazyLock::new(|| {
         rayon_core::ThreadPoolBuilder::new()
