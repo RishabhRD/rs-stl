@@ -194,7 +194,9 @@ where
     where
         Pred: FnMut(&Whole::Element) -> bool,
     {
-        self.from = self.first_position_where(|e| !predicate(e));
+        self.from = self
+            .first_position_where(|e| !predicate(e))
+            .unwrap_or(self.end());
     }
 
     /// Drops suffix upto specified maximum length.
@@ -461,7 +463,9 @@ where
     where
         Pred: FnMut(&Whole::Element) -> bool,
     {
-        let p = self.first_position_where(|e| !predicate(e));
+        let p = self
+            .first_position_where(|e| !predicate(e))
+            .unwrap_or(self.end());
         let res = Slice {
             _whole: self._whole,
             from: self.from.clone(),

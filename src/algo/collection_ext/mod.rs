@@ -130,7 +130,9 @@ pub trait CollectionExt: Collection {
         &self,
         mut predicate: F,
     ) -> Slice<'_, Self::Whole> {
-        let p = self.first_position_where(|x| !predicate(x));
+        let p = self
+            .first_position_where(|x| !predicate(x))
+            .unwrap_or(self.end());
         self.prefix_upto(p)
     }
 
@@ -152,7 +154,10 @@ pub trait CollectionExt: Collection {
     where
         F: FnMut(&Self::Element) -> bool,
     {
-        self.suffix_from(self.first_position_where(|x| !predicate(x)))
+        self.suffix_from(
+            self.first_position_where(|x| !predicate(x))
+                .unwrap_or(self.end()),
+        )
     }
 
     /// Returns a slice containing all but the given number of initial elements.
@@ -522,19 +527,22 @@ pub trait CollectionExt: Collection {
     ///
     /// let arr = [1, 2, 3];
     /// let i = arr.first_position_where(|x| *x == 3);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn first_position_where<Pred>(&self, mut pred: Pred) -> Self::Position
+    fn first_position_where<Pred>(
+        &self,
+        mut pred: Pred,
+    ) -> Option<Self::Position>
     where
         Pred: FnMut(&Self::Element) -> bool,
     {
         let mut rest = self.full();
         while let Some((p, e)) = rest.pop_first_with_pos() {
             if pred(&e) {
-                return p;
+                return Some(p);
             }
         }
-        self.end()
+        None
     }
 
     /// Finds position of first element in `self` equals `e`. If no such element
@@ -549,9 +557,9 @@ pub trait CollectionExt: Collection {
     ///
     /// let arr = [1, 2, 3, 3];
     /// let i = arr.first_position_of(&3);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn first_position_of(&self, e: &Self::Element) -> Self::Position
+    fn first_position_of(&self, e: &Self::Element) -> Option<Self::Position>
     where
         Self::Element: Eq,
     {
@@ -570,17 +578,20 @@ pub trait CollectionExt: Collection {
     ///
     /// let arr = [1, 2, 3, 4];
     /// let i = arr.last_position_where(|x| x % 2 == 1);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn last_position_where<Pred>(&self, mut pred: Pred) -> Self::Position
+    fn last_position_where<Pred>(
+        &self,
+        mut pred: Pred,
+    ) -> Option<Self::Position>
     where
         Pred: FnMut(&Self::Element) -> bool,
     {
         let mut rest = self.full();
-        let mut res = self.end();
+        let mut res = None;
         while let Some((p, e)) = rest.pop_first_with_pos() {
             if pred(&e) {
-                res = p;
+                res = Some(p);
             }
         }
         res
@@ -598,9 +609,9 @@ pub trait CollectionExt: Collection {
     ///
     /// let arr = [1, 3, 3];
     /// let i = arr.last_position_of(&3);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn last_position_of(&self, e: &Self::Element) -> Self::Position
+    fn last_position_of(&self, e: &Self::Element) -> Option<Self::Position>
     where
         Self::Element: Eq,
     {
@@ -870,3 +881,6 @@ pub trait CollectionExt: Collection {
 }
 
 impl<R> CollectionExt for R where R: Collection + ?Sized {}
+
+mod parallel;
+pub use parallel::*;
