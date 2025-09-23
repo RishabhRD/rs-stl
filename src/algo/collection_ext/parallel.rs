@@ -34,7 +34,7 @@ where
         let hardware_concurrency = std::thread::available_parallelism()
             .map(|n| n.get())
             .unwrap_or(1);
-        let min_elements_per_core = 5;
+        let min_elements_per_core = 512;
         let even_splits = self.splitting_evenly_in_with_min_size(
             hardware_concurrency,
             min_elements_per_core,
