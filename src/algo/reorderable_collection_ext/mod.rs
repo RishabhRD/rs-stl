@@ -127,7 +127,9 @@ where
         &mut self,
         mut predicate: F,
     ) -> SliceMut<'_, Self::Whole> {
-        let p = self.first_position_where(|x| !predicate(x));
+        let p = self
+            .first_position_where(|x| !predicate(x))
+            .unwrap_or(self.end());
         self.prefix_upto_mut(p)
     }
 
@@ -152,7 +154,10 @@ where
     where
         F: FnMut(&Self::Element) -> bool,
     {
-        self.suffix_from_mut(self.first_position_where(|x| !predicate(x)))
+        self.suffix_from_mut(
+            self.first_position_where(|x| !predicate(x))
+                .unwrap_or(self.end()),
+        )
     }
 
     /// Returns a slice containing all but the given number of initial elements.
@@ -488,10 +493,11 @@ where
     where
         F: FnMut(&Self::Element) -> bool + Clone,
     {
-        let mut write_pos =
-            self.first_position_where(belongs_in_second_partition.clone());
+        let mut write_pos = self
+            .first_position_where(belongs_in_second_partition.clone())
+            .unwrap_or(self.end());
         if write_pos == self.end() {
-            return self.end();
+            return write_pos;
         }
 
         let mut i = self.next(write_pos.clone());

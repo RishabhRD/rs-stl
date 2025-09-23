@@ -22,9 +22,12 @@ where
     ///
     /// let arr = [1, 2, 3];
     /// let i = arr.parallel_first_position_where(|x| *x == 3);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn parallel_first_position_where<Pred>(&self, pred: Pred) -> Self::Position
+    fn parallel_first_position_where<Pred>(
+        &self,
+        pred: Pred,
+    ) -> Option<Self::Position>
     where
         Pred: Fn(&Self::Element) -> bool + Clone + Send,
     {
@@ -39,22 +42,9 @@ where
         let num_splits = even_splits.len();
         let parallel_tasks = even_splits
             .zip(std::iter::repeat_n(pred, num_splits))
-            .map(|(slice, pred)| {
-                move || {
-                    let p = slice.first_position_where(pred);
-                    if p == slice.end() {
-                        None
-                    } else {
-                        Some(p)
-                    }
-                }
-            });
+            .map(|(slice, pred)| move || slice.first_position_where(pred));
 
-        exec_par(parallel_tasks)
-            .into_iter()
-            .flatten()
-            .next()
-            .unwrap_or_else(|| self.end())
+        exec_par(parallel_tasks).into_iter().flatten().next()
     }
 }
 
