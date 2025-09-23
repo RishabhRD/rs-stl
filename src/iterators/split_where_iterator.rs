@@ -42,7 +42,10 @@ where
         if self.rest.is_empty() {
             return None;
         }
-        let p = self.rest.first_position_where(self.predicate.clone());
+        let p = self
+            .rest
+            .first_position_where(self.predicate.clone())
+            .unwrap_or(self.rest.end());
         let res = self.rest.pop_prefix_upto(p);
         self.rest.drop_first();
         Some(res)
@@ -86,7 +89,10 @@ where
         if self.rest.is_empty() {
             return None;
         }
-        let p = self.rest.first_position_where(self.predicate.clone());
+        let p = self
+            .rest
+            .first_position_where(self.predicate.clone())
+            .unwrap_or(self.rest.end());
         let res = self.rest.pop_prefix_upto(p);
         self.rest.drop_first();
         Some(res)
