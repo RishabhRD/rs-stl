@@ -79,4 +79,19 @@ pub mod tests {
         let i = arr.parallel_first_position_where(|x| *x == 5);
         assert_eq!(i, None);
     }
+
+    #[test]
+    fn parallel_first_position_of() {
+        let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+        let i = arr.parallel_first_position_of(&5);
+        assert_eq!(i, 0);
+
+        let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
+        let i = arr.parallel_first_position_of(&5);
+        assert_eq!(i, 6);
+
+        let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let i = arr.parallel_first_position_of(&5);
+        assert_eq!(i, 11);
+    }
 }

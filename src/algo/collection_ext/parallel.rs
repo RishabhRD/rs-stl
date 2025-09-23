@@ -46,6 +46,27 @@ where
 
         exec_par(parallel_tasks).into_iter().flatten().next()
     }
+
+    /// Finds position of first element in `self` equals `e`. If no such element
+    /// exists, returns `self.end()`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 3];
+    /// let i = arr.parallel_first_position_of(&3);
+    /// assert_eq!(i, 2);
+    /// ```
+    fn parallel_first_position_of(&self, e: &Self::Element) -> Self::Position
+    where
+        Self::Element: Eq + Send + Sync, // TODO: is Sync really necessary??
+    {
+        self.parallel_first_position_where(|x| x == e)
+    }
 }
 
 impl<R> ParallelCollectionExt for R
