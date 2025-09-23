@@ -59,9 +59,12 @@ where
     ///
     /// let arr = [1, 2, 3, 3];
     /// let i = arr.parallel_first_position_of(&3);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn parallel_first_position_of(&self, e: &Self::Element) -> Self::Position
+    fn parallel_first_position_of(
+        &self,
+        e: &Self::Element,
+    ) -> Option<Self::Position>
     where
         Self::Element: Eq + Send + Sync, // TODO: is Sync really necessary??
     {
