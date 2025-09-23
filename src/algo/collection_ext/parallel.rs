@@ -44,6 +44,7 @@ where
             .zip(std::iter::repeat_n(pred, num_splits))
             .map(|(slice, pred)| move || slice.first_position_where(pred));
 
+        // TODO: implement cancellation.
         exec_par(parallel_tasks).into_iter().flatten().next()
     }
 
