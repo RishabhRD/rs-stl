@@ -276,9 +276,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = Some(self.unsafe_lifetime_whole().at(&self.from));
+            let from = self.from.clone();
             self.unsafe_lifetime_whole().form_next(&mut self.from);
-            e
+            Some(self.unsafe_lifetime_whole().at(&from))
         }
     }
 
@@ -302,9 +302,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = Some(self.unsafe_lifetime_whole().at_mut(&self.from));
+            let from = self.from.clone();
             self.unsafe_lifetime_whole().form_next(&mut self.from);
-            e
+            Some(self.unsafe_lifetime_whole().at_mut(&from))
         }
     }
 
@@ -327,9 +327,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = self.unsafe_lifetime_whole().at(&self.from);
             let p = self.from.clone();
             self.unsafe_lifetime_whole().form_next(&mut self.from);
+            let e = self.unsafe_lifetime_whole().at(&p);
             Some((p, e))
         }
     }
@@ -356,9 +356,9 @@ where
         if self.from == self.to {
             None
         } else {
-            let e = self.unsafe_lifetime_whole().at_mut(&self.from);
             let p = self.from.clone();
             self.unsafe_lifetime_whole().form_next(&mut self.from);
+            let e = self.unsafe_lifetime_whole().at_mut(&p);
             Some((p, e))
         }
     }
@@ -383,9 +383,8 @@ where
             None
         } else {
             let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
-            let e = Some(self.unsafe_lifetime_whole().at(&ele_pos));
             self.unsafe_lifetime_whole().form_prior(&mut self.to);
-            e
+            Some(self.unsafe_lifetime_whole().at(&ele_pos))
         }
     }
 
@@ -409,8 +408,8 @@ where
             None
         } else {
             let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
-            let e = Some(self.unsafe_lifetime_whole().at_mut(&ele_pos));
             self.unsafe_lifetime_whole().form_prior(&mut self.to);
+            let e = Some(self.unsafe_lifetime_whole().at_mut(&ele_pos));
             e
         }
     }
@@ -438,8 +437,8 @@ where
             None
         } else {
             let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
-            let e = self.unsafe_lifetime_whole().at(&ele_pos);
             self.unsafe_lifetime_whole().form_prior(&mut self.to);
+            let e = self.unsafe_lifetime_whole().at(&ele_pos);
             Some((ele_pos, e))
         }
     }
@@ -467,8 +466,8 @@ where
             None
         } else {
             let ele_pos = self.unsafe_lifetime_whole().prior(self.to.clone());
-            let e = self.unsafe_lifetime_whole().at_mut(&ele_pos);
             self.unsafe_lifetime_whole().form_prior(&mut self.to);
+            let e = self.unsafe_lifetime_whole().at_mut(&ele_pos);
             Some((ele_pos, e))
         }
     }
