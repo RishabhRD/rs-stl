@@ -24,10 +24,10 @@ where
     Task: FnOnce() + Send,
     Tasks: Iterator<Item = Task> + Send,
 {
-    std::thread::scope(|s| {
+    global_thread_pool().scope(|s| {
         if let Some(first_task) = tasks.next() {
             for task in tasks {
-                s.spawn(task);
+                s.spawn(|_| task());
             }
             first_task()
         }
