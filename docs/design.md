@@ -249,6 +249,8 @@ Currently
 - `Option<T>`
 - `Range<T>`
 - `RangeInclusive<T>`
+- `&str`
+- `String`
 
 is supported. Will support more data structures in future.
 

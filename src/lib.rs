@@ -15,6 +15,8 @@
 //! - `Option<T>` (Option)
 //! - `Range<T>` (a..b) where `T` is a signed/unsigned integer type.
 //! - `RangeInclusive<T>` (a..=b) where `T` is a signed/unsigned integer type.
+//! - `&str` (string slice).
+//! - `String` (Owned String).
 
 mod core;
 #[doc(inline)]
