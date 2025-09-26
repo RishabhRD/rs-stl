@@ -23,6 +23,19 @@ where
     to: Whole::Position,
 }
 
+impl<'a, Whole> Clone for Slice<'a, Whole>
+where
+    Whole: Collection<Whole = Whole>,
+{
+    fn clone(&self) -> Self {
+        Self {
+            _whole: self._whole,
+            from: self.from.clone(),
+            to: self.to.clone(),
+        }
+    }
+}
+
 // Base accessor algorithms.
 impl<'a, Whole> Slice<'a, Whole>
 where
