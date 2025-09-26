@@ -618,7 +618,7 @@ pub trait CollectionExt: Collection {
         self.last_position_where(|x| x == e)
     }
 
-    /*-----------------Predicate Satisfication Algorithms-----------------*/
+    /*-----------------Predicate Test Algorithms-----------------*/
 
     /// Returns true if all element in `self` satisfies `pred`.
     ///
