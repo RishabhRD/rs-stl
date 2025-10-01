@@ -774,6 +774,9 @@ where
         min_size: usize,
     ) -> SplitEvenlyIterator<'a, Whole> {
         let n = self.count();
+        if n == 0 {
+            return SplitEvenlyIterator::new(self, 0, 0, 0);
+        }
         let num_slices = if min_size == 0 {
             max_slices
         } else {
