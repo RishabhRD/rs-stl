@@ -18,6 +18,18 @@ pub mod tests {
     }
 
     #[test]
+    fn parallel_all_satisfy() {
+        let arr = [1, 3, 5];
+        assert!(arr.parallel_all_satisfy(|x| x % 2 == 1));
+
+        let arr = [1, 2, 5];
+        assert!(!arr.parallel_all_satisfy(|x| x % 2 == 1));
+
+        let arr = [];
+        assert!(arr.parallel_all_satisfy(|x| x % 2 == 1));
+    }
+
+    #[test]
     fn any_satisfy() {
         let arr = [1, 2, 5];
         assert!(arr.any_satisfy(|x| x % 2 == 1));
