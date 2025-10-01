@@ -116,9 +116,11 @@ where
     let start = collection.start();
 
     // Partition collection except first element.
-    let rest_start = collection.next(start.clone());
-    let (pivot, mut rest) = collection.full_mut().split_at_mut(rest_start);
-    let p = rest.partition(|e| !are_in_increasing_order(e, &pivot.at(&start)));
+    let p = {
+        let mut rest = collection.full_mut();
+        let pivot = unsafe { rest.pop_first().unwrap_unchecked() };
+        rest.partition(|e| !are_in_increasing_order(e, &pivot))
+    };
 
     // Fix posiiton of first element.
     let partition_point = collection.prior(p);
