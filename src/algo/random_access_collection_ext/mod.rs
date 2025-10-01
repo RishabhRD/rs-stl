@@ -38,6 +38,31 @@ where
     {
         sort::sort_unstable_by(self, are_in_increasing_order);
     }
+
+    /// Sorts the collection in place.
+    ///
+    /// # Postcondition:
+    ///   - Relative ordering of equivalent elements are NOT guaranteed to be presevered.
+    ///
+    /// # Complexity:
+    ///   - O(n * log(n)) worst case where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [3, 4, 1, 2, 5];
+    /// arr.sort_unstable();
+    /// assert_eq!(arr, [1, 2, 3, 4, 5]);
+    /// ```
+    fn sort_unstable(&mut self)
+    where
+        Self: ReorderableCollection,
+        Self::Whole: ReorderableCollection,
+        Self::Element: Ord,
+    {
+        self.sort_unstable_by(|x, y| x < y)
+    }
 }
 
 impl<R> RandomAccessCollectionExt for R
