@@ -3,7 +3,7 @@
 
 use crate::{
     collections::MappedCollection,
-    iterators::{CollectionIter, SplitIterator},
+    iterators::{CollectionIter, SplitEvenlyIterator, SplitWhereIterator},
     Collection, Slice,
 };
 
@@ -20,7 +20,7 @@ pub trait CollectionExt: Collection {
     /*-----------------Element Access Algorithms-----------------*/
 
     /// Returns the first element, or nil if `self` is empty.
-    fn first(&self) -> Option<<Self as Collection>::ElementRef<'_>> {
+    fn first(&self) -> Option<Self::ElementRef<'_>> {
         if self.start() == self.end() {
             None
         } else {
@@ -130,7 +130,9 @@ pub trait CollectionExt: Collection {
         &self,
         mut predicate: F,
     ) -> Slice<'_, Self::Whole> {
-        let p = self.first_position_where(|x| !predicate(x));
+        let p = self
+            .first_position_where(|x| !predicate(x))
+            .unwrap_or(self.end());
         self.prefix_upto(p)
     }
 
@@ -145,14 +147,17 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 3, 5, 2, 4, 7];
-    /// let s = arr.drop_while(|x| x % 2 == 1);
+    /// let s = arr.dropping_while(|x| x % 2 == 1);
     /// assert!(s.equals(&[2, 4, 7]));
     /// ```
-    fn drop_while<F>(&self, mut predicate: F) -> Slice<'_, Self::Whole>
+    fn dropping_while<F>(&self, mut predicate: F) -> Slice<'_, Self::Whole>
     where
         F: FnMut(&Self::Element) -> bool,
     {
-        self.suffix_from(self.first_position_where(|x| !predicate(x)))
+        self.suffix_from(
+            self.first_position_where(|x| !predicate(x))
+                .unwrap_or(self.end()),
+        )
     }
 
     /// Returns a slice containing all but the given number of initial elements.
@@ -169,10 +174,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop(3);
+    /// let s = arr.dropping_prefix(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn drop(&self, count: usize) -> Slice<'_, Self::Whole> {
+    fn dropping_prefix(&self, count: usize) -> Slice<'_, Self::Whole> {
         let mut start = self.start();
         self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from(start)
@@ -192,10 +197,10 @@ pub trait CollectionExt: Collection {
     /// use stl::*;
     ///
     /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop_end(3);
+    /// let s = arr.dropping_suffix(3);
     /// assert!(s.equals(&[1, 2]));
     /// ```
-    fn drop_end(&self, count: usize) -> Slice<'_, Self::Whole> {
+    fn dropping_suffix(&self, count: usize) -> Slice<'_, Self::Whole> {
         let n = self.count();
         if count > n {
             return self.prefix_upto(self.start());
@@ -251,6 +256,46 @@ pub trait CollectionExt: Collection {
         self.slice(from, self.end())
     }
 
+    /// Returns two disjoint slices of `self` split at the given `position`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_at(2);
+    /// assert!(s1.equals(&[0, 1]));
+    /// assert!(s2.equals(&[2, 3, 4]));
+    /// ```
+    fn splitting_at(
+        &self,
+        position: Self::Position,
+    ) -> (Slice<'_, Self::Whole>, Slice<'_, Self::Whole>) {
+        self.full().split_at(position)
+    }
+
+    /// Returns two disjoint slices of `self`, split immediately *after* the
+    /// given `position`.
+    ///
+    /// # Precondition
+    ///   - `position != self.end()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_after(2);
+    /// assert!(s1.equals(&[0, 1, 2]));
+    /// assert!(s2.equals(&[3, 4]));
+    /// ```
+    fn splitting_after(
+        &self,
+        position: Self::Position,
+    ) -> (Slice<'_, Self::Whole>, Slice<'_, Self::Whole>) {
+        self.full().split_after(position)
+    }
+
     /*-----------------Iterator Algorithms-----------------*/
 
     /// Returns an iterator to iterate over element refs in collection.
@@ -294,16 +339,86 @@ pub trait CollectionExt: Collection {
     ///
     /// // Store sum of each split.
     /// let mut res = vec![];
-    /// arr.split(|x| x % 2 == 0)
-    ///     .for_each(|s| res.push(s.iter().fold(0, |x, e| x + e)));
+    /// arr.splitting_where(|x| x % 2 == 0)
+    ///     .for_each(|s| res.push(s.iter().sum::<i32>()));
     /// assert_eq!(res, vec![9, 0, 3, 10]);
     /// ```
-    fn split<Pred>(&self, pred: Pred) -> SplitIterator<'_, Self, Pred>
+    fn splitting_where<Pred>(
+        &self,
+        pred: Pred,
+    ) -> SplitWhereIterator<'_, Self::Whole, Pred>
     where
         Pred: FnMut(&Self::Element) -> bool,
         Self: Sized,
     {
-        SplitIterator::new(self.full(), pred)
+        self.full().split_where(pred)
+    }
+
+    /// Returns an iterator that iterates through evenly sized consecutive at
+    /// max `max_slices` slices of `self` with every slice being atleast of
+    /// size `min_size`.
+    ///
+    /// # Precondition
+    ///   - `max_slices > 0`,
+    ///
+    /// # Postcondition
+    ///   - If splitting exactly evenly is not possible, then slices on start
+    ///     would have bigger size than slices at end, still maintaining as even
+    ///     splitting as possible.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4, 5, 6, 7];
+    /// let splits: Vec<Vec<_>> = arr
+    ///     .splitting_evenly_in_with_min_size(3, 2)
+    ///     .map(|s| s.iter().copied().collect())
+    ///     .collect();
+    /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
+    /// ```
+    fn splitting_evenly_in_with_min_size(
+        &self,
+        max_slices: usize,
+        min_size: usize,
+    ) -> SplitEvenlyIterator<'_, Self::Whole> {
+        self.full()
+            .split_evenly_in_with_min_size(max_slices, min_size)
+    }
+
+    /// Returns an iterator that iterates through evenly sized consecutive
+    /// `num_slices` slices of `self`.
+    ///
+    /// # Precondition
+    ///   - `num_slices > 0`.
+    ///
+    /// # Postcondition
+    ///   - If splitting exactly evenly is not possible, then slices on start
+    ///     would have bigger size than slices at end, still maintaining as even
+    ///     splitting as possible.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 3, 4, 5, 6, 7];
+    /// let splits: Vec<Vec<_>> = arr
+    ///     .splitting_evenly_in(3)
+    ///     .map(|s| s.iter().copied().collect())
+    ///     .collect();
+    /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
+    /// ```
+    fn splitting_evenly_in(
+        &self,
+        num_slices: usize,
+    ) -> SplitEvenlyIterator<'_, Self::Whole> {
+        self.full().split_evenly_in(num_slices)
     }
 
     /*-----------------Transformation algorithms-----------------*/
@@ -412,19 +527,22 @@ pub trait CollectionExt: Collection {
     ///
     /// let arr = [1, 2, 3];
     /// let i = arr.first_position_where(|x| *x == 3);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn first_position_where<Pred>(&self, mut pred: Pred) -> Self::Position
+    fn first_position_where<Pred>(
+        &self,
+        mut pred: Pred,
+    ) -> Option<Self::Position>
     where
         Pred: FnMut(&Self::Element) -> bool,
     {
         let mut rest = self.full();
         while let Some((p, e)) = rest.pop_first_with_pos() {
             if pred(&e) {
-                return p;
+                return Some(p);
             }
         }
-        self.end()
+        None
     }
 
     /// Finds position of first element in `self` equals `e`. If no such element
@@ -439,9 +557,9 @@ pub trait CollectionExt: Collection {
     ///
     /// let arr = [1, 2, 3, 3];
     /// let i = arr.first_position_of(&3);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn first_position_of(&self, e: &Self::Element) -> Self::Position
+    fn first_position_of(&self, e: &Self::Element) -> Option<Self::Position>
     where
         Self::Element: Eq,
     {
@@ -460,17 +578,20 @@ pub trait CollectionExt: Collection {
     ///
     /// let arr = [1, 2, 3, 4];
     /// let i = arr.last_position_where(|x| x % 2 == 1);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn last_position_where<Pred>(&self, mut pred: Pred) -> Self::Position
+    fn last_position_where<Pred>(
+        &self,
+        mut pred: Pred,
+    ) -> Option<Self::Position>
     where
         Pred: FnMut(&Self::Element) -> bool,
     {
         let mut rest = self.full();
-        let mut res = self.end();
+        let mut res = None;
         while let Some((p, e)) = rest.pop_first_with_pos() {
             if pred(&e) {
-                res = p;
+                res = Some(p);
             }
         }
         res
@@ -488,16 +609,16 @@ pub trait CollectionExt: Collection {
     ///
     /// let arr = [1, 3, 3];
     /// let i = arr.last_position_of(&3);
-    /// assert_eq!(i, 2);
+    /// assert_eq!(i, Some(2));
     /// ```
-    fn last_position_of(&self, e: &Self::Element) -> Self::Position
+    fn last_position_of(&self, e: &Self::Element) -> Option<Self::Position>
     where
         Self::Element: Eq,
     {
         self.last_position_where(|x| x == e)
     }
 
-    /*-----------------Predicate Satisfication Algorithms-----------------*/
+    /*-----------------Predicate Test Algorithms-----------------*/
 
     /// Returns true if all element in `self` satisfies `pred`.
     ///
@@ -760,3 +881,6 @@ pub trait CollectionExt: Collection {
 }
 
 impl<R> CollectionExt for R where R: Collection + ?Sized {}
+
+mod parallel;
+pub use parallel::*;

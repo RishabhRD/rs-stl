@@ -15,6 +15,8 @@
 //! - `Option<T>` (Option)
 //! - `Range<T>` (a..b) where `T` is a signed/unsigned integer type.
 //! - `RangeInclusive<T>` (a..=b) where `T` is a signed/unsigned integer type.
+//! - `&str` (string slice).
+//! - `String` (Owned String).
 
 mod core;
 #[doc(inline)]
@@ -44,4 +46,8 @@ pub(crate) mod std_impl;
 /// Proxy Reference to temporary value.
 pub mod value_ref;
 
-pub use lender::{DoubleEndedLender, Lend, Lender, Lending};
+mod util;
+pub(crate) use util::*;
+
+mod exec;
+pub(crate) use exec::*;

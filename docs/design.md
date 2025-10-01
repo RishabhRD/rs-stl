@@ -30,7 +30,7 @@ elements. Elements are not necessarily needed to be stored in memory.
 
 ```rust
 pub trait Collection {
-    type Position: Regular;
+    type Position: Regular + Ord;
     type Element;
     type ElementRef<'a>: std::ops::Deref<Target = Self::Element>
     type Whole: Collection<
@@ -58,7 +58,10 @@ pub trait Collection {
 
 Collection defines associated type Position and Element that determines type
 of positions in collection and elements in collection. Every element has
-an associated position.
+an associated position. The `Position` associated type is
+
+- `Regular` so that it can be cloned and stored for multipass traversal as well as checked for equality.
+- `Ord` so that bounds checks are possible for slices (see forward).
 
 To access an element at a position, `at` method can be used.
 
@@ -103,8 +106,7 @@ methods with O(1) implementation. Also, it needs to explicitly provide impl for
 RandomAccessCollection.
 
 ```rust
-pub trait RandomAccessCollection:
-    BidirectionalCollection<Position: Regular + Ord>
+pub trait RandomAccessCollection: BidirectionalCollection
 where
     Self::Whole: RandomAccessCollection,
 {
@@ -223,11 +225,18 @@ can provide generic iterators for collections. rs-stl provides:
 - `MutableCollectionExt` exposes `iter_mut()` method that returns `MutableCollectionIterator` that iterates over mutable references to elements of collection.
 - `LazyCollectionExt` exposes `lazy_iter()` method that returns `LazyCollectionIterator` that iterates over lazily computed element values of collection.
 
-`CollectionIterator` and `MutableCollectionIterator` are not rust stdlib's `Iterator` trait
-as `Iterator` trait can only yield owned values. Instead, they are lending iterator from
-`lender` crate that provides `Lender` trait for the same and respective iterator algorithms.
-
 rs-stl also exports multiple algorithms on collections that yield iterators like `split`, `split_mut`.
+
+## Concurrency / Data Parallelism
+
+Slices provide primitive to split themselves in 2 independent parts at any given position with algorithms:
+
+- `split_at`
+- `split_at_mut`
+
+Those independent parts can be processed in different threads for writing parallel algorithms.
+Now for making the whole thing safe, `Collection` mandates its `Position` to be `Ord`
+so that slices can provide bounds check and eliminate any chances for data races.
 
 ## Data Structures
 
@@ -240,6 +249,8 @@ Currently
 - `Option<T>`
 - `Range<T>`
 - `RangeInclusive<T>`
+- `&str`
+- `String`
 
 is supported. Will support more data structures in future.
 
@@ -314,19 +325,14 @@ coroutines.**
 
 ### Lifetime GATs are useless right now
 
-Similar to how collections exposes their custom `Iterator` type, collections
-could expose their custom `Slice` type too. However, when working with
-refinement like `BidirectionalCollection`, associated `Slice` type should also
-need to conform to `BidirectionalCollection`. However, that would require
-`for<...>` syntax on lifetimes of `Slice` associated type, that would require
-lifetime of `Slice` associated type to be `'static`. This is a well known
-language limitation currently.
+rs-stl could provide ability for collections to provide their custom `Slice` associated slice type.
+However, for describing `BidirectionalCollection`, it needs to state that associated `Slice` type
+is also a `BidirectionalCollection`. However that requires `for<'a>` syntax on
+lifetime of `Slice` associated type that leads to borrow checker require `'static` lifetime.
+This is a well known language limitation currently.
 
 To overcome the same, `Whole` associated type is exposed on which generic `Slice`
 and `SliceMut` structs can be built.
-
-The same bug is also the reason why rust currently not have `LendingIterator`
-in stdlib and library has to rely on `lender` crate.
 
 ### Unable of handling recursive trait conditionals
 

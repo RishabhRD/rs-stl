@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::collection_ext::CollectionExt;
-use crate::iterators::SplitIteratorMut;
+use crate::iterators::{SplitEvenlyIteratorMut, SplitWhereIteratorMut};
 use crate::{ReorderableCollection, SliceMut};
 mod stable_partition;
 use stable_partition::*;
@@ -127,7 +127,9 @@ where
         &mut self,
         mut predicate: F,
     ) -> SliceMut<'_, Self::Whole> {
-        let p = self.first_position_where(|x| !predicate(x));
+        let p = self
+            .first_position_where(|x| !predicate(x))
+            .unwrap_or(self.end());
         self.prefix_upto_mut(p)
     }
 
@@ -142,17 +144,20 @@ where
     /// use stl::*;
     ///
     /// let mut arr = [1, 3, 5, 2, 4, 7];
-    /// let s = arr.drop_while_mut(|x| x % 2 == 1);
+    /// let s = arr.dropping_while_mut(|x| x % 2 == 1);
     /// assert!(s.equals(&[2, 4, 7]));
     /// ```
-    fn drop_while_mut<F>(
+    fn dropping_while_mut<F>(
         &mut self,
         mut predicate: F,
     ) -> SliceMut<'_, Self::Whole>
     where
         F: FnMut(&Self::Element) -> bool,
     {
-        self.suffix_from_mut(self.first_position_where(|x| !predicate(x)))
+        self.suffix_from_mut(
+            self.first_position_where(|x| !predicate(x))
+                .unwrap_or(self.end()),
+        )
     }
 
     /// Returns a slice containing all but the given number of initial elements.
@@ -168,11 +173,14 @@ where
     /// ```rust
     /// use stl::*;
     ///
-    /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop(3);
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let s = arr.dropping_prefix_mut(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn drop_mut(&mut self, count: usize) -> SliceMut<'_, Self::Whole> {
+    fn dropping_prefix_mut(
+        &mut self,
+        count: usize,
+    ) -> SliceMut<'_, Self::Whole> {
         let mut start = self.start();
         self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from_mut(start)
@@ -191,11 +199,14 @@ where
     /// ```rust
     /// use stl::*;
     ///
-    /// let arr = [1, 2, 3, 4, 5];
-    /// let s = arr.drop_end(3);
+    /// let mut arr = [1, 2, 3, 4, 5];
+    /// let s = arr.dropping_suffix_mut(3);
     /// assert!(s.equals(&[1, 2]));
     /// ```
-    fn drop_end_mut(&mut self, count: usize) -> SliceMut<'_, Self::Whole> {
+    fn dropping_suffix_mut(
+        &mut self,
+        count: usize,
+    ) -> SliceMut<'_, Self::Whole> {
         let n = self.count();
         if count > n {
             return self.prefix_upto_mut(self.start());
@@ -257,6 +268,46 @@ where
         self.slice_mut(from, self.end())
     }
 
+    /// Returns two disjoint mutable slices of `self` split at the given `position`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_at_mut(2);
+    /// assert!(s1.equals(&[0, 1]));
+    /// assert!(s2.equals(&[2, 3, 4]));
+    /// ```
+    fn splitting_at_mut(
+        &mut self,
+        position: Self::Position,
+    ) -> (SliceMut<'_, Self::Whole>, SliceMut<'_, Self::Whole>) {
+        self.full_mut().split_at(position)
+    }
+
+    /// Returns two disjoint mutable slices of `self`, split immediately *after* the
+    /// given `position`.
+    ///
+    /// # Precondition
+    ///   - `position != self.end()`.
+    ///
+    /// # Examples
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [0, 1, 2, 3, 4];
+    /// let (s1, s2) = arr.splitting_after_mut(2);
+    /// assert!(s1.equals(&[0, 1, 2]));
+    /// assert!(s2.equals(&[3, 4]));
+    /// ```
+    fn splitting_after_mut(
+        &mut self,
+        position: Self::Position,
+    ) -> (SliceMut<'_, Self::Whole>, SliceMut<'_, Self::Whole>) {
+        self.full_mut().split_after(position)
+    }
+
     /*-----------------Iterator Algorithms-----------------*/
 
     /// Returns an iterator of mutable slices which are separated by elements that match `pred`.
@@ -267,18 +318,85 @@ where
     ///
     /// let mut arr = [1, 3, 5, 2, 2, 3, 4, 5, 7];
     /// // Reverse each split
-    /// arr.split_mut(|x| x % 2 == 0).for_each(|mut s| s.reverse());
+    /// arr.splitting_where_mut(|x| x % 2 == 0).for_each(|mut s| s.reverse());
     /// assert_eq!(arr, [5, 3, 1, 2, 2, 3, 4, 7, 5]);
     /// ```
-    fn split_mut<Pred>(
+    fn splitting_where_mut<Pred>(
         &mut self,
         pred: Pred,
-    ) -> SplitIteratorMut<'_, Self, Pred>
+    ) -> SplitWhereIteratorMut<'_, Self::Whole, Pred>
     where
         Pred: FnMut(&Self::Element) -> bool,
         Self: Sized,
     {
-        SplitIteratorMut::new(self.full_mut(), pred)
+        self.full_mut().split_where(pred)
+    }
+
+    /// Returns an iterator that iterates through evenly sized consecutive at
+    /// max `max_slices` mutable slices of `self` with every slice being atleast of
+    /// size `min_size`.
+    ///
+    /// # Precondition
+    ///   - `max_slices > 0`,
+    ///
+    /// # Postcondition
+    ///   - If splitting exactly evenly is not possible, then slices on start
+    ///     would have bigger size than slices at end, still maintaining as even
+    ///     splitting as possible.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5, 6, 7];
+    /// let splits: Vec<Vec<_>> = arr
+    ///     .splitting_evenly_in_with_min_size_mut(3, 2)
+    ///     .map(|s| s.iter().copied().collect())
+    ///     .collect();
+    /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
+    /// ```
+    fn splitting_evenly_in_with_min_size_mut(
+        &mut self,
+        max_slices: usize,
+        min_size: usize,
+    ) -> SplitEvenlyIteratorMut<'_, Self::Whole> {
+        self.full_mut()
+            .split_evenly_in_with_min_size(max_slices, min_size)
+    }
+
+    /// Returns an iterator that iterates through evenly sized consecutive
+    /// `num_slices` mutable slices of `self`.
+    ///
+    /// # Precondition
+    ///   - `num_slices > 0`.
+    ///
+    /// # Postcondition
+    ///   - If splitting exactly evenly is not possible, then slices on start
+    ///     would have bigger size than slices at end, still maintaining as even
+    ///     splitting as possible.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5, 6, 7];
+    /// let splits: Vec<Vec<_>> = arr
+    ///     .splitting_evenly_in_mut(3)
+    ///     .map(|s| s.iter().copied().collect())
+    ///     .collect();
+    /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
+    /// ```
+    fn splitting_evenly_in_mut(
+        &mut self,
+        num_slices: usize,
+    ) -> SplitEvenlyIteratorMut<'_, Self::Whole> {
+        self.full_mut().split_evenly_in(num_slices)
     }
 
     /*-----------------Reordering Algorithms-----------------*/
@@ -375,10 +493,11 @@ where
     where
         F: FnMut(&Self::Element) -> bool + Clone,
     {
-        let mut write_pos =
-            self.first_position_where(belongs_in_second_partition.clone());
+        let mut write_pos = self
+            .first_position_where(belongs_in_second_partition.clone())
+            .unwrap_or(self.end());
         if write_pos == self.end() {
-            return self.end();
+            return write_pos;
         }
 
         let mut i = self.next(write_pos.clone());

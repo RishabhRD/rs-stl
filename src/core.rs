@@ -9,8 +9,8 @@ use crate::{Slice, SliceMut};
 ///   - Movable
 ///   - Destructable
 ///   - Equality comparable
-pub trait SemiRegular: Eq {}
-impl<T> SemiRegular for T where T: Eq {}
+pub trait SemiRegular: Send + Eq {}
+impl<T> SemiRegular for T where T: Send + Eq {}
 
 /// Any SemiRegular type that is cloneable.
 ///
@@ -31,7 +31,7 @@ impl<T> Regular for T where T: SemiRegular + Clone {}
 /// start   -->   end
 pub trait Collection {
     /// Type of positions in the collection.
-    type Position: Regular;
+    type Position: Regular + Ord;
 
     /// Type of element in the collection.
     type Element;
@@ -343,8 +343,7 @@ where
 ///
 ///   NOTE: If complexity requirements are not formed any algorithm on RandomAccessCollection
 ///   have undefined behavior.
-pub trait RandomAccessCollection:
-    BidirectionalCollection<Position: Regular + Ord>
+pub trait RandomAccessCollection: BidirectionalCollection
 where
     Self::Whole: RandomAccessCollection,
 {

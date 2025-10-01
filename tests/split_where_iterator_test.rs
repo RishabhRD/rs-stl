@@ -9,8 +9,8 @@ pub mod tests {
     fn split() {
         let arr = [1, 3, 5, 2, 2, 3, 4, 5, 5];
         let mut res = vec![];
-        arr.split(|x| x % 2 == 0)
-            .for_each(|s| res.push(s.iter().fold(0, |x, e| x + e)));
+        arr.splitting_where(|x| x % 2 == 0)
+            .for_each(|s| res.push(s.iter().sum::<i32>()));
         assert_eq!(res, vec![9, 0, 3, 10]);
     }
 
@@ -20,13 +20,14 @@ pub mod tests {
 
         {
             let mut res = vec![];
-            arr.split_mut(|x| x % 2 == 0)
-                .for_each(|s| res.push(s.iter().fold(0, |x, e| x + e)));
+            arr.splitting_where_mut(|x| x % 2 == 0)
+                .for_each(|s| res.push(s.iter().sum::<i32>()));
             assert_eq!(res, vec![9, 0, 3, 12]);
         }
 
         {
-            arr.split_mut(|x| x % 2 == 0).for_each(|mut s| s.reverse());
+            arr.splitting_where_mut(|x| x % 2 == 0)
+                .for_each(|mut s| s.reverse());
             assert_eq!(arr, [5, 3, 1, 2, 2, 3, 4, 7, 5]);
         }
     }

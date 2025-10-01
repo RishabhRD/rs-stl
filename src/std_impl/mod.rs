@@ -5,4 +5,5 @@ pub mod array_impl;
 pub mod option;
 pub mod range;
 pub mod slice_impl;
+pub mod string;
 pub mod vec_impl;

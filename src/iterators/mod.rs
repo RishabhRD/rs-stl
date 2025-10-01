@@ -17,6 +17,11 @@ pub mod mutable_collection_iterator;
 pub use mutable_collection_iterator::*;
 
 #[doc(hidden)]
-pub mod split_iterator;
+pub mod split_where_iterator;
 #[doc(inline)]
-pub use split_iterator::*;
+pub use split_where_iterator::*;
+
+#[doc(hidden)]
+pub mod split_evenly_iterator;
+#[doc(inline)]
+pub use split_evenly_iterator::*;

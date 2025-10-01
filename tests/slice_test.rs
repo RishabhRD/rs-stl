@@ -191,27 +191,27 @@ pub mod tests {
     #[test]
     fn drop_while() {
         let arr = [1, 3, 5, 2, 4, 7];
-        assert!(arr.drop_while(|x| x % 2 == 1).equals(&[2, 4, 7]));
-        assert!(arr.drop_while(|x| *x < 10).equals(&[]));
-        assert!(arr.drop_while(|x| *x < 1).equals(&[1, 3, 5, 2, 4, 7]));
+        assert!(arr.dropping_while(|x| x % 2 == 1).equals(&[2, 4, 7]));
+        assert!(arr.dropping_while(|x| *x < 10).equals(&[]));
+        assert!(arr.dropping_while(|x| *x < 1).equals(&[1, 3, 5, 2, 4, 7]));
     }
 
     #[test]
     fn drop() {
         let arr = [1, 3, 5, 2, 4, 7];
-        assert!(arr.drop(3).equals(&[2, 4, 7]));
-        assert!(arr.drop(0).equals(&[1, 3, 5, 2, 4, 7]));
-        assert!(arr.drop(6).equals(&[]));
-        assert!(arr.drop(7).equals(&[]));
+        assert!(arr.dropping_prefix(3).equals(&[2, 4, 7]));
+        assert!(arr.dropping_prefix(0).equals(&[1, 3, 5, 2, 4, 7]));
+        assert!(arr.dropping_prefix(6).equals(&[]));
+        assert!(arr.dropping_prefix(7).equals(&[]));
     }
 
     #[test]
     fn drop_end() {
         let arr = [1, 3, 5, 2, 4, 7];
-        assert!(arr.drop_end(3).equals(&[1, 3, 5]));
-        assert!(arr.drop_end(0).equals(&[1, 3, 5, 2, 4, 7]));
-        assert!(arr.drop_end(6).equals(&[]));
-        assert!(arr.drop_end(7).equals(&[]));
+        assert!(arr.dropping_suffix(3).equals(&[1, 3, 5]));
+        assert!(arr.dropping_suffix(0).equals(&[1, 3, 5, 2, 4, 7]));
+        assert!(arr.dropping_suffix(6).equals(&[]));
+        assert!(arr.dropping_suffix(7).equals(&[]));
     }
 
     #[test]
@@ -275,5 +275,22 @@ pub mod tests {
         let (s1, s2) = arr.full().split_at(2);
         assert!(s1.equals(&[1, 2]));
         assert!(s2.equals(&[3, 4, 5]));
+    }
+
+    #[test]
+    fn split_after() {
+        let arr = [1, 2, 3, 4, 5];
+        let (s1, s2) = arr.full().split_after(2);
+        assert!(s1.equals(&[1, 2, 3]));
+        assert!(s2.equals(&[4, 5]));
+    }
+
+    #[test]
+    fn pop_prefix_through() {
+        let arr = [1, 2, 3, 4, 5];
+        let mut s = arr.full();
+        let prefix = s.pop_prefix_through(2);
+        assert!(s.equals(&[4, 5]));
+        assert!(prefix.equals(&[1, 2, 3]));
     }
 }
