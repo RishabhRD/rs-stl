@@ -169,6 +169,40 @@ where
         // TODO: implement cancellation.
         exec_par(parallel_tasks).into_iter().all(|e| e)
     }
+
+    /// Returns true if atleast one element in `self` satisfies `pred`.
+    ///
+    /// # Complexity
+    ///   - O(n) where `n == self.count()`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let arr = [1, 2, 5];
+    /// assert!(arr.any(|x| x % 2 == 1));
+    /// ```
+    fn parallel_any_satisfy<Pred>(&self, pred: Pred) -> bool
+    where
+        Pred: Fn(&Self::Element) -> bool + Clone + Send,
+    {
+        let hardware_concurrency = std::thread::available_parallelism()
+            .map(|n| n.get())
+            .unwrap_or(1);
+        let min_elements_per_core = 512;
+        let even_splits = self.splitting_evenly_in_with_min_size(
+            hardware_concurrency,
+            min_elements_per_core,
+        );
+        let num_splits = even_splits.len();
+        let parallel_tasks = even_splits
+            .zip(std::iter::repeat_n(pred, num_splits))
+            .map(|(slice, pred)| move || slice.any_satisfy(pred));
+
+        // TODO: implement cancellation.
+        exec_par(parallel_tasks).into_iter().any(|e| e)
+    }
 }
 
 impl<R> ParallelCollectionExt for R
