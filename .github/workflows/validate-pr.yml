@@ -20,8 +20,9 @@ jobs:
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable # Use stable Rust. Adjust to 'nightly' if needed.
+          toolchain: stable
           override: true
+          components: rustfmt, clippy
 
       # Step 3: Cache Cargo dependencies for faster builds
       - name: Cache Cargo Registry
