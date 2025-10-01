@@ -279,4 +279,28 @@ mod tests {
         );
         assert_eq!(arr, []);
     }
+
+    #[test]
+    fn insertion_sort_test() {
+        let mut arr = [3, 2, 1, 4];
+        crate::algo::random_access_collection_ext::sort::insertion_sort(
+            &mut arr,
+            |x, y| x < y,
+        );
+        assert_eq!(arr, [1, 2, 3, 4]);
+
+        let mut arr = [1];
+        crate::algo::random_access_collection_ext::sort::insertion_sort(
+            &mut arr,
+            |x, y| x < y,
+        );
+        assert_eq!(arr, [1]);
+
+        let mut arr: [i32; 0] = [];
+        crate::algo::random_access_collection_ext::sort::insertion_sort(
+            &mut arr,
+            |x, y| x < y,
+        );
+        assert_eq!(arr, []);
+    }
 }
