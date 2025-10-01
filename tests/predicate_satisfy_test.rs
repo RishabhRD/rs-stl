@@ -64,4 +64,16 @@ pub mod tests {
         let arr = [];
         assert!(arr.none_satisfy(|x| x % 2 == 1));
     }
+
+    #[test]
+    fn parallel_none_satisfy() {
+        let arr = [2, 4, 6];
+        assert!(arr.parallel_none_satisfy(|x| x % 2 == 1));
+
+        let arr = [2, 1, 6];
+        assert!(!arr.parallel_none_satisfy(|x| x % 2 == 1));
+
+        let arr = [];
+        assert!(arr.parallel_none_satisfy(|x| x % 2 == 1));
+    }
 }
