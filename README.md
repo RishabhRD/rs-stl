@@ -1,4 +1,4 @@
-# rs-stl [WIP]
+# rs-stl
 
 Generic Programming for Rust Programming Language.
 
