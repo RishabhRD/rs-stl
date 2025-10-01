@@ -256,7 +256,6 @@ pub(crate) fn heap_sort<C, Compare>(
 }
 
 mod tests {
-
     #[test]
     fn heap_sort_test() {
         let mut arr = [3, 2, 1, 4];
