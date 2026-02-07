@@ -537,10 +537,12 @@ pub trait CollectionExt: Collection {
         Pred: FnMut(&Self::Element) -> bool,
     {
         let mut rest = self.full();
-        while let Some((p, e)) = rest.pop_first_with_pos() {
+        let mut p = self.start();
+        while let Some(e) = rest.pop_first() {
             if pred(&e) {
                 return Some(p);
             }
+            p = rest.start()
         }
         None
     }
@@ -589,10 +591,12 @@ pub trait CollectionExt: Collection {
     {
         let mut rest = self.full();
         let mut res = None;
-        while let Some((p, e)) = rest.pop_first_with_pos() {
+        let mut p = self.start();
+        while let Some(e) = rest.pop_first() {
             if pred(&e) {
                 res = Some(p);
             }
+            p = rest.start();
         }
         res
     }
