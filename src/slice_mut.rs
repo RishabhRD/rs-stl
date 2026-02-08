@@ -194,7 +194,33 @@ where
     ///
     /// # Complexity:
     ///   - O(1).
-    pub fn pop_first(&mut self) -> Option<&'a mut Whole::Element>
+    pub fn pop_first(&mut self) -> Option<Whole::ElementRef<'a>> {
+        let f = self.from.clone();
+        if self.drop_first() {
+            Some(unsafe { &mut *self._whole }.at(&f))
+        } else {
+            None
+        }
+    }
+
+    /// Removes and yields the last element if non-empty; returns None otherwise.
+    pub fn pop_last(&mut self) -> Option<Whole::ElementRef<'a>>
+    where
+        Whole: BidirectionalCollection,
+    {
+        let t = self.prior(self.to.clone());
+        if self.drop_last() {
+            Some(unsafe { &mut *self._whole }.at(&t))
+        } else {
+            None
+        }
+    }
+
+    /// Removes and yields the mutable first element if non-empty; returns None otherwise.
+    ///
+    /// # Complexity:
+    ///   - O(1).
+    pub fn pop_first_mut(&mut self) -> Option<&'a mut Whole::Element>
     where
         Whole: MutableCollection,
     {
@@ -206,8 +232,8 @@ where
         }
     }
 
-    /// Removes and yield the last element if non-empty; returns None otherwise.
-    pub fn pop_last(&mut self) -> Option<&'a mut Whole::Element>
+    /// Removes and yields the mutable last element if non-empty; returns None otherwise.
+    pub fn pop_last_mut(&mut self) -> Option<&'a mut Whole::Element>
     where
         Whole: BidirectionalCollection + MutableCollection,
     {
@@ -298,43 +324,48 @@ impl<'a, Whole> SliceMut<'a, Whole>
 where
     Whole: ReorderableCollection<Whole = Whole>,
 {
-    /// Returns two disjoint mutable slices of `self` split at `p`.
-    pub fn split_at(self, p: Whole::Position) -> (Self, Self) {
-        self.assert_bounds_check_slice(&p);
-        let prefix = Self {
-            _whole: self._whole,
-            _phantom: PhantomData,
-            from: self.from.clone(),
-            to: p.clone(),
-        };
-        let suffix = Self {
-            _whole: self._whole,
-            _phantom: PhantomData,
-            from: p,
-            to: self.to.clone(),
-        };
-        (prefix, suffix)
+    /// Splits `self` into two subsequences at position `p`:
+    /// - the left part contains elements before `p`,
+    /// - the right part contains elements starting at `p`.
+    ///
+    /// # Complexity
+    ///   - O(1).
+    pub fn split_at(mut self, p: Whole::Position) -> (Self, Self) {
+        let r = self.pop_prefix_upto(p);
+        (r, self)
     }
 
-    /// Returns two disjoint mutable slices of `self`, split immediately *after* `p`.
+    /// Splits `self` into two subsequences at position `p`:
+    /// - the left part contains elements before `p`,
+    /// - the right part contains elements starting at `p`.
+    ///
+    /// # Complexity
+    ///   - O(1).
     pub fn split_after(self, mut p: Whole::Position) -> (Self, Self) {
         self.form_next(&mut p);
         self.split_at(p)
     }
 
-    /// Splits `self` into mutable slices separated by elements that satisfy
-    /// `p` by returning an Iterator of mutable slices.
+    /// Returns an iterator over subsequences of `self`, split at elements
+    /// where `p` returns `true`.
+    ///
+    /// # Note
+    ///   - Consecutive elements for which `p` returns `true` produce empty subsequences.
+    ///
+    /// # Complexity
+    ///   - O(`self.count()`).
     ///
     /// # Example
     /// ```rust
     /// use stl::*;
     ///
-    /// let mut arr = [1, 3, 5, 2, 2, 3, 4, 5, 7];
-    /// // Reverse each split
-    /// arr.full_mut()
-    ///    .split_where(|x| x % 2 == 0)
-    ///    .for_each(|mut s| s.reverse());
-    /// assert_eq!(arr, [5, 3, 1, 2, 2, 3, 4, 7, 5]);
+    /// let mut arr = [1, 3, 5, 2, 2, 2, 3, 4, 5, 7];
+    /// let v: Vec<_> =
+    ///   arr.full_mut()
+    ///      .split_where(|x| x % 2 == 0)
+    ///      .map(|s| s.to_vec())
+    ///      .collect();
+    /// assert_eq!(v, vec![vec![1, 3, 5], vec![], vec![], vec![3], vec![5, 7]]);
     /// ```
     pub fn split_where<Predicate>(
         self,
@@ -347,20 +378,18 @@ where
         SplitWhereIteratorMut::new(self, p)
     }
 
-    /// Splits `self` into at max `n` mutable slices with each slice
-    /// being of at min size of `min_size` by returning an Iterator of mutable
-    /// slices.
+    /// Returns an iterator over at most `n` subsequences of `self`, each of size
+    /// at least `min_size`, splitting as evenly as possible.
+    ///
+    /// If the elements cannot be divided evenly, the earlier subsequences are
+    /// one element larger than the later ones.
     ///
     /// # Precondition
-    ///   - `n > 0`,
-    ///
-    /// # Postcondition
-    ///   - If splitting exactly evenly is not possible, then slices on start
-    ///     would have bigger size than slices at end, still maintaining as even
-    ///     splitting as possible.
+    ///   - `n > 0`.
     ///
     /// # Complexity
-    ///   - O(1) for `RandomAccessCollection`; otherwise O(n) where `n == self.count()`.
+    ///   - O(1) for `RandomAccessCollection`;
+    ///   - O(`self.count()`) otherwise.
     ///
     /// # Example
     /// ```rust
@@ -369,7 +398,7 @@ where
     /// let mut arr = [1, 2, 3, 4, 5, 6, 7];
     /// let splits: Vec<Vec<_>> = arr.full_mut()
     ///     .split_evenly_in_with_min_size(3, 2)
-    ///     .map(|s| s.iter().copied().collect())
+    ///     .map(|s| s.to_vec())
     ///     .collect();
     /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
     /// ```
@@ -399,15 +428,13 @@ where
         )
     }
 
-    /// Splits `self` into `n` mutable slices by returning an Iterator of mutable slices.
+    /// Returns an iterator over `n` subsequences of `self`, split as evenly as possible.
+    ///
+    /// If the elements cannot be divided evenly, the earlier subsequences are
+    /// one element larger than the later ones.
     ///
     /// # Precondition
-    ///   - `n > 0`,
-    ///
-    /// # Postcondition
-    ///   - If splitting exactly evenly is not possible, then slices on start
-    ///     would have bigger size than slices at end, still maintaining as even
-    ///     splitting as possible.
+    ///   - `n > 0`.
     ///
     /// # Complexity
     ///   - O(1) for `RandomAccessCollection`;
@@ -420,10 +447,9 @@ where
     /// let mut arr = [1, 2, 3, 4, 5, 6, 7];
     /// let splits: Vec<Vec<_>> = arr.full_mut()
     ///     .split_evenly_in(3)
-    ///     .map(|s| s.iter().copied().collect())
+    ///     .map(|s| s.to_vec())
     ///     .collect();
     /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
-    /// ```
     pub fn split_evenly_in(
         self,
         n: usize,

@@ -882,6 +882,23 @@ pub trait CollectionExt: Collection {
         }
         res
     }
+
+    /*-----------------Copying Algorithms-----------------*/
+
+    /// Copies and returns all elements of `self` into `Vec<Self::Element>`.
+    ///
+    /// # Complexity
+    ///   - O(`self.count()`)
+    fn to_vec(&self) -> Vec<Self::Element>
+    where
+        Self::Element: Clone,
+    {
+        let mut r = Vec::with_capacity(self.underestimated_count());
+        for e in self.iter() {
+            r.push(e.clone())
+        }
+        r
+    }
 }
 
 impl<R> CollectionExt for R where R: Collection + ?Sized {}

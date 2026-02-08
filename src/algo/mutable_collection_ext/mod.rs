@@ -3,7 +3,7 @@
 
 use crate::algo::reorderable_collection_ext::ReorderableCollectionExt;
 use crate::iterators::MutableCollectionIter;
-use crate::{BidirectionalCollection, MutableCollection};
+use crate::MutableCollection;
 
 /// Algorithms for `MutableCollection`.
 pub trait MutableCollectionExt: MutableCollection
