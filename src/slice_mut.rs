@@ -146,8 +146,7 @@ where
     /// # Complexity
     ///   - O(1).
     pub fn drop_prefix_through(&mut self, p: Whole::Position) {
-        self.assert_bounds_check_read(&p);
-        self.from = self.next(p);
+        self.drop_prefix_upto(self.next(p))
     }
 
     /// Removes the longest prefix of `self` whose elements satisfy `p`.
@@ -204,13 +203,16 @@ where
     }
 
     /// Removes and yields the last element if non-empty; returns None otherwise.
+    ///
+    /// # Complexity
+    ///   - O(1).
     pub fn pop_last(&mut self) -> Option<Whole::ElementRef<'a>>
     where
         Whole: BidirectionalCollection,
     {
-        let t = self.prior(self.to.clone());
+        let t = self.to.clone();
         if self.drop_last() {
-            Some(unsafe { &mut *self._whole }.at(&t))
+            Some(unsafe { &mut *self._whole }.at(&self.prior(t)))
         } else {
             None
         }
@@ -274,6 +276,9 @@ where
     }
 
     /// Removes and returns the subsequence from start position of `self` through (including) `p`.
+    ///
+    /// # Complexity
+    ///   - O(1).
     pub fn pop_prefix_through(&mut self, p: Whole::Position) -> Self {
         self.pop_prefix_upto(self.next(p))
     }
@@ -282,13 +287,11 @@ where
     ///
     /// # Complexity
     ///   - Atmost `self.count()` applications of `p`.
-    pub fn pop_while<Predicate>(&mut self, mut predicate: Predicate) -> Self
+    pub fn pop_while<Predicate>(&mut self, mut p: Predicate) -> Self
     where
         Predicate: FnMut(&Whole::Element) -> bool,
     {
-        let p = self
-            .first_position_where(|e| !predicate(e))
-            .unwrap_or(self.end());
+        let p = self.first_position_where(|e| !p(e)).unwrap_or(self.end());
         self.pop_prefix_upto(p)
     }
 
@@ -297,7 +300,7 @@ where
     /// subsequence of all elements.
     ///
     /// # Complexity
-    ///   - O(n), where `n == self.count()`.
+    ///   - O(n).
     pub fn pop_end(&mut self, n: usize) -> Self {
         let c = self.count();
         let i = if n > c {

@@ -60,7 +60,7 @@ where
             self.num_bigger_slices -= 1;
         }
 
-        Some(self.rest.pop_prefix(size))
+        Some(self.rest.pop(size))
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
