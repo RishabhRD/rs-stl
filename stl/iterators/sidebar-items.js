@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CollectionIter","LazyCollectionIter","MutableCollectionIter","SplitEvenlyIterator","SplitEvenlyIteratorMut","SplitWhereIterator","SplitWhereIteratorMut"]};

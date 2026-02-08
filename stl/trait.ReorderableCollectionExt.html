@@ -1,0 +1,369 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Algorithms for `ReorderableCollection`."><title>ReorderableCollectionExt in stl - Rust</title><script>if(window.location.protocol!=="file:")document.head.insertAdjacentHTML("beforeend","SourceSerif4-Regular-6b053e98.ttf.woff2,FiraSans-Italic-81dc35de.woff2,FiraSans-Regular-0fe48ade.woff2,FiraSans-MediumItalic-ccf7e434.woff2,FiraSans-Medium-e1aa3f0a.woff2,SourceCodePro-Regular-8badfe75.ttf.woff2,SourceCodePro-Semibold-aa29a496.ttf.woff2".split(",").map(f=>`<link rel="preload" as="font" type="font/woff2"href="../static.files/${f}">`).join(""))</script><link rel="stylesheet" href="../static.files/normalize-9960930a.css"><link rel="stylesheet" href="../static.files/rustdoc-ca0dd0c4.css"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="stl" data-themes="" data-resource-suffix="" data-rustdoc-version="1.93.0 (254b59607 2026-01-19)" data-channel="1.93.0" data-search-js="search-9e2438ea.js" data-stringdex-js="stringdex-a3946164.js" data-settings-js="settings-c38705f0.js" ><script src="../static.files/storage-e2aeef58.js"></script><script defer src="sidebar-items.js"></script><script defer src="../static.files/main-a410ff4d.js"></script><noscript><link rel="stylesheet" href="../static.files/noscript-263c88ec.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-eab170b8.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-044be391.svg"></head><body class="rustdoc trait"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><rustdoc-topbar><h2><a href="#">ReorderableCollectionExt</a></h2></rustdoc-topbar><nav class="sidebar"><div class="sidebar-crate"><h2><a href="../stl/index.html">stl</a><span class="version">0.0.1</span></h2></div><div class="sidebar-elems"><section id="rustdoc-toc"><h2 class="location"><a href="#">Reorderable<wbr>Collection<wbr>Ext</a></h2><h3><a href="#provided-methods">Provided Methods</a></h3><ul class="block"><li><a href="#method.dropping_prefix_mut" title="dropping_prefix_mut">dropping_prefix_mut</a></li><li><a href="#method.dropping_suffix_mut" title="dropping_suffix_mut">dropping_suffix_mut</a></li><li><a href="#method.dropping_while_mut" title="dropping_while_mut">dropping_while_mut</a></li><li><a href="#method.full_mut" title="full_mut">full_mut</a></li><li><a href="#method.partition" title="partition">partition</a></li><li><a href="#method.prefix_mut" title="prefix_mut">prefix_mut</a></li><li><a href="#method.prefix_through_mut" title="prefix_through_mut">prefix_through_mut</a></li><li><a href="#method.prefix_upto_mut" title="prefix_upto_mut">prefix_upto_mut</a></li><li><a href="#method.prefix_while_mut" title="prefix_while_mut">prefix_while_mut</a></li><li><a href="#method.rotate" title="rotate">rotate</a></li><li><a href="#method.splitting_after_mut" title="splitting_after_mut">splitting_after_mut</a></li><li><a href="#method.splitting_at_mut" title="splitting_at_mut">splitting_at_mut</a></li><li><a href="#method.splitting_evenly_in_mut" title="splitting_evenly_in_mut">splitting_evenly_in_mut</a></li><li><a href="#method.splitting_evenly_in_with_min_size_mut" title="splitting_evenly_in_with_min_size_mut">splitting_evenly_in_with_min_size_mut</a></li><li><a href="#method.splitting_where_mut" title="splitting_where_mut">splitting_where_mut</a></li><li><a href="#method.stable_partition" title="stable_partition">stable_partition</a></li><li><a href="#method.suffix_from_mut" title="suffix_from_mut">suffix_from_mut</a></li><li><a href="#method.suffix_mut" title="suffix_mut">suffix_mut</a></li></ul><h3><a href="#dyn-compatibility">Dyn Compatibility</a></h3><h3><a href="#implementors">Implementors</a></h3></section><div id="rustdoc-modnav"><h2 class="in-crate"><a href="index.html">In crate stl</a></h2></div></div></nav><div class="sidebar-resizer" title="Drag to resize sidebar"></div><main><div class="width-limiter"><section id="main-content" class="content"><div class="main-heading"><div class="rustdoc-breadcrumbs"><a href="index.html">stl</a></div><h1>Trait <span class="trait">Reorderable<wbr>Collection<wbr>Ext</span>&nbsp;<button id="copy-path" title="Copy item path to clipboard">Copy item path</button></h1><rustdoc-toolbar></rustdoc-toolbar><span class="sub-heading"><a class="src" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#11-544">Source</a> </span></div><pre class="rust item-decl"><code>pub trait ReorderableCollectionExt: <a class="trait" href="trait.ReorderableCollection.html" title="trait stl::ReorderableCollection">ReorderableCollection</a><div class="where">where
+    Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>: <a class="trait" href="trait.ReorderableCollection.html" title="trait stl::ReorderableCollection">ReorderableCollection</a>,</div>{
+<details class="toggle type-contents-toggle"><summary class="hideme"><span>Show 18 methods</span></summary>    // Provided methods
+    fn <a href="#method.full_mut" class="fn">full_mut</a>(&amp;mut self) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.prefix_mut" class="fn">prefix_mut</a>(&amp;mut self, max_length: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.prefix_upto_mut" class="fn">prefix_upto_mut</a>(
+        &amp;mut self,
+        to: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>,
+    ) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.prefix_through_mut" class="fn">prefix_through_mut</a>(
+        &amp;mut self,
+        pos: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>,
+    ) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.prefix_while_mut" class="fn">prefix_while_mut</a>&lt;F: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a>&gt;(
+        &amp;mut self,
+        predicate: F,
+    ) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.dropping_while_mut" class="fn">dropping_while_mut</a>&lt;F&gt;(
+        &amp;mut self,
+        predicate: F,
+    ) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a></span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.dropping_prefix_mut" class="fn">dropping_prefix_mut</a>(&amp;mut self, count: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.dropping_suffix_mut" class="fn">dropping_suffix_mut</a>(&amp;mut self, count: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.suffix_mut" class="fn">suffix_mut</a>(&amp;mut self, max_length: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.suffix_from_mut" class="fn">suffix_from_mut</a>(
+        &amp;mut self,
+        from: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>,
+    ) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; { ... }
+<span class="item-spacer"></span>    fn <a href="#method.splitting_at_mut" class="fn">splitting_at_mut</a>(
+        &amp;mut self,
+        position: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>,
+    ) -&gt; (<a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;, <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.splitting_after_mut" class="fn">splitting_after_mut</a>(
+        &amp;mut self,
+        position: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>,
+    ) -&gt; (<a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;, <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;) { ... }
+<span class="item-spacer"></span>    fn <a href="#method.splitting_where_mut" class="fn">splitting_where_mut</a>&lt;Pred&gt;(
+        &amp;mut self,
+        pred: Pred,
+    ) -&gt; <a class="struct" href="iterators/struct.SplitWhereIteratorMut.html" title="struct stl::iterators::SplitWhereIteratorMut">SplitWhereIteratorMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>, Pred&gt; <a href="#" class="tooltip" data-notable-ty="SplitWhereIteratorMut&lt;&#39;_, Self::Whole, Pred&gt;">ⓘ</a>
+       <span class="where">where Pred: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a>,
+             Self: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a></span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.splitting_evenly_in_with_min_size_mut" class="fn">splitting_evenly_in_with_min_size_mut</a>(
+        &amp;mut self,
+        max_slices: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>,
+        min_size: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>,
+    ) -&gt; <a class="struct" href="iterators/struct.SplitEvenlyIteratorMut.html" title="struct stl::iterators::SplitEvenlyIteratorMut">SplitEvenlyIteratorMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; <a href="#" class="tooltip" data-notable-ty="SplitEvenlyIteratorMut&lt;&#39;_, Self::Whole&gt;">ⓘ</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.splitting_evenly_in_mut" class="fn">splitting_evenly_in_mut</a>(
+        &amp;mut self,
+        num_slices: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>,
+    ) -&gt; <a class="struct" href="iterators/struct.SplitEvenlyIteratorMut.html" title="struct stl::iterators::SplitEvenlyIteratorMut">SplitEvenlyIteratorMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; <a href="#" class="tooltip" data-notable-ty="SplitEvenlyIteratorMut&lt;&#39;_, Self::Whole&gt;">ⓘ</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.rotate" class="fn">rotate</a>(&amp;mut self, at: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>) -&gt; Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.partition" class="fn">partition</a>&lt;F&gt;(&amp;mut self, belongs_in_second_partition: F) -&gt; Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a> + <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a></span> { ... }
+<span class="item-spacer"></span>    fn <a href="#method.stable_partition" class="fn">stable_partition</a>&lt;F&gt;(
+        &amp;mut self,
+        belongs_in_second_partition: F,
+    ) -&gt; Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>
+       <span class="where">where F: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a> + <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a></span> { ... }
+</details>}</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Algorithms for <code>ReorderableCollection</code>.</p>
+</div></details><h2 id="provided-methods" class="section-header">Provided Methods<a href="#provided-methods" class="anchor">§</a></h2><div class="methods"><details class="toggle method-toggle" open><summary><section id="method.full_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#33-35">Source</a><h4 class="code-header">fn <a href="#method.full_mut" class="fn">full_mut</a>(&amp;mut self) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;</h4></section></summary><div class="docblock"><p>Returns mutable slice of the collection covering full collection.</p>
+<h5 id="complexity"><a class="doc-anchor" href="#complexity">§</a>Complexity</h5>
+<ul>
+<li>O(1).</li>
+</ul>
+<h5 id="examples"><a class="doc-anchor" href="#examples">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span><span class="kw-2">mut </span>s = arr.full_mut();
+<span class="kw">let </span>start = s.start();
+<span class="kw-2">*</span>s.at_mut(<span class="kw-2">&amp;</span>start) = <span class="number">0</span>;
+<span class="macro">assert!</span>(s.equals(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]));
+<span class="macro">assert!</span>(arr.equals(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.prefix_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#56-60">Source</a><h4 class="code-header">fn <a href="#method.prefix_mut" class="fn">prefix_mut</a>(&amp;mut self, max_length: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;</h4></section></summary><div class="docblock"><p>Returns a slice, upto specified maximum length, containing the initial elements of
+collection.</p>
+<h5 id="postcondition"><a class="doc-anchor" href="#postcondition">§</a>Postcondition</h5>
+<ul>
+<li>If the maximum length exceeds the number of elements in the
+collection, the result contains all elements in the collection.</li>
+</ul>
+<h5 id="complexity-1"><a class="doc-anchor" href="#complexity-1">§</a>Complexity</h5>
+<ul>
+<li>O(1) for RandomAccessCollection; otherwise O(k) where k is the
+number of elements in resultant slice.</li>
+</ul>
+<h5 id="example"><a class="doc-anchor" href="#example">§</a>Example</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span>s = arr.prefix_mut(<span class="number">3</span>);
+<span class="macro">assert!</span>(s.equals(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.prefix_upto_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#81-86">Source</a><h4 class="code-header">fn <a href="#method.prefix_upto_mut" class="fn">prefix_upto_mut</a>(&amp;mut self, to: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;</h4></section></summary><div class="docblock"><p>Returns mutable prefix slice of the collection ending at <code>to</code> exclusive.</p>
+<h5 id="precondition"><a class="doc-anchor" href="#precondition">§</a>Precondition</h5>
+<ul>
+<li><code>to</code> is a valid position in the collection.</li>
+</ul>
+<h5 id="complexity-2"><a class="doc-anchor" href="#complexity-2">§</a>Complexity</h5>
+<ul>
+<li>O(1).</li>
+</ul>
+<h5 id="examples-1"><a class="doc-anchor" href="#examples-1">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span><span class="kw-2">mut </span>p = arr.prefix_upto_mut(<span class="number">3</span>);
+<span class="kw">let </span>start = p.start();
+<span class="kw-2">*</span>p.at_mut(<span class="kw-2">&amp;</span>start) = <span class="number">0</span>;
+<span class="macro">assert!</span>(p.equals(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>]));
+<span class="macro">assert!</span>(arr.equals(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.prefix_through_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#104-110">Source</a><h4 class="code-header">fn <a href="#method.prefix_through_mut" class="fn">prefix_through_mut</a>(
+    &amp;mut self,
+    pos: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>,
+) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;</h4></section></summary><div class="docblock"><p>Returns mutable prefix slice of the collection ending at <code>to</code> inclusive.</p>
+<h5 id="precondition-1"><a class="doc-anchor" href="#precondition-1">§</a>Precondition</h5>
+<ul>
+<li><code>to</code> is a valid position in the collection and <code>to != self.end()</code>.</li>
+</ul>
+<h5 id="complexity-3"><a class="doc-anchor" href="#complexity-3">§</a>Complexity</h5>
+<ul>
+<li>O(1).</li>
+</ul>
+<h5 id="examples-2"><a class="doc-anchor" href="#examples-2">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span>p = arr.prefix_through_mut(<span class="number">3</span>);
+<span class="macro">assert!</span>(p.equals(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.prefix_while_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#126-134">Source</a><h4 class="code-header">fn <a href="#method.prefix_while_mut" class="fn">prefix_while_mut</a>&lt;F: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a>&gt;(
+    &amp;mut self,
+    predicate: F,
+) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;</h4></section></summary><div class="docblock"><p>Returns mutable prefix slice containing the initial elements until <code>predicate</code> returns
+false skipping the remaining elements.</p>
+<h5 id="complexity-4"><a class="doc-anchor" href="#complexity-4">§</a>Complexity</h5>
+<ul>
+<li>O(n) where <code>n == self.count()</code>.</li>
+</ul>
+<h5 id="examples-3"><a class="doc-anchor" href="#examples-3">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">7</span>];
+<span class="kw">let </span>p = arr.prefix_while_mut(|x| x % <span class="number">2 </span>== <span class="number">1</span>);
+<span class="macro">assert!</span>(p.equals(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.dropping_while_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#150-161">Source</a><h4 class="code-header">fn <a href="#method.dropping_while_mut" class="fn">dropping_while_mut</a>&lt;F&gt;(&amp;mut self, predicate: F) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;<div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a>,</div></h4></section></summary><div class="docblock"><p>Returns a slice by skipping initial elements while <code>predicate</code> returns true,
+returning the remaining elements.</p>
+<h5 id="complexity-5"><a class="doc-anchor" href="#complexity-5">§</a>Complexity</h5>
+<ul>
+<li>O(n) where <code>n == self.count()</code>.</li>
+</ul>
+<h5 id="examples-4"><a class="doc-anchor" href="#examples-4">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">7</span>];
+<span class="kw">let </span>s = arr.dropping_while_mut(|x| x % <span class="number">2 </span>== <span class="number">1</span>);
+<span class="macro">assert!</span>(s.equals(<span class="kw-2">&amp;</span>[<span class="number">2</span>, <span class="number">4</span>, <span class="number">7</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.dropping_prefix_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#180-187">Source</a><h4 class="code-header">fn <a href="#method.dropping_prefix_mut" class="fn">dropping_prefix_mut</a>(&amp;mut self, count: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;</h4></section></summary><div class="docblock"><p>Returns a slice containing all but the given number of initial elements.</p>
+<h5 id="postcondition-1"><a class="doc-anchor" href="#postcondition-1">§</a>Postcondition</h5>
+<ul>
+<li>If <code>count &gt; self.count()</code>, returns an empty slice.</li>
+</ul>
+<h5 id="complexity-6"><a class="doc-anchor" href="#complexity-6">§</a>Complexity</h5>
+<ul>
+<li>O(1) for RandomAccessCollection;</li>
+<li>O(k) otherwise, where k is number of elements to drop from beginning of collection.</li>
+</ul>
+<h5 id="examples-5"><a class="doc-anchor" href="#examples-5">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span>s = arr.dropping_prefix_mut(<span class="number">3</span>);
+<span class="macro">assert!</span>(s.equals(<span class="kw-2">&amp;</span>[<span class="number">4</span>, <span class="number">5</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.dropping_suffix_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#206-215">Source</a><h4 class="code-header">fn <a href="#method.dropping_suffix_mut" class="fn">dropping_suffix_mut</a>(&amp;mut self, count: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;</h4></section></summary><div class="docblock"><p>Returns a slice containing all but the given number of final elements.</p>
+<h5 id="postcondition-2"><a class="doc-anchor" href="#postcondition-2">§</a>Postcondition</h5>
+<ul>
+<li>If <code>count &gt; self.count()</code>, returns an empty slice.</li>
+</ul>
+<h5 id="complexity-7"><a class="doc-anchor" href="#complexity-7">§</a>Complexity</h5>
+<ul>
+<li>O(1) for RandomAccessCollection;</li>
+<li>O(n) otherwise, where <code>n == self.count()</code>.</li>
+</ul>
+<h5 id="examples-6"><a class="doc-anchor" href="#examples-6">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span>s = arr.dropping_suffix_mut(<span class="number">3</span>);
+<span class="macro">assert!</span>(s.equals(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.suffix_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#236-243">Source</a><h4 class="code-header">fn <a href="#method.suffix_mut" class="fn">suffix_mut</a>(&amp;mut self, max_length: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;</h4></section></summary><div class="docblock"><p>Returns a slice, upto specified maximum length, containing the final elements of the
+collection.</p>
+<h5 id="postcondition-3"><a class="doc-anchor" href="#postcondition-3">§</a>Postcondition</h5>
+<ul>
+<li>If the maximum length exceeds the number of elements in the
+collection, the result contains all elements in the collection.</li>
+</ul>
+<h5 id="complexity-8"><a class="doc-anchor" href="#complexity-8">§</a>Complexity</h5>
+<ul>
+<li>O(1) for RandomAccessCollection; otherwise O(n) where
+<code>n == self.count()</code>.</li>
+</ul>
+<h5 id="example-1"><a class="doc-anchor" href="#example-1">§</a>Example</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span>s = arr.suffix_mut(<span class="number">3</span>);
+<span class="macro">assert!</span>(s.equals(<span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.suffix_from_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#264-269">Source</a><h4 class="code-header">fn <a href="#method.suffix_from_mut" class="fn">suffix_from_mut</a>(&amp;mut self, from: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>) -&gt; <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;</h4></section></summary><div class="docblock"><p>Returns mutable suffix slice of the collection starting from <code>from</code> inclusive.</p>
+<h5 id="precondition-2"><a class="doc-anchor" href="#precondition-2">§</a>Precondition</h5>
+<ul>
+<li><code>from</code> is a valid position in the collection.</li>
+</ul>
+<h5 id="complexity-9"><a class="doc-anchor" href="#complexity-9">§</a>Complexity</h5>
+<ul>
+<li>O(1).</li>
+</ul>
+<h5 id="examples-7"><a class="doc-anchor" href="#examples-7">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span><span class="kw-2">mut </span>s = arr.suffix_from_mut(<span class="number">3</span>);
+<span class="kw">let </span>start = s.start();
+<span class="kw-2">*</span>s.at_mut(<span class="kw-2">&amp;</span>start) = <span class="number">0</span>;
+<span class="macro">assert!</span>(s.equals(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">5</span>]));
+<span class="macro">assert!</span>(arr.equals(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">0</span>, <span class="number">5</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.splitting_at_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#282-287">Source</a><h4 class="code-header">fn <a href="#method.splitting_at_mut" class="fn">splitting_at_mut</a>(
+    &amp;mut self,
+    position: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>,
+) -&gt; (<a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;, <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;)</h4></section></summary><div class="docblock"><p>Returns two disjoint mutable slices of <code>self</code> split at the given <code>position</code>.</p>
+<h5 id="examples-8"><a class="doc-anchor" href="#examples-8">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];
+<span class="kw">let </span>(s1, s2) = arr.splitting_at_mut(<span class="number">2</span>);
+<span class="macro">assert!</span>(s1.equals(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>]));
+<span class="macro">assert!</span>(s2.equals(<span class="kw-2">&amp;</span>[<span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.splitting_after_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#304-309">Source</a><h4 class="code-header">fn <a href="#method.splitting_after_mut" class="fn">splitting_after_mut</a>(
+    &amp;mut self,
+    position: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>,
+) -&gt; (<a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;, <a class="struct" href="struct.SliceMut.html" title="struct stl::SliceMut">SliceMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt;)</h4></section></summary><div class="docblock"><p>Returns two disjoint mutable slices of <code>self</code>, split immediately <em>after</em> the
+given <code>position</code>.</p>
+<h5 id="precondition-3"><a class="doc-anchor" href="#precondition-3">§</a>Precondition</h5>
+<ul>
+<li><code>position != self.end()</code>.</li>
+</ul>
+<h5 id="examples-9"><a class="doc-anchor" href="#examples-9">§</a>Examples</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>];
+<span class="kw">let </span>(s1, s2) = arr.splitting_after_mut(<span class="number">2</span>);
+<span class="macro">assert!</span>(s1.equals(<span class="kw-2">&amp;</span>[<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>]));
+<span class="macro">assert!</span>(s2.equals(<span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">4</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.splitting_where_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#324-333">Source</a><h4 class="code-header">fn <a href="#method.splitting_where_mut" class="fn">splitting_where_mut</a>&lt;Pred&gt;(
+    &amp;mut self,
+    pred: Pred,
+) -&gt; <a class="struct" href="iterators/struct.SplitWhereIteratorMut.html" title="struct stl::iterators::SplitWhereIteratorMut">SplitWhereIteratorMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>, Pred&gt; <a href="#" class="tooltip" data-notable-ty="SplitWhereIteratorMut&lt;&#39;_, Self::Whole, Pred&gt;">ⓘ</a><div class="where">where
+    Pred: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a>,
+    Self: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,</div></h4></section></summary><div class="docblock"><p>Returns an iterator of mutable slices which are separated by elements that match <code>pred</code>.</p>
+<h5 id="example-2"><a class="doc-anchor" href="#example-2">§</a>Example</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">7</span>];
+<span class="comment">// Reverse each split
+</span>arr.splitting_where_mut(|x| x % <span class="number">2 </span>== <span class="number">0</span>).for_each(|<span class="kw-2">mut </span>s| s.reverse());
+<span class="macro">assert_eq!</span>(arr, [<span class="number">5</span>, <span class="number">3</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">7</span>, <span class="number">5</span>]);</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.splitting_evenly_in_with_min_size_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#361-368">Source</a><h4 class="code-header">fn <a href="#method.splitting_evenly_in_with_min_size_mut" class="fn">splitting_evenly_in_with_min_size_mut</a>(
+    &amp;mut self,
+    max_slices: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>,
+    min_size: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>,
+) -&gt; <a class="struct" href="iterators/struct.SplitEvenlyIteratorMut.html" title="struct stl::iterators::SplitEvenlyIteratorMut">SplitEvenlyIteratorMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; <a href="#" class="tooltip" data-notable-ty="SplitEvenlyIteratorMut&lt;&#39;_, Self::Whole&gt;">ⓘ</a></h4></section></summary><div class="docblock"><p>Returns an iterator that iterates through evenly sized consecutive at
+max <code>max_slices</code> mutable slices of <code>self</code> with every slice being atleast of
+size <code>min_size</code>.</p>
+<h5 id="precondition-4"><a class="doc-anchor" href="#precondition-4">§</a>Precondition</h5>
+<ul>
+<li><code>max_slices &gt; 0</code>,</li>
+</ul>
+<h5 id="postcondition-4"><a class="doc-anchor" href="#postcondition-4">§</a>Postcondition</h5>
+<ul>
+<li>If splitting exactly evenly is not possible, then slices on start
+would have bigger size than slices at end, still maintaining as even
+splitting as possible.</li>
+</ul>
+<h5 id="complexity-10"><a class="doc-anchor" href="#complexity-10">§</a>Complexity</h5>
+<ul>
+<li>O(1) for <code>RandomAccessCollection</code>; otherwise O(n) where <code>n == self.count()</code>.</li>
+</ul>
+<h5 id="example-3"><a class="doc-anchor" href="#example-3">§</a>Example</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>];
+<span class="kw">let </span>splits: Vec&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = arr
+    .splitting_evenly_in_with_min_size_mut(<span class="number">3</span>, <span class="number">2</span>)
+    .map(|s| s.iter().copied().collect())
+    .collect();
+<span class="macro">assert_eq!</span>(splits, <span class="macro">vec!</span>[<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>], <span class="macro">vec!</span>[<span class="number">6</span>, <span class="number">7</span>]]);</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.splitting_evenly_in_mut" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#395-400">Source</a><h4 class="code-header">fn <a href="#method.splitting_evenly_in_mut" class="fn">splitting_evenly_in_mut</a>(
+    &amp;mut self,
+    num_slices: <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.usize.html">usize</a>,
+) -&gt; <a class="struct" href="iterators/struct.SplitEvenlyIteratorMut.html" title="struct stl::iterators::SplitEvenlyIteratorMut">SplitEvenlyIteratorMut</a>&lt;'_, Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>&gt; <a href="#" class="tooltip" data-notable-ty="SplitEvenlyIteratorMut&lt;&#39;_, Self::Whole&gt;">ⓘ</a></h4></section></summary><div class="docblock"><p>Returns an iterator that iterates through evenly sized consecutive
+<code>num_slices</code> mutable slices of <code>self</code>.</p>
+<h5 id="precondition-5"><a class="doc-anchor" href="#precondition-5">§</a>Precondition</h5>
+<ul>
+<li><code>num_slices &gt; 0</code>.</li>
+</ul>
+<h5 id="postcondition-5"><a class="doc-anchor" href="#postcondition-5">§</a>Postcondition</h5>
+<ul>
+<li>If splitting exactly evenly is not possible, then slices on start
+would have bigger size than slices at end, still maintaining as even
+splitting as possible.</li>
+</ul>
+<h5 id="complexity-11"><a class="doc-anchor" href="#complexity-11">§</a>Complexity</h5>
+<ul>
+<li>O(1) for <code>RandomAccessCollection</code>; otherwise O(n) where <code>n == self.count()</code>.</li>
+</ul>
+<h5 id="example-4"><a class="doc-anchor" href="#example-4">§</a>Example</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>];
+<span class="kw">let </span>splits: Vec&lt;Vec&lt;<span class="kw">_</span>&gt;&gt; = arr
+    .splitting_evenly_in_mut(<span class="number">3</span>)
+    .map(|s| s.iter().copied().collect())
+    .collect();
+<span class="macro">assert_eq!</span>(splits, <span class="macro">vec!</span>[<span class="macro">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>], <span class="macro">vec!</span>[<span class="number">4</span>, <span class="number">5</span>], <span class="macro">vec!</span>[<span class="number">6</span>, <span class="number">7</span>]]);</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.rotate" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#424-467">Source</a><h4 class="code-header">fn <a href="#method.rotate" class="fn">rotate</a>(&amp;mut self, at: Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a>) -&gt; Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a></h4></section></summary><div class="docblock"><p>Swaps the order in which the values <code>self.prefix_upto(at)</code> and
+<code>self.suffix_from(at)</code> occur, so that the end of the latter sequence of
+element values is the start of the former sequence, and returns that
+position.</p>
+<h5 id="precondition-6"><a class="doc-anchor" href="#precondition-6">§</a>Precondition</h5>
+<ul>
+<li><code>at</code> is a valid position in <code>self</code>.</li>
+</ul>
+<h5 id="complexity-12"><a class="doc-anchor" href="#complexity-12">§</a>Complexity</h5>
+<ul>
+<li>O(n). At most <code>n</code> swaps. Where n == <code>self.count()</code>.</li>
+</ul>
+<h5 id="example-5"><a class="doc-anchor" href="#example-5">§</a>Example</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span>i = arr.rotate(<span class="number">2</span>);
+<span class="macro">assert_eq!</span>(i, <span class="number">3</span>);
+<span class="macro">assert!</span>(arr.equals(<span class="kw-2">&amp;</span>[<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">1</span>, <span class="number">2</span>]));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.partition" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#489-513">Source</a><h4 class="code-header">fn <a href="#method.partition" class="fn">partition</a>&lt;F&gt;(&amp;mut self, belongs_in_second_partition: F) -&gt; Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a><div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a> + <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h4></section></summary><div class="docblock"><p>Moves all elements satisfying the given predicate into a suffix of the
+collection, returning the start position of the resulting suffix.</p>
+<h5 id="postcondition-6"><a class="doc-anchor" href="#postcondition-6">§</a>Postcondition</h5>
+<ul>
+<li>If no elements exist in suffix, returns <code>self.end()</code>.</li>
+<li>Relative ordering of elements in the partitions are not preserved.</li>
+</ul>
+<h5 id="complexity-13"><a class="doc-anchor" href="#complexity-13">§</a>Complexity</h5>
+<ul>
+<li>O(<code>count</code>)</li>
+</ul>
+<h5 id="example-6"><a class="doc-anchor" href="#example-6">§</a>Example</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span>i = arr.partition(|x| x % <span class="number">2 </span>== <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(i, <span class="number">2</span>);
+<span class="macro">assert!</span>(arr.prefix_upto(i).all_satisfy(|x| x % <span class="number">2 </span>== <span class="number">0</span>));
+<span class="macro">assert!</span>(arr.suffix_from(i).all_satisfy(|x| x % <span class="number">2 </span>== <span class="number">1</span>));</code></pre></div></div></details><details class="toggle method-toggle" open><summary><section id="method.stable_partition" class="method"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#534-543">Source</a><h4 class="code-header">fn <a href="#method.stable_partition" class="fn">stable_partition</a>&lt;F&gt;(
+    &amp;mut self,
+    belongs_in_second_partition: F,
+) -&gt; Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Position" title="type stl::Collection::Position">Position</a><div class="where">where
+    F: <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html" title="trait core::ops::function::FnMut">FnMut</a>(&amp;Self::<a class="associatedtype" href="trait.Collection.html#associatedtype.Element" title="type stl::Collection::Element">Element</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.93.0/std/primitive.bool.html">bool</a> + <a class="trait" href="https://doc.rust-lang.org/1.93.0/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</div></h4></section></summary><div class="docblock"><p>Moves all elements satisfying the given predicate into a suffix of the
+given range, preserving the relative order of the elements in both
+partitions, and returns the start of the resulting suffix.</p>
+<h5 id="postcondition-7"><a class="doc-anchor" href="#postcondition-7">§</a>Postcondition</h5>
+<ul>
+<li>If no element exists in suffix, returns <code>self.end()</code>.</li>
+</ul>
+<h5 id="complexity-14"><a class="doc-anchor" href="#complexity-14">§</a>Complexity</h5>
+<ul>
+<li>O(n log(n)) where <code>n == self.count()</code></li>
+</ul>
+<h5 id="example-7"><a class="doc-anchor" href="#example-7">§</a>Example</h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>stl::<span class="kw-2">*</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>arr = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];
+<span class="kw">let </span>i = arr.stable_partition(|x| x % <span class="number">2 </span>== <span class="number">1</span>);
+<span class="macro">assert_eq!</span>(i, <span class="number">2</span>);
+<span class="macro">assert!</span>(arr.equals(<span class="kw-2">&amp;</span>[<span class="number">2</span>, <span class="number">4</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>]));</code></pre></div></div></details></div><h2 id="dyn-compatibility" class="section-header">Dyn Compatibility<a href="#dyn-compatibility" class="anchor">§</a></h2><div class="dyn-compatibility-info"><p>This trait is <b>not</b> <a href="https://doc.rust-lang.org/1.93.0/reference/items/traits.html#dyn-compatibility">dyn compatible</a>.</p><p><i>In older versions of Rust, dyn compatibility was called "object safety", so this trait is not object safe.</i></p></div><h2 id="implementors" class="section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><section id="impl-ReorderableCollectionExt-for-R" class="impl"><a class="src rightside" href="../src/stl/algo/reorderable_collection_ext/mod.rs.html#546-551">Source</a><a href="#impl-ReorderableCollectionExt-for-R" class="anchor">§</a><h3 class="code-header">impl&lt;R&gt; <a class="trait" href="trait.ReorderableCollectionExt.html" title="trait stl::ReorderableCollectionExt">ReorderableCollectionExt</a> for R<div class="where">where
+    R: <a class="trait" href="trait.ReorderableCollection.html" title="trait stl::ReorderableCollection">ReorderableCollection</a> + ?<a class="trait" href="https://doc.rust-lang.org/1.93.0/core/marker/trait.Sized.html" title="trait core::marker::Sized">Sized</a>,
+    R::<a class="associatedtype" href="trait.Collection.html#associatedtype.Whole" title="type stl::Collection::Whole">Whole</a>: <a class="trait" href="trait.ReorderableCollection.html" title="trait stl::ReorderableCollection">ReorderableCollection</a>,</div></h3></section></div><script src="../trait.impl/stl/algo/reorderable_collection_ext/trait.ReorderableCollectionExt.js" async></script><script type="text/json" id="notable-traits-data">{"SplitEvenlyIteratorMut<'_, Self::Whole>":"<h3>Notable traits for <code><a class=\"struct\" href=\"iterators/struct.SplitEvenlyIteratorMut.html\" title=\"struct stl::iterators::SplitEvenlyIteratorMut\">SplitEvenlyIteratorMut</a>&lt;'a, C&gt;</code></h3><pre><code><div class=\"where\">impl&lt;'a, C&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.93.0/core/iter/traits/iterator/trait.Iterator.html\" title=\"trait core::iter::traits::iterator::Iterator\">Iterator</a> for <a class=\"struct\" href=\"iterators/struct.SplitEvenlyIteratorMut.html\" title=\"struct stl::iterators::SplitEvenlyIteratorMut\">SplitEvenlyIteratorMut</a>&lt;'a, C&gt;<div class=\"where\">where\n    C: <a class=\"trait\" href=\"trait.ReorderableCollection.html\" title=\"trait stl::ReorderableCollection\">ReorderableCollection</a>&lt;Whole = C&gt;,</div></div><div class=\"where\">    type <a href=\"https://doc.rust-lang.org/1.93.0/core/iter/traits/iterator/trait.Iterator.html#associatedtype.Item\" class=\"associatedtype\">Item</a> = <a class=\"struct\" href=\"struct.SliceMut.html\" title=\"struct stl::SliceMut\">SliceMut</a>&lt;'a, C&gt;;</div>","SplitWhereIteratorMut<'_, Self::Whole, Pred>":"<h3>Notable traits for <code><a class=\"struct\" href=\"iterators/struct.SplitWhereIteratorMut.html\" title=\"struct stl::iterators::SplitWhereIteratorMut\">SplitWhereIteratorMut</a>&lt;'a, C, Pred&gt;</code></h3><pre><code><div class=\"where\">impl&lt;'a, C, Pred&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.93.0/core/iter/traits/iterator/trait.Iterator.html\" title=\"trait core::iter::traits::iterator::Iterator\">Iterator</a> for <a class=\"struct\" href=\"iterators/struct.SplitWhereIteratorMut.html\" title=\"struct stl::iterators::SplitWhereIteratorMut\">SplitWhereIteratorMut</a>&lt;'a, C, Pred&gt;<div class=\"where\">where\n    C: <a class=\"trait\" href=\"trait.ReorderableCollection.html\" title=\"trait stl::ReorderableCollection\">ReorderableCollection</a>&lt;Whole = C&gt;,\n    Pred: <a class=\"trait\" href=\"https://doc.rust-lang.org/1.93.0/core/ops/function/trait.FnMut.html\" title=\"trait core::ops::function::FnMut\">FnMut</a>(&amp;C::<a class=\"associatedtype\" href=\"trait.Collection.html#associatedtype.Element\" title=\"type stl::Collection::Element\">Element</a>) -&gt; <a class=\"primitive\" href=\"https://doc.rust-lang.org/1.93.0/std/primitive.bool.html\">bool</a> + <a class=\"trait\" href=\"https://doc.rust-lang.org/1.93.0/core/clone/trait.Clone.html\" title=\"trait core::clone::Clone\">Clone</a>,</div></div><div class=\"where\">    type <a href=\"https://doc.rust-lang.org/1.93.0/core/iter/traits/iterator/trait.Iterator.html#associatedtype.Item\" class=\"associatedtype\">Item</a> = <a class=\"struct\" href=\"struct.SliceMut.html\" title=\"struct stl::SliceMut\">SliceMut</a>&lt;'a, C::<a class=\"associatedtype\" href=\"trait.Collection.html#associatedtype.Whole\" title=\"type stl::Collection::Whole\">Whole</a>&gt;;</div>"}</script></section></div></main></body></html>
