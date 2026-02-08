@@ -20,6 +20,19 @@ where
         }
     }
 
+    /// Returns the "lazily computed" last element, or nil if `self` is empty.
+    fn lazy_last(&self) -> Option<Self::Element>
+    where
+        Self: BidirectionalCollection,
+        Self::Whole: BidirectionalCollection,
+    {
+        if self.start() == self.end() {
+            None
+        } else {
+            Some(self.compute_at(&self.prior(self.end())))
+        }
+    }
+
     /*-----------------Iteration Algorithms-----------------*/
 
     /// Returns an iterator to iterate over lazyily computed elements in collection.
@@ -188,8 +201,7 @@ where
         Self::Whole: BidirectionalCollection,
     {
         let mut res = init;
-        let mut rest = self.full();
-        while let Some(e) = rest.lazy_pop_last() {
+        for e in self.lazy_iter().rev() {
             res = op(e, res)
         }
         res

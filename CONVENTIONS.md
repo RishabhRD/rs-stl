@@ -19,7 +19,8 @@ These are project wide policy used for contract documentation:
         - Separate the fragment from any additional documentation with a blank line and end it with a period.
     - Preconditions, postconditions and invariants obviously implied by the summary need not be explicitly documented.
     - Declarations that fulfill protocol requirements are exempted when nothing useful can be added to the documentation of the protocol requirement itself.
-- Document the performance of every operation that doesn't execute in constant time and space.
+- Document the time complexity of every operation, except for constructors which operate in constant time.
+- Document the space complexity of every operation that doesn't operate in constant space.
 
 ## API design guidelines
 

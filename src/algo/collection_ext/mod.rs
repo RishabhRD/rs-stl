@@ -537,10 +537,12 @@ pub trait CollectionExt: Collection {
         Pred: FnMut(&Self::Element) -> bool,
     {
         let mut rest = self.full();
-        while let Some((p, e)) = rest.pop_first_with_pos() {
+        let mut p = self.start();
+        while let Some(e) = rest.pop_first() {
             if pred(&e) {
                 return Some(p);
             }
+            p = rest.start()
         }
         None
     }
@@ -589,10 +591,12 @@ pub trait CollectionExt: Collection {
     {
         let mut rest = self.full();
         let mut res = None;
-        while let Some((p, e)) = rest.pop_first_with_pos() {
+        let mut p = self.start();
+        while let Some(e) = rest.pop_first() {
             if pred(&e) {
                 res = Some(p);
             }
+            p = rest.start();
         }
         res
     }
@@ -877,6 +881,23 @@ pub trait CollectionExt: Collection {
             res = op(res, &e)
         }
         res
+    }
+
+    /*-----------------Copying Algorithms-----------------*/
+
+    /// Copies and returns all elements of `self` into `Vec<Self::Element>`.
+    ///
+    /// # Complexity
+    ///   - O(`self.count()`)
+    fn to_vec(&self) -> Vec<Self::Element>
+    where
+        Self::Element: Clone,
+    {
+        let mut r = Vec::with_capacity(self.underestimated_count());
+        for e in self.iter() {
+            r.push(e.clone())
+        }
+        r
     }
 }
 

@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, LazyCollection,
+    BidirectionalCollection, Collection, LazyCollection, LazyCollectionExt,
     RandomAccessCollection, Slice,
 };
 
@@ -32,7 +32,9 @@ where
     type Item = C::Element;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.slice.lazy_pop_first()
+        let r = self.slice.lazy_first();
+        self.slice.drop_first();
+        r
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -45,7 +47,9 @@ where
     C: BidirectionalCollection<Whole = C> + LazyCollection,
 {
     fn next_back(&mut self) -> Option<Self::Item> {
-        self.slice.lazy_pop_last()
+        let r = self.slice.lazy_last();
+        self.slice.drop_last();
+        r
     }
 }
 

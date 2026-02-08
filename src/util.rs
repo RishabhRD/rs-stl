@@ -4,10 +4,7 @@
 /// Unwraps given `Vec<Option<T>>` as `Vec<T>` without any allocation.
 ///
 /// # Precondition
-///   - All elements of v is `Some`.
-///
-/// # Complexity
-///   - O(1).
+///   - All elements of `v` have values inside it.
 pub fn unwrap_option_vec<T>(mut v: Vec<Option<T>>) -> Vec<T> {
     let len = v.len();
     let capacity = v.capacity();
