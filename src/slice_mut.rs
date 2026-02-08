@@ -414,10 +414,9 @@ where
         if c == 0 {
             return SplitEvenlyIteratorMut::new(self, 0, 0, 0);
         }
-        let num_slices = if min_size == 0 {
-            n
-        } else {
-            usize::min(usize::max(c / min_size, 1), n)
+        let num_slices = match min_size == 0 {
+            true => n,
+            false => usize::min(usize::max(c / min_size, 1), n),
         };
 
         let slice_size = c / num_slices;
