@@ -3,15 +3,16 @@
 
 use crate::{
     Collection, CollectionExt, ReorderableCollection, Slice, SliceMut,
+    UnsafeSubSequence,
 };
 
 /// An iterator yielding evenly sized slices of collection.
 pub struct SplitEvenlyIterator<'a, C>
 where
-    C: Collection<Whole = C>,
+    C: Collection<SubSequence = C> + UnsafeSubSequence,
 {
     /// Remaining elements.
-    rest: Slice<'a, C::Whole>,
+    rest: Slice<'a, C::SubSequence>,
 
     /// Number of slices.
     num_slices: usize,
@@ -25,11 +26,11 @@ where
 
 impl<'a, C> SplitEvenlyIterator<'a, C>
 where
-    C: Collection<Whole = C>,
+    C: Collection<SubSequence = C> + UnsafeSubSequence,
 {
     /// Creates instance of SplitEvenlyIterator.
     pub(crate) fn new(
-        slice: Slice<'a, C::Whole>,
+        slice: Slice<'a, C::SubSequence>,
         num_slices: usize,
         slice_size: usize,
         num_bigger_slices: usize,
@@ -45,7 +46,7 @@ where
 
 impl<'a, C> Iterator for SplitEvenlyIterator<'a, C>
 where
-    C: Collection<Whole = C>,
+    C: Collection<SubSequence = C> + UnsafeSubSequence,
 {
     type Item = Slice<'a, C>;
 
@@ -70,7 +71,7 @@ where
 
 impl<'a, C> ExactSizeIterator for SplitEvenlyIterator<'a, C>
 where
-    C: Collection<Whole = C>,
+    C: Collection<SubSequence = C> + UnsafeSubSequence,
 {
     fn len(&self) -> usize {
         self.num_slices

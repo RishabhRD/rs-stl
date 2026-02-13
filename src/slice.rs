@@ -3,7 +3,7 @@
 
 use std::marker::PhantomData;
 
-use crate::*;
+use crate::{iterators::*, *};
 
 /// A safe view into unsafe subsequence of a collection.
 pub struct Slice<'a, SubSequence>
@@ -33,7 +33,7 @@ where
     ///
     /// The removed element becomes independent of `self` and can therefore be used
     /// in parallel with `self`.
-    fn pop_first(&mut self) -> SubSequence::ElementRef<'a> {
+    pub fn pop_first(&mut self) -> SubSequence::ElementRef<'a> {
         precondition!(!self.is_empty());
         let mut i = self.start();
         let r = unsafe { self.subsequence.unsafe_at(&i) };
@@ -46,7 +46,7 @@ where
     ///
     /// The removed element becomes independent of `self` and can therefore be used
     /// in parallel with `self`.
-    fn pop_last(&mut self) -> SubSequence::ElementRef<'a>
+    pub fn pop_last(&mut self) -> SubSequence::ElementRef<'a>
     where
         SubSequence: BidirectionalCollection,
     {
@@ -59,7 +59,7 @@ where
 
     /// Removes and returns a subsequence of elements starting from `self.start()` upto but not
     /// including `p`.
-    fn pop_prefix_upto(&mut self, p: SubSequence::Position) -> Self {
+    pub fn pop_prefix_upto(&mut self, p: SubSequence::Position) -> Self {
         let s = unsafe {
             self.subsequence
                 .unsafe_slice(self.subsequence.start(), p.clone())
@@ -202,6 +202,149 @@ where
         let mut s = self.pop_prefix_upto(p);
         std::mem::swap(self, &mut s);
         s
+    }
+}
+
+/// Splitting algorithms.
+impl<'a, SubSequence> Slice<'a, SubSequence>
+where
+    SubSequence: UnsafeSubSequence<SubSequence = SubSequence> + 'a,
+{
+    /// Splits `self` into two subsequences at position `p`:
+    /// - the left part contains elements before `p`,
+    /// - the right part contains elements starting at `p`.
+    ///
+    /// # Complexity
+    ///   - O(1).
+    pub fn split_at(mut self, p: SubSequence::Position) -> (Self, Self) {
+        let r = self.pop_prefix_upto(p);
+        (r, self)
+    }
+
+    /// Splits `self` into two subsequences at position `p`:
+    /// - the left part contains elements before `p`,
+    /// - the right part contains elements starting at `p`.
+    ///
+    /// # Precondition
+    ///   - There must be a well defined position after `p`.
+    ///
+    /// # Complexity
+    ///   - O(1).
+    pub fn split_after(self, mut p: SubSequence::Position) -> (Self, Self) {
+        self.form_next(&mut p);
+        self.split_at(p)
+    }
+
+    /// Returns an iterator over subsequences of `self`, split at elements
+    /// where `p` returns `true`.
+    ///
+    /// # Note
+    ///   - Consecutive elements for which `p` returns `true` produce empty subsequences.
+    ///
+    /// # Complexity
+    ///   - O(`self.count()`).
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 3, 5, 2, 2, 2, 3, 4, 5, 7];
+    /// let v: Vec<_> =
+    ///   arr.full_mut()
+    ///      .split_where(|x| x % 2 == 0)
+    ///      .map(|s| s.to_vec())
+    ///      .collect();
+    /// assert_eq!(v, vec![vec![1, 3, 5], vec![], vec![], vec![3], vec![5, 7]]);
+    /// ```
+    pub fn split_where<Predicate>(
+        self,
+        p: Predicate,
+    ) -> SplitWhereIterator<'a, SubSequence, Predicate>
+    where
+        Predicate: FnMut(&SubSequence::Element) -> bool,
+        Self: Sized,
+    {
+        SplitWhereIterator::new(self, p)
+    }
+
+    /// Returns an iterator over at most `n` subsequences of `self`, each of size
+    /// at least `min_size`, splitting as evenly as possible.
+    ///
+    /// If the elements cannot be divided evenly, the earlier subsequences are
+    /// one element larger than the later ones.
+    ///
+    /// # Precondition
+    ///   - `n > 0`.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`;
+    ///   - O(`self.count()`) otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5, 6, 7];
+    /// let splits: Vec<Vec<_>> = arr.full_mut()
+    ///     .split_evenly_in_with_min_size(3, 2)
+    ///     .map(|s| s.to_vec())
+    ///     .collect();
+    /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
+    /// ```
+    pub fn split_evenly_in_with_min_size(
+        self,
+        n: usize,
+        min_size: usize,
+    ) -> SplitEvenlyIterator<'a, SubSequence> {
+        precondition!(n > 0);
+        let c = self.count();
+        if c == 0 {
+            return SplitEvenlyIterator::new(self, 0, 0, 0);
+        }
+        let num_slices = match min_size == 0 {
+            true => n,
+            false => usize::min(usize::max(c / min_size, 1), n),
+        };
+
+        let slice_size = c / num_slices;
+        let num_bigger_slices = c % num_slices;
+
+        SplitEvenlyIterator::new(
+            self,
+            num_slices,
+            slice_size,
+            num_bigger_slices,
+        )
+    }
+
+    /// Returns an iterator over `n` subsequences of `self`, split as evenly as possible.
+    ///
+    /// If the elements cannot be divided evenly, the earlier subsequences are
+    /// one element larger than the later ones.
+    ///
+    /// # Precondition
+    ///   - `n > 0`.
+    ///
+    /// # Complexity
+    ///   - O(1) for `RandomAccessCollection`;
+    ///   - O(`self.count()`) otherwise.
+    ///
+    /// # Example
+    /// ```rust
+    /// use stl::*;
+    ///
+    /// let mut arr = [1, 2, 3, 4, 5, 6, 7];
+    /// let splits: Vec<Vec<_>> = arr.full_mut()
+    ///     .split_evenly_in(3)
+    ///     .map(|s| s.to_vec())
+    ///     .collect();
+    /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
+    pub fn split_evenly_in(
+        self,
+        n: usize,
+    ) -> SplitEvenlyIterator<'a, SubSequence> {
+        precondition!(n > 0);
+        self.split_evenly_in_with_min_size(n, 0)
     }
 }
 
