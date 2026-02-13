@@ -1,6 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
+#[macro_export]
+macro_rules! precondition {
+    ($cond:expr $(,)?) => {
+        debug_assert!($cond);
+    };
+    ($cond:expr, $($msg:tt)+) => {
+        debug_assert!($cond, $($msg)+);
+    };
+}
+
 /// Unwraps given `Vec<Option<T>>` as `Vec<T>` without any allocation.
 ///
 /// # Precondition

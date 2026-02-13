@@ -4,7 +4,7 @@
 use crate::{
     collections::MappedCollection,
     iterators::{CollectionIter, SplitEvenlyIterator, SplitWhereIterator},
-    Collection, Slice,
+    precondition, Collection, Slice,
 };
 
 /// Algorithms for `Collection`.
@@ -19,13 +19,10 @@ pub trait CollectionExt: Collection {
 
     /*-----------------Element Access Algorithms-----------------*/
 
-    /// Returns the first element, or nil if `self` is empty.
-    fn first(&self) -> Option<Self::ElementRef<'_>> {
-        if self.start() == self.end() {
-            None
-        } else {
-            Some(self.at(&self.start()))
-        }
+    /// Yields the first element.
+    fn first(&self) -> Self::ElementRef<'_> {
+        precondition!(self.is_empty());
+        self.at(&self.start())
     }
 
     /*-----------------Slice Algorithms-----------------*/
