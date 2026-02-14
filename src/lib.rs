@@ -53,3 +53,6 @@ pub(crate) use util::*;
 
 mod exec;
 pub(crate) use exec::*;
+
+mod unsafe_slice;
+pub use unsafe_slice::*;
