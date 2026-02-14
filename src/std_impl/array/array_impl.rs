@@ -2,9 +2,10 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    std_impl::array_slice::ArraySlice, BidirectionalCollection, Collection,
-    MutableCollection, RandomAccessCollection, ReorderableCollection, Slice,
-    SliceMut,
+    std_impl::array::array_slice::ArraySlice,
+    std_impl::array::array_slice_mut::ArraySliceMut, BidirectionalCollection,
+    Collection, MutableCollection, RandomAccessCollection,
+    ReorderableCollection, Slice, SliceMut,
 };
 
 impl<T, const N: usize> Collection for [T; N] {
@@ -18,6 +19,8 @@ impl<T, const N: usize> Collection for [T; N] {
         Self: 'a;
 
     type SubSequence = ArraySlice<T>;
+
+    type MutableSubSequence = ArraySliceMut<T>;
 
     fn start(&self) -> Self::Position {
         0
@@ -80,8 +83,9 @@ impl<T, const N: usize> Collection for [T; N] {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<'_, Self::Whole> {
-        Slice::new(self, from, to)
+    ) -> Slice<'_, Self::SubSequence> {
+        assert!(from <= to && from <= N && to <= N);
+        unsafe { Slice::new(ArraySlice::new(self.as_ptr(), from, to)) }
     }
 }
 
@@ -121,8 +125,11 @@ impl<T, const N: usize> ReorderableCollection for [T; N] {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<'_, Self::Whole> {
-        SliceMut::new(self, from, to)
+    ) -> SliceMut<'_, Self::MutableSubSequence> {
+        assert!(from <= to && from <= N && to <= N);
+        unsafe {
+            SliceMut::new(ArraySliceMut::new(self.as_mut_ptr(), from, to))
+        }
     }
 }
 
