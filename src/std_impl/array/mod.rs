@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-pub mod array;
-pub mod option;
-pub mod range;
-pub mod slice_impl;
-pub mod string;
-pub mod vec_impl;
+pub mod array_impl;
+pub mod array_slice;
+pub mod array_slice_mut;

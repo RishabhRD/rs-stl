@@ -2,8 +2,9 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, MutableCollection,
-    RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
+    std_impl::array_slice::ArraySlice, BidirectionalCollection, Collection,
+    MutableCollection, RandomAccessCollection, ReorderableCollection, Slice,
+    SliceMut,
 };
 
 impl<T, const N: usize> Collection for [T; N] {
@@ -16,7 +17,7 @@ impl<T, const N: usize> Collection for [T; N] {
     where
         Self: 'a;
 
-    type Whole = Self;
+    type SubSequence = ArraySlice<T>;
 
     fn start(&self) -> Self::Position {
         0
