@@ -3,6 +3,7 @@
 
 use crate::{
     Collection, CollectionExt, ReorderableCollection, Slice, SliceMut,
+    UnsafeReorderableSubSequence,
 };
 
 /// An iterator of slices which are separated by elements that match `predicate`.
@@ -55,11 +56,12 @@ where
 /// An iterator of mutable slices which are separated by elements that match `predicate`.
 pub struct SplitWhereIteratorMut<'a, C, Pred>
 where
-    C: ReorderableCollection<Whole = C>,
+    C: ReorderableCollection,
+    C::MutableSubSequence: UnsafeReorderableSubSequence,
     Pred: FnMut(&C::Element) -> bool,
 {
     /// Rest of collection.
-    rest: SliceMut<'a, C::Whole>,
+    rest: SliceMut<'a, C>,
 
     /// Predicate upon which splitting would be done.
     predicate: Pred,
@@ -67,10 +69,11 @@ where
 
 impl<'a, C, Pred> SplitWhereIteratorMut<'a, C, Pred>
 where
-    C: ReorderableCollection<Whole = C>,
+    C: ReorderableCollection,
+    C::MutableSubSequence: UnsafeReorderableSubSequence,
     Pred: FnMut(&C::Element) -> bool,
 {
-    pub(crate) fn new(slice: SliceMut<'a, C::Whole>, predicate: Pred) -> Self {
+    pub(crate) fn new(slice: SliceMut<'a, C>, predicate: Pred) -> Self {
         SplitWhereIteratorMut {
             rest: slice,
             predicate,
@@ -80,10 +83,11 @@ where
 
 impl<'a, C, Pred> Iterator for SplitWhereIteratorMut<'a, C, Pred>
 where
-    C: ReorderableCollection<Whole = C>,
+    C: ReorderableCollection,
+    C::MutableSubSequence: UnsafeReorderableSubSequence,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
-    type Item = SliceMut<'a, C::Whole>;
+    type Item = SliceMut<'a, C>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {

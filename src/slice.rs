@@ -424,10 +424,11 @@ where
     }
 }
 
-impl<'a, SubSequence> LazyCollection for Slice<'a, SubSequence>
+impl<'a, C> LazyCollection for Slice<'a, C>
 where
-    SubSequence:
-        LazyCollection + UnsafeSubSequence<SubSequence = SubSequence> + 'a,
+    C: LazyCollection + 'a,
+    C::SubSequence: LazyCollection,
+    C::MutableSubSequence: LazyCollection,
 {
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
         self.subsequence.compute_at(i)

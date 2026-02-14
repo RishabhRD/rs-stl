@@ -384,5 +384,9 @@ pub trait UnsafeMutableSubSequence:
 where
     Self::MutableSubSequence: UnsafeMutableSubSequence,
 {
-    fn unsafe_at_mut<'a>(&self, i: &Self::Position) -> &'a mut Self::Element;
+    /// Yields mutable reference to `i`th element with lifetime `'a`.
+    unsafe fn unsafe_at_mut<'a>(
+        &self,
+        i: &Self::Position,
+    ) -> &'a mut Self::Element;
 }
