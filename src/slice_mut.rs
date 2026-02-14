@@ -65,6 +65,41 @@ where
         r
     }
 
+    /// Removes and returns mutable reference to first element.
+    ///
+    /// The removed element becomes independent of `self` and can therefore be used
+    /// in parallel with `self`.
+    pub fn pop_first_mut(&mut self) -> &'a mut C::Element
+    where
+        C: MutableCollection,
+        C::MutableSubSequence: UnsafeMutableSubSequence,
+    {
+        precondition!(!self.is_empty());
+        let mut i = self.start();
+        let r = unsafe { self.subsequence.unsafe_at_mut(&i) };
+        self.subsequence.form_next(&mut i);
+        unsafe { self.subsequence.set_start(i) };
+        r
+    }
+
+    /// Removes and returns mutable reference last element.
+    ///
+    /// The removed element becomes independent of `self` and can therefore be used
+    /// in parallel with `self`.
+    pub fn pop_last_mut(&mut self) -> &'a mut C::Element
+    where
+        C: MutableCollection + BidirectionalCollection,
+        C::SubSequence: BidirectionalCollection,
+        C::MutableSubSequence:
+            UnsafeMutableSubSequence + BidirectionalCollection,
+    {
+        precondition!(!self.subsequence.is_empty());
+        let i = self.subsequence.prior(self.subsequence.end());
+        let r = unsafe { self.subsequence.unsafe_at_mut(&i) };
+        unsafe { self.subsequence.set_end(i) };
+        r
+    }
+
     /// Removes and returns a subsequence of elements starting from `self.start()` upto but not
     /// including `p`.
     pub fn pop_prefix_upto(&mut self, p: C::Position) -> Self {
