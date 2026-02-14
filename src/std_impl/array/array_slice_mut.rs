@@ -2,10 +2,9 @@
 // Copyright (c) 2026 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    std_impl::array::array_slice::ArraySlice, BidirectionalCollection,
-    Collection, MutableCollection, RandomAccessCollection,
-    ReorderableCollection, Slice, SliceMut, UnsafeMutableSubSequence,
-    UnsafeReorderableSubSequence, UnsafeSubSequence,
+    ArraySlice, BidirectionalCollection, Collection, MutableCollection,
+    RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
+    UnsafeMutableSubSequence, UnsafeReorderableSubSequence, UnsafeSubSequence,
 };
 
 /// Unsafe mutable slice for array-like data structures.

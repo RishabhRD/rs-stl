@@ -2,8 +2,9 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, MutableCollection,
-    RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
+    ArraySlice, ArraySliceMut, BidirectionalCollection, Collection,
+    MutableCollection, RandomAccessCollection, ReorderableCollection, Slice,
+    SliceMut,
 };
 
 impl<T> Collection for &[T] {
@@ -16,7 +17,9 @@ impl<T> Collection for &[T] {
     where
         Self: 'a;
 
-    type Whole = Self;
+    type SubSequence = ArraySlice<T>;
+
+    type MutableSubSequence = ArraySliceMut<T>;
 
     fn start(&self) -> Self::Position {
         0
@@ -61,8 +64,9 @@ impl<T> Collection for &[T] {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<'_, Self::Whole> {
-        Slice::new(self, from, to)
+    ) -> Slice<'_, Self::SubSequence> {
+        assert!(from <= to && from <= self.len() && to <= self.len());
+        unsafe { Slice::new(ArraySlice::new(self.as_ptr(), from, to)) }
     }
 }
 
@@ -103,7 +107,9 @@ impl<T> Collection for &mut [T] {
     where
         Self: 'a;
 
-    type Whole = Self;
+    type SubSequence = ArraySlice<T>;
+
+    type MutableSubSequence = ArraySliceMut<T>;
 
     fn start(&self) -> Self::Position {
         0
@@ -148,8 +154,9 @@ impl<T> Collection for &mut [T] {
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<'_, Self::Whole> {
-        Slice::new(self, from, to)
+    ) -> Slice<'_, Self::SubSequence> {
+        assert!(from <= to && from <= self.len() && to <= self.len());
+        unsafe { Slice::new(ArraySlice::new(self.as_ptr(), from, to)) }
     }
 }
 
@@ -189,8 +196,11 @@ impl<T> ReorderableCollection for &mut [T] {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<'_, Self::Whole> {
-        SliceMut::new(self, from, to)
+    ) -> crate::SliceMut<'_, Self::MutableSubSequence> {
+        assert!(from <= to && from <= self.len() && to <= self.len());
+        unsafe {
+            SliceMut::new(ArraySliceMut::new(self.as_mut_ptr(), from, to))
+        }
     }
 }
 

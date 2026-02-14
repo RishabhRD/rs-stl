@@ -4,6 +4,6 @@
 pub mod array;
 pub mod option;
 pub mod range;
-pub mod slice_impl;
 pub mod string;
-pub mod vec_impl;
+
+pub use array::*;

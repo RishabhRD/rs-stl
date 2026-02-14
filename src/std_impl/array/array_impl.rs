@@ -2,10 +2,9 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    std_impl::array::array_slice::ArraySlice,
-    std_impl::array::array_slice_mut::ArraySliceMut, BidirectionalCollection,
-    Collection, MutableCollection, RandomAccessCollection,
-    ReorderableCollection, Slice, SliceMut,
+    ArraySlice, ArraySliceMut, BidirectionalCollection, Collection,
+    MutableCollection, RandomAccessCollection, ReorderableCollection, Slice,
+    SliceMut,
 };
 
 impl<T, const N: usize> Collection for [T; N] {
