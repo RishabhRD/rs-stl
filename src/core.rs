@@ -48,7 +48,7 @@ pub trait Collection {
         Position = Self::Position,
         Element = Self::Element,
         SubSequence = Self::SubSequence,
-        MutableSubSequence = Self::MutableSubSequence,
+        MutableSubSequence = Self::SubSequence,
     >;
 
     /// An unsafe collection representing mutable contiguous subrange of `self`.
