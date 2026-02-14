@@ -4,6 +4,7 @@
 use crate::{
     BidirectionalCollection, Collection, LazyCollection, MutableCollection,
     RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
+    UnsafeMutableSubSequence, UnsafeReorderableSubSequence, UnsafeSubSequence,
 };
 
 /// An empty collection.
@@ -25,89 +26,6 @@ impl<E> Default for EmptyCollection<E> {
     }
 }
 
-/// An iterator for empty collection.
-pub struct Iter<'a, T> {
-    _phantom: std::marker::PhantomData<&'a T>,
-}
-
-impl<E> Iter<'_, E> {
-    pub fn new() -> Self {
-        Iter {
-            _phantom: std::marker::PhantomData,
-        }
-    }
-}
-
-impl<E> Default for Iter<'_, E> {
-    fn default() -> Self {
-        Iter {
-            _phantom: std::marker::PhantomData,
-        }
-    }
-}
-
-impl<'a, E> Iterator for Iter<'a, E> {
-    type Item = &'a E;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        None
-    }
-}
-
-/// A mutable iterator for empty collection.
-pub struct IterMut<'a, T> {
-    _phantom: std::marker::PhantomData<&'a T>,
-}
-
-impl<E> IterMut<'_, E> {
-    pub fn new() -> Self {
-        IterMut {
-            _phantom: std::marker::PhantomData,
-        }
-    }
-}
-
-impl<E> Default for IterMut<'_, E> {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl<'a, E> Iterator for IterMut<'a, E> {
-    type Item = &'a mut E;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        None
-    }
-}
-
-/// A lazy iterator for empty collection.
-pub struct LazyIter<T> {
-    _phantom: std::marker::PhantomData<T>,
-}
-
-impl<E> LazyIter<E> {
-    pub fn new() -> Self {
-        LazyIter {
-            _phantom: std::marker::PhantomData,
-        }
-    }
-}
-
-impl<E> Default for LazyIter<E> {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl<E> Iterator for LazyIter<E> {
-    type Item = E;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        None
-    }
-}
-
 impl<E> Collection for EmptyCollection<E> {
     type Position = ();
 
@@ -118,7 +36,9 @@ impl<E> Collection for EmptyCollection<E> {
     where
         Self: 'a;
 
-    type Whole = Self;
+    type SubSequence = Self;
+
+    type MutableSubSequence = Self;
 
     fn start(&self) -> Self::Position {}
 
@@ -155,10 +75,10 @@ impl<E> Collection for EmptyCollection<E> {
 
     fn slice(
         &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> crate::Slice<'_, Self::Whole> {
-        Slice::new(self, from, to)
+        _: Self::Position,
+        _: Self::Position,
+    ) -> crate::Slice<'_, Self::SubSequence> {
+        unsafe { Slice::new(Self::default()) }
     }
 }
 
@@ -186,10 +106,10 @@ impl<E> ReorderableCollection for EmptyCollection<E> {
 
     fn slice_mut(
         &mut self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> crate::SliceMut<'_, Self::Whole> {
-        SliceMut::new(self, from, to)
+        _: Self::Position,
+        _: Self::Position,
+    ) -> crate::SliceMut<'_, Self::MutableSubSequence> {
+        unsafe { SliceMut::new(Self::default()) }
     }
 }
 
@@ -201,6 +121,43 @@ impl<E> MutableCollection for EmptyCollection<E> {
 
 impl<E> LazyCollection for EmptyCollection<E> {
     fn compute_at(&self, _: &Self::Position) -> Self::Element {
+        panic!("Out of bound access")
+    }
+}
+
+impl<E> UnsafeSubSequence for EmptyCollection<E> {
+    unsafe fn unsafe_at<'a>(&self, _: &Self::Position) -> Self::ElementRef<'a> {
+        panic!("Out of bound access")
+    }
+
+    unsafe fn unsafe_slice(
+        &self,
+        _: Self::Position,
+        _: Self::Position,
+    ) -> Self::SubSequence {
+        Self::default()
+    }
+
+    unsafe fn set_start(&mut self, _: Self::Position) {}
+
+    unsafe fn set_end(&mut self, _: Self::Position) {}
+}
+
+impl<E> UnsafeReorderableSubSequence for EmptyCollection<E> {
+    unsafe fn unsafe_slice_mut(
+        &self,
+        _: Self::Position,
+        _: Self::Position,
+    ) -> Self::MutableSubSequence {
+        Self::default()
+    }
+}
+
+impl<E> UnsafeMutableSubSequence for EmptyCollection<E> {
+    unsafe fn unsafe_at_mut<'a>(
+        &self,
+        _: &Self::Position,
+    ) -> &'a mut Self::Element {
         panic!("Out of bound access")
     }
 }
