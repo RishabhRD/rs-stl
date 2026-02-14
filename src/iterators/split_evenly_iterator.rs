@@ -9,10 +9,10 @@ use crate::{
 /// An iterator yielding evenly sized slices of collection.
 pub struct SplitEvenlyIterator<'a, C>
 where
-    C: Collection<SubSequence = C> + UnsafeSubSequence,
+    C: Collection,
 {
     /// Remaining elements.
-    rest: Slice<'a, C::SubSequence>,
+    rest: Slice<'a, C>,
 
     /// Number of slices.
     num_slices: usize,
@@ -26,11 +26,11 @@ where
 
 impl<'a, C> SplitEvenlyIterator<'a, C>
 where
-    C: Collection<SubSequence = C> + UnsafeSubSequence,
+    C: Collection,
 {
     /// Creates instance of SplitEvenlyIterator.
     pub(crate) fn new(
-        slice: Slice<'a, C::SubSequence>,
+        slice: Slice<'a, C>,
         num_slices: usize,
         slice_size: usize,
         num_bigger_slices: usize,
@@ -46,7 +46,7 @@ where
 
 impl<'a, C> Iterator for SplitEvenlyIterator<'a, C>
 where
-    C: Collection<SubSequence = C> + UnsafeSubSequence,
+    C: Collection,
 {
     type Item = Slice<'a, C>;
 
@@ -71,7 +71,7 @@ where
 
 impl<'a, C> ExactSizeIterator for SplitEvenlyIterator<'a, C>
 where
-    C: Collection<SubSequence = C> + UnsafeSubSequence,
+    C: Collection,
 {
     fn len(&self) -> usize {
         self.num_slices
@@ -81,7 +81,7 @@ where
 /// An iterator yielding evenly sized mutable slices of collection.
 pub struct SplitEvenlyIteratorMut<'a, C>
 where
-    C: ReorderableCollection<Whole = C>,
+    C: ReorderableCollection<MutableSubSequence = C> + UnsafeSubSequence,
 {
     /// Remaining elements.
     rest: SliceMut<'a, C::Whole>,

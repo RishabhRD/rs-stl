@@ -3,17 +3,16 @@
 
 use crate::{
     Collection, CollectionExt, ReorderableCollection, Slice, SliceMut,
-    UnsafeSubSequence,
 };
 
 /// An iterator of slices which are separated by elements that match `predicate`.
 pub struct SplitWhereIterator<'a, C, Pred>
 where
-    C: Collection<SubSequence = C> + UnsafeSubSequence,
+    C: Collection,
     Pred: FnMut(&C::Element) -> bool,
 {
     /// Rest of collection.
-    rest: Slice<'a, C::SubSequence>,
+    rest: Slice<'a, C>,
 
     /// Predicate upon which splitting would be done.
     predicate: Pred,
@@ -21,13 +20,10 @@ where
 
 impl<'a, C, Predicate> SplitWhereIterator<'a, C, Predicate>
 where
-    C: Collection<SubSequence = C> + UnsafeSubSequence,
+    C: Collection,
     Predicate: FnMut(&C::Element) -> bool,
 {
-    pub(crate) fn new(
-        slice: Slice<'a, C::SubSequence>,
-        predicate: Predicate,
-    ) -> Self {
+    pub(crate) fn new(slice: Slice<'a, C>, predicate: Predicate) -> Self {
         SplitWhereIterator {
             rest: slice,
             predicate,
@@ -37,10 +33,10 @@ where
 
 impl<'a, C, Pred> Iterator for SplitWhereIterator<'a, C, Pred>
 where
-    C: Collection<SubSequence = C> + UnsafeSubSequence,
+    C: Collection,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
-    type Item = Slice<'a, C::SubSequence>;
+    type Item = Slice<'a, C>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {

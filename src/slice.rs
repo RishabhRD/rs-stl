@@ -6,23 +6,23 @@ use std::marker::PhantomData;
 use crate::{iterators::*, *};
 
 /// A safe view into unsafe subsequence of a collection.
-pub struct Slice<'a, SubSequence>
+pub struct Slice<'a, C>
 where
-    SubSequence: UnsafeSubSequence<SubSequence = SubSequence> + 'a,
+    C: Collection + 'a,
 {
     /// The unsafe subsequence.
-    subsequence: SubSequence,
+    subsequence: C::SubSequence,
 
     /// A marker data managing lifetime of `self`.
     _marker: PhantomData<&'a ()>,
 }
 
-impl<'a, SubSequence> Slice<'a, SubSequence>
+impl<'a, C> Slice<'a, C>
 where
-    SubSequence: UnsafeSubSequence<SubSequence = SubSequence> + 'a,
+    C: Collection + 'a,
 {
     /// Returns a slice for unsafe subsequence `s`.
-    pub unsafe fn new(s: SubSequence) -> Self {
+    pub unsafe fn new(s: C::SubSequence) -> Self {
         Slice {
             subsequence: s,
             _marker: PhantomData,
@@ -33,7 +33,9 @@ where
     ///
     /// The removed element becomes independent of `self` and can therefore be used
     /// in parallel with `self`.
-    pub fn pop_first(&mut self) -> SubSequence::ElementRef<'a> {
+    pub fn pop_first(
+        &mut self,
+    ) -> <C::SubSequence as Collection>::ElementRef<'a> {
         precondition!(!self.is_empty());
         let mut i = self.start();
         let r = unsafe { self.subsequence.unsafe_at(&i) };
@@ -46,9 +48,11 @@ where
     ///
     /// The removed element becomes independent of `self` and can therefore be used
     /// in parallel with `self`.
-    pub fn pop_last(&mut self) -> SubSequence::ElementRef<'a>
+    pub fn pop_last(&mut self) -> <C::SubSequence as Collection>::ElementRef<'a>
     where
-        SubSequence: BidirectionalCollection,
+        C: BidirectionalCollection,
+        C::SubSequence: BidirectionalCollection,
+        C::MutableSubSequence: BidirectionalCollection,
     {
         precondition!(!self.subsequence.is_empty());
         let i = self.subsequence.prior(self.subsequence.end());
@@ -59,7 +63,7 @@ where
 
     /// Removes and returns a subsequence of elements starting from `self.start()` upto but not
     /// including `p`.
-    pub fn pop_prefix_upto(&mut self, p: SubSequence::Position) -> Self {
+    pub fn pop_prefix_upto(&mut self, p: C::Position) -> Self {
         let s = unsafe {
             self.subsequence
                 .unsafe_slice(self.subsequence.start(), p.clone())
@@ -70,9 +74,9 @@ where
 }
 
 /// Drop algorithms
-impl<'a, SubSequence> Slice<'a, SubSequence>
+impl<'a, C> Slice<'a, C>
 where
-    SubSequence: UnsafeSubSequence<SubSequence = SubSequence> + 'a,
+    C: Collection + 'a,
 {
     /// Removes the first element.
     ///
@@ -86,14 +90,16 @@ where
     /// - Precondition: `self` is not empty.
     pub fn drop_last(&mut self)
     where
-        SubSequence: BidirectionalCollection,
+        C: BidirectionalCollection,
+        C::SubSequence: BidirectionalCollection,
+        C::MutableSubSequence: BidirectionalCollection,
     {
         _ = self.pop_last();
     }
 
     /// Removes subsequence of elements starting from `self.start()` upto but not
     /// including `p`.
-    fn drop_prefix_upto(&mut self, p: SubSequence::Position) {
+    fn drop_prefix_upto(&mut self, p: C::Position) {
         _ = self.pop_prefix_upto(p)
     }
 
@@ -110,7 +116,7 @@ where
     /// Removes the subsequence from start position of `self` through (including) `p`.
     ///
     /// - Precondition: Next position of `p` should be well defined.
-    pub fn drop_prefix_through(&mut self, p: SubSequence::Position) {
+    pub fn drop_prefix_through(&mut self, p: C::Position) {
         _ = self.pop_prefix_through(p);
     }
 
@@ -120,7 +126,7 @@ where
     ///   - Atmost `self.count()` applications of `p`.
     pub fn drop_while<Predicate>(&mut self, p: Predicate)
     where
-        Predicate: FnMut(&SubSequence::Element) -> bool,
+        Predicate: FnMut(&C::Element) -> bool,
     {
         _ = self.pop_while(p);
     }
@@ -134,21 +140,23 @@ where
     ///   - O(`n`) otherwise.
     pub fn drop_end(&mut self, n: usize)
     where
-        SubSequence: BidirectionalCollection,
+        C: BidirectionalCollection,
+        C::SubSequence: BidirectionalCollection,
+        C::MutableSubSequence: BidirectionalCollection,
     {
         _ = self.pop_end(n);
     }
 
     /// Removes subsequence of last elements from `self` starting from `p`.
-    pub fn drop_suffix_from(&mut self, p: SubSequence::Position) {
+    pub fn drop_suffix_from(&mut self, p: C::Position) {
         _ = self.pop_suffix_from(p);
     }
 }
 
 /// Pop algorithms
-impl<'a, SubSequence> Slice<'a, SubSequence>
+impl<'a, C> Slice<'a, C>
 where
-    SubSequence: UnsafeSubSequence<SubSequence = SubSequence> + 'a,
+    C: Collection + 'a,
 {
     /// Removes and returns subsequence of first `n` elements in `self`;
     /// If `self` has less than `n` elements, make `self` empty and return all elements of `self`.
@@ -165,7 +173,7 @@ where
     /// Removes and returns the subsequence from start position of `self` through (including) `p`.
     ///
     /// - Precondition: Next position of `p` should be well defined.
-    pub fn pop_prefix_through(&mut self, p: SubSequence::Position) -> Self {
+    pub fn pop_prefix_through(&mut self, p: C::Position) -> Self {
         self.pop_prefix_upto(self.next(p))
     }
 
@@ -175,7 +183,7 @@ where
     ///   - Atmost `self.count()` applications of `p`.
     pub fn pop_while<Predicate>(&mut self, mut p: Predicate) -> Self
     where
-        Predicate: FnMut(&SubSequence::Element) -> bool,
+        Predicate: FnMut(&C::Element) -> bool,
     {
         let p = self.first_position_where(|e| !p(e)).unwrap_or(self.end());
         self.pop_prefix_upto(p)
@@ -190,7 +198,9 @@ where
     ///   - O(`n`) otherwise.
     pub fn pop_end(&mut self, n: usize) -> Self
     where
-        SubSequence: BidirectionalCollection,
+        C: BidirectionalCollection,
+        C::SubSequence: BidirectionalCollection,
+        C::MutableSubSequence: BidirectionalCollection,
     {
         let mut f = self.end();
         self.form_prior_n_limited_by(&mut f, n, self.start());
@@ -198,7 +208,7 @@ where
     }
 
     /// Removes and returns subsequence of last elements from `self` starting from `p`.
-    pub fn pop_suffix_from(&mut self, p: SubSequence::Position) -> Self {
+    pub fn pop_suffix_from(&mut self, p: C::Position) -> Self {
         let mut s = self.pop_prefix_upto(p);
         std::mem::swap(self, &mut s);
         s
@@ -206,9 +216,9 @@ where
 }
 
 /// Splitting algorithms.
-impl<'a, SubSequence> Slice<'a, SubSequence>
+impl<'a, C> Slice<'a, C>
 where
-    SubSequence: UnsafeSubSequence<SubSequence = SubSequence> + 'a,
+    C: Collection + 'a,
 {
     /// Splits `self` into two subsequences at position `p`:
     /// - the left part contains elements before `p`,
@@ -216,7 +226,7 @@ where
     ///
     /// # Complexity
     ///   - O(1).
-    pub fn split_at(mut self, p: SubSequence::Position) -> (Self, Self) {
+    pub fn split_at(mut self, p: C::Position) -> (Self, Self) {
         let r = self.pop_prefix_upto(p);
         (r, self)
     }
@@ -230,7 +240,7 @@ where
     ///
     /// # Complexity
     ///   - O(1).
-    pub fn split_after(self, mut p: SubSequence::Position) -> (Self, Self) {
+    pub fn split_after(self, mut p: C::Position) -> (Self, Self) {
         self.form_next(&mut p);
         self.split_at(p)
     }
@@ -259,9 +269,9 @@ where
     pub fn split_where<Predicate>(
         self,
         p: Predicate,
-    ) -> SplitWhereIterator<'a, SubSequence, Predicate>
+    ) -> SplitWhereIterator<'a, C, Predicate>
     where
-        Predicate: FnMut(&SubSequence::Element) -> bool,
+        Predicate: FnMut(&C::Element) -> bool,
         Self: Sized,
     {
         SplitWhereIterator::new(self, p)
@@ -295,7 +305,7 @@ where
         self,
         n: usize,
         min_size: usize,
-    ) -> SplitEvenlyIterator<'a, SubSequence> {
+    ) -> SplitEvenlyIterator<'a, C> {
         precondition!(n > 0);
         let c = self.count();
         if c == 0 {
@@ -339,34 +349,30 @@ where
     ///     .map(|s| s.to_vec())
     ///     .collect();
     /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
-    pub fn split_evenly_in(
-        self,
-        n: usize,
-    ) -> SplitEvenlyIterator<'a, SubSequence> {
+    pub fn split_evenly_in(self, n: usize) -> SplitEvenlyIterator<'a, C> {
         precondition!(n > 0);
         self.split_evenly_in_with_min_size(n, 0)
     }
 }
 
-unsafe impl<'a, SubSequence> Send for Slice<'a, SubSequence> where
-    SubSequence: UnsafeSubSequence<SubSequence = SubSequence> + 'a
-{
-}
+unsafe impl<'a, C> Send for Slice<'a, C> where C: Collection + 'a {}
 
-impl<'a, SubSequence> Collection for Slice<'a, SubSequence>
+impl<'a, C> Collection for Slice<'a, C>
 where
-    SubSequence: UnsafeSubSequence<SubSequence = SubSequence> + 'a,
+    C: Collection + 'a,
 {
-    type Position = SubSequence::Position;
+    type Position = C::Position;
 
-    type Element = SubSequence::Element;
+    type Element = C::Element;
 
     type ElementRef<'b>
-        = SubSequence::ElementRef<'b>
+        = <<C as Collection>::SubSequence as Collection>::ElementRef<'b>
     where
         Self: 'b;
 
-    type SubSequence = SubSequence;
+    type SubSequence = C::SubSequence;
+
+    type MutableSubSequence = C::MutableSubSequence;
 
     fn start(&self) -> Self::Position {
         self.subsequence.start()
@@ -428,11 +434,11 @@ where
     }
 }
 
-impl<'a, SubSequence> BidirectionalCollection for Slice<'a, SubSequence>
+impl<'a, C> BidirectionalCollection for Slice<'a, C>
 where
-    SubSequence: BidirectionalCollection
-        + UnsafeSubSequence<SubSequence = SubSequence>
-        + 'a,
+    C: BidirectionalCollection + 'a,
+    C::SubSequence: BidirectionalCollection,
+    C::MutableSubSequence: BidirectionalCollection,
 {
     fn form_prior(&self, i: &mut Self::Position) {
         self.subsequence.form_prior(i);
@@ -460,9 +466,10 @@ where
     }
 }
 
-impl<'a, SubSequence> RandomAccessCollection for Slice<'a, SubSequence> where
-    SubSequence: RandomAccessCollection
-        + UnsafeSubSequence<SubSequence = SubSequence>
-        + 'a
+impl<'a, C> RandomAccessCollection for Slice<'a, C>
+where
+    C: RandomAccessCollection + 'a,
+    C::SubSequence: RandomAccessCollection,
+    C::MutableSubSequence: RandomAccessCollection,
 {
 }
