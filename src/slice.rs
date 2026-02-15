@@ -29,6 +29,11 @@ where
         }
     }
 
+    /// Returns the wrapped unsafe subsequence
+    pub unsafe fn subsequence(&self) -> C::SubSequence {
+        self.subsequence.clone()
+    }
+
     /// Removes and returns first element.
     ///
     /// The removed element becomes independent of `self` and can therefore be used
