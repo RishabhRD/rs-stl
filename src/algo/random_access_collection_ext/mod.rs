@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{RandomAccessCollection, ReorderableCollection};
+use crate::{
+    RandomAccessCollection, ReorderableCollection, UnsafeReorderableSubSequence,
+};
 mod sort;
 
 /// Algorithms for `RandomAccessCollection`.
 pub trait RandomAccessCollectionExt: RandomAccessCollection
 where
-    Self::Whole: RandomAccessCollection,
+    Self::SubSequence: RandomAccessCollection,
+    Self::MutableSubSequence: RandomAccessCollection,
 {
     /*-----------------Sorting Algorithms-----------------*/
 
@@ -33,7 +36,7 @@ where
     fn sort_unstable_by<Compare>(&mut self, are_in_increasing_order: Compare)
     where
         Self: ReorderableCollection,
-        Self::Whole: ReorderableCollection,
+        Self::MutableSubSequence: UnsafeReorderableSubSequence,
         Compare: Fn(&Self::Element, &Self::Element) -> bool + Clone,
     {
         sort::sort_unstable_by(self, are_in_increasing_order);
@@ -58,7 +61,7 @@ where
     fn sort_unstable(&mut self)
     where
         Self: ReorderableCollection,
-        Self::Whole: ReorderableCollection,
+        Self::MutableSubSequence: UnsafeReorderableSubSequence,
         Self::Element: Ord,
     {
         self.sort_unstable_by(|x, y| x < y)
@@ -68,6 +71,7 @@ where
 impl<R> RandomAccessCollectionExt for R
 where
     R: RandomAccessCollection + ?Sized,
-    R::Whole: RandomAccessCollection,
+    R::SubSequence: RandomAccessCollection,
+    R::MutableSubSequence: RandomAccessCollection,
 {
 }

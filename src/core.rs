@@ -336,7 +336,7 @@ where
 ///
 /// NOTE: The trait doesn't enforce usual lifetime tracking. It is intended to
 /// be wrapped in a safe view (i.e., `Slice`).
-pub trait UnsafeSubSequence: Collection + Clone {
+pub trait UnsafeSubSequence: Collection {
     /// Yields reference to `i`th element with lifetime `'a`.
     unsafe fn unsafe_at<'a>(&self, i: &Self::Position) -> Self::ElementRef<'a>;
 

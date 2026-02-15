@@ -3,12 +3,12 @@
 
 use crate::algo::reorderable_collection_ext::ReorderableCollectionExt;
 use crate::iterators::MutableCollectionIter;
-use crate::MutableCollection;
+use crate::{MutableCollection, UnsafeMutableSubSequence};
 
 /// Algorithms for `MutableCollection`.
 pub trait MutableCollectionExt: MutableCollection
 where
-    Self::Whole: MutableCollection,
+    Self::MutableSubSequence: UnsafeMutableSubSequence,
 {
     /*-----------------Iteration Algorithms-----------------*/
 
@@ -38,7 +38,9 @@ where
     }
 
     /// Returns an iterator to iterate over mutable element refs in collection.
-    fn iter_mut(&mut self) -> MutableCollectionIter<'_, Self::Whole> {
+    fn iter_mut(
+        &mut self,
+    ) -> MutableCollectionIter<'_, Self::MutableSubSequence> {
         MutableCollectionIter::new(self.full_mut())
     }
 }
@@ -46,6 +48,6 @@ where
 impl<R> MutableCollectionExt for R
 where
     R: MutableCollection + ?Sized,
-    R::Whole: MutableCollection,
+    R::MutableSubSequence: UnsafeMutableSubSequence,
 {
 }

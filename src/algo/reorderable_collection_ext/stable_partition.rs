@@ -2,7 +2,7 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::reorderable_collection_ext::ReorderableCollectionExt;
-use crate::ReorderableCollection;
+use crate::{ReorderableCollection, UnsafeReorderableSubSequence};
 
 /// Moves all elements satisfying `belongs_in_second_partition` into a suffix of
 /// the collection, preserving their relative order, and returns the start of
@@ -23,7 +23,7 @@ pub fn stable_partition<C, F>(
 ) -> C::Position
 where
     C: ReorderableCollection + ?Sized,
-    C::Whole: ReorderableCollection,
+    C::MutableSubSequence: UnsafeReorderableSubSequence,
     F: FnMut(&C::Element) -> bool + Clone,
 {
     if n == 0 {

@@ -19,19 +19,6 @@ where
     pub base: C,
 }
 
-impl<C> Clone for ReversedCollection<C>
-where
-    C: UnsafeSubSequence + BidirectionalCollection,
-    C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: BidirectionalCollection,
-{
-    fn clone(&self) -> Self {
-        Self {
-            base: self.base.clone(),
-        }
-    }
-}
-
 /// Position type of ReversedCollection.
 ///
 /// Ordering of positions should be inverted in ReversedCollection.

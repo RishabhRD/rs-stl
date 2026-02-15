@@ -4,10 +4,7 @@
 use crate::{exec_par, Collection, CollectionExt};
 
 /// Parallel Algorithms for `Collection`.
-pub trait ParallelCollectionExt: Collection
-where
-    Self::Whole: Send,
-{
+pub trait ParallelCollectionExt: Collection {
     /*-----------------Find Algorithms-----------------*/
 
     /// Finds position of first element in `self` satisfying `pred`. If no such
@@ -242,6 +239,6 @@ where
 impl<R> ParallelCollectionExt for R
 where
     R: Collection + ?Sized,
-    R::Whole: Send,
+    R::SubSequence: Send,
 {
 }

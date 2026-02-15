@@ -20,9 +20,8 @@ pub mod tests {
 
         let arr = 1_i32..3;
         let mut sum = 0;
-        let mut rest = arr.full();
-        while let Some(i) = rest.pop_first() {
-            sum += *i;
+        for e in arr.iter() {
+            sum += *e;
         }
         assert_eq!(sum, 3);
         assert_eq!(arr.lazy_iter().sum::<i32>(), 3);
@@ -43,8 +42,7 @@ pub mod tests {
 
         let arr = 1_i32..=3;
         let mut sum = 0;
-        let mut rest = arr.full();
-        while let Some(i) = rest.pop_first() {
+        for i in arr.iter() {
             sum += *i;
         }
         assert_eq!(sum, 6);

@@ -31,7 +31,9 @@ where
 
     /// Returns the wrapped unsafe subsequence
     pub unsafe fn subsequence(&self) -> C::SubSequence {
-        self.subsequence.clone()
+        let s = self.subsequence.start();
+        let e = self.subsequence.end();
+        self.subsequence.unsafe_slice(s, e)
     }
 
     /// Removes and returns first element.
@@ -104,7 +106,7 @@ where
 
     /// Removes subsequence of elements starting from `self.start()` upto but not
     /// including `p`.
-    fn drop_prefix_upto(&mut self, p: C::Position) {
+    pub fn drop_prefix_upto(&mut self, p: C::Position) {
         _ = self.pop_prefix_upto(p)
     }
 

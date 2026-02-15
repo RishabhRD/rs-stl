@@ -7,11 +7,13 @@ use crate::BidirectionalCollection;
 use crate::Collection;
 use crate::ReorderableCollection;
 use crate::ReorderableCollectionExt;
+use crate::UnsafeReorderableSubSequence;
 
 /// Algorithms for `BidirectionalCollection`.
 pub trait BidirectionalCollectionExt: BidirectionalCollection
 where
-    Self::Whole: BidirectionalCollection,
+    Self::SubSequence: BidirectionalCollection,
+    Self::MutableSubSequence: BidirectionalCollection,
 {
     /// Reverses the order of elements in `self`.
     ///
@@ -29,7 +31,7 @@ where
     fn reverse(&mut self)
     where
         Self: ReorderableCollection,
-        Self::Whole: ReorderableCollection,
+        Self::MutableSubSequence: UnsafeReorderableSubSequence,
     {
         let mut s = self.full_mut();
         while s.count() > 1 {
@@ -79,7 +81,8 @@ where
     {
         let mut res = init;
         let mut rest = self.full();
-        while let Some(e) = rest.pop_last() {
+        while !rest.is_empty() {
+            let e = rest.pop_last();
             res = op(&e, res)
         }
         res
@@ -89,6 +92,7 @@ where
 impl<R> BidirectionalCollectionExt for R
 where
     R: BidirectionalCollection + ?Sized,
-    R::Whole: BidirectionalCollection,
+    R::SubSequence: BidirectionalCollection,
+    R::MutableSubSequence: BidirectionalCollection,
 {
 }

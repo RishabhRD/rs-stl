@@ -2,7 +2,6 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 pub mod array;
-pub mod option;
 pub mod range;
 pub mod string;
 

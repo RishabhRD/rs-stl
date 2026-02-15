@@ -6,7 +6,7 @@ use crate::{
     RandomAccessCollection, Slice, UnsafeSubSequence,
 };
 
-struct UnsafeSlice<C: Collection> {
+pub struct UnsafeSlice<C: Collection> {
     /// The whole collection.
     whole: *const C,
 

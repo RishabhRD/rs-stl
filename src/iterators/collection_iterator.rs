@@ -2,36 +2,41 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, RandomAccessCollection, Slice,
+    BidirectionalCollection, Collection, CollectionExt, RandomAccessCollection,
+    Slice,
 };
 
 /// An iterator to iterate over element-ref of collection.
 pub struct CollectionIter<'a, C>
 where
-    C: Collection<Whole = C>,
+    C: Collection,
 {
     /// Slice representing remaining elements to iterate.
-    slice: Slice<'a, C>,
+    slice: Slice<'a, C::SubSequence>,
 }
 
 impl<'a, C> CollectionIter<'a, C>
 where
-    C: Collection<Whole = C>,
+    C: Collection,
 {
     /// Creates a new instance of Self with given slice.
-    pub(crate) fn new(slice: Slice<'a, C>) -> Self {
+    pub(crate) fn new(slice: Slice<'a, C::SubSequence>) -> Self {
         Self { slice }
     }
 }
 
 impl<'a, C> Iterator for CollectionIter<'a, C>
 where
-    C: Collection<Whole = C>,
+    C: Collection,
 {
-    type Item = C::ElementRef<'a>;
+    type Item = <C::SubSequence as Collection>::ElementRef<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.slice.pop_first()
+        if self.slice.is_empty() {
+            None
+        } else {
+            Some(self.slice.pop_first())
+        }
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -41,16 +46,24 @@ where
 
 impl<'a, C> DoubleEndedIterator for CollectionIter<'a, C>
 where
-    C: BidirectionalCollection<Whole = C>,
+    C: BidirectionalCollection,
+    C::SubSequence: BidirectionalCollection,
+    C::MutableSubSequence: BidirectionalCollection,
 {
     fn next_back(&mut self) -> Option<Self::Item> {
-        self.slice.pop_last()
+        if self.slice.is_empty() {
+            None
+        } else {
+            Some(self.slice.pop_last())
+        }
     }
 }
 
 impl<'a, C> ExactSizeIterator for CollectionIter<'a, C>
 where
-    C: RandomAccessCollection<Whole = C>,
+    C: RandomAccessCollection,
+    C::SubSequence: RandomAccessCollection,
+    C::MutableSubSequence: RandomAccessCollection,
 {
     fn len(&self) -> usize {
         self.slice.count()

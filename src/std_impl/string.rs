@@ -131,7 +131,7 @@ impl LazyCollection for &str {
 }
 
 /// Unsafe slice for string.
-struct StringSlice {
+pub struct StringSlice {
     start_address: *const u8,
 
     start_position: usize,

@@ -246,19 +246,13 @@ pub mod tests {
         let mut s = arr.full_mut();
 
         let e = s.pop_first();
-        assert_eq!(e, Some(&1));
+        assert_eq!(e, &1);
+        s.drop_first();
         assert!(s.equals(&[2, 3]));
-
-        assert!(s.drop_first());
+        s.drop_first();
         assert!(s.equals(&[3]));
-        assert!(s.drop_first());
-        assert!(s.equals(&[]));
-        assert!(!s.drop_first());
-        assert!(s.equals(&[]));
-
-        let e = s.pop_first();
-        assert_eq!(e, None);
-        assert!(s.equals(&[]));
+        s.drop_first();
+        assert!(s.is_empty());
     }
 
     #[test]

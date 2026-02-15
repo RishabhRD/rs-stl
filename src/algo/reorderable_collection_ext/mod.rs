@@ -3,14 +3,14 @@
 
 use crate::algo::collection_ext::CollectionExt;
 use crate::iterators::{SplitEvenlyIteratorMut, SplitWhereIteratorMut};
-use crate::{ReorderableCollection, SliceMut};
+use crate::{ReorderableCollection, SliceMut, UnsafeReorderableSubSequence};
 mod stable_partition;
 use stable_partition::*;
 
 /// Algorithms for `ReorderableCollection`.
 pub trait ReorderableCollectionExt: ReorderableCollection
 where
-    Self::Whole: ReorderableCollection,
+    Self::MutableSubSequence: UnsafeReorderableSubSequence,
 {
     /*-----------------Slice Algorithms-----------------*/
 
@@ -30,7 +30,7 @@ where
     /// assert!(s.equals(&[0, 2, 3, 4, 5]));
     /// assert!(arr.equals(&[0, 2, 3, 4, 5]));
     /// ```
-    fn full_mut(&mut self) -> SliceMut<'_, Self::Whole> {
+    fn full_mut(&mut self) -> SliceMut<'_, Self::MutableSubSequence> {
         self.slice_mut(self.start(), self.end())
     }
 
@@ -53,7 +53,10 @@ where
     /// let s = arr.prefix_mut(3);
     /// assert!(s.equals(&[1, 2, 3]));
     /// ```
-    fn prefix_mut(&mut self, max_length: usize) -> SliceMut<'_, Self::Whole> {
+    fn prefix_mut(
+        &mut self,
+        max_length: usize,
+    ) -> SliceMut<'_, Self::MutableSubSequence> {
         let mut end = self.start();
         self.form_next_n_limited_by(&mut end, max_length, self.end());
         self.prefix_upto_mut(end)
@@ -81,7 +84,7 @@ where
     fn prefix_upto_mut(
         &mut self,
         to: Self::Position,
-    ) -> SliceMut<'_, Self::Whole> {
+    ) -> SliceMut<'_, Self::MutableSubSequence> {
         self.slice_mut(self.start(), to)
     }
 
@@ -104,7 +107,7 @@ where
     fn prefix_through_mut(
         &mut self,
         pos: Self::Position,
-    ) -> SliceMut<'_, Self::Whole> {
+    ) -> SliceMut<'_, Self::MutableSubSequence> {
         let next = self.next(pos);
         self.prefix_upto_mut(next)
     }
@@ -126,7 +129,7 @@ where
     fn prefix_while_mut<F: FnMut(&Self::Element) -> bool>(
         &mut self,
         mut predicate: F,
-    ) -> SliceMut<'_, Self::Whole> {
+    ) -> SliceMut<'_, Self::MutableSubSequence> {
         let p = self
             .first_position_where(|x| !predicate(x))
             .unwrap_or(self.end());
@@ -150,7 +153,7 @@ where
     fn dropping_while_mut<F>(
         &mut self,
         mut predicate: F,
-    ) -> SliceMut<'_, Self::Whole>
+    ) -> SliceMut<'_, Self::MutableSubSequence>
     where
         F: FnMut(&Self::Element) -> bool,
     {
@@ -180,7 +183,7 @@ where
     fn dropping_prefix_mut(
         &mut self,
         count: usize,
-    ) -> SliceMut<'_, Self::Whole> {
+    ) -> SliceMut<'_, Self::MutableSubSequence> {
         let mut start = self.start();
         self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from_mut(start)
@@ -206,7 +209,7 @@ where
     fn dropping_suffix_mut(
         &mut self,
         count: usize,
-    ) -> SliceMut<'_, Self::Whole> {
+    ) -> SliceMut<'_, Self::MutableSubSequence> {
         let n = self.count();
         if count > n {
             return self.prefix_upto_mut(self.start());
@@ -233,7 +236,10 @@ where
     /// let s = arr.suffix_mut(3);
     /// assert!(s.equals(&[3, 4, 5]));
     /// ```
-    fn suffix_mut(&mut self, max_length: usize) -> SliceMut<'_, Self::Whole> {
+    fn suffix_mut(
+        &mut self,
+        max_length: usize,
+    ) -> SliceMut<'_, Self::MutableSubSequence> {
         let n = self.count();
         if max_length > n {
             self.full_mut()
@@ -264,7 +270,7 @@ where
     fn suffix_from_mut(
         &mut self,
         from: Self::Position,
-    ) -> SliceMut<'_, Self::Whole> {
+    ) -> SliceMut<'_, Self::MutableSubSequence> {
         self.slice_mut(from, self.end())
     }
 
@@ -282,7 +288,10 @@ where
     fn splitting_at_mut(
         &mut self,
         position: Self::Position,
-    ) -> (SliceMut<'_, Self::Whole>, SliceMut<'_, Self::Whole>) {
+    ) -> (
+        SliceMut<'_, Self::MutableSubSequence>,
+        SliceMut<'_, Self::MutableSubSequence>,
+    ) {
         self.full_mut().split_at(position)
     }
 
@@ -304,7 +313,10 @@ where
     fn splitting_after_mut(
         &mut self,
         position: Self::Position,
-    ) -> (SliceMut<'_, Self::Whole>, SliceMut<'_, Self::Whole>) {
+    ) -> (
+        SliceMut<'_, Self::MutableSubSequence>,
+        SliceMut<'_, Self::MutableSubSequence>,
+    ) {
         self.full_mut().split_after(position)
     }
 
@@ -324,7 +336,7 @@ where
     fn splitting_where_mut<Pred>(
         &mut self,
         pred: Pred,
-    ) -> SplitWhereIteratorMut<'_, Self::Whole, Pred>
+    ) -> SplitWhereIteratorMut<'_, Self::MutableSubSequence, Pred>
     where
         Pred: FnMut(&Self::Element) -> bool,
         Self: Sized,
@@ -362,7 +374,7 @@ where
         &mut self,
         max_slices: usize,
         min_size: usize,
-    ) -> SplitEvenlyIteratorMut<'_, Self::Whole> {
+    ) -> SplitEvenlyIteratorMut<'_, Self::MutableSubSequence> {
         self.full_mut()
             .split_evenly_in_with_min_size(max_slices, min_size)
     }
@@ -395,7 +407,7 @@ where
     fn splitting_evenly_in_mut(
         &mut self,
         num_slices: usize,
-    ) -> SplitEvenlyIteratorMut<'_, Self::Whole> {
+    ) -> SplitEvenlyIteratorMut<'_, Self::MutableSubSequence> {
         self.full_mut().split_evenly_in(num_slices)
     }
 
@@ -546,6 +558,6 @@ where
 impl<R> ReorderableCollectionExt for R
 where
     R: ReorderableCollection + ?Sized,
-    R::Whole: ReorderableCollection,
+    R::MutableSubSequence: UnsafeReorderableSubSequence,
 {
 }
