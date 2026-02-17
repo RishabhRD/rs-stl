@@ -128,8 +128,8 @@ impl<T> ReorderableCollection for ArraySliceMut<T> {
         assert!(*j >= self.start_position && *j < self.end_position);
 
         unsafe {
-            let pi = self.start_address.add(*i + self.start_position);
-            let pj = self.start_address.add(*j + self.start_position);
+            let pi = self.start_address.add(*i);
+            let pj = self.start_address.add(*j);
 
             std::ptr::swap(pi, pj);
         }
@@ -153,11 +153,7 @@ impl<T> MutableCollection for ArraySliceMut<T> {
 impl<T> UnsafeSubSequence for ArraySliceMut<T> {
     unsafe fn unsafe_at<'a>(&self, i: &Self::Position) -> Self::ElementRef<'a> {
         assert!(*i >= self.start_position && *i < self.end_position);
-        unsafe {
-            self.start_address
-                .add(i + self.start_position)
-                .as_ref_unchecked()
-        }
+        unsafe { self.start_address.add(*i).as_ref_unchecked() }
     }
 
     unsafe fn unsafe_slice(
@@ -201,10 +197,6 @@ impl<T> UnsafeMutableSubSequence for ArraySliceMut<T> {
         i: &Self::Position,
     ) -> &'a mut Self::Element {
         assert!(*i >= self.start_position && *i < self.end_position);
-        unsafe {
-            self.start_address
-                .add(i + self.start_position)
-                .as_mut_unchecked()
-        }
+        unsafe { self.start_address.add(*i).as_mut_unchecked() }
     }
 }

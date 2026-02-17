@@ -2,8 +2,8 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, LazyCollection, LazyCollectionExt,
-    RandomAccessCollection, Slice,
+    BidirectionalCollection, Collection, CollectionExt, LazyCollection,
+    LazyCollectionExt, RandomAccessCollection, Slice,
 };
 
 /// An iterator to iterate over lazily computed elements of collection.
@@ -38,9 +38,12 @@ where
     type Item = C::Element;
 
     fn next(&mut self) -> Option<Self::Item> {
+        if self.slice.is_empty() {
+            return None;
+        }
         let r = self.slice.lazy_first();
         self.slice.drop_first();
-        r
+        Some(r)
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -55,9 +58,12 @@ where
     C::MutableSubSequence: BidirectionalCollection + LazyCollection,
 {
     fn next_back(&mut self) -> Option<Self::Item> {
+        if self.slice.is_empty() {
+            return None;
+        }
         let r = self.slice.lazy_last();
         self.slice.drop_last();
-        r
+        Some(r)
     }
 }
 

@@ -48,7 +48,9 @@ where
             .first_position_where(self.predicate.clone())
             .unwrap_or(self.rest.end());
         let res = self.rest.pop_prefix_upto(p);
-        self.rest.drop_first();
+        if !self.rest.is_empty() {
+            self.rest.drop_first();
+        }
         Some(res)
     }
 }
@@ -98,7 +100,9 @@ where
             .first_position_where(self.predicate.clone())
             .unwrap_or(self.rest.end());
         let res = self.rest.pop_prefix_upto(p);
-        self.rest.drop_first();
+        if !self.rest.is_empty() {
+            self.rest.drop_first();
+        }
         Some(res)
     }
 }

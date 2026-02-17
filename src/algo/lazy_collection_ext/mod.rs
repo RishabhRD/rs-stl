@@ -3,7 +3,7 @@
 
 use crate::algo::collection_ext::CollectionExt;
 use crate::iterators::LazyCollectionIter;
-use crate::{BidirectionalCollection, LazyCollection};
+use crate::{precondition, BidirectionalCollection, LazyCollection};
 
 /// Algorithms for `LazyCollection`.
 pub trait LazyCollectionExt: LazyCollection
@@ -11,27 +11,26 @@ where
     Self::SubSequence: LazyCollection,
     Self::MutableSubSequence: LazyCollection,
 {
-    /// Returns the "lazily computed" first element, or nil if `self` is empty.
-    fn lazy_first(&self) -> Option<Self::Element> {
-        if self.start() == self.end() {
-            None
-        } else {
-            Some(self.compute_at(&self.start()))
-        }
+    /// Returns the "lazily computed" first element.
+    ///
+    /// - Precondition: `!self.is_empty()`.
+    fn lazy_first(&self) -> Self::Element {
+        precondition!(!self.is_empty());
+        self.compute_at(&self.start())
     }
 
-    /// Returns the "lazily computed" last element, or nil if `self` is empty.
-    fn lazy_last(&self) -> Option<Self::Element>
+    /// Returns the "lazily computed" last element.
+    ///
+    /// - Precondition: `!self.is_empty()`.
+    fn lazy_last(&self) -> Self::Element
     where
         Self: BidirectionalCollection,
         Self::SubSequence: BidirectionalCollection,
         Self::MutableSubSequence: BidirectionalCollection,
     {
-        if self.start() == self.end() {
-            None
-        } else {
-            Some(self.compute_at(&self.prior(self.end())))
-        }
+        precondition!(!self.is_empty());
+        self.compute_at(&self.start());
+        self.compute_at(&self.prior(self.end()))
     }
 
     /*-----------------Iteration Algorithms-----------------*/

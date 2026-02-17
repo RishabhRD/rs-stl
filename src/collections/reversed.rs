@@ -116,7 +116,9 @@ where
         to: Self::Position,
     ) -> Slice<'_, Self::SubSequence> {
         unsafe {
-            let s = self.full().subsequence();
+            let s = ReversedCollection {
+                base: self.base.full().subsequence(),
+            };
             Slice::new(s.unsafe_slice(from, to))
         }
     }
@@ -265,7 +267,9 @@ where
         to: Self::Position,
     ) -> SliceMut<'_, Self::MutableSubSequence> {
         unsafe {
-            let s = self.full_mut().subsequence();
+            let s = ReversedCollection {
+                base: self.base.full_mut().subsequence(),
+            };
             SliceMut::new(s.unsafe_slice_mut(from, to))
         }
     }

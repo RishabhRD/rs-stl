@@ -460,11 +460,11 @@ pub trait CollectionExt: Collection {
         let mut self1 = self.full();
         let mut other1 = other.full();
         while !self1.is_empty() && !other1.is_empty() {
-            if bi_pred(&self1.pop_first(), &other1.pop_first()) {
+            if !bi_pred(&self1.pop_first(), &other1.pop_first()) {
                 return false;
             }
         }
-        return self1.is_empty() && other1.is_empty();
+        self1.is_empty() && other1.is_empty()
     }
 
     /// Returns true if elements of self is equal to elements of other.
