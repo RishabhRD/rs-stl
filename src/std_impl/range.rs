@@ -7,7 +7,7 @@ use std::ops::RangeInclusive;
 use crate::UnsafeSubSequence;
 use crate::{
     value_ref::ValueRef, BidirectionalCollection, Collection, LazyCollection,
-    RandomAccessCollection, Slice, UnsafeSlice,
+    RandomAccessCollection, Slice,
 };
 
 macro_rules! impl_collection_for_range_inclusive {
@@ -22,9 +22,9 @@ impl Collection for RangeInclusive<$t> {
     where
         Self: 'a;
 
-    type SubSequence = UnsafeSlice<Self>;
+    type SubSequence = Self;
 
-    type MutableSubSequence = UnsafeSlice<Self>;
+    type MutableSubSequence = Self;
 
     fn start(&self) -> Self::Position {
         *self.start()
@@ -47,7 +47,7 @@ impl Collection for RangeInclusive<$t> {
         from: Self::Position,
         to: Self::Position,
     ) -> crate::Slice<'_, Self::SubSequence> {
-        unsafe { Slice::new(UnsafeSlice::new(self, from, to)) }
+        unsafe { Slice::new(from..=(to - 1)) }
     }
 
     fn form_next_n(&self, position: &mut Self::Position, n: usize) {
@@ -107,6 +107,32 @@ impl BidirectionalCollection for RangeInclusive<$t> {
 
 impl RandomAccessCollection for RangeInclusive<$t> {}
 
+impl UnsafeSubSequence for RangeInclusive<$t> {
+    unsafe fn unsafe_at<'a>(&self, i: &Self::Position) -> Self::ElementRef<'a> {
+        ValueRef::new(*i)
+    }
+
+    unsafe fn unsafe_slice(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::SubSequence {
+        from..=(to - 1)
+    }
+
+    unsafe fn set_start(&mut self, p: Self::Position) {
+        assert!(p <= *self.end() + 1);
+        *self = p..=(*self.end())
+    }
+
+    unsafe fn set_end(&mut self, p: Self::Position) {
+        if p == *self.start() {
+          *self = (*self.start() + 1)..=p
+        }else {
+          *self = *self.start()..=(p - 1)
+        }
+    }
+}
 )*};}
 
 impl_collection_for_range_inclusive!(
