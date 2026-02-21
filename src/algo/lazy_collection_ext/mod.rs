@@ -27,7 +27,6 @@ where
         Self::SubSequence: BidirectionalCollection,
     {
         precondition!(!self.is_empty());
-        self.compute_at(&self.start());
         self.compute_at(&self.prior(self.end()))
     }
 
