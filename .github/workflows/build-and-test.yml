@@ -1,10 +1,13 @@
-name: Validate PR
+name: Build and Test
 
 on:
   pull_request:
     types: [opened, synchronize]
     branches:
       - "*"
+  push:
+    branches:
+      - main
 
 jobs:
   lint-and-test:
