@@ -3,7 +3,6 @@
 
 use crate::{
     Collection, CollectionExt, ReorderableCollection, Slice, SliceMut,
-    UnsafeReorderableSubSequence,
 };
 
 /// An iterator of slices which are separated by elements that match `predicate`.
@@ -13,7 +12,7 @@ where
     Pred: FnMut(&C::Element) -> bool,
 {
     /// Rest of collection.
-    rest: Slice<'a, C>,
+    rest: Slice<'a, C::SubSequence>,
 
     /// Predicate upon which splitting would be done.
     predicate: Pred,
@@ -24,7 +23,10 @@ where
     C: Collection,
     Predicate: FnMut(&C::Element) -> bool,
 {
-    pub(crate) fn new(slice: Slice<'a, C>, predicate: Predicate) -> Self {
+    pub(crate) fn new(
+        slice: Slice<'a, C::SubSequence>,
+        predicate: Predicate,
+    ) -> Self {
         SplitWhereIterator {
             rest: slice,
             predicate,
@@ -37,7 +39,7 @@ where
     C: Collection,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
-    type Item = Slice<'a, C>;
+    type Item = Slice<'a, C::SubSequence>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {
@@ -59,11 +61,11 @@ where
 pub struct SplitWhereIteratorMut<'a, C, Pred>
 where
     C: ReorderableCollection,
-    C::MutableSubSequence: UnsafeReorderableSubSequence,
+    C::SubSequence: ReorderableCollection,
     Pred: FnMut(&C::Element) -> bool,
 {
     /// Rest of collection.
-    rest: SliceMut<'a, C>,
+    rest: SliceMut<'a, C::SubSequence>,
 
     /// Predicate upon which splitting would be done.
     predicate: Pred,
@@ -72,10 +74,13 @@ where
 impl<'a, C, Pred> SplitWhereIteratorMut<'a, C, Pred>
 where
     C: ReorderableCollection,
-    C::MutableSubSequence: UnsafeReorderableSubSequence,
+    C::SubSequence: ReorderableCollection,
     Pred: FnMut(&C::Element) -> bool,
 {
-    pub(crate) fn new(slice: SliceMut<'a, C>, predicate: Pred) -> Self {
+    pub(crate) fn new(
+        slice: SliceMut<'a, C::SubSequence>,
+        predicate: Pred,
+    ) -> Self {
         SplitWhereIteratorMut {
             rest: slice,
             predicate,
@@ -86,10 +91,10 @@ where
 impl<'a, C, Pred> Iterator for SplitWhereIteratorMut<'a, C, Pred>
 where
     C: ReorderableCollection,
-    C::MutableSubSequence: UnsafeReorderableSubSequence,
+    C::SubSequence: ReorderableCollection,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
-    type Item = SliceMut<'a, C>;
+    type Item = SliceMut<'a, C::SubSequence>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {

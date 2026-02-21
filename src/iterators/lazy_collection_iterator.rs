@@ -11,7 +11,6 @@ pub struct LazyCollectionIter<'a, C>
 where
     C: LazyCollection,
     C::SubSequence: LazyCollection,
-    C::MutableSubSequence: LazyCollection,
 {
     /// Slice representing remaining elements to iterate.
     slice: Slice<'a, C::SubSequence>,
@@ -21,7 +20,6 @@ impl<'a, C> LazyCollectionIter<'a, C>
 where
     C: LazyCollection,
     C::SubSequence: LazyCollection,
-    C::MutableSubSequence: LazyCollection,
 {
     /// Creates a new instance of Self with given slice.
     pub(crate) fn new(slice: Slice<'a, C::SubSequence>) -> Self {
@@ -33,7 +31,6 @@ impl<C> Iterator for LazyCollectionIter<'_, C>
 where
     C: LazyCollection,
     C::SubSequence: LazyCollection,
-    C::MutableSubSequence: LazyCollection,
 {
     type Item = C::Element;
 
@@ -55,7 +52,6 @@ impl<C> DoubleEndedIterator for LazyCollectionIter<'_, C>
 where
     C: BidirectionalCollection + LazyCollection,
     C::SubSequence: BidirectionalCollection + LazyCollection,
-    C::MutableSubSequence: BidirectionalCollection + LazyCollection,
 {
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.slice.is_empty() {
@@ -71,7 +67,6 @@ impl<'a, C> ExactSizeIterator for LazyCollectionIter<'a, C>
 where
     C: RandomAccessCollection + LazyCollection,
     C::SubSequence: RandomAccessCollection + LazyCollection,
-    C::MutableSubSequence: RandomAccessCollection + LazyCollection,
 {
     fn len(&self) -> usize {
         self.slice.count()

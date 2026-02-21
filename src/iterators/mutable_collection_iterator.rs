@@ -3,26 +3,26 @@
 
 use crate::{
     BidirectionalCollection, Collection, CollectionExt, MutableCollection,
-    RandomAccessCollection, SliceMut, UnsafeMutableSubSequence,
+    RandomAccessCollection, SliceMut,
 };
 
 /// An iterator to iterate over mutable reference of elements of collection.
 pub struct MutableCollectionIter<'a, C>
 where
     C: MutableCollection + 'a,
-    C::MutableSubSequence: UnsafeMutableSubSequence,
+    C::SubSequence: MutableCollection,
 {
     /// Slice representing remaining elements to iterate.
-    slice: SliceMut<'a, C::MutableSubSequence>,
+    slice: SliceMut<'a, C::SubSequence>,
 }
 
 impl<'a, C> MutableCollectionIter<'a, C>
 where
     C: MutableCollection + 'a,
-    C::MutableSubSequence: UnsafeMutableSubSequence,
+    C::SubSequence: MutableCollection,
 {
     /// Creates a new instance of Self with given slice.
-    pub(crate) fn new(slice: SliceMut<'a, C::MutableSubSequence>) -> Self {
+    pub(crate) fn new(slice: SliceMut<'a, C::SubSequence>) -> Self {
         Self { slice }
     }
 }
@@ -30,9 +30,9 @@ where
 impl<'a, C> Iterator for MutableCollectionIter<'a, C>
 where
     C: MutableCollection + 'a,
-    C::MutableSubSequence: UnsafeMutableSubSequence,
+    C::SubSequence: MutableCollection,
 {
-    type Item = &'a mut <C::MutableSubSequence as Collection>::Element;
+    type Item = &'a mut <C::SubSequence as Collection>::Element;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.slice.is_empty() {
@@ -50,8 +50,7 @@ where
 impl<'a, C> DoubleEndedIterator for MutableCollectionIter<'a, C>
 where
     C: BidirectionalCollection + MutableCollection + 'a,
-    C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: BidirectionalCollection + UnsafeMutableSubSequence,
+    C::SubSequence: MutableCollection + BidirectionalCollection,
 {
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.slice.is_empty() {
@@ -65,8 +64,7 @@ where
 impl<'a, C> ExactSizeIterator for MutableCollectionIter<'a, C>
 where
     C: RandomAccessCollection + MutableCollection + 'a,
-    C::SubSequence: RandomAccessCollection,
-    C::MutableSubSequence: RandomAccessCollection + UnsafeMutableSubSequence,
+    C::SubSequence: RandomAccessCollection + MutableCollection,
 {
     fn len(&self) -> usize {
         self.slice.count()

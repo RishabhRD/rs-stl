@@ -48,17 +48,6 @@ pub trait Collection {
         Position = Self::Position,
         Element = Self::Element,
         SubSequence = Self::SubSequence,
-        MutableSubSequence = Self::SubSequence,
-    >;
-
-    /// An unsafe collection representing mutable contiguous subrange of `self`.
-    ///
-    /// For immutable collections, this is same as `SubSequence`.
-    type MutableSubSequence: UnsafeSubSequence<
-        Position = Self::Position,
-        Element = Self::Element,
-        SubSequence = Self::SubSequence,
-        MutableSubSequence = Self::MutableSubSequence,
     >;
 
     /// Returns the position of first element in `self` if `self` is not empty;
@@ -207,7 +196,6 @@ where
 pub trait BidirectionalCollection: Collection
 where
     Self::SubSequence: BidirectionalCollection,
-    Self::MutableSubSequence: BidirectionalCollection,
 {
     /// Sets `p` to position just before `p`.
     ///
@@ -301,14 +289,13 @@ where
 pub trait RandomAccessCollection: BidirectionalCollection
 where
     Self::SubSequence: RandomAccessCollection,
-    Self::MutableSubSequence: RandomAccessCollection,
 {
 }
 
 /// A collection which supports internally reordering its element.
 pub trait ReorderableCollection: Collection
 where
-    Self::MutableSubSequence: UnsafeReorderableSubSequence,
+    Self::SubSequence: ReorderableCollection,
 {
     /// Swaps element at position `i` with element at position `j`.
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
@@ -320,13 +307,14 @@ where
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> SliceMut<'_, Self::MutableSubSequence>;
+    ) -> SliceMut<'_, Self::SubSequence>;
 }
 
 /// A collection which allows mutable access to its elements.
-pub trait MutableCollection: ReorderableCollection
+pub trait MutableCollection:
+    ReorderableCollection<SubSequence: UnsafeMutableSubSequence>
 where
-    Self::MutableSubSequence: UnsafeMutableSubSequence,
+    Self::SubSequence: MutableCollection,
 {
     /// Returns mutable reference to element at `i`th position.
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
@@ -358,31 +346,13 @@ pub trait UnsafeSubSequence: Collection {
     unsafe fn set_end(&mut self, p: Self::Position);
 }
 
-/// A low-level re-orderable contiguous subsequence of a collection.
-///
-/// NOTE: The trait doesn't enforce usual lifetime tracking. It is intended to
-/// be wrapped in a safe view (i.e., `SliceMut`).
-pub trait UnsafeReorderableSubSequence:
-    ReorderableCollection + UnsafeSubSequence
-where
-    Self::MutableSubSequence: UnsafeReorderableSubSequence,
-{
-    /// Returns a mutable slice of elements in position range `[from, to)`.
-    unsafe fn unsafe_slice_mut(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::MutableSubSequence;
-}
-
 /// A low-level mutable contiguous subsequence of a collection.
 ///
 /// NOTE: The trait doesn't enforce usual lifetime tracking. It is intended to
 /// be wrapped in a safe view (i.e., `SliceMut`).
-pub trait UnsafeMutableSubSequence:
-    UnsafeReorderableSubSequence + MutableCollection
+pub trait UnsafeMutableSubSequence: UnsafeSubSequence
 where
-    Self::MutableSubSequence: UnsafeMutableSubSequence,
+    Self::SubSequence: UnsafeMutableSubSequence,
 {
     /// Yields mutable reference to `i`th element with lifetime `'a`.
     unsafe fn unsafe_at_mut<'a>(

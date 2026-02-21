@@ -4,7 +4,6 @@
 use crate::{
     BidirectionalCollection, Collection, CollectionExt, RandomAccessCollection,
     ReorderableCollection, ReorderableCollectionExt,
-    UnsafeReorderableSubSequence,
 };
 
 /// Sorts the collection in place, using the given predicate as comparision between elements.
@@ -22,9 +21,7 @@ pub(crate) fn sort_unstable_by<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::SubSequence: RandomAccessCollection,
-    C::MutableSubSequence:
-        UnsafeReorderableSubSequence + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool + Clone,
 {
     let n = collection.count();
@@ -57,9 +54,7 @@ pub(crate) fn insertion_sort<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + BidirectionalCollection + ?Sized,
-    C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence:
-        UnsafeReorderableSubSequence + BidirectionalCollection,
+    C::SubSequence: ReorderableCollection + BidirectionalCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool,
 {
     if collection.is_empty() {
@@ -105,9 +100,7 @@ pub(crate) fn quick_sort_within<C, Compare>(
 ) -> bool
 where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::SubSequence: RandomAccessCollection,
-    C::MutableSubSequence:
-        UnsafeReorderableSubSequence + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool + Clone,
 {
     if collection.start() == collection.end()
@@ -161,9 +154,7 @@ pub(crate) fn heapify<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::SubSequence: RandomAccessCollection,
-    C::MutableSubSequence:
-        UnsafeReorderableSubSequence + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool,
 {
     let n = elements.count();
@@ -220,9 +211,7 @@ pub(crate) fn make_heap<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::SubSequence: RandomAccessCollection,
-    C::MutableSubSequence:
-        UnsafeReorderableSubSequence + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool + Clone,
 {
     let n = elements.count();
@@ -255,9 +244,7 @@ pub(crate) fn heap_sort<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::SubSequence: RandomAccessCollection,
-    C::MutableSubSequence:
-        UnsafeReorderableSubSequence + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool + Clone,
 {
     make_heap(elements, are_in_increasing_order.clone());

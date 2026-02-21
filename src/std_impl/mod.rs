@@ -6,3 +6,4 @@ pub mod range;
 pub mod string;
 
 pub use array::*;
+pub use string::*;

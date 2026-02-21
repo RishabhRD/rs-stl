@@ -2,9 +2,8 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    ArraySlice, ArraySliceMut, BidirectionalCollection, Collection,
-    MutableCollection, RandomAccessCollection, ReorderableCollection, Slice,
-    SliceMut,
+    ArraySlice, BidirectionalCollection, Collection, MutableCollection,
+    RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
 };
 
 impl<T> Collection for Vec<T> {
@@ -18,8 +17,6 @@ impl<T> Collection for Vec<T> {
         Self: 'a;
 
     type SubSequence = ArraySlice<T>;
-
-    type MutableSubSequence = ArraySliceMut<T>;
 
     fn start(&self) -> Self::Position {
         0
@@ -74,7 +71,10 @@ impl<T> Collection for Vec<T> {
         to: Self::Position,
     ) -> Slice<'_, Self::SubSequence> {
         assert!(from <= to && from <= self.len() && to <= self.len());
-        unsafe { Slice::new(ArraySlice::new(self.as_ptr(), from, to)) }
+        unsafe {
+            let p = std::mem::transmute::<*const T, *mut T>(self.as_ptr());
+            Slice::new(ArraySlice::new(p, from, to))
+        }
     }
 }
 
@@ -114,11 +114,9 @@ impl<T> ReorderableCollection for Vec<T> {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> crate::SliceMut<'_, Self::MutableSubSequence> {
+    ) -> crate::SliceMut<'_, Self::SubSequence> {
         assert!(from <= to && from <= self.len() && to <= self.len());
-        unsafe {
-            SliceMut::new(ArraySliceMut::new(self.as_mut_ptr(), from, to))
-        }
+        unsafe { SliceMut::new(ArraySlice::new(self.as_mut_ptr(), from, to)) }
     }
 }
 

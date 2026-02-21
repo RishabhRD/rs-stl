@@ -9,7 +9,6 @@ use crate::{precondition, BidirectionalCollection, LazyCollection};
 pub trait LazyCollectionExt: LazyCollection
 where
     Self::SubSequence: LazyCollection,
-    Self::MutableSubSequence: LazyCollection,
 {
     /// Returns the "lazily computed" first element.
     ///
@@ -26,7 +25,6 @@ where
     where
         Self: BidirectionalCollection,
         Self::SubSequence: BidirectionalCollection,
-        Self::MutableSubSequence: BidirectionalCollection,
     {
         precondition!(!self.is_empty());
         self.compute_at(&self.start());
@@ -176,7 +174,6 @@ where
         F: FnMut(Self::Element, R) -> R,
         Self: BidirectionalCollection,
         Self::SubSequence: BidirectionalCollection,
-        Self::MutableSubSequence: BidirectionalCollection,
     {
         let mut res = init;
         for e in self.lazy_iter().rev() {
@@ -190,6 +187,5 @@ impl<R> LazyCollectionExt for R
 where
     R: LazyCollection + ?Sized,
     R::SubSequence: LazyCollection,
-    R::MutableSubSequence: LazyCollection,
 {
 }

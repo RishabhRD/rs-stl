@@ -3,7 +3,6 @@
 
 use crate::{
     Collection, CollectionExt, ReorderableCollection, Slice, SliceMut,
-    UnsafeReorderableSubSequence,
 };
 
 /// An iterator yielding evenly sized slices of collection.
@@ -12,7 +11,7 @@ where
     C: Collection,
 {
     /// Remaining elements.
-    rest: Slice<'a, C>,
+    rest: Slice<'a, C::SubSequence>,
 
     /// Number of slices.
     num_slices: usize,
@@ -30,7 +29,7 @@ where
 {
     /// Creates instance of SplitEvenlyIterator.
     pub(crate) fn new(
-        slice: Slice<'a, C>,
+        slice: Slice<'a, C::SubSequence>,
         num_slices: usize,
         slice_size: usize,
         num_bigger_slices: usize,
@@ -48,7 +47,7 @@ impl<'a, C> Iterator for SplitEvenlyIterator<'a, C>
 where
     C: Collection,
 {
-    type Item = Slice<'a, C>;
+    type Item = Slice<'a, C::SubSequence>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {
@@ -82,10 +81,10 @@ where
 pub struct SplitEvenlyIteratorMut<'a, C>
 where
     C: ReorderableCollection,
-    C::MutableSubSequence: UnsafeReorderableSubSequence,
+    C::SubSequence: ReorderableCollection,
 {
     /// Remaining elements.
-    rest: SliceMut<'a, C>,
+    rest: SliceMut<'a, C::SubSequence>,
 
     /// Number of slices.
     num_slices: usize,
@@ -100,11 +99,11 @@ where
 impl<'a, C> SplitEvenlyIteratorMut<'a, C>
 where
     C: ReorderableCollection,
-    C::MutableSubSequence: UnsafeReorderableSubSequence,
+    C::SubSequence: ReorderableCollection,
 {
     /// Creates instance of SplitEvenlyIteratorMut.
     pub(crate) fn new(
-        slice: SliceMut<'a, C>,
+        slice: SliceMut<'a, C::SubSequence>,
         num_slices: usize,
         slice_size: usize,
         num_bigger_slices: usize,
@@ -121,9 +120,9 @@ where
 impl<'a, C> Iterator for SplitEvenlyIteratorMut<'a, C>
 where
     C: ReorderableCollection,
-    C::MutableSubSequence: UnsafeReorderableSubSequence,
+    C::SubSequence: ReorderableCollection,
 {
-    type Item = SliceMut<'a, C>;
+    type Item = SliceMut<'a, C::SubSequence>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {
@@ -147,7 +146,7 @@ where
 impl<'a, C> ExactSizeIterator for SplitEvenlyIteratorMut<'a, C>
 where
     C: ReorderableCollection,
-    C::MutableSubSequence: UnsafeReorderableSubSequence,
+    C::SubSequence: ReorderableCollection,
 {
     fn len(&self) -> usize {
         self.num_slices

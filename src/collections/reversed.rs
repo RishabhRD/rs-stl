@@ -5,7 +5,7 @@ use crate::{
     BidirectionalCollection, Collection, CollectionExt, LazyCollection,
     MutableCollection, RandomAccessCollection, ReorderableCollection,
     ReorderableCollectionExt, Slice, SliceMut, UnsafeMutableSubSequence,
-    UnsafeReorderableSubSequence, UnsafeSubSequence,
+    UnsafeSubSequence,
 };
 
 /// A collection that presents element in reverse order of base collection.
@@ -13,7 +13,6 @@ pub struct ReversedCollection<C>
 where
     C: BidirectionalCollection,
     C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: BidirectionalCollection,
 {
     /// The base collection.
     pub base: C,
@@ -58,7 +57,6 @@ impl<C> ReversedCollection<C>
 where
     C: BidirectionalCollection,
     C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: BidirectionalCollection,
 {
     /// Returns a new instance of ReversedCollection created from given base collection.
     pub fn new(base: C) -> Self {
@@ -75,7 +73,6 @@ impl<C> Collection for ReversedCollection<C>
 where
     C: BidirectionalCollection,
     C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: BidirectionalCollection,
 {
     type Position = ReversedCollectionPosition<C::Position>;
 
@@ -87,8 +84,6 @@ where
         Self: 'a;
 
     type SubSequence = ReversedCollection<C::SubSequence>;
-
-    type MutableSubSequence = ReversedCollection<C::MutableSubSequence>;
 
     fn start(&self) -> Self::Position {
         ReversedCollectionPosition {
@@ -180,7 +175,6 @@ impl<C> BidirectionalCollection for ReversedCollection<C>
 where
     C: BidirectionalCollection,
     C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: BidirectionalCollection,
 {
     fn form_prior(&self, position: &mut Self::Position) {
         self.base.form_next(&mut position.base_position)
@@ -231,7 +225,6 @@ impl<C> RandomAccessCollection for ReversedCollection<C>
 where
     C: RandomAccessCollection,
     C::SubSequence: RandomAccessCollection,
-    C::MutableSubSequence: RandomAccessCollection,
 {
 }
 
@@ -239,7 +232,6 @@ impl<C> LazyCollection for ReversedCollection<C>
 where
     C: LazyCollection + BidirectionalCollection,
     C::SubSequence: LazyCollection + BidirectionalCollection,
-    C::MutableSubSequence: LazyCollection + BidirectionalCollection,
 {
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
         self.base
@@ -250,9 +242,7 @@ where
 impl<C> ReorderableCollection for ReversedCollection<C>
 where
     C: ReorderableCollection + BidirectionalCollection,
-    C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence:
-        UnsafeReorderableSubSequence + BidirectionalCollection,
+    C::SubSequence: ReorderableCollection + BidirectionalCollection,
 {
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
         self.base.swap_at(
@@ -265,12 +255,12 @@ where
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> SliceMut<'_, Self::MutableSubSequence> {
+    ) -> SliceMut<'_, Self::SubSequence> {
         unsafe {
             let s = ReversedCollection {
                 base: self.base.full_mut().subsequence(),
             };
-            SliceMut::new(s.unsafe_slice_mut(from, to))
+            SliceMut::new(s.unsafe_slice(from, to))
         }
     }
 }
@@ -278,8 +268,7 @@ where
 impl<C> MutableCollection for ReversedCollection<C>
 where
     C: MutableCollection + BidirectionalCollection,
-    C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: UnsafeMutableSubSequence + BidirectionalCollection,
+    C::SubSequence: MutableCollection + BidirectionalCollection,
 {
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
         self.base.at_mut(&self.base.prior(i.base_position.clone()))
@@ -290,7 +279,6 @@ impl<C> UnsafeSubSequence for ReversedCollection<C>
 where
     C: BidirectionalCollection + UnsafeSubSequence,
     C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: BidirectionalCollection,
 {
     unsafe fn unsafe_at<'a>(&self, i: &Self::Position) -> Self::ElementRef<'a> {
         self.base
@@ -316,31 +304,10 @@ where
     }
 }
 
-impl<C> UnsafeReorderableSubSequence for ReversedCollection<C>
-where
-    C: BidirectionalCollection + UnsafeReorderableSubSequence,
-    C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence:
-        UnsafeReorderableSubSequence + BidirectionalCollection,
-{
-    unsafe fn unsafe_slice_mut(
-        &self,
-        from: Self::Position,
-        to: Self::Position,
-    ) -> Self::MutableSubSequence {
-        ReversedCollection {
-            base: self
-                .base
-                .unsafe_slice_mut(to.base_position, from.base_position),
-        }
-    }
-}
-
 impl<C> UnsafeMutableSubSequence for ReversedCollection<C>
 where
     C: BidirectionalCollection + UnsafeMutableSubSequence,
-    C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: UnsafeMutableSubSequence + BidirectionalCollection,
+    C::SubSequence: MutableCollection + BidirectionalCollection,
 {
     unsafe fn unsafe_at_mut<'a>(
         &self,

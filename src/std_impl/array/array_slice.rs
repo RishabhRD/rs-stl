@@ -2,14 +2,15 @@
 // Copyright (c) 2026 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    BidirectionalCollection, Collection, RandomAccessCollection, Slice,
-    UnsafeSubSequence,
+    BidirectionalCollection, Collection, MutableCollection,
+    RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
+    UnsafeMutableSubSequence, UnsafeSubSequence,
 };
 
-/// Unsafe slice for array-like data structures.
+/// Unsafe mutable slice for array-like data structures.
 pub struct ArraySlice<T> {
     /// Start address of array.
-    start_address: *const T,
+    start_address: *mut T,
 
     /// Start position of slice.
     start_position: usize,
@@ -20,7 +21,7 @@ pub struct ArraySlice<T> {
 
 impl<T> ArraySlice<T> {
     pub(in crate::std_impl::array) fn new(
-        start_address: *const T,
+        start_address: *mut T,
         start_position: usize,
         end_position: usize,
     ) -> Self {
@@ -43,8 +44,6 @@ impl<T> Collection for ArraySlice<T> {
         Self: 'a;
 
     type SubSequence = ArraySlice<T>;
-
-    type MutableSubSequence = ArraySlice<T>;
 
     fn start(&self) -> Self::Position {
         self.start_position
@@ -121,6 +120,34 @@ impl<T> BidirectionalCollection for ArraySlice<T> {
 
 impl<T> RandomAccessCollection for ArraySlice<T> {}
 
+impl<T> ReorderableCollection for ArraySlice<T> {
+    fn swap_at(&mut self, i: &Self::Position, j: &Self::Position) {
+        assert!(*i >= self.start_position && *i < self.end_position);
+        assert!(*j >= self.start_position && *j < self.end_position);
+
+        unsafe {
+            let pi = self.start_address.add(*i);
+            let pj = self.start_address.add(*j);
+
+            std::ptr::swap(pi, pj);
+        }
+    }
+
+    fn slice_mut(
+        &mut self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> crate::SliceMut<'_, Self::SubSequence> {
+        unsafe { SliceMut::new(self.unsafe_slice(from, to)) }
+    }
+}
+
+impl<T> MutableCollection for ArraySlice<T> {
+    fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element {
+        unsafe { self.unsafe_at_mut(i) }
+    }
+}
+
 impl<T> UnsafeSubSequence for ArraySlice<T> {
     unsafe fn unsafe_at<'a>(&self, i: &Self::Position) -> Self::ElementRef<'a> {
         assert!(*i >= self.start_position && *i < self.end_position);
@@ -135,11 +162,7 @@ impl<T> UnsafeSubSequence for ArraySlice<T> {
         assert!(to >= from);
         assert!(from >= self.start_position && from <= self.end_position);
         assert!(to >= self.start_position && to <= self.end_position);
-        ArraySlice {
-            start_address: self.start_address,
-            start_position: from,
-            end_position: to,
-        }
+        ArraySlice::new(self.start_address, from, to)
     }
 
     unsafe fn set_start(&mut self, p: Self::Position) {
@@ -150,5 +173,15 @@ impl<T> UnsafeSubSequence for ArraySlice<T> {
     unsafe fn set_end(&mut self, p: Self::Position) {
         assert!(p >= self.start_position && p <= self.end_position);
         self.end_position = p
+    }
+}
+
+impl<T> UnsafeMutableSubSequence for ArraySlice<T> {
+    unsafe fn unsafe_at_mut<'a>(
+        &self,
+        i: &Self::Position,
+    ) -> &'a mut Self::Element {
+        assert!(*i >= self.start_position && *i < self.end_position);
+        unsafe { self.start_address.add(*i).as_mut_unchecked() }
     }
 }

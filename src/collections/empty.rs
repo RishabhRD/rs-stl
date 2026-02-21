@@ -4,7 +4,7 @@
 use crate::{
     BidirectionalCollection, Collection, LazyCollection, MutableCollection,
     RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
-    UnsafeMutableSubSequence, UnsafeReorderableSubSequence, UnsafeSubSequence,
+    UnsafeMutableSubSequence, UnsafeSubSequence,
 };
 
 /// An empty collection.
@@ -37,8 +37,6 @@ impl<E> Collection for EmptyCollection<E> {
         Self: 'a;
 
     type SubSequence = Self;
-
-    type MutableSubSequence = Self;
 
     fn start(&self) -> Self::Position {}
 
@@ -108,7 +106,7 @@ impl<E> ReorderableCollection for EmptyCollection<E> {
         &mut self,
         _: Self::Position,
         _: Self::Position,
-    ) -> crate::SliceMut<'_, Self::MutableSubSequence> {
+    ) -> crate::SliceMut<'_, Self::SubSequence> {
         unsafe { SliceMut::new(Self::default()) }
     }
 }
@@ -141,16 +139,6 @@ impl<E> UnsafeSubSequence for EmptyCollection<E> {
     unsafe fn set_start(&mut self, _: Self::Position) {}
 
     unsafe fn set_end(&mut self, _: Self::Position) {}
-}
-
-impl<E> UnsafeReorderableSubSequence for EmptyCollection<E> {
-    unsafe fn unsafe_slice_mut(
-        &self,
-        _: Self::Position,
-        _: Self::Position,
-    ) -> Self::MutableSubSequence {
-        Self::default()
-    }
 }
 
 impl<E> UnsafeMutableSubSequence for EmptyCollection<E> {

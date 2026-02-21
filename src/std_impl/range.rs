@@ -24,8 +24,6 @@ impl Collection for RangeInclusive<$t> {
 
     type SubSequence = Self;
 
-    type MutableSubSequence = Self;
-
     fn start(&self) -> Self::Position {
         *self.start()
     }
@@ -152,8 +150,6 @@ impl Collection for Range<$t> {
         Self: 'a;
 
     type SubSequence = Self;
-
-    type MutableSubSequence = Self;
 
     fn start(&self) -> Self::Position {
         self.start

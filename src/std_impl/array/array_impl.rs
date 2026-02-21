@@ -2,9 +2,8 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    ArraySlice, ArraySliceMut, BidirectionalCollection, Collection,
-    MutableCollection, RandomAccessCollection, ReorderableCollection, Slice,
-    SliceMut,
+    ArraySlice, BidirectionalCollection, Collection, MutableCollection,
+    RandomAccessCollection, ReorderableCollection, Slice, SliceMut,
 };
 
 impl<T, const N: usize> Collection for [T; N] {
@@ -18,8 +17,6 @@ impl<T, const N: usize> Collection for [T; N] {
         Self: 'a;
 
     type SubSequence = ArraySlice<T>;
-
-    type MutableSubSequence = ArraySliceMut<T>;
 
     fn start(&self) -> Self::Position {
         0
@@ -84,7 +81,10 @@ impl<T, const N: usize> Collection for [T; N] {
         to: Self::Position,
     ) -> Slice<'_, Self::SubSequence> {
         assert!(from <= to && from <= N && to <= N);
-        unsafe { Slice::new(ArraySlice::new(self.as_ptr(), from, to)) }
+        unsafe {
+            let p = std::mem::transmute::<*const T, *mut T>(self.as_ptr());
+            Slice::new(ArraySlice::new(p, from, to))
+        }
     }
 }
 
@@ -124,11 +124,9 @@ impl<T, const N: usize> ReorderableCollection for [T; N] {
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> SliceMut<'_, Self::MutableSubSequence> {
+    ) -> SliceMut<'_, Self::SubSequence> {
         assert!(from <= to && from <= N && to <= N);
-        unsafe {
-            SliceMut::new(ArraySliceMut::new(self.as_mut_ptr(), from, to))
-        }
+        unsafe { SliceMut::new(ArraySlice::new(self.as_mut_ptr(), from, to)) }
     }
 }
 

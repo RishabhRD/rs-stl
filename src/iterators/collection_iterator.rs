@@ -48,7 +48,6 @@ impl<'a, C> DoubleEndedIterator for CollectionIter<'a, C>
 where
     C: BidirectionalCollection,
     C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: BidirectionalCollection,
 {
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.slice.is_empty() {
@@ -63,7 +62,6 @@ impl<'a, C> ExactSizeIterator for CollectionIter<'a, C>
 where
     C: RandomAccessCollection,
     C::SubSequence: RandomAccessCollection,
-    C::MutableSubSequence: RandomAccessCollection,
 {
     fn len(&self) -> usize {
         self.slice.count()

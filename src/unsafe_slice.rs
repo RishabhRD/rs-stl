@@ -45,8 +45,6 @@ impl<C: Collection> Collection for UnsafeSlice<C> {
 
     type SubSequence = Self;
 
-    type MutableSubSequence = Self;
-
     fn start(&self) -> Self::Position {
         self.start_position.clone()
     }
@@ -119,7 +117,6 @@ impl<C> LazyCollection for UnsafeSlice<C>
 where
     C: LazyCollection,
     C::SubSequence: LazyCollection,
-    C::MutableSubSequence: LazyCollection,
 {
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
         unsafe { self.whole.as_ref_unchecked() }.compute_at(i)
@@ -130,7 +127,6 @@ impl<C> BidirectionalCollection for UnsafeSlice<C>
 where
     C: BidirectionalCollection,
     C::SubSequence: BidirectionalCollection,
-    C::MutableSubSequence: BidirectionalCollection,
 {
     fn form_prior(&self, p: &mut Self::Position) {
         unsafe { self.whole.as_ref_unchecked() }.form_prior(p)
@@ -172,7 +168,6 @@ impl<C> RandomAccessCollection for UnsafeSlice<C>
 where
     C: RandomAccessCollection,
     C::SubSequence: RandomAccessCollection,
-    C::MutableSubSequence: RandomAccessCollection,
 {
 }
 
