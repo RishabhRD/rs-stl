@@ -33,7 +33,7 @@ where
 
     /*-----------------Iteration Algorithms-----------------*/
 
-    /// Returns an iterator to iterate over lazyily computed elements in collection.
+    /// Returns an iterator over the laziily computed elements in collection.
     fn lazy_iter(&self) -> LazyCollectionIter<'_, Self::SubSequence> {
         LazyCollectionIter::new(self.full())
     }
