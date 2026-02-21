@@ -326,9 +326,17 @@ where
 /// be wrapped in a safe view (i.e., `Slice`).
 pub trait UnsafeSubSequence: Collection {
     /// Yields reference to `i`th element with lifetime `'a`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to provide such `'a` that doesn't violate
+    /// memory safety.
     unsafe fn unsafe_at<'a>(&self, i: &Self::Position) -> Self::ElementRef<'a>;
 
     /// Returns a slice of elements in position range `[from, to)`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to use this mechanism to create disjoint
+    /// slices of appropriate lifetimes.
     unsafe fn unsafe_slice(
         &self,
         from: Self::Position,
@@ -338,11 +346,19 @@ pub trait UnsafeSubSequence: Collection {
     /// Set the start position of `self` to `p`.
     ///
     /// - Precondition: `p` belongs to `[self.start(), self.end()]`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to use this mechanism to create disjoint
+    /// slices of appropriate lifetimes.
     unsafe fn set_start(&mut self, p: Self::Position);
 
     /// Set the end position of `self` to `p`.
     ///
     /// - Precondition: `p` belongs to `[self.start(), self.end()]`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to use this mechanism to create disjoint
+    /// slices of appropriate lifetimes.
     unsafe fn set_end(&mut self, p: Self::Position);
 }
 
@@ -355,6 +371,10 @@ where
     Self::SubSequence: UnsafeMutableSubSequence,
 {
     /// Yields mutable reference to `i`th element with lifetime `'a`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to provide such `'a` that doesn't violate
+    /// memory safety.
     unsafe fn unsafe_at_mut<'a>(
         &self,
         i: &Self::Position,

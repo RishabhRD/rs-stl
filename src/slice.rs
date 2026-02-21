@@ -22,6 +22,10 @@ where
     C: UnsafeSubSequence<SubSequence = C> + 'a,
 {
     /// Returns a slice for unsafe subsequence `s`.
+    ///
+    /// # Safety
+    /// It is the responsibility of caller to create slice that enforce
+    /// memory safety.
     pub unsafe fn new(s: C) -> Self {
         Slice {
             subsequence: s,
@@ -30,6 +34,10 @@ where
     }
 
     /// Returns the wrapped unsafe subsequence
+    ///
+    /// # Safety
+    /// The returned subsequence is not lifetime tracked and hence it is the
+    /// responsibility of caller to enforce the lifetime rules manually.
     pub unsafe fn subsequence(&self) -> C::SubSequence {
         let s = self.subsequence.start();
         let e = self.subsequence.end();

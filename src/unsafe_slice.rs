@@ -20,6 +20,10 @@ pub struct UnsafeSlice<C: Collection> {
 impl<C: Collection> UnsafeSlice<C> {
     /// Creates a new unsafe slice of `whole` collection starting from
     /// `start_position` and ending and `end_position`.
+    ///
+    /// # Safety
+    /// The returned slice is not lifetime tracked and hence it is the
+    /// responsibility of caller to enforce the lifetime rules manually.
     pub unsafe fn new(
         whole: &C,
         start_position: C::Position,
