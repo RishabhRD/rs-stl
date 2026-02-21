@@ -3,7 +3,7 @@ name: Deploy rs-stl Docs
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   deploy-docs:
