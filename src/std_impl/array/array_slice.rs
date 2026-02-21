@@ -151,7 +151,7 @@ impl<T> MutableCollection for ArraySlice<T> {
 impl<T> UnsafeSubSequence for ArraySlice<T> {
     unsafe fn unsafe_at<'a>(&self, i: &Self::Position) -> Self::ElementRef<'a> {
         assert!(*i >= self.start_position && *i < self.end_position);
-        unsafe { self.start_address.add(*i).as_ref_unchecked() }
+        unsafe { self.start_address.add(*i).as_ref().unwrap_unchecked() }
     }
 
     unsafe fn unsafe_slice(

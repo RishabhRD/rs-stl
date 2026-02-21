@@ -48,7 +48,9 @@ impl Collection for StringSlice {
 
     fn form_next(&self, i: &mut Self::Position) {
         let len = unsafe {
-            char_len_for(*self.start_address.add(*i).as_ref_unchecked())
+            char_len_for(
+                *self.start_address.add(*i).as_ref().unwrap_unchecked(),
+            )
         };
         *i += len
     }
@@ -75,7 +77,7 @@ impl LazyCollection for StringSlice {
 impl UnsafeSubSequence for StringSlice {
     unsafe fn unsafe_at<'a>(&self, i: &Self::Position) -> Self::ElementRef<'a> {
         let p = unsafe { self.start_address.add(*i) };
-        let l = unsafe { char_len_for(*p.as_ref_unchecked()) };
+        let l = unsafe { char_len_for(*p.as_ref().unwrap_unchecked()) };
         let r = unsafe {
             str::from_utf8_unchecked(std::slice::from_raw_parts(p, l))
         }
