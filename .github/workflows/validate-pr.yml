@@ -12,11 +12,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Check out the repository
       - name: Checkout Code
         uses: actions/checkout@v6
 
-      # Step 2: Set up Rust environment
       - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -24,7 +22,6 @@ jobs:
           override: true
           components: rustfmt, clippy
 
-      # Step 3: Cache Cargo dependencies for faster builds
       - name: Cache Cargo Registry
         uses: actions/cache@v5
         with:
@@ -41,14 +38,47 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-index
 
-      # Step 4: Run formatting check
       - name: Run cargo fmt
         run: cargo fmt --all -- --check
 
-      # Step 5: Run Clippy linting
       - name: Run cargo clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
 
-      # Step 6: Run tests
       - name: Run cargo test
         run: cargo test --all --verbose
+  miri:
+    name: Miri (UB checks)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+
+      - name: Set up Rust (nightly + miri)
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+          components: miri
+
+      - name: Cache Cargo Registry
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache Cargo Index
+        uses: actions/cache@v5
+        with:
+          path: ~/.cargo/index
+          key: ${{ runner.os }}-cargo-index
+          restore-keys: |
+            ${{ runner.os }}-cargo-index
+
+      - name: Run cargo miri test
+        run: |
+          rustup component add miri
+          cargo miri setup
+          cargo miri test --all
