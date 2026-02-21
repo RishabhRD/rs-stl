@@ -182,6 +182,6 @@ impl<T> UnsafeMutableSubSequence for ArraySlice<T> {
         i: &Self::Position,
     ) -> &'a mut Self::Element {
         assert!(*i >= self.start_position && *i < self.end_position);
-        unsafe { self.start_address.add(*i).as_mut_unchecked() }
+        unsafe { self.start_address.add(*i).as_mut().unwrap_unchecked() }
     }
 }
