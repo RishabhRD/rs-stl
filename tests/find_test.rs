@@ -65,63 +65,63 @@ pub mod tests {
         assert_eq!(i, None);
     }
 
-    // #[test]
-    // fn parallel_first_position_where() {
-    //     let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-    //     let i = arr.parallel_first_position_where(|x| *x == 5);
-    //     assert_eq!(i, Some(0));
-    //
-    //     let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
-    //     let i = arr.parallel_first_position_where(|x| *x == 5);
-    //     assert_eq!(i, Some(6));
-    //
-    //     let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    //     let i = arr.parallel_first_position_where(|x| *x == 5);
-    //     assert_eq!(i, None);
-    // }
-    //
-    // #[test]
-    // fn parallel_first_position_of() {
-    //     let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-    //     let i = arr.parallel_first_position_of(&5);
-    //     assert_eq!(i, Some(0));
-    //
-    //     let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
-    //     let i = arr.parallel_first_position_of(&5);
-    //     assert_eq!(i, Some(6));
-    //
-    //     let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    //     let i = arr.parallel_first_position_of(&5);
-    //     assert_eq!(i, None);
-    // }
-    //
-    // #[test]
-    // fn parallel_last_position_where() {
-    //     let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-    //     let i = arr.parallel_last_position_where(|x| *x == 5);
-    //     assert_eq!(i, Some(10));
-    //
-    //     let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
-    //     let i = arr.parallel_last_position_where(|x| *x == 5);
-    //     assert_eq!(i, Some(10));
-    //
-    //     let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    //     let i = arr.parallel_last_position_where(|x| *x == 5);
-    //     assert_eq!(i, None);
-    // }
-    //
-    // #[test]
-    // fn parallel_last_position_of() {
-    //     let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-    //     let i = arr.parallel_last_position_of(&5);
-    //     assert_eq!(i, Some(10));
-    //
-    //     let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
-    //     let i = arr.parallel_last_position_of(&5);
-    //     assert_eq!(i, Some(10));
-    //
-    //     let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    //     let i = arr.parallel_last_position_of(&5);
-    //     assert_eq!(i, None);
-    // }
+    #[test]
+    fn parallel_first_position_where() {
+        let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+        let i = arr.parallel_first_position_where(|x| *x == 5);
+        assert_eq!(i, Some(0));
+
+        let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
+        let i = arr.parallel_first_position_where(|x| *x == 5);
+        assert_eq!(i, Some(6));
+
+        let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let i = arr.parallel_first_position_where(|x| *x == 5);
+        assert_eq!(i, None);
+    }
+
+    #[test]
+    fn parallel_first_position_of() {
+        let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+        let i = arr.parallel_first_position_of(&5);
+        assert_eq!(i, Some(0));
+
+        let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
+        let i = arr.parallel_first_position_of(&5);
+        assert_eq!(i, Some(6));
+
+        let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let i = arr.parallel_first_position_of(&5);
+        assert_eq!(i, None);
+    }
+
+    #[test]
+    fn parallel_last_position_where() {
+        let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+        let i = arr.parallel_last_position_where(|x| *x == 5);
+        assert_eq!(i, Some(10));
+
+        let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
+        let i = arr.parallel_last_position_where(|x| *x == 5);
+        assert_eq!(i, Some(10));
+
+        let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let i = arr.parallel_last_position_where(|x| *x == 5);
+        assert_eq!(i, None);
+    }
+
+    #[test]
+    fn parallel_last_position_of() {
+        let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
+        let i = arr.parallel_last_position_of(&5);
+        assert_eq!(i, Some(10));
+
+        let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
+        let i = arr.parallel_last_position_of(&5);
+        assert_eq!(i, Some(10));
+
+        let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let i = arr.parallel_last_position_of(&5);
+        assert_eq!(i, None);
+    }
 }

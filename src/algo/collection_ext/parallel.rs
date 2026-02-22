@@ -174,9 +174,4 @@ pub trait ParallelCollectionExt: Collection {
     }
 }
 
-impl<R> ParallelCollectionExt for R
-where
-    R: Collection + ?Sized,
-    R::SubSequence: Send,
-{
-}
+impl<R> ParallelCollectionExt for R where R: Collection + ?Sized {}

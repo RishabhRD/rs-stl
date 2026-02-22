@@ -2,17 +2,6 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::unwrap_option_vec;
-use std::sync::LazyLock;
-
-/// Returns the global thread pool to execute tasks on.
-fn global_thread_pool() -> &'static rayon_core::ThreadPool {
-    static POOL: LazyLock<rayon_core::ThreadPool> = LazyLock::new(|| {
-        rayon_core::ThreadPoolBuilder::new()
-            .build()
-            .expect("failed to get global threadpool")
-    });
-    &POOL
-}
 
 /// Executes all task in `tasks` concurrently on global executor.
 ///
@@ -24,14 +13,14 @@ where
     Task: FnOnce() + Send,
     Tasks: Iterator<Item = Task> + Send,
 {
-    global_thread_pool().scope(|s| {
-        if let Some(first_task) = tasks.next() {
+    if let Some(first_task) = tasks.next() {
+        rayon_core::scope(|s| {
             for task in tasks {
                 s.spawn(|_| task());
             }
-            first_task()
-        }
-    });
+        });
+        first_task()
+    }
 }
 
 /// Executes all task in `tasks` concurrently on global executor and returns
