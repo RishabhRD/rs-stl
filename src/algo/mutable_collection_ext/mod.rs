@@ -8,7 +8,7 @@ use crate::MutableCollection;
 /// Algorithms for `MutableCollection`.
 pub trait MutableCollectionExt: MutableCollection
 where
-    Self::Whole: MutableCollection,
+    Self::SubSequence: MutableCollection,
 {
     /*-----------------Iteration Algorithms-----------------*/
 
@@ -38,7 +38,7 @@ where
     }
 
     /// Returns an iterator to iterate over mutable element refs in collection.
-    fn iter_mut(&mut self) -> MutableCollectionIter<'_, Self::Whole> {
+    fn iter_mut(&mut self) -> MutableCollectionIter<'_, Self::SubSequence> {
         MutableCollectionIter::new(self.full_mut())
     }
 }
@@ -46,6 +46,6 @@ where
 impl<R> MutableCollectionExt for R
 where
     R: MutableCollection + ?Sized,
-    R::Whole: MutableCollection,
+    R::SubSequence: MutableCollection,
 {
 }

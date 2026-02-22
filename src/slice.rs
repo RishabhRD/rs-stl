@@ -1,246 +1,189 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
-use crate::{
-    iterators::{SplitEvenlyIterator, SplitWhereIterator},
-    BidirectionalCollection, Collection, CollectionExt, LazyCollection,
-    RandomAccessCollection,
-};
+use std::marker::PhantomData;
 
-/// A contiguous sub-collection of a collection.
-#[derive(PartialEq, Eq)]
-pub struct Slice<'a, Whole>
+use crate::{iterators::*, *};
+
+/// A safe view into unsafe subsequence of a collection.
+pub struct Slice<'a, C>
 where
-    Whole: Collection<Whole = Whole>,
+    C: UnsafeSubSequence<SubSequence = C> + 'a,
 {
-    /// Reference to the whole collection.
-    _whole: &'a Whole,
+    /// The unsafe subsequence.
+    subsequence: C,
 
-    /// Start position of slice.
-    from: Whole::Position,
-
-    /// End position of slice.
-    to: Whole::Position,
+    /// A marker data managing lifetime of `self`.
+    _marker: PhantomData<&'a ()>,
 }
 
-impl<'a, Whole> Clone for Slice<'a, Whole>
+impl<'a, C> Slice<'a, C>
 where
-    Whole: Collection<Whole = Whole>,
+    C: UnsafeSubSequence<SubSequence = C> + 'a,
 {
-    fn clone(&self) -> Self {
-        Self {
-            _whole: self._whole,
-            from: self.from.clone(),
-            to: self.to.clone(),
-        }
-    }
-}
-
-// Base accessor algorithms.
-impl<'a, Whole> Slice<'a, Whole>
-where
-    Whole: Collection<Whole = Whole>,
-{
-    /// Creates a new instance of slice with given collection and position range.
-    pub fn new(
-        collection: &'a Whole,
-        from: Whole::Position,
-        to: Whole::Position,
-    ) -> Self {
-        Self {
-            _whole: collection,
-            from,
-            to,
-        }
-    }
-
-    /// Panics if position is out of bounds of slice for reading element.
+    /// Returns a slice for unsafe subsequence `s`.
     ///
-    /// # Complexity
-    ///   - O(1).
-    fn assert_bounds_check_read(&self, position: &Whole::Position) {
-        if *position < self.from || *position >= self.to {
-            panic!("Out of bounds read to slice.");
+    /// # Safety
+    /// It is the responsibility of caller to create slice that enforce
+    /// memory safety.
+    pub unsafe fn new(s: C) -> Self {
+        Slice {
+            subsequence: s,
+            _marker: PhantomData,
         }
     }
 
-    /// Panics if position is out of bounds of slice for defining sub-slice.
+    /// Returns the wrapped unsafe subsequence
     ///
-    /// # Complexity
-    ///   - O(1).
-    fn assert_bounds_check_slice(&self, position: &Whole::Position) {
-        if *position < self.from || *position > self.to {
-            panic!("Out of bounds slicing to slice.");
-        }
-    }
-}
-
-/// Dropping algorithms
-impl<Whole> Slice<'_, Whole>
-where
-    Whole: Collection<Whole = Whole>,
-{
-    /// Removes the first element if non-empty and returns true; returns false otherwise.
-    ///
-    /// # Complexity
-    ///   - O(1).
-    pub fn drop_first(&mut self) -> bool {
-        if self.from == self.to {
-            false
-        } else {
-            self._whole.form_next(&mut self.from);
-            true
-        }
+    /// # Safety
+    /// The returned subsequence is not lifetime tracked and hence it is the
+    /// responsibility of caller to enforce the lifetime rules manually.
+    pub unsafe fn subsequence(&self) -> C::SubSequence {
+        let s = self.subsequence.start();
+        let e = self.subsequence.end();
+        self.subsequence.unsafe_slice(s, e)
     }
 
-    /// Removes the last element if non-empty and returns true; returns false otherwise.
+    /// Removes and returns first element.
     ///
-    /// # Complexity
-    ///   - O(1).
-    pub fn drop_last(&mut self) -> bool
+    /// The removed element becomes independent of `self` and can therefore be used
+    /// in parallel with `self`.
+    pub fn pop_first(&mut self) -> C::ElementRef<'a> {
+        precondition!(!self.is_empty());
+        let mut i = self.start();
+        let r = unsafe { self.subsequence.unsafe_at(&i) };
+        self.subsequence.form_next(&mut i);
+        unsafe { self.subsequence.set_start(i) };
+        r
+    }
+
+    /// Removes and returns last element.
+    ///
+    /// The removed element becomes independent of `self` and can therefore be used
+    /// in parallel with `self`.
+    pub fn pop_last(&mut self) -> C::ElementRef<'a>
     where
-        Whole: BidirectionalCollection,
+        C: BidirectionalCollection,
+        C::SubSequence: BidirectionalCollection,
     {
-        if self.from == self.to {
-            false
-        } else {
-            self._whole.form_prior(&mut self.to);
-            true
-        }
+        precondition!(!self.subsequence.is_empty());
+        let i = self.subsequence.prior(self.subsequence.end());
+        let r = unsafe { self.subsequence.unsafe_at(&i) };
+        unsafe { self.subsequence.set_end(i) };
+        r
     }
 
-    /// Removes first `n` elements from `self` if `self` has atleast `n` elements; otherwise make
-    /// `self` empty.
+    /// Removes and returns a subsequence of elements starting from `self.start()` upto but not
+    /// including `p`.
+    pub fn pop_prefix_upto(&mut self, p: C::Position) -> Self {
+        let s = unsafe {
+            self.subsequence
+                .unsafe_slice(self.subsequence.start(), p.clone())
+        };
+        unsafe { self.subsequence.set_start(p) };
+        unsafe { Self::new(s) }
+    }
+}
+
+/// Drop algorithms
+impl<'a, C> Slice<'a, C>
+where
+    C: UnsafeSubSequence<SubSequence = C> + 'a,
+{
+    /// Removes the first element.
+    ///
+    /// - Precondition: `self` is not empty.
+    pub fn drop_first(&mut self) {
+        _ = self.pop_first();
+    }
+
+    /// Removes the last element.
+    ///
+    /// - Precondition: `self` is not empty.
+    pub fn drop_last(&mut self)
+    where
+        C: BidirectionalCollection,
+        C::SubSequence: BidirectionalCollection,
+    {
+        _ = self.pop_last();
+    }
+
+    /// Removes subsequence of elements starting from `self.start()` upto but not
+    /// including `p`.
+    pub fn drop_prefix_upto(&mut self, p: C::Position) {
+        _ = self.pop_prefix_upto(p)
+    }
+
+    /// Removes subsequence of first `n` elements in `self`;
+    /// If `self` has less than `n` elements, make `self` empty and return all elements of `self`.
     ///
     /// # Complexity
-    ///   - O(1) for RandomAccessCollection;
-    ///   - O(n) otherwise.
+    ///   - O(1) for `RandomAccessCollection`;
+    ///   - O(`n`) otherwise.
     pub fn drop(&mut self, n: usize) {
-        let mut new_from = self.from.clone();
-        self._whole
-            .form_next_n_limited_by(&mut new_from, n, self.to.clone());
-        self.from = new_from;
-    }
-
-    /// Removes the subsequence from start position of `self` up to, but not including `p`.
-    ///
-    /// # Complexity
-    ///   - O(1).
-    pub fn drop_prefix_upto(&mut self, position: Whole::Position) {
-        self.assert_bounds_check_slice(&position);
-        self.from = position;
+        _ = self.pop(n);
     }
 
     /// Removes the subsequence from start position of `self` through (including) `p`.
     ///
-    /// # Complexity
-    ///   - O(1).
-    pub fn drop_prefix_through(&mut self, position: Whole::Position) {
-        self.assert_bounds_check_read(&position);
-        self.from = self._whole.next(position);
+    /// - Precondition: Next position of `p` should be well defined.
+    pub fn drop_prefix_through(&mut self, p: C::Position) {
+        _ = self.pop_prefix_through(p);
     }
 
     /// Removes the longest prefix of `self` whose elements satisfy `p`.
     ///
     /// # Complexity
     ///   - Atmost `self.count()` applications of `p`.
-    pub fn drop_while<Predicate>(&mut self, mut p: Predicate)
+    pub fn drop_while<Predicate>(&mut self, p: Predicate)
     where
-        Predicate: FnMut(&Whole::Element) -> bool,
+        Predicate: FnMut(&C::Element) -> bool,
     {
-        self.from = self.first_position_where(|e| !p(e)).unwrap_or(self.end());
+        _ = self.pop_while(p);
     }
 
-    /// Removes last `n` elements from `self`. If `self` has less than `n` elements, make it empty.
+    /// Removes subsequence of last `n` elements from `self`.
+    /// If `self` has less than `n` elements, make it empty and returns
+    /// subsequence of all elements.
     ///
     /// # Complexity
     ///   - O(1) for `RandomAccessCollection`;
-    ///   - O(`self.count()`) otherwise.
-    pub fn drop_suffix(&mut self, n: usize) {
-        let c = self.count();
-        if n > c {
-            self.to = self.from.clone()
-        } else {
-            self.to = self.next_n(self.start(), c - n)
-        }
+    ///   - O(`n`) otherwise.
+    pub fn drop_end(&mut self, n: usize)
+    where
+        C: BidirectionalCollection,
+        C::SubSequence: BidirectionalCollection,
+    {
+        _ = self.pop_end(n);
     }
 
-    /// Removes last elements from `self` starting from `p`.
-    ///
-    /// # Complexity
-    ///   - O(1).
-    pub fn drop_suffix_from(&mut self, p: Whole::Position) {
-        self.assert_bounds_check_slice(&p);
-        self.to = p;
+    /// Removes subsequence of last elements from `self` starting from `p`.
+    pub fn drop_suffix_from(&mut self, p: C::Position) {
+        _ = self.pop_suffix_from(p);
     }
 }
 
-/// Pop algorithms.
-impl<'a, Whole> Slice<'a, Whole>
+/// Pop algorithms
+impl<'a, C> Slice<'a, C>
 where
-    Whole: Collection<Whole = Whole>,
+    C: UnsafeSubSequence<SubSequence = C> + 'a,
 {
-    /// Removes and yields the first element if non-empty; returns None otherwise.
-    ///
-    /// # Complexity:
-    ///   - O(1).
-    pub fn pop_first(&mut self) -> Option<Whole::ElementRef<'a>> {
-        let f = self.from.clone();
-        if self.drop_first() {
-            Some(self._whole.at(&f))
-        } else {
-            None
-        }
-    }
-
-    /// Removes and yields the last element if non-empty; returns None otherwise.
+    /// Removes and returns subsequence of first `n` elements in `self`;
+    /// If `self` has less than `n` elements, make `self` empty and return all elements of `self`.
     ///
     /// # Complexity
-    ///   - O(1).
-    pub fn pop_last(&mut self) -> Option<Whole::ElementRef<'a>>
-    where
-        Whole: BidirectionalCollection,
-    {
-        let t = self.to.clone();
-        if self.drop_last() {
-            Some(self._whole.at(&self.prior(t)))
-        } else {
-            None
-        }
-    }
-
-    /// Removes and returns subsequence of first `n` elements in `self`; If `self` has less than `n`
-    /// elements, make `self` empty and return all elements of `self`.
-    ///
-    /// # Complexity
-    ///   - O(1) for RandomAccessCollection;
-    ///   - O(n) otherwise.
+    ///   - O(1) for `RandomAccessCollection`;
+    ///   - O(`n`) otherwise.
     pub fn pop(&mut self, n: usize) -> Self {
-        let mut f = self.from.clone();
-        self.form_next_n_limited_by(&mut f, n, self.to.clone());
+        let mut f = self.subsequence.start();
+        self.form_next_n_limited_by(&mut f, n, self.end());
         self.pop_prefix_upto(f)
-    }
-
-    /// Removes and returns the subsequence from start position of `self` up to, but not including `p`.
-    ///
-    /// # Complexity
-    ///   - O(1).
-    pub fn pop_prefix_upto(&mut self, p: Whole::Position) -> Self {
-        self.assert_bounds_check_slice(&p);
-        let prefix = Self {
-            _whole: self._whole,
-            from: self.from.clone(),
-            to: p.clone(),
-        };
-        self.from = p;
-        prefix
     }
 
     /// Removes and returns the subsequence from start position of `self` through (including) `p`.
     ///
-    /// # Complexity
-    ///   - O(1).
-    pub fn pop_prefix_through(&mut self, p: Whole::Position) -> Self {
+    /// - Precondition: Next position of `p` should be well defined.
+    pub fn pop_prefix_through(&mut self, p: C::Position) -> Self {
         self.pop_prefix_upto(self.next(p))
     }
 
@@ -250,7 +193,7 @@ where
     ///   - Atmost `self.count()` applications of `p`.
     pub fn pop_while<Predicate>(&mut self, mut p: Predicate) -> Self
     where
-        Predicate: FnMut(&Whole::Element) -> bool,
+        Predicate: FnMut(&C::Element) -> bool,
     {
         let p = self.first_position_where(|e| !p(e)).unwrap_or(self.end());
         self.pop_prefix_upto(p)
@@ -261,22 +204,20 @@ where
     /// subsequence of all elements.
     ///
     /// # Complexity
-    ///   - O(n).
-    pub fn pop_end(&mut self, n: usize) -> Self {
-        let c = self.count();
-        let i = if n > c {
-            self.from.clone()
-        } else {
-            self.next_n(self.start(), c - n)
-        };
-        self.pop_suffix_from(i)
+    ///   - O(1) for `RandomAccessCollection`;
+    ///   - O(`n`) otherwise.
+    pub fn pop_end(&mut self, n: usize) -> Self
+    where
+        C: BidirectionalCollection,
+        C::SubSequence: BidirectionalCollection,
+    {
+        let mut f = self.end();
+        self.form_prior_n_limited_by(&mut f, n, self.start());
+        self.pop_suffix_from(f)
     }
 
     /// Removes and returns subsequence of last elements from `self` starting from `p`.
-    ///
-    /// # Complexity
-    ///   - O(1).
-    pub fn pop_suffix_from(&mut self, p: Whole::Position) -> Self {
+    pub fn pop_suffix_from(&mut self, p: C::Position) -> Self {
         let mut s = self.pop_prefix_upto(p);
         std::mem::swap(self, &mut s);
         s
@@ -284,9 +225,9 @@ where
 }
 
 /// Splitting algorithms.
-impl<'a, Whole> Slice<'a, Whole>
+impl<'a, C> Slice<'a, C>
 where
-    Whole: Collection<Whole = Whole>,
+    C: UnsafeSubSequence<SubSequence = C> + 'a,
 {
     /// Splits `self` into two subsequences at position `p`:
     /// - the left part contains elements before `p`,
@@ -294,7 +235,7 @@ where
     ///
     /// # Complexity
     ///   - O(1).
-    pub fn split_at(mut self, p: Whole::Position) -> (Self, Self) {
+    pub fn split_at(mut self, p: C::Position) -> (Self, Self) {
         let r = self.pop_prefix_upto(p);
         (r, self)
     }
@@ -303,11 +244,14 @@ where
     /// - the left part contains elements before `p`,
     /// - the right part contains elements starting at `p`.
     ///
+    /// # Precondition
+    ///   - There must be a well defined position after `p`.
+    ///
     /// # Complexity
     ///   - O(1).
-    pub fn split_after(self, mut position: Whole::Position) -> (Self, Self) {
-        self.form_next(&mut position);
-        self.split_at(position)
+    pub fn split_after(self, mut p: C::Position) -> (Self, Self) {
+        self.form_next(&mut p);
+        self.split_at(p)
     }
 
     /// Returns an iterator over subsequences of `self`, split at elements
@@ -331,15 +275,15 @@ where
     ///      .collect();
     /// assert_eq!(v, vec![vec![1, 3, 5], vec![], vec![], vec![3], vec![5, 7]]);
     /// ```
-    pub fn split_where<Pred>(
+    pub fn split_where<Predicate>(
         self,
-        pred: Pred,
-    ) -> SplitWhereIterator<'a, Whole, Pred>
+        p: Predicate,
+    ) -> SplitWhereIterator<'a, C::SubSequence, Predicate>
     where
-        Pred: FnMut(&Whole::Element) -> bool,
+        Predicate: FnMut(&C::Element) -> bool,
         Self: Sized,
     {
-        SplitWhereIterator::new(self, pred)
+        SplitWhereIterator::new(self, p)
     }
 
     /// Returns an iterator over at most `n` subsequences of `self`, each of size
@@ -370,7 +314,8 @@ where
         self,
         n: usize,
         min_size: usize,
-    ) -> SplitEvenlyIterator<'a, Whole> {
+    ) -> SplitEvenlyIterator<'a, C> {
+        precondition!(n > 0);
         let c = self.count();
         if c == 0 {
             return SplitEvenlyIterator::new(self, 0, 0, 0);
@@ -413,45 +358,46 @@ where
     ///     .map(|s| s.to_vec())
     ///     .collect();
     /// assert_eq!(splits, vec![vec![1, 2, 3], vec![4, 5], vec![6, 7]]);
-    pub fn split_evenly_in(self, n: usize) -> SplitEvenlyIterator<'a, Whole> {
+    pub fn split_evenly_in(self, n: usize) -> SplitEvenlyIterator<'a, C> {
+        precondition!(n > 0);
         self.split_evenly_in_with_min_size(n, 0)
     }
 }
 
-unsafe impl<'a, Whole> Send for Slice<'a, Whole> where
-    Whole: Collection<Whole = Whole> + Send
+unsafe impl<'a, C> Send for Slice<'a, C> where
+    C: UnsafeSubSequence<SubSequence = C> + 'a
 {
 }
 
-impl<Whole> Collection for Slice<'_, Whole>
+impl<'a, C> Collection for Slice<'a, C>
 where
-    Whole: Collection<Whole = Whole>,
+    C: UnsafeSubSequence<SubSequence = C> + 'a,
 {
-    type Position = Whole::Position;
+    type Position = C::Position;
 
-    type Element = Whole::Element;
+    type Element = C::Element;
 
-    type ElementRef<'a>
-        = Whole::ElementRef<'a>
+    type ElementRef<'b>
+        = <<C as Collection>::SubSequence as Collection>::ElementRef<'b>
     where
-        Self: 'a;
+        Self: 'b;
 
-    type Whole = Whole;
+    type SubSequence = C::SubSequence;
 
     fn start(&self) -> Self::Position {
-        self.from.clone()
+        self.subsequence.start()
     }
 
     fn end(&self) -> Self::Position {
-        self.to.clone()
+        self.subsequence.end()
     }
 
     fn form_next(&self, i: &mut Self::Position) {
-        self._whole.form_next(i);
+        self.subsequence.form_next(i);
     }
 
     fn form_next_n(&self, i: &mut Self::Position, n: usize) {
-        self._whole.form_next_n(i, n);
+        self.subsequence.form_next_n(i, n);
     }
 
     fn form_next_n_limited_by(
@@ -460,57 +406,53 @@ where
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        self._whole.form_next_n_limited_by(position, n, limit)
+        self.subsequence.form_next_n_limited_by(position, n, limit)
     }
 
     fn next(&self, i: Self::Position) -> Self::Position {
-        self._whole.next(i)
+        self.subsequence.next(i)
     }
 
     fn next_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self._whole.next_n(i, n)
+        self.subsequence.next_n(i, n)
     }
 
     fn distance(&self, from: Self::Position, to: Self::Position) -> usize {
-        self._whole.distance(from, to)
+        self.subsequence.distance(from, to)
     }
 
     fn at(&self, i: &Self::Position) -> Self::ElementRef<'_> {
-        self.assert_bounds_check_read(i);
-        self._whole.at(i)
+        unsafe { self.subsequence.unsafe_at(i) }
     }
 
     fn slice(
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<'_, Self::Whole> {
-        self.assert_bounds_check_slice(&from);
-        self.assert_bounds_check_slice(&to);
-        Slice::new(self._whole, from, to)
+    ) -> Slice<'_, Self::SubSequence> {
+        unsafe { Slice::new(self.subsequence.unsafe_slice(from, to)) }
     }
 }
 
-impl<Whole> LazyCollection for Slice<'_, Whole>
+impl<'a, C> LazyCollection for Slice<'a, C>
 where
-    Whole: LazyCollection<Whole = Whole>,
+    C: LazyCollection + UnsafeSubSequence<SubSequence = C> + 'a,
 {
     fn compute_at(&self, i: &Self::Position) -> Self::Element {
-        self.assert_bounds_check_read(i);
-        self._whole.compute_at(i)
+        self.subsequence.compute_at(i)
     }
 }
 
-impl<Whole> BidirectionalCollection for Slice<'_, Whole>
+impl<'a, C> BidirectionalCollection for Slice<'a, C>
 where
-    Whole: BidirectionalCollection<Whole = Whole>,
+    C: BidirectionalCollection + UnsafeSubSequence<SubSequence = C> + 'a,
 {
     fn form_prior(&self, i: &mut Self::Position) {
-        self._whole.form_prior(i);
+        self.subsequence.form_prior(i);
     }
 
     fn form_prior_n(&self, i: &mut Self::Position, n: usize) {
-        self._whole.form_prior_n(i, n);
+        self.subsequence.form_prior_n(i, n);
     }
 
     fn form_prior_n_limited_by(
@@ -519,19 +461,19 @@ where
         n: usize,
         limit: Self::Position,
     ) -> bool {
-        self._whole.form_prior_n_limited_by(position, n, limit)
+        self.subsequence.form_prior_n_limited_by(position, n, limit)
     }
 
     fn prior(&self, i: Self::Position) -> Self::Position {
-        self._whole.prior(i)
+        self.subsequence.prior(i)
     }
 
     fn prior_n(&self, i: Self::Position, n: usize) -> Self::Position {
-        self._whole.prior_n(i, n)
+        self.subsequence.prior_n(i, n)
     }
 }
 
-impl<Whole> RandomAccessCollection for Slice<'_, Whole> where
-    Whole: RandomAccessCollection<Whole = Whole>
+impl<'a, C> RandomAccessCollection for Slice<'a, C> where
+    C: RandomAccessCollection + UnsafeSubSequence<SubSequence = C> + 'a
 {
 }

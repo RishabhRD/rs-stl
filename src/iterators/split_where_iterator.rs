@@ -8,22 +8,25 @@ use crate::{
 /// An iterator of slices which are separated by elements that match `predicate`.
 pub struct SplitWhereIterator<'a, C, Pred>
 where
-    C: Collection<Whole = C>,
+    C: Collection,
     Pred: FnMut(&C::Element) -> bool,
 {
     /// Rest of collection.
-    rest: Slice<'a, C::Whole>,
+    rest: Slice<'a, C::SubSequence>,
 
     /// Predicate upon which splitting would be done.
     predicate: Pred,
 }
 
-impl<'a, C, Pred> SplitWhereIterator<'a, C, Pred>
+impl<'a, C, Predicate> SplitWhereIterator<'a, C, Predicate>
 where
-    C: Collection<Whole = C>,
-    Pred: FnMut(&C::Element) -> bool,
+    C: Collection,
+    Predicate: FnMut(&C::Element) -> bool,
 {
-    pub(crate) fn new(slice: Slice<'a, C::Whole>, predicate: Pred) -> Self {
+    pub(crate) fn new(
+        slice: Slice<'a, C::SubSequence>,
+        predicate: Predicate,
+    ) -> Self {
         SplitWhereIterator {
             rest: slice,
             predicate,
@@ -33,10 +36,10 @@ where
 
 impl<'a, C, Pred> Iterator for SplitWhereIterator<'a, C, Pred>
 where
-    C: Collection<Whole = C>,
+    C: Collection,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
-    type Item = Slice<'a, C::Whole>;
+    type Item = Slice<'a, C::SubSequence>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {
@@ -47,7 +50,9 @@ where
             .first_position_where(self.predicate.clone())
             .unwrap_or(self.rest.end());
         let res = self.rest.pop_prefix_upto(p);
-        self.rest.drop_first();
+        if !self.rest.is_empty() {
+            self.rest.drop_first();
+        }
         Some(res)
     }
 }
@@ -55,11 +60,12 @@ where
 /// An iterator of mutable slices which are separated by elements that match `predicate`.
 pub struct SplitWhereIteratorMut<'a, C, Pred>
 where
-    C: ReorderableCollection<Whole = C>,
+    C: ReorderableCollection,
+    C::SubSequence: ReorderableCollection,
     Pred: FnMut(&C::Element) -> bool,
 {
     /// Rest of collection.
-    rest: SliceMut<'a, C::Whole>,
+    rest: SliceMut<'a, C::SubSequence>,
 
     /// Predicate upon which splitting would be done.
     predicate: Pred,
@@ -67,10 +73,14 @@ where
 
 impl<'a, C, Pred> SplitWhereIteratorMut<'a, C, Pred>
 where
-    C: ReorderableCollection<Whole = C>,
+    C: ReorderableCollection,
+    C::SubSequence: ReorderableCollection,
     Pred: FnMut(&C::Element) -> bool,
 {
-    pub(crate) fn new(slice: SliceMut<'a, C::Whole>, predicate: Pred) -> Self {
+    pub(crate) fn new(
+        slice: SliceMut<'a, C::SubSequence>,
+        predicate: Pred,
+    ) -> Self {
         SplitWhereIteratorMut {
             rest: slice,
             predicate,
@@ -80,10 +90,11 @@ where
 
 impl<'a, C, Pred> Iterator for SplitWhereIteratorMut<'a, C, Pred>
 where
-    C: ReorderableCollection<Whole = C>,
+    C: ReorderableCollection,
+    C::SubSequence: ReorderableCollection,
     Pred: FnMut(&C::Element) -> bool + Clone,
 {
-    type Item = SliceMut<'a, C::Whole>;
+    type Item = SliceMut<'a, C::SubSequence>;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.rest.is_empty() {
@@ -94,7 +105,9 @@ where
             .first_position_where(self.predicate.clone())
             .unwrap_or(self.rest.end());
         let res = self.rest.pop_prefix_upto(p);
-        self.rest.drop_first();
+        if !self.rest.is_empty() {
+            self.rest.drop_first();
+        }
         Some(res)
     }
 }

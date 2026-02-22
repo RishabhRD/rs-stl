@@ -2,41 +2,38 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::algo::collection_ext::CollectionExt;
-use crate::collections::LazyMappedCollection;
 use crate::iterators::LazyCollectionIter;
-use crate::{BidirectionalCollection, LazyCollection};
+use crate::{precondition, BidirectionalCollection, LazyCollection};
 
 /// Algorithms for `LazyCollection`.
 pub trait LazyCollectionExt: LazyCollection
 where
-    Self::Whole: LazyCollection,
+    Self::SubSequence: LazyCollection,
 {
-    /// Returns the "lazily computed" first element, or nil if `self` is empty.
-    fn lazy_first(&self) -> Option<Self::Element> {
-        if self.start() == self.end() {
-            None
-        } else {
-            Some(self.compute_at(&self.start()))
-        }
+    /// Returns the "lazily computed" first element.
+    ///
+    /// - Precondition: `!self.is_empty()`.
+    fn lazy_first(&self) -> Self::Element {
+        precondition!(!self.is_empty());
+        self.compute_at(&self.start())
     }
 
-    /// Returns the "lazily computed" last element, or nil if `self` is empty.
-    fn lazy_last(&self) -> Option<Self::Element>
+    /// Returns the "lazily computed" last element.
+    ///
+    /// - Precondition: `!self.is_empty()`.
+    fn lazy_last(&self) -> Self::Element
     where
         Self: BidirectionalCollection,
-        Self::Whole: BidirectionalCollection,
+        Self::SubSequence: BidirectionalCollection,
     {
-        if self.start() == self.end() {
-            None
-        } else {
-            Some(self.compute_at(&self.prior(self.end())))
-        }
+        precondition!(!self.is_empty());
+        self.compute_at(&self.prior(self.end()))
     }
 
     /*-----------------Iteration Algorithms-----------------*/
 
-    /// Returns an iterator to iterate over lazyily computed elements in collection.
-    fn lazy_iter(&self) -> LazyCollectionIter<'_, Self::Whole> {
+    /// Returns an iterator over the laziily computed elements in collection.
+    fn lazy_iter(&self) -> LazyCollectionIter<'_, Self::SubSequence> {
         LazyCollectionIter::new(self.full())
     }
 
@@ -64,29 +61,6 @@ where
             f(self.compute_at(&start));
             start = self.next(start);
         }
-    }
-
-    /*-----------------Transformation algorithms-----------------*/
-
-    /// Returns a lazy collection projecting elements of mapping the given closure over lazily
-    /// computed values of self.
-    ///
-    /// # Example
-    /// ```rust
-    /// use stl::*;
-    ///
-    /// let arr = (1..=5).lazy_map(|x| x * 2);
-    /// assert!(arr.equals(&[2, 4, 6, 8, 10]));
-    /// ```
-    fn lazy_map<MapFn, MappedType>(
-        self,
-        map_fn: MapFn,
-    ) -> LazyMappedCollection<Self, MapFn, MappedType>
-    where
-        Self: Sized,
-        MapFn: Fn(Self::Element) -> MappedType,
-    {
-        LazyMappedCollection::new(self, map_fn)
     }
 
     /*-----------------Partition Algorithms-----------------*/
@@ -198,7 +172,7 @@ where
     where
         F: FnMut(Self::Element, R) -> R,
         Self: BidirectionalCollection,
-        Self::Whole: BidirectionalCollection,
+        Self::SubSequence: BidirectionalCollection,
     {
         let mut res = init;
         for e in self.lazy_iter().rev() {
@@ -211,6 +185,6 @@ where
 impl<R> LazyCollectionExt for R
 where
     R: LazyCollection + ?Sized,
-    R::Whole: LazyCollection,
+    R::SubSequence: LazyCollection,
 {
 }

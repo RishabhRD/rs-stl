@@ -232,19 +232,11 @@ pub mod tests {
     fn pop_elements() {
         let arr = [1, 2, 3];
         let mut s = arr.full();
-        let e = s.pop_first();
-        assert_eq!(e, Some(&1));
+        assert_eq!(*s.pop_first(), 1);
         assert!(s.equals(&[2, 3]));
-
-        assert!(s.drop_first());
+        s.drop_first();
         assert!(s.equals(&[3]));
-        assert!(s.drop_first());
-        assert!(s.equals(&[]));
-        assert!(!s.drop_first());
-        assert!(s.equals(&[]));
-
-        let e = s.pop_first();
-        assert_eq!(e, None);
+        s.drop_first();
         assert!(s.equals(&[]));
     }
 

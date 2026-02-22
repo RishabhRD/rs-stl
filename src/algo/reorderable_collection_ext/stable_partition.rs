@@ -23,7 +23,7 @@ pub fn stable_partition<C, F>(
 ) -> C::Position
 where
     C: ReorderableCollection + ?Sized,
-    C::Whole: ReorderableCollection,
+    C::SubSequence: ReorderableCollection,
     F: FnMut(&C::Element) -> bool + Clone,
 {
     if n == 0 {

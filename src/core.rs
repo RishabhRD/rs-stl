@@ -20,7 +20,7 @@ impl<T> SemiRegular for T where T: Send + Eq {}
 pub trait Regular: SemiRegular + Clone {}
 impl<T> Regular for T where T: SemiRegular + Clone {}
 
-/// Models a multi-pass linear sequence of elements.
+/// A multi-pass linear sequence of elements.
 ///
 /// Representation:
 /// ```text
@@ -30,7 +30,7 @@ impl<T> Regular for T where T: SemiRegular + Clone {}
 ///   |            |
 /// start   -->   end
 pub trait Collection {
-    /// Type of positions in the collection.
+    /// Type represting position in the collection.
     type Position: Regular + Ord;
 
     /// Type of element in the collection.
@@ -43,111 +43,99 @@ pub trait Collection {
         Self: 'a; // Someday if rust supports yield once coroutines like swift,
                   // then this proxy reference technique is not needed.
 
-    /// Type representing whole collection.
-    /// i.e., `Self == Slice<W> ? W : Self`
-    type Whole: Collection<
+    /// An unsafe collection representing contiguous subrange of `self`.
+    type SubSequence: UnsafeSubSequence<
         Position = Self::Position,
         Element = Self::Element,
-        Whole = Self::Whole,
+        SubSequence = Self::SubSequence,
     >;
 
-    /// Returns the position of first element in self,
-    /// or if self is empty then start() == end()
+    /// Returns the position of first element in `self` if `self` is not empty;
+    /// Returns end position otherwise.
     fn start(&self) -> Self::Position;
 
     /// Returns the position just after last element in collection.
     fn end(&self) -> Self::Position;
 
-    /// Mutates given `position` to next position in collection.
+    /// Set `p` to next position after `p`.
     ///
     /// # Precondition
-    ///   - `position != end()`
-    fn form_next(&self, position: &mut Self::Position);
+    ///   - Next position of `p` should be well defined.
+    fn form_next(&self, p: &mut Self::Position);
 
-    /// Increments given position by `n`.
+    /// Increments `p` by `n`.
     ///
     /// # Precondition
-    ///   - There are `n` valid positions in self after `position`.
+    ///   - There are `n` valid positions in self after `p`.
     ///
     /// # Complexity
-    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
-    fn form_next_n(&self, position: &mut Self::Position, mut n: usize) {
+    ///   - O(1) for `RandomAccessCollection`; O(`n`) otherwise.
+    fn form_next_n(&self, p: &mut Self::Position, mut n: usize) {
         while n > 0 {
-            self.form_next(position);
+            self.form_next(p);
             n -= 1;
         }
     }
 
-    /// Increments given position by `n`, or so that it equals the given limit.
+    /// Increments `p` by `n` and returns true; unless the distance is beyond `limit` in which case
+    /// set `p` to `limit` and returns false.
     ///
     /// # Precondition
-    ///   - `limit` is a valid position in `self`.
-    ///   - `limit` should be increment-reachable from `position`.
-    ///
-    /// # Postcondition
-    ///   - Returns true if `position` has been incremented exactly by `n`
-    ///     without going beyond limit, otherwise returns false.
-    ///   - When the return value is false, the value `position` is equal to
-    ///     `limit`.
+    ///   - `limit` should be increment-reachable from `p`.
     ///
     /// # Complexity
-    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    ///   - O(1) for `RandomAccessCollection`; O(`n`) otherwise.
     fn form_next_n_limited_by(
         &self,
-        position: &mut Self::Position,
+        p: &mut Self::Position,
         n: usize,
         limit: Self::Position,
     ) -> bool {
         let mut n = n;
-        while *position != limit && n > 0 {
-            self.form_next(position);
+        while *p != limit && n > 0 {
+            self.form_next(p);
             n -= 1;
         }
         n == 0
     }
 
-    /// Returns position immediately after `position`.
+    /// Returns position immediately after `p`.
     ///
     /// # Precondition
-    ///   - `position != end()`
-    fn next(&self, mut position: Self::Position) -> Self::Position {
-        self.form_next(&mut position);
-        position
+    ///   - Next position of `p` should be well defined.
+    fn next(&self, mut p: Self::Position) -> Self::Position {
+        self.form_next(&mut p);
+        p
     }
 
-    /// Returns nth position after `position`.
+    /// Returns nth position after `p`.
     ///
     /// # Precondition
-    ///   - There are n valid positions in self after `position`.
+    ///   - There are `n` valid positions in self after `p`.
     ///
     /// # Complexity
-    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
-    fn next_n(&self, mut position: Self::Position, n: usize) -> Self::Position {
-        self.form_next_n(&mut position, n);
-        position
+    ///   - O(1) for `RandomAccessCollection`; O(`n`) otherwise.
+    fn next_n(&self, mut p: Self::Position, n: usize) -> Self::Position {
+        self.form_next_n(&mut p, n);
+        p
     }
 
-    /// Returns `n`th position after given position, unless `n` is beyond `limit`.
+    /// Returns `n`th position after `p`, unless `n` is beyond `limit`.
     ///
     /// # Precondition
-    ///   - `limit` is a valid position in `self`.
-    ///   - `limit` should be increment-reachable from `position`.
-    ///
-    /// # Postcondition
-    ///   - Returns `n`th position after given position, unless `n` is beyond `limit`.
-    ///   - Otherwise, returns None.
+    ///   - `limit` should be increment-reachable from `p`.
     ///
     /// # Complexity
-    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    ///   - O(1) for `RandomAccessCollection`; O(`n`) otherwise.
     fn next_n_limited_by(
         &self,
-        mut position: Self::Position,
+        mut p: Self::Position,
         n: usize,
         limit: Self::Position,
     ) -> Option<Self::Position> {
-        let success = self.form_next_n_limited_by(&mut position, n, limit);
+        let success = self.form_next_n_limited_by(&mut p, n, limit);
         if success {
-            Some(position)
+            Some(p)
         } else {
             None
         }
@@ -155,11 +143,8 @@ pub trait Collection {
 
     /// Returns number of elements in `[from, to)`.
     ///
-    /// # Precondition
-    ///   - `[from, to)` represents valid positions in the collection.
-    ///
     /// # Complexity
-    ///   - O(1) if RandomAccessCollection; O(n) otherwise.
+    ///   - O(1) if `RandomAccessCollection`; O(`n`) otherwise.
     fn distance(&self, mut from: Self::Position, to: Self::Position) -> usize {
         let mut dist = 0;
         while from != to {
@@ -172,7 +157,7 @@ pub trait Collection {
     /// Returns number of elements in collection.
     ///
     /// # Complexity
-    ///   - O(1) if RandomAccessCollection; O(n) otherwise.
+    ///   - O(1) if `RandomAccessCollection`; O(`n`) otherwise.
     fn count(&self) -> usize {
         self.distance(self.start(), self.end())
     }
@@ -180,85 +165,66 @@ pub trait Collection {
     /// Returns count less than or equal to number of elements in collection.
     ///
     /// # Complexity
-    ///   - O(1) if RandomAccessCollection; O(n) otherwise.
+    ///   - O(1) if `RandomAccessCollection`; O(`n`) otherwise.
     fn underestimated_count(&self) -> usize {
         self.count()
     }
 
-    /// Access element at position i.
-    ///
-    /// # Precondition
-    ///   - i is a valid position in self and i != end()
-    ///
-    /// # Complexity Requirement
-    ///   - O(1)
+    /// Yields element at `i`th position.
     fn at(&self, i: &Self::Position) -> Self::ElementRef<'_>;
 
-    /// Returns slice of collection in positions `[from, to)`.
+    /// A contiguous subrange of `self` having elements in position `[from, to)`.
     ///
-    /// # Precondition
-    ///   - `[from, to)` represents valid positions in collection.
+    /// The slice share positions with `self`.
     fn slice(
         &self,
         from: Self::Position,
         to: Self::Position,
-    ) -> Slice<'_, Self::Whole>;
+    ) -> Slice<'_, Self::SubSequence>;
 }
 
-/// Models a collection whose elements are computed on element access.
+/// A collection whose elements are computed on element access.
 pub trait LazyCollection: Collection
 where
-    Self::Whole: LazyCollection,
+    Self::SubSequence: LazyCollection,
 {
-    /// Computes element at position `i`.
-    ///
-    /// # Precondition
-    ///   - i is a valid position in self and i != end()
-    ///
-    /// # Complexity Requirement
-    ///   - O(1)
+    /// Computes and returns `i`th element.
     fn compute_at(&self, i: &Self::Position) -> Self::Element;
 }
 
-/// Models a bidirectional collection, which can be traversed forward as well as backward.
+/// A collection which supports backward traversal as well as forward traversal.
 pub trait BidirectionalCollection: Collection
 where
-    Self::Whole: BidirectionalCollection,
+    Self::SubSequence: BidirectionalCollection,
 {
-    /// Mutates the given position to position just before `position`.
+    /// Sets `p` to position just before `p`.
     ///
     /// # Precondition
-    ///   - `position != start()`
-    fn form_prior(&self, position: &mut Self::Position);
+    ///   - Position before `p` should be well defined.
+    fn form_prior(&self, p: &mut Self::Position);
 
-    /// Mutates the given position to nth position before `position`.
+    /// Sets `p` to `n` positions before `p`.
     ///
     /// # Precondition
-    ///   - There are n valid positions in self before `position`.
+    ///   - There are `n` valid positions in self before `p`.
     ///
     /// # Complexity
-    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
-    fn form_prior_n(&self, position: &mut Self::Position, mut n: usize) {
+    ///   - O(1) for `RandomAccessCollection`; O(`n`) otherwise.
+    fn form_prior_n(&self, p: &mut Self::Position, mut n: usize) {
         while n > 0 {
-            self.form_prior(position);
+            self.form_prior(p);
             n -= 1;
         }
     }
 
-    /// Decrements given position by `n`, or so that it equals the given limit.
+    /// Increments `p` by `n` and returns true; unless the distance is beyond `limit`
+    /// in which case set `p` to `limit` and returns false.
     ///
     /// # Precondition
-    ///   - `limit` is a valid position in `self`.
     ///   - `limit` should be decrement-reachable from `position`.
     ///
-    /// # Postcondition
-    ///   - Returns true if `position` has been decremented exactly by `n`
-    ///     without going beyond limit, otherwise returns false.
-    ///   - When the return value is false, the value `position` is equal to
-    ///     `limit`.
-    ///
     /// # Complexity
-    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    ///   - O(1) for `RandomAccessCollection`; O(`n`) otherwise.
     fn form_prior_n_limited_by(
         &self,
         position: &mut Self::Position,
@@ -273,112 +239,144 @@ where
         n == 0
     }
 
-    /// Returns position immediately before `position`
+    /// Returns position immediately before `p`
     ///
     /// # Precondition
-    ///   - `position != start()`
-    fn prior(&self, mut position: Self::Position) -> Self::Position {
-        self.form_prior(&mut position);
-        position
+    ///   - Position before `p` should be well defined.
+    fn prior(&self, mut p: Self::Position) -> Self::Position {
+        self.form_prior(&mut p);
+        p
     }
 
-    /// Returns nth position before `position`
+    /// Returns `n`th position before `p`
     ///
     /// # Precondition
-    ///   - self has n valid positions before `position`.
+    ///   - There are `n` valid positions before `p`.
     ///
     /// # Complexity
-    /// n applications of before.
-    fn prior_n(
-        &self,
-        mut position: Self::Position,
-        n: usize,
-    ) -> Self::Position {
-        self.form_prior_n(&mut position, n);
-        position
+    ///   - O(1) for `RandomAccessCollection`; O(`n`) otherwise.
+    fn prior_n(&self, mut p: Self::Position, n: usize) -> Self::Position {
+        self.form_prior_n(&mut p, n);
+        p
     }
 
-    /// Returns `n`th position before given position, unless `n` is beyond `limit`.
+    /// Returns `n`th position before `p`, unless `n` position is beyond `limit`.
     ///
     /// # Precondition
-    ///   - `limit` is a valid position in `self`.
-    ///   - `limit` should be increment-reachable from `position`.
-    ///
-    /// # Postcondition
-    ///   - Returns `n`th position before given position, unless `n` is beyond `limit`.
-    ///   - Otherwise, returns None.
+    ///   - `limit` should be increment-reachable from `p`.
     ///
     /// # Complexity
-    ///   - O(1) for RandomAccessCollection; O(n) otherwise.
+    ///   - O(1) for `RandomAccessCollection`; O(`n`) otherwise.
     fn prior_n_limited_by(
         &self,
-        mut position: Self::Position,
+        mut p: Self::Position,
         n: usize,
         limit: Self::Position,
     ) -> Option<Self::Position> {
-        let success = self.form_prior_n_limited_by(&mut position, n, limit);
+        let success = self.form_prior_n_limited_by(&mut p, n, limit);
         if success {
-            Some(position)
+            Some(p)
         } else {
             None
         }
     }
 }
 
-/// Models a random access collection (similar to array) where jumping to any position from any
-/// other position is O(1) operation.
+/// A collection that supports efficient random access traversal.
 ///
-/// - RandomAccessCollection is extension of BidirectionalCollection.
-/// - RandomAccessCollection enforces the Position of collection should be ordered.
-/// - RandomAccessCollection doesn't add any new method but introduces complexity
-///   requirements mentioned below. The complexity requirements ensure that
-///   any position jump is O(1).
-///
-/// # Complexity Requirements
-///   - `self.distance(from, to)` -> O(1).
-///   - `self.form_next_n(i)` -> O(1).
-///   - `self.form_prior_n(i)` -> O(1).
-///   - `self.next_n(i)` -> O(1).
-///   - `self.prior_n(i)` -> O(1).
-///
-///   NOTE: If complexity requirements are not formed any algorithm on RandomAccessCollection
-///   have undefined behavior.
+/// Random access collections can move any position any distance and measure
+/// distance between positions in O(1) time.
 pub trait RandomAccessCollection: BidirectionalCollection
 where
-    Self::Whole: RandomAccessCollection,
+    Self::SubSequence: RandomAccessCollection,
 {
 }
 
-/// Models a collection which supports internally reordering its element.
+/// A collection which supports internally reordering its element.
 pub trait ReorderableCollection: Collection
 where
-    Self::Whole: ReorderableCollection,
+    Self::SubSequence: ReorderableCollection,
 {
-    /// Swaps element at position i with element at position j.
+    /// Swaps element at position `i` with element at position `j`.
     fn swap_at(&mut self, i: &Self::Position, j: &Self::Position);
 
-    /// Returns mutable slice of collection in positions `[from, to)`.
+    /// A contiguous mutable subrange of `self` having elements in position `[from, to)`.
     ///
-    /// # Precondition
-    ///   - `[from, to)` represents valid positions in collection.
+    /// The slice share positions with `self`.
     fn slice_mut(
         &mut self,
         from: Self::Position,
         to: Self::Position,
-    ) -> SliceMut<'_, Self::Whole>;
+    ) -> SliceMut<'_, Self::SubSequence>;
 }
 
-/// Models a collection which supports mutating its element
-pub trait MutableCollection: ReorderableCollection
+/// A collection which allows mutable access to its elements.
+pub trait MutableCollection:
+    ReorderableCollection<SubSequence: UnsafeMutableSubSequence>
 where
-    Self::Whole: MutableCollection,
+    Self::SubSequence: MutableCollection,
 {
-    /// Mutably Access element at position i.
-    ///
-    /// # Precondition
-    ///   - i is a valid position in self and i != end()
-    ///
-    /// # Complexity Requirement
-    ///   - O(1)
+    /// Returns mutable reference to element at `i`th position.
     fn at_mut(&mut self, i: &Self::Position) -> &mut Self::Element;
+}
+
+/// A low-level, unchecked view into contiguous subsequence of a collection.
+///
+/// NOTE: The trait doesn't enforce usual lifetime tracking. It is intended to
+/// be wrapped in a safe view (i.e., `Slice`).
+pub trait UnsafeSubSequence: Collection {
+    /// Yields reference to `i`th element with lifetime `'a`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to provide such `'a` that doesn't violate
+    /// memory safety.
+    unsafe fn unsafe_at<'a>(&self, i: &Self::Position) -> Self::ElementRef<'a>;
+
+    /// Returns a slice of elements in position range `[from, to)`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to use this mechanism to create disjoint
+    /// slices of appropriate lifetimes.
+    unsafe fn unsafe_slice(
+        &self,
+        from: Self::Position,
+        to: Self::Position,
+    ) -> Self::SubSequence;
+
+    /// Set the start position of `self` to `p`.
+    ///
+    /// - Precondition: `p` belongs to `[self.start(), self.end()]`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to use this mechanism to create disjoint
+    /// slices of appropriate lifetimes.
+    unsafe fn set_start(&mut self, p: Self::Position);
+
+    /// Set the end position of `self` to `p`.
+    ///
+    /// - Precondition: `p` belongs to `[self.start(), self.end()]`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to use this mechanism to create disjoint
+    /// slices of appropriate lifetimes.
+    unsafe fn set_end(&mut self, p: Self::Position);
+}
+
+/// A low-level mutable contiguous subsequence of a collection.
+///
+/// NOTE: The trait doesn't enforce usual lifetime tracking. It is intended to
+/// be wrapped in a safe view (i.e., `SliceMut`).
+pub trait UnsafeMutableSubSequence: UnsafeSubSequence
+where
+    Self::SubSequence: UnsafeMutableSubSequence,
+{
+    /// Yields mutable reference to `i`th element with lifetime `'a`.
+    ///
+    /// # Safety
+    /// It is responsibility of caller to provide such `'a` that doesn't violate
+    /// memory safety.
+    unsafe fn unsafe_at_mut<'a>(
+        &self,
+        i: &Self::Position,
+    ) -> &'a mut Self::Element;
 }

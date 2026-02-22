@@ -2,9 +2,8 @@
 // Copyright (c) 2025 Rishabh Dwivedi (rishabhdwivedi17@gmail.com)
 
 use crate::{
-    collections::MappedCollection,
     iterators::{CollectionIter, SplitEvenlyIterator, SplitWhereIterator},
-    Collection, Slice,
+    precondition, Collection, Slice,
 };
 
 /// Algorithms for `Collection`.
@@ -19,13 +18,10 @@ pub trait CollectionExt: Collection {
 
     /*-----------------Element Access Algorithms-----------------*/
 
-    /// Returns the first element, or nil if `self` is empty.
-    fn first(&self) -> Option<Self::ElementRef<'_>> {
-        if self.start() == self.end() {
-            None
-        } else {
-            Some(self.at(&self.start()))
-        }
+    /// Yields the first element.
+    fn first(&self) -> Self::ElementRef<'_> {
+        precondition!(self.is_empty());
+        self.at(&self.start())
     }
 
     /*-----------------Slice Algorithms-----------------*/
@@ -43,7 +39,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.full();
     /// assert!(s.equals(&[1, 2, 3, 4, 5]));
     /// ```
-    fn full(&self) -> Slice<'_, Self::Whole> {
+    fn full(&self) -> Slice<'_, Self::SubSequence> {
         self.slice(self.start(), self.end())
     }
 
@@ -66,7 +62,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.prefix(3);
     /// assert!(s.equals(&[1, 2, 3]));
     /// ```
-    fn prefix(&self, max_length: usize) -> Slice<'_, Self::Whole> {
+    fn prefix(&self, max_length: usize) -> Slice<'_, Self::SubSequence> {
         let mut end = self.start();
         self.form_next_n_limited_by(&mut end, max_length, self.end());
         self.prefix_upto(end)
@@ -88,7 +84,7 @@ pub trait CollectionExt: Collection {
     /// let p = arr.prefix_upto(3);
     /// assert!(p.equals(&[1, 2, 3]));
     /// ```
-    fn prefix_upto(&self, pos: Self::Position) -> Slice<'_, Self::Whole> {
+    fn prefix_upto(&self, pos: Self::Position) -> Slice<'_, Self::SubSequence> {
         self.slice(self.start(), pos)
     }
 
@@ -108,7 +104,10 @@ pub trait CollectionExt: Collection {
     /// let p = arr.prefix_through(3);
     /// assert!(p.equals(&[1, 2, 3, 4]));
     /// ```
-    fn prefix_through(&self, pos: Self::Position) -> Slice<'_, Self::Whole> {
+    fn prefix_through(
+        &self,
+        pos: Self::Position,
+    ) -> Slice<'_, Self::SubSequence> {
         self.prefix_upto(self.next(pos))
     }
 
@@ -129,7 +128,7 @@ pub trait CollectionExt: Collection {
     fn prefix_while<F: FnMut(&Self::Element) -> bool>(
         &self,
         mut predicate: F,
-    ) -> Slice<'_, Self::Whole> {
+    ) -> Slice<'_, Self::SubSequence> {
         let p = self
             .first_position_where(|x| !predicate(x))
             .unwrap_or(self.end());
@@ -150,7 +149,10 @@ pub trait CollectionExt: Collection {
     /// let s = arr.dropping_while(|x| x % 2 == 1);
     /// assert!(s.equals(&[2, 4, 7]));
     /// ```
-    fn dropping_while<F>(&self, mut predicate: F) -> Slice<'_, Self::Whole>
+    fn dropping_while<F>(
+        &self,
+        mut predicate: F,
+    ) -> Slice<'_, Self::SubSequence>
     where
         F: FnMut(&Self::Element) -> bool,
     {
@@ -177,7 +179,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.dropping_prefix(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn dropping_prefix(&self, count: usize) -> Slice<'_, Self::Whole> {
+    fn dropping_prefix(&self, count: usize) -> Slice<'_, Self::SubSequence> {
         let mut start = self.start();
         self.form_next_n_limited_by(&mut start, count, self.end());
         self.suffix_from(start)
@@ -200,7 +202,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.dropping_suffix(3);
     /// assert!(s.equals(&[1, 2]));
     /// ```
-    fn dropping_suffix(&self, count: usize) -> Slice<'_, Self::Whole> {
+    fn dropping_suffix(&self, count: usize) -> Slice<'_, Self::SubSequence> {
         let n = self.count();
         if count > n {
             return self.prefix_upto(self.start());
@@ -227,7 +229,7 @@ pub trait CollectionExt: Collection {
     /// let s = arr.suffix(3);
     /// assert!(s.equals(&[3, 4, 5]));
     /// ```
-    fn suffix(&self, max_length: usize) -> Slice<'_, Self::Whole> {
+    fn suffix(&self, max_length: usize) -> Slice<'_, Self::SubSequence> {
         let n = self.count();
         if max_length > n {
             self.full()
@@ -252,7 +254,10 @@ pub trait CollectionExt: Collection {
     /// let s = arr.suffix_from(3);
     /// assert!(s.equals(&[4, 5]));
     /// ```
-    fn suffix_from(&self, from: Self::Position) -> Slice<'_, Self::Whole> {
+    fn suffix_from(
+        &self,
+        from: Self::Position,
+    ) -> Slice<'_, Self::SubSequence> {
         self.slice(from, self.end())
     }
 
@@ -270,7 +275,7 @@ pub trait CollectionExt: Collection {
     fn splitting_at(
         &self,
         position: Self::Position,
-    ) -> (Slice<'_, Self::Whole>, Slice<'_, Self::Whole>) {
+    ) -> (Slice<'_, Self::SubSequence>, Slice<'_, Self::SubSequence>) {
         self.full().split_at(position)
     }
 
@@ -292,14 +297,14 @@ pub trait CollectionExt: Collection {
     fn splitting_after(
         &self,
         position: Self::Position,
-    ) -> (Slice<'_, Self::Whole>, Slice<'_, Self::Whole>) {
+    ) -> (Slice<'_, Self::SubSequence>, Slice<'_, Self::SubSequence>) {
         self.full().split_after(position)
     }
 
     /*-----------------Iterator Algorithms-----------------*/
 
     /// Returns an iterator to iterate over element refs in collection.
-    fn iter(&self) -> CollectionIter<'_, Self::Whole> {
+    fn iter(&self) -> CollectionIter<'_, Self::SubSequence> {
         CollectionIter::new(self.full())
     }
 
@@ -346,7 +351,7 @@ pub trait CollectionExt: Collection {
     fn splitting_where<Pred>(
         &self,
         pred: Pred,
-    ) -> SplitWhereIterator<'_, Self::Whole, Pred>
+    ) -> SplitWhereIterator<'_, Self::SubSequence, Pred>
     where
         Pred: FnMut(&Self::Element) -> bool,
         Self: Sized,
@@ -384,7 +389,7 @@ pub trait CollectionExt: Collection {
         &self,
         max_slices: usize,
         min_size: usize,
-    ) -> SplitEvenlyIterator<'_, Self::Whole> {
+    ) -> SplitEvenlyIterator<'_, Self::SubSequence> {
         self.full()
             .split_evenly_in_with_min_size(max_slices, min_size)
     }
@@ -417,30 +422,8 @@ pub trait CollectionExt: Collection {
     fn splitting_evenly_in(
         &self,
         num_slices: usize,
-    ) -> SplitEvenlyIterator<'_, Self::Whole> {
+    ) -> SplitEvenlyIterator<'_, Self::SubSequence> {
         self.full().split_evenly_in(num_slices)
-    }
-
-    /*-----------------Transformation algorithms-----------------*/
-
-    /// Returns a lazy collection projecting elements of mapping the given closure over elements.
-    ///
-    /// # Example
-    /// ```rust
-    /// use stl::*;
-    ///
-    /// let arr = [1, 2, 3, 4, 5].map(|x| x * 2);
-    /// assert!(arr.equals(&[2, 4, 6, 8, 10]));
-    /// ```
-    fn map<MapFn, MappedType>(
-        self,
-        map_fn: MapFn,
-    ) -> MappedCollection<Self, MapFn, MappedType>
-    where
-        Self: Sized,
-        MapFn: Fn(&Self::Element) -> MappedType,
-    {
-        MappedCollection::new(self, map_fn)
     }
 
     /*-----------------Equality algorithms-----------------*/
@@ -476,13 +459,12 @@ pub trait CollectionExt: Collection {
     {
         let mut self1 = self.full();
         let mut other1 = other.full();
-        loop {
-            match (self1.pop_first(), other1.pop_first()) {
-                (Some(x), Some(y)) if bi_pred(&x, &y) => {}
-                (None, None) => return true,
-                _ => return false,
+        while !self1.is_empty() && !other1.is_empty() {
+            if !bi_pred(&self1.pop_first(), &other1.pop_first()) {
+                return false;
             }
         }
+        self1.is_empty() && other1.is_empty()
     }
 
     /// Returns true if elements of self is equal to elements of other.
@@ -515,11 +497,11 @@ pub trait CollectionExt: Collection {
 
     /*-----------------Find Algorithms-----------------*/
 
-    /// Finds position of first element in `self` satisfying `pred`. If no such
-    /// element exists, returns `self.end()`.
+    /// Returns first position whose element satisfies `pred`. If no such element
+    /// exists, returns `None`.
     ///
     /// # Complexity
-    ///   - O(n) where `n == self.count()`.
+    ///   - O(`n`) where `n == self.count()`.
     ///
     /// # Example
     /// ```rust
@@ -538,17 +520,17 @@ pub trait CollectionExt: Collection {
     {
         let mut rest = self.full();
         let mut p = self.start();
-        while let Some(e) = rest.pop_first() {
-            if pred(&e) {
+        while !rest.is_empty() {
+            if pred(&rest.pop_first()) {
                 return Some(p);
             }
-            p = rest.start()
+            p = rest.start();
         }
         None
     }
 
-    /// Finds position of first element in `self` equals `e`. If no such element
-    /// exists, returns `self.end()`.
+    /// Returns position of first element in `self` equals `e`. If no such element
+    /// exists, returns `None`.
     ///
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
@@ -569,7 +551,7 @@ pub trait CollectionExt: Collection {
     }
 
     /// Finds position of last element in `self` satisfying `pred`. If no such
-    /// element exists, returns `self.end()`.
+    /// element exists, returns `None`.
     ///
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
@@ -592,8 +574,8 @@ pub trait CollectionExt: Collection {
         let mut rest = self.full();
         let mut res = None;
         let mut p = self.start();
-        while let Some(e) = rest.pop_first() {
-            if pred(&e) {
+        while !rest.is_empty() {
+            if pred(&rest.pop_first()) {
                 res = Some(p);
             }
             p = rest.start();
@@ -602,7 +584,7 @@ pub trait CollectionExt: Collection {
     }
 
     /// Finds position of `last` element equals `e`. If no such element exist,
-    /// return `self.end()`.
+    /// return `None`.
     ///
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
@@ -641,8 +623,7 @@ pub trait CollectionExt: Collection {
     where
         Pred: FnMut(&Self::Element) -> bool,
     {
-        let mut cur = self.full();
-        while let Some(e) = cur.pop_first() {
+        for e in self.iter() {
             if !pred(&e) {
                 return false;
             }
@@ -667,8 +648,7 @@ pub trait CollectionExt: Collection {
     where
         Pred: FnMut(&Self::Element) -> bool,
     {
-        let mut cur = self.full();
-        while let Some(e) = cur.pop_first() {
+        for e in self.iter() {
             if pred(&e) {
                 return true;
             }
@@ -693,8 +673,7 @@ pub trait CollectionExt: Collection {
     where
         Pred: FnMut(&Self::Element) -> bool,
     {
-        let mut cur = self.full();
-        while let Some(e) = cur.pop_first() {
+        for e in self.iter() {
             if pred(&e) {
                 return false;
             }
@@ -721,14 +700,13 @@ pub trait CollectionExt: Collection {
     where
         Pred: FnMut(&Self::Element) -> bool,
     {
-        let mut cur = self.full();
-        let mut count = 0;
-        while let Some(e) = cur.pop_first() {
+        let mut res = 0;
+        for e in self.iter() {
             if pred(&e) {
-                count += 1;
+                res += 1
             }
         }
-        count
+        res
     }
 
     /// Returns number of elements in `self` equals `e`.
@@ -831,7 +809,8 @@ pub trait CollectionExt: Collection {
         let mut right_idx = n;
 
         let mut rest = self.full();
-        while let Some(e) = rest.pop_first() {
+        while !rest.is_empty() {
+            let e = rest.pop_first();
             if belongs_in_second_half(&e) {
                 right_idx -= 1;
                 arr[right_idx].write((*e).clone());
@@ -876,8 +855,7 @@ pub trait CollectionExt: Collection {
         F: FnMut(R, &Self::Element) -> R,
     {
         let mut res = init;
-        let mut rest = self.full();
-        while let Some(e) = rest.pop_first() {
+        for e in self.iter() {
             res = op(res, &e)
         }
         res

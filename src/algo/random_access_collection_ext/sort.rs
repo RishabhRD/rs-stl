@@ -21,7 +21,7 @@ pub(crate) fn sort_unstable_by<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::Whole: ReorderableCollection + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool + Clone,
 {
     let n = collection.count();
@@ -54,7 +54,7 @@ pub(crate) fn insertion_sort<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + BidirectionalCollection + ?Sized,
-    C::Whole: ReorderableCollection + BidirectionalCollection,
+    C::SubSequence: ReorderableCollection + BidirectionalCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool,
 {
     if collection.is_empty() {
@@ -100,7 +100,7 @@ pub(crate) fn quick_sort_within<C, Compare>(
 ) -> bool
 where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::Whole: ReorderableCollection + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool + Clone,
 {
     if collection.start() == collection.end()
@@ -118,7 +118,7 @@ where
     // Partition collection except first element.
     let p = {
         let mut rest = collection.full_mut();
-        let pivot = unsafe { rest.pop_first().unwrap_unchecked() };
+        let pivot = rest.pop_first();
         rest.partition(|e| !are_in_increasing_order(e, &pivot))
     };
 
@@ -154,7 +154,7 @@ pub(crate) fn heapify<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::Whole: ReorderableCollection + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool,
 {
     let n = elements.count();
@@ -211,7 +211,7 @@ pub(crate) fn make_heap<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::Whole: ReorderableCollection + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool + Clone,
 {
     let n = elements.count();
@@ -244,7 +244,7 @@ pub(crate) fn heap_sort<C, Compare>(
     are_in_increasing_order: Compare,
 ) where
     C: ReorderableCollection + RandomAccessCollection + ?Sized,
-    C::Whole: ReorderableCollection + RandomAccessCollection,
+    C::SubSequence: ReorderableCollection + RandomAccessCollection,
     Compare: Fn(&C::Element, &C::Element) -> bool + Clone,
 {
     make_heap(elements, are_in_increasing_order.clone());

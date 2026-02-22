@@ -20,6 +20,17 @@ pub mod tests {
     }
 
     #[test]
+    fn swap() {
+        let mut array = [1, 2, 3];
+        let mut arr = array.full_mut();
+        arr.swap_at(&0, &2);
+        arr.equals(&[3, 2, 1]);
+        let mut arr = array.slice_mut(1, 3);
+        arr.swap_at(&1, &2);
+        arr.equals(&[3, 1, 2]);
+    }
+
+    #[test]
     fn at() {
         let mut array = [1, 2, 3];
         let arr = array.slice_mut(array.start(), array.end());
@@ -246,19 +257,12 @@ pub mod tests {
         let mut s = arr.full_mut();
 
         let e = s.pop_first();
-        assert_eq!(e, Some(&1));
+        assert_eq!(e, &1);
         assert!(s.equals(&[2, 3]));
-
-        assert!(s.drop_first());
+        s.drop_first();
         assert!(s.equals(&[3]));
-        assert!(s.drop_first());
-        assert!(s.equals(&[]));
-        assert!(!s.drop_first());
-        assert!(s.equals(&[]));
-
-        let e = s.pop_first();
-        assert_eq!(e, None);
-        assert!(s.equals(&[]));
+        s.drop_first();
+        assert!(s.is_empty());
     }
 
     #[test]

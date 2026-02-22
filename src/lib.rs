@@ -42,6 +42,8 @@ pub mod iterators;
 
 #[doc(hidden)]
 pub(crate) mod std_impl;
+#[doc(inline)]
+pub use std_impl::*;
 
 /// Proxy Reference to temporary value.
 pub mod value_ref;
@@ -51,3 +53,6 @@ pub(crate) use util::*;
 
 mod exec;
 pub(crate) use exec::*;
+
+mod unsafe_slice;
+pub use unsafe_slice::*;
