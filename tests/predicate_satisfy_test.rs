@@ -20,13 +20,13 @@ pub mod tests {
     #[test]
     fn parallel_all_satisfy() {
         let arr = [1, 3, 5];
-        assert!(arr.parallel_all_satisfy(|x| x % 2 == 1));
+        assert!(arr.all_satisfy_par(|x| x % 2 == 1));
 
         let arr = [1, 2, 5];
-        assert!(!arr.parallel_all_satisfy(|x| x % 2 == 1));
+        assert!(!arr.all_satisfy_par(|x| x % 2 == 1));
 
         let arr = [];
-        assert!(arr.parallel_all_satisfy(|x| x % 2 == 1));
+        assert!(arr.all_satisfy_par(|x| x % 2 == 1));
     }
 
     #[test]
@@ -44,13 +44,13 @@ pub mod tests {
     #[test]
     fn parallel_any_satisfy() {
         let arr = [1, 2, 5];
-        assert!(arr.parallel_any_satisfy(|x| x % 2 == 1));
+        assert!(arr.any_satisfy_par(|x| x % 2 == 1));
 
         let arr = [2, 4, 6];
-        assert!(!arr.parallel_any_satisfy(|x| x % 2 == 1));
+        assert!(!arr.any_satisfy_par(|x| x % 2 == 1));
 
         let arr = [];
-        assert!(!arr.parallel_any_satisfy(|x| x % 2 == 1));
+        assert!(!arr.any_satisfy_par(|x| x % 2 == 1));
     }
 
     #[test]
@@ -68,12 +68,12 @@ pub mod tests {
     #[test]
     fn parallel_none_satisfy() {
         let arr = [2, 4, 6];
-        assert!(arr.parallel_none_satisfy(|x| x % 2 == 1));
+        assert!(arr.none_satisfy_par(|x| x % 2 == 1));
 
         let arr = [2, 1, 6];
-        assert!(!arr.parallel_none_satisfy(|x| x % 2 == 1));
+        assert!(!arr.none_satisfy_par(|x| x % 2 == 1));
 
         let arr = [];
-        assert!(arr.parallel_none_satisfy(|x| x % 2 == 1));
+        assert!(arr.none_satisfy_par(|x| x % 2 == 1));
     }
 }

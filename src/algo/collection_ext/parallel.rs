@@ -12,7 +12,7 @@ pub trait ParallelCollectionExt: Collection {
     ///
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
-    fn parallel_first_position_where<Pred>(
+    fn first_position_where_par<Pred>(
         &self,
         pred: Pred,
     ) -> Option<Self::Position>
@@ -41,14 +41,11 @@ pub trait ParallelCollectionExt: Collection {
     ///
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
-    fn parallel_first_position_of(
-        &self,
-        e: &Self::Element,
-    ) -> Option<Self::Position>
+    fn first_position_of_par(&self, e: &Self::Element) -> Option<Self::Position>
     where
         Self::Element: Eq + Sync, // TODO: is Sync really necessary??
     {
-        self.parallel_first_position_where(|x| x == e)
+        self.first_position_where_par(|x| x == e)
     }
 
     /// Finds position of last element in `self` satisfying `pred`. If no such
@@ -57,7 +54,7 @@ pub trait ParallelCollectionExt: Collection {
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
     /// ```
-    fn parallel_last_position_where<Pred>(
+    fn last_position_where_par<Pred>(
         &self,
         pred: Pred,
     ) -> Option<Self::Position>
@@ -86,14 +83,11 @@ pub trait ParallelCollectionExt: Collection {
     ///
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
-    fn parallel_last_position_of(
-        &self,
-        e: &Self::Element,
-    ) -> Option<Self::Position>
+    fn last_position_of_par(&self, e: &Self::Element) -> Option<Self::Position>
     where
         Self::Element: Eq + Sync,
     {
-        self.parallel_last_position_where(|x| x == e)
+        self.last_position_where_par(|x| x == e)
     }
 
     /*-----------------Predicate Test Algorithms-----------------*/
@@ -102,7 +96,7 @@ pub trait ParallelCollectionExt: Collection {
     ///
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
-    fn parallel_all_satisfy<Pred>(&self, pred: Pred) -> bool
+    fn all_satisfy_par<Pred>(&self, pred: Pred) -> bool
     where
         Pred: Fn(&Self::Element) -> bool + Clone + Send,
     {
@@ -127,7 +121,7 @@ pub trait ParallelCollectionExt: Collection {
     ///
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
-    fn parallel_any_satisfy<Pred>(&self, pred: Pred) -> bool
+    fn any_satisfy_par<Pred>(&self, pred: Pred) -> bool
     where
         Pred: Fn(&Self::Element) -> bool + Clone + Send,
     {
@@ -152,7 +146,7 @@ pub trait ParallelCollectionExt: Collection {
     ///
     /// # Complexity
     ///   - O(n) where `n == self.count()`.
-    fn parallel_none_satisfy<Pred>(&self, pred: Pred) -> bool
+    fn none_satisfy_par<Pred>(&self, pred: Pred) -> bool
     where
         Pred: Fn(&Self::Element) -> bool + Clone + Send,
     {
