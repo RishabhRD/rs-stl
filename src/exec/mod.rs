@@ -10,7 +10,11 @@ use crate::unwrap_option_vec;
 /// Returns the global thread pool to execute tasks on.
 pub(crate) fn global_thread_pool() -> &'static rayon_core::ThreadPool {
     static POOL: LazyLock<rayon_core::ThreadPool> = LazyLock::new(|| {
+        let t = std::thread::available_parallelism()
+            .map(|n| n.get())
+            .unwrap_or(1);
         rayon_core::ThreadPoolBuilder::new()
+            .num_threads(t)
             .build()
             .expect("failed to get global threadpool")
     });

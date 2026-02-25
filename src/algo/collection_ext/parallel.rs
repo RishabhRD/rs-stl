@@ -24,14 +24,10 @@ pub trait ParallelCollectionExt: Collection {
     where
         Pred: Fn(&Self::Element) -> bool + Clone + Send,
     {
-        let hardware_concurrency = std::thread::available_parallelism()
-            .map(|n| n.get())
-            .unwrap_or(1);
+        let t = scheduler.current_num_threads();
         let min_elements_per_core = 512;
-        let even_splits = self.splitting_evenly_in_with_min_size(
-            hardware_concurrency,
-            min_elements_per_core,
-        );
+        let even_splits =
+            self.splitting_evenly_in_with_min_size(t, min_elements_per_core);
         let num_splits = even_splits.len();
         let parallel_tasks = even_splits
             .zip(std::iter::repeat_n(pred, num_splits))
@@ -109,14 +105,10 @@ pub trait ParallelCollectionExt: Collection {
     where
         Pred: Fn(&Self::Element) -> bool + Clone + Send,
     {
-        let hardware_concurrency = std::thread::available_parallelism()
-            .map(|n| n.get())
-            .unwrap_or(1);
+        let t = scheduler.current_num_threads();
         let min_elements_per_core = 512;
-        let even_splits = self.splitting_evenly_in_with_min_size(
-            hardware_concurrency,
-            min_elements_per_core,
-        );
+        let even_splits =
+            self.splitting_evenly_in_with_min_size(t, min_elements_per_core);
         let num_splits = even_splits.len();
         let parallel_tasks = even_splits
             .zip(std::iter::repeat_n(pred, num_splits))
@@ -195,14 +187,10 @@ pub trait ParallelCollectionExt: Collection {
     where
         Pred: Fn(&Self::Element) -> bool + Clone + Send,
     {
-        let hardware_concurrency = std::thread::available_parallelism()
-            .map(|n| n.get())
-            .unwrap_or(1);
+        let t = scheduler.current_num_threads();
         let min_elements_per_core = 512;
-        let even_splits = self.splitting_evenly_in_with_min_size(
-            hardware_concurrency,
-            min_elements_per_core,
-        );
+        let even_splits =
+            self.splitting_evenly_in_with_min_size(t, min_elements_per_core);
         let num_splits = even_splits.len();
         let parallel_tasks = even_splits
             .zip(std::iter::repeat_n(pred, num_splits))
@@ -241,14 +229,10 @@ pub trait ParallelCollectionExt: Collection {
     where
         Pred: Fn(&Self::Element) -> bool + Clone + Send,
     {
-        let hardware_concurrency = std::thread::available_parallelism()
-            .map(|n| n.get())
-            .unwrap_or(1);
+        let t = scheduler.current_num_threads();
         let min_elements_per_core = 512;
-        let even_splits = self.splitting_evenly_in_with_min_size(
-            hardware_concurrency,
-            min_elements_per_core,
-        );
+        let even_splits =
+            self.splitting_evenly_in_with_min_size(t, min_elements_per_core);
         let num_splits = even_splits.len();
         let parallel_tasks = even_splits
             .zip(std::iter::repeat_n(pred, num_splits))
@@ -287,14 +271,10 @@ pub trait ParallelCollectionExt: Collection {
     where
         Pred: Fn(&Self::Element) -> bool + Clone + Send,
     {
-        let hardware_concurrency = std::thread::available_parallelism()
-            .map(|n| n.get())
-            .unwrap_or(1);
+        let t = scheduler.current_num_threads();
         let min_elements_per_core = 512;
-        let even_splits = self.splitting_evenly_in_with_min_size(
-            hardware_concurrency,
-            min_elements_per_core,
-        );
+        let even_splits =
+            self.splitting_evenly_in_with_min_size(t, min_elements_per_core);
         let num_splits = even_splits.len();
         let parallel_tasks = even_splits
             .zip(std::iter::repeat_n(pred, num_splits))
