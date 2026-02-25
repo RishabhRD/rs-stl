@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["array_impl","array_slice","slice_impl","vec_impl"],"struct":["ArraySlice"]};

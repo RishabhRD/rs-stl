@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["string_impl","string_slice","string_slice_impl"],"struct":["StringSlice"]};
