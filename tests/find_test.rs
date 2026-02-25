@@ -67,61 +67,69 @@ pub mod tests {
 
     #[test]
     fn parallel_first_position_where() {
+        let e = rayon_core::ThreadPoolBuilder::new().build().unwrap();
+
         let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-        let i = arr.parallel_first_position_where(|x| *x == 5);
+        let i = arr.first_position_where_par_on(&e, |x| *x == 5);
         assert_eq!(i, Some(0));
 
         let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
-        let i = arr.parallel_first_position_where(|x| *x == 5);
+        let i = arr.first_position_where_par_on(&e, |x| *x == 5);
         assert_eq!(i, Some(6));
 
         let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let i = arr.parallel_first_position_where(|x| *x == 5);
+        let i = arr.first_position_where_par_on(&e, |x| *x == 5);
         assert_eq!(i, None);
     }
 
     #[test]
     fn parallel_first_position_of() {
+        let e = rayon_core::ThreadPoolBuilder::new().build().unwrap();
+
         let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-        let i = arr.parallel_first_position_of(&5);
+        let i = arr.first_position_of_par_on(&e, &5);
         assert_eq!(i, Some(0));
 
         let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
-        let i = arr.parallel_first_position_of(&5);
+        let i = arr.first_position_of_par_on(&e, &5);
         assert_eq!(i, Some(6));
 
         let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let i = arr.parallel_first_position_of(&5);
+        let i = arr.first_position_of_par_on(&e, &5);
         assert_eq!(i, None);
     }
 
     #[test]
     fn parallel_last_position_where() {
+        let e = rayon_core::ThreadPoolBuilder::new().build().unwrap();
+
         let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-        let i = arr.parallel_last_position_where(|x| *x == 5);
+        let i = arr.last_position_where_par_on(&e, |x| *x == 5);
         assert_eq!(i, Some(10));
 
         let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
-        let i = arr.parallel_last_position_where(|x| *x == 5);
+        let i = arr.last_position_where_par_on(&e, |x| *x == 5);
         assert_eq!(i, Some(10));
 
         let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let i = arr.parallel_last_position_where(|x| *x == 5);
+        let i = arr.last_position_where_par_on(&e, |x| *x == 5);
         assert_eq!(i, None);
     }
 
     #[test]
     fn parallel_last_position_of() {
+        let e = rayon_core::ThreadPoolBuilder::new().build().unwrap();
+
         let arr = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5];
-        let i = arr.parallel_last_position_of(&5);
+        let i = arr.last_position_of_par_on(&e, &5);
         assert_eq!(i, Some(10));
 
         let arr = [0, 0, 0, 0, 0, 0, 5, 5, 5, 5, 5];
-        let i = arr.parallel_last_position_of(&5);
+        let i = arr.last_position_of_par_on(&e, &5);
         assert_eq!(i, Some(10));
 
         let arr = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        let i = arr.parallel_last_position_of(&5);
+        let i = arr.last_position_of_par_on(&e, &5);
         assert_eq!(i, None);
     }
 }
